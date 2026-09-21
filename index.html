@@ -1,85 +1,380 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎮 مكتبة سليم التفاعلية</title>
-<style>
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:'Segoe UI',Tahoma,Arial,sans-serif; background:#fffbe8; color:#222; }
-  header {
-    background:linear-gradient(135deg,#7bc47f,#1e5aa8); color:#fff; text-align:center;
-    padding:26px 14px; border-bottom:5px solid rgba(0,0,0,.12);
-  }
-  header h1 { margin:0 0 6px; font-size:28px; }
-  header p { margin:0; opacity:.9; font-size:16px; }
-  .wrap { max-width:760px; margin:0 auto; padding:18px 14px 50px; }
-  h2 { color:#2e7d32; font-size:21px; margin:26px 4px 10px; }
-  .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  @media (max-width:560px){ .grid{grid-template-columns:1fr;} }
-  .card {
-    display:block; background:#fff; border-radius:18px; padding:18px 14px; text-align:center;
-    text-decoration:none; color:#1c2b1c; border:3px solid #c8e6c9;
-    box-shadow:0 3px 10px rgba(0,0,0,.07); transition:transform .15s;
-  }
-  .card:hover { transform:translateY(-4px); }
-  .card .em { font-size:44px; }
-  .card .t { font-size:18px; font-weight:800; margin-top:8px; line-height:1.7; }
-  .card .s { font-size:13px; color:#666; margin-top:4px; line-height:1.7; }
-  .card.blue { border-color:#cfe3ff; }
-  .card.gold { border-color:#ffe9a8; }
-  footer { text-align:center; color:#998; font-size:13px; padding:18px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌟 بوابة أبطال البيت: سليم، كارما، وكندة 🌟</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 49, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+      --neon-green: #10b981;
+      --neon-blue: #00f2fe;
+      --neon-gold: #f59e0b;
+      --neon-purple: #a855f7;
+      --neon-rose: #f43f5e;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(0, 242, 254, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+      color: #f8fafc;
+      min-height: 100vh;
+      padding: 16px 12px 60px;
+    }
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    /* Hero Header */
+    .hero {
+      text-align: center;
+      padding: 24px 16px 20px;
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.95));
+      border: 1.5px solid var(--border);
+      border-radius: 26px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      margin-bottom: 22px;
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--neon-green), var(--neon-blue), var(--neon-gold), var(--neon-purple));
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid var(--neon-green);
+      color: #6ee7b7;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .hero h1 {
+      font-size: 30px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .hero p {
+      color: #94a3b8;
+      font-size: 15px;
+      max-width: 580px;
+      margin: 0 auto 14px;
+      line-height: 1.6;
+    }
+    .names-pill {
+      display: inline-flex;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 6px 16px;
+      border-radius: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .npill {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    /* Section Styling */
+    .section-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #e2e8f0;
+      margin: 24px 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title span.badge {
+      font-size: 11px;
+      background: rgba(255,255,255,0.1);
+      padding: 2px 10px;
+      border-radius: 20px;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 650px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 25px; }
+    }
+
+    /* Cards */
+    .app-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: white;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .app-card:hover, .app-card:active {
+      transform: translateY(-3px) scale(1.01);
+    }
+    .app-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; width: 5px; height: 100%;
+    }
+
+    /* Card Variants */
+    .card-quran { border-color: rgba(245, 158, 11, 0.35); }
+    .card-quran::before { background: var(--neon-gold); }
+    .card-quran:hover { box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25); border-color: rgba(245, 158, 11, 0.7); }
+
+    .card-math { border-color: rgba(0, 242, 254, 0.35); }
+    .card-math::before { background: var(--neon-blue); }
+    .card-math:hover { box-shadow: 0 10px 25px rgba(0, 242, 254, 0.25); border-color: rgba(0, 242, 254, 0.7); }
+
+    .card-plant { border-color: rgba(16, 185, 129, 0.35); }
+    .card-plant::before { background: var(--neon-green); }
+    .card-plant:hover { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25); border-color: rgba(16, 185, 129, 0.7); }
+
+    .card-podcast { border-color: rgba(168, 85, 247, 0.35); }
+    .card-podcast::before { background: var(--neon-purple); }
+    .card-podcast:hover { box-shadow: 0 10px 25px rgba(168, 85, 247, 0.25); border-color: rgba(168, 85, 247, 0.7); }
+
+    .icon-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.06);
+    }
+    .app-details { flex: 1; min-width: 0; }
+    .app-details h3 { font-size: 17px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .app-details p { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+    
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 700; white-space: nowrap; }
+    .tag-green { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag-blue { background: rgba(0, 242, 254, 0.2); color: #67e8f9; }
+    .tag-gold { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    .tag-purple { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+
+    .arrow-go {
+      font-size: 20px;
+      color: #64748b;
+      transition: transform 0.2s;
+    }
+    .app-card:hover .arrow-go { transform: translateX(-4px); color: white; }
+
+    footer {
+      text-align: center;
+      margin-top: 36px;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>📚 مكتبة سليم التفاعلية</h1>
-  <p>ألعاب وحلقات ومصحف — كل حاجة بصوت حلو وتشتغل من المتصفح على طول ✨</p>
-</header>
-<div class="wrap">
 
-  <h2>🎮 الألعاب التفاعلية (افتح والعب فورًا)</h2>
-  <div class="grid">
-    <a class="card" href="selim-math-arabic/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82_%D8%A7%D8%B2%D8%B1%D8%B9_%D9%86%D8%A8%D8%AA%D8%A9_%D8%B3%D9%84%D9%8A%D9%85_%D8%A8%D8%A7%D9%84%D8%A8%D9%84%D8%AF%D9%8A.html">
-      <div class="em">🌱👄</div>
-      <div class="t">ازرع نبتة (فصحى + بلدي)</div>
-      <div class="s">تقويم الاستماع مع شرح كل سؤال بالعامية — لغة عربية</div>
-    </a>
-    <a class="card" href="selim-math-arabic/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82_%D8%A7%D8%B2%D8%B1%D8%B9_%D9%86%D8%A8%D8%AA%D8%A9_%D8%B3%D9%84%D9%8A%D9%85.html">
-      <div class="em">🌱</div>
-      <div class="t">ازرع نبتة (فصحى فقط)</div>
-      <div class="s">نفس التقويم بنسخة الكتاب الجافة — للتدريب الامتحاني</div>
-    </a>
-    <a class="card blue" href="selim-math-arabic/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82_%D8%B3%D8%B1_%D8%A7%D9%84%D8%AA%D9%82%D8%B3%D9%8A%D9%85_%D8%A7%D9%84%D8%B3%D8%AD%D8%B1%D9%8A_%D8%B3%D9%84%D9%8A%D9%85_%D8%A8%D8%A7%D9%84%D8%B5%D9%88%D8%AA.html">
-      <div class="em">🧺🔊</div>
-      <div class="t">سر التقسيم السحري (بالصوت)</div>
-      <div class="s">خاصية تجزئة المضروب في الضرب — مع نجوم وتلميحات جدو حسن</div>
-    </a>
-    <a class="card gold" href="quran-albayyinah/%D8%B3%D9%88%D8%B1%D8%A9_%D8%A7%D9%84%D8%A8%D9%8A%D9%86%D8%A9_%D9%85%D8%B5%D8%AD%D9%81_%D8%AA%D9%81%D8%A7%D8%B9%D9%84%D9%8A.html">
-      <div class="em">🌙📖</div>
-      <div class="t">سورة البيّنة — مصحف تفاعلي</div>
-      <div class="s">رسم عثماني + ألوان تجويد + تلاوة ~٢٠ دقيقة مع تظليل الآية</div>
-    </a>
+<div class="container">
+  
+  <!-- Hero Header -->
+  <div class="hero">
+    <span class="hero-badge">🚀 المنصة التعليمية السحابية الموحدة</span>
+    <h1>بوابة أبطال البيت</h1>
+    <p>تطبيقات تفاعلية متكاملة بالصوت والشرح الممتع وتلوين الأحكام.. شغالة في أي مكان ومن أي جهاز 📱✨</p>
+    <div class="names-pill">
+      <span class="npill" style="color: #6ee7b7;">🦸‍♂️ سليم</span>
+      <span class="npill" style="color: #f472b6;">🌸 كارما</span>
+      <span class="npill" style="color: #67e8f9;">⭐ كندة</span>
+    </div>
   </div>
 
-  <h2>🎧 الحلقات الصوتية (MP3)</h2>
-  <div class="grid">
-    <a class="card gold" href="quran-albayyinah/%D8%AA%D9%84%D9%82%D9%8A%D9%86_%D8%B3%D9%88%D8%B1%D8%A9_%D8%A7%D9%84%D8%A8%D9%8A%D9%86%D8%A9.mp3">
-      <div class="em">🕌</div>
-      <div class="t">تلقين سورة البيّنة</div>
-      <div class="s">٢٠ دقيقة: استماع ← ترديد ← تثبيت</div>
+  <!-- 1. قسم القرآن الكريم والتجويد -->
+  <div class="section-title">
+    <span>📖 مصاحف التجويد والقرآن الكريم</span>
+    <span class="badge">صوت بنت + الشيخ الحصري + تلوين الأحكام</span>
+  </div>
+  <div class="grid-2">
+    
+    <!-- سورة القدر -->
+    <a href="quran-alqadr/index.html" class="app-card card-quran">
+      <div class="icon-box">✨</div>
+      <div class="app-details">
+        <h3>سورة القدر <span class="tag tag-gold">مصحف التجويد</span></h3>
+        <p>تلاوة وتلقين بصوت نقي + أحكام التجويد الملونة وفضائل ليلة القدر.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
     </a>
-    <a class="card blue" href="selim-math-arabic/%D8%B3%D9%84%D9%8A%D9%85_%D8%B1%D8%AD%D9%84%D8%A9_%D8%B3%D8%B1_%D8%A7%D9%84%D8%AA%D9%82%D8%B3%D9%8A%D9%85_%D8%A7%D9%84%D8%B3%D8%AD%D8%B1%D9%8A_%D8%AE%D9%88%D8%A7%D8%B5_%D8%A7%D9%84%D8%B6%D8%B1%D8%A8.mp3">
-      <div class="em">🧺</div>
-      <div class="t">رحلة سر التقسيم السحري</div>
-      <div class="s">حلقة قصة خواص الضرب (الجزء التاني) — ١٠ دقائق</div>
+
+    <!-- سورة البينة - النسخة 1 (20 دقيقة تجويد) -->
+    <a href="albayyinah.html" class="app-card card-quran">
+      <div class="icon-box">📖</div>
+      <div class="app-details">
+        <h3>سورة البينة (نسخة 1) <span class="tag tag-gold">20 دقيقة تجويد</span></h3>
+        <p>تلاوة الحصري المعلم + صوت بنت مجودة وتظليل الأحكام آية بآية.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
     </a>
+
+    <!-- سورة البينة - النسخة 2 (المصحف التفاعلي التلقين) -->
+    <a href="quran-albayyinah/سورة_البينة_مصحف_تفاعلي.html" class="app-card card-quran">
+      <div class="icon-box">🌙</div>
+      <div class="app-details">
+        <h3>سورة البينة (نسخة 2) <span class="tag tag-gold">تلقين عثماني</span></h3>
+        <p>مصحف تفاعلي بالرسم العثماني والصوت المدمج للحفظ والتسميع.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- تلقين سورة البينة صوت MP3 -->
+    <a href="quran-albayyinah/تلقين_سورة_البينة.mp3" class="app-card card-quran" target="_blank">
+      <div class="icon-box">🕌</div>
+      <div class="app-details">
+        <h3>حلقة تلقين سورة البينة <span class="tag tag-gold">ملف MP3</span></h3>
+        <p>تسجيل ٢٠ دقيقة متواصلة: استماع ← ترديد ← تثبيت وسماع مباشر.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
   </div>
 
-  <h2>📖 حلقات الجداول والقصص</h2>
-  <div class="grid" id="eps"><div class="card" style="border-style:dashed;pointer-events:none"><div class="em">📂</div><div class="t">حلقات سليم وكرمة وكندا</div><div class="s">موجودة في مجلد episodes-selim — افتح الريبو واختر الحلقة</div></div></div>
+  <!-- 2. قسم الرياضيات والماث -->
+  <div class="section-title">
+    <span>🚀 معمل الرياضيات والماث</span>
+    <span class="badge">المنهج الجديد وتفكيك الأعداد</span>
+  </div>
+  <div class="grid-2">
 
-  <footer>💛 معمول بحب لسليم وكرمة وكندا — آخر تحديث تلقائي من مساحة العمل</footer>
+    <!-- معمل الماث 4×5 -->
+    <a href="math.html" class="app-card card-math">
+      <div class="icon-box">🚀</div>
+      <div class="app-details">
+        <h3>معمل أبطال الماث (4×5) <span class="tag tag-blue">نيون Cyber</span></h3>
+        <p>كتاب الوزارة ص 10-11: تفكيك خواص الضرب بالأصوات والألعاب التفاعلية.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- سر التقسيم السحري -->
+    <a href="selim-math-arabic/تطبيق_سر_التقسيم_السحري_سليم_بالصوت.html" class="app-card card-math">
+      <div class="icon-box">🧺</div>
+      <div class="app-details">
+        <h3>سر التقسيم السحري <span class="tag tag-blue">بالصوت الحماسي</span></h3>
+        <p>تجزئة المضروب في جدول الضرب مع نجوم وتلميحات جدو حسن لسليم.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- رحلة سر التقسيم السحري MP3 -->
+    <a href="selim-math-arabic/سليم_رحلة_سر_التقسيم_السحري_خواص_الضرب.mp3" class="app-card card-math" target="_blank">
+      <div class="icon-box">⚡</div>
+      <div class="app-details">
+        <h3>قصة سر التقسيم السحري <span class="tag tag-blue">بودكاست MP3</span></h3>
+        <p>حلقة صوتية شيقة (الجزء الثاني - ١٠ دقائق) لشرح خواص الضرب في رحلة ممتعة.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+  </div>
+
+  <!-- 3. قسم اللغة العربية والقصص -->
+  <div class="section-title">
+    <span>🌱 اللغة العربية والقصص التفاعلية</span>
+    <span class="badge">استماع + تقويم تفاعلي</span>
+  </div>
+  <div class="grid-2">
+
+    <!-- ازرع نبتة فصحى + بلدي -->
+    <a href="plant.html" class="app-card card-plant">
+      <div class="icon-box">🌱</div>
+      <div class="app-details">
+        <h3>ازرع نبتة <span class="tag tag-green">فصحى + شرح بالبلدي</span></h3>
+        <p>قصة مريم التفاعلية وحل التقويم مع شرح كل سؤال بالعامية وأصوات تشجيعية.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- ازرع نبتة فصحى فقط -->
+    <a href="selim-math-arabic/تطبيق_ازرع_نبتة_سليم.html" class="app-card card-plant">
+      <div class="icon-box">📖</div>
+      <div class="app-details">
+        <h3>ازرع نبتة <span class="tag tag-green">فصحى امتحاني</span></h3>
+        <p>نسخة تقويم الاستماع الفصحى المباشرة للتدريب على نمط الامتحانات.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+  </div>
+
+  <!-- 4. قسم استوديو البودكاست لسليم -->
+  <div class="section-title">
+    <span>🎧 استوديو حلقات بودكاست سليم</span>
+    <span class="badge">صوت كرتون نتورك وشبابي حماسي</span>
+  </div>
+  <div class="grid-2">
+
+    <!-- حلقة سليم جدول 3 -->
+    <a href="episodes-selim/حلقة_سليم_جدول_٣.mp3" class="app-card card-podcast" target="_blank">
+      <div class="icon-box">📻</div>
+      <div class="app-details">
+        <h3>حلقة سليم: جدول ٣ <span class="tag tag-purple">صوت كرتوني</span></h3>
+        <p>حلقة ممتعة لحفظ وإتقان جدول الضرب ٣ مع تحديات وألعاب صوتية.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- مستودع الحلقات الكامل -->
+    <a href="https://github.com/html-mobile-audio/html-mobile-audio/tree/main/episodes-selim" class="app-card card-podcast" target="_blank">
+      <div class="icon-box">📂</div>
+      <div class="app-details">
+        <h3>أرشيف الحلقات وسيناريوهات Word <span class="tag tag-purple">جدول 4 والإيمان</span></h3>
+        <p>مجلد الحلقات والسيناريوهات المكتوبة على GitHub لمتابعة كافة الدروس.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+  </div>
+
+  <footer>
+    <p>❤️ منصة العائلة التعليمية لأبطال البيت: سليم، كارما، وكندة ❤️</p>
+    <p style="font-size: 11px; opacity: 0.7;">استضافة سحابية مجانية ودائمة عبر GitHub Pages • متوافقة 100% مع الموبايل والتابلت والكمبيوتر</p>
+  </footer>
+
 </div>
+
 </body>
 </html>
