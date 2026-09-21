@@ -1,0 +1,12 @@
+# ملفات الأسرار والمتغيرات الحساسة
+.env
+*.env
+!.env.example
+
+# بايثون والملفات المؤقتة
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+.system_generated/
+scratch/
