@@ -592,17 +592,35 @@
 
 <div class="container">
   <!-- Mobile & Laptop Quick Navigation Portal -->
-  <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(18, 24, 43, 0.9); padding: 10px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); flex-wrap: wrap; gap: 10px;">
-    <div style="font-weight: 800; font-size: 13px; color: var(--neon-gold); display: flex; align-items: center; gap: 6px;">
-      <span>📱 بوابة أبطال البيت (سليم، كارما، وكندة)</span>
-    </div>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-      <a href="/index.html" style="background: rgba(255,255,255,0.06); color: #ffd700; text-decoration: none; padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; border: 1px solid rgba(255,215,0,0.3);">📖 سورة البينة</a>
-      <a href="/سورة%20القدر/index.html" style="background: rgba(255,255,255,0.06); color: #67e8f9; text-decoration: none; padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; border: 1px solid rgba(103,232,249,0.3);">✨ سورة القدر</a>
-      <a href="/رياضيات_سليم_خواص_الضرب/index.html" style="background: rgba(0, 242, 254, 0.2); color: white; text-decoration: none; padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 800; border: 1px solid var(--neon-blue);">🚀 معمل الماث (4×5)</a>
-      <a href="/plant.html" style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 800; border: 1px solid #34d399;">🌱 ازرع نبتة سليم</a>
-    </div>
+<script>
+function getAppBase() {
+  var p = window.location.pathname;
+  return p.indexOf('/html-mobile-audio') !== -1 ? '/html-mobile-audio/' : '/';
+}
+function navApp(target) {
+  window.location.href = getAppBase() + target;
+  return false;
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var base = getAppBase();
+  document.querySelectorAll('a[data-target]').forEach(function(a) {
+    a.href = base + a.getAttribute('data-target');
+  });
+});
+</script>
+<nav class="kids-unified-nav" style="max-width: 900px; margin: 0 auto 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); padding: 8px 16px; border-radius: 50px; border: 1.5px solid #d4af37; box-shadow: 0 4px 20px rgba(0,0,0,0.08); flex-wrap: wrap; gap: 8px; direction: rtl; font-family: 'Tajawal', sans-serif; position: relative; z-index: 1000;">
+  <div style="font-weight: 800; font-size: 13px; color: #5d4037; display: flex; align-items: center; gap: 6px;">
+    <a href="index.html" data-target="index.html" onclick="return navApp('index.html');" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px;">
+      <span>📱 بوابة أبطال البيت (الرئيسية 🏠)</span>
+    </a>
   </div>
+  <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+    <a href="albayyinah.html" data-target="albayyinah.html" onclick="return navApp('albayyinah.html');" style="background: #fdf6e3; color: #5d4037; border: 1px solid #e0d0a8; text-decoration: none; padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 700; transition: 0.2s;">📖 سورة البينة</a>
+    <a href="quran-alqadr/index.html" data-target="quran-alqadr/index.html" onclick="return navApp('quran-alqadr/index.html');" style="background: #fdf6e3; color: #5d4037; border: 1px solid #e0d0a8; text-decoration: none; padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 700; transition: 0.2s;">✨ سورة القدر</a>
+    <a href="math.html" data-target="math.html" onclick="return navApp('math.html');" style="background: linear-gradient(135deg, #00f2fe, #4facfe); color: #0f172a; font-weight: 900; box-shadow: 0 2px 10px rgba(0,242,254,0.4); text-decoration: none; padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 800; transition: 0.2s;">🚀 معمل الماث (4×5)</a>
+    <a href="plant.html" data-target="plant.html" onclick="return navApp('plant.html');" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: 1px solid #34d399; text-decoration: none; padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 800; transition: 0.2s;">🌱 ازرع نبتة سليم</a>
+  </div>
+</nav>
 
   <!-- Hero Banner -->
   <div class="hero-panel">
