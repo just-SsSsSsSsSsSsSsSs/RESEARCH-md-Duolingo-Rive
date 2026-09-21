@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سورة القدر - مصحف التجويد التفاعلي - 20 دقيقة</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Scheherazade+New:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c5a059; --gold-dark: #8a6d3b; --bg-cream: #fdf8ef; --bg-page: #fffdf7;
+    --red-qalqala: #d32f2f; --blue-ikhfa: #1565c0; --green-ghunna: #2e7d32;
+    --orange-iqlab: #ef6c00; --purple-madd: #6a1b9a; --pink-idgham: #ad1457;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Tajawal',sans-serif;background:radial-gradient(ellipse at top,#f9f3e8 0%,#efe6d0 100%);color:#1a1a1a;min-height:100vh;padding:16px}
+  .mushaf-container{max-width:880px;margin:0 auto;background:var(--bg-page);border:3px solid var(--gold);border-radius:18px;box-shadow:0 12px 40px rgba(139,109,59,.15),0 0 0 8px rgba(197,160,89,.08);overflow:hidden;position:relative}
+  .mushaf-container::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--gold),#f3d89c,var(--gold))}
+  .surah-header{text-align:center;padding:28px 20px 18px;background:linear-gradient(180deg,#fffdf7 0%,#fcf6e8 100%);border-bottom:2px solid #f0e0b8}
+  .ornament-top{font-family:'Amiri Quran',serif;color:var(--gold);font-size:28px;letter-spacing:6px;margin-bottom:6px}
+  .surah-title-box{display:inline-flex;align-items:center;gap:14px;border:2px solid var(--gold);border-radius:50px;padding:8px 28px;background:white;box-shadow:0 4px 12px rgba(197,160,89,.15)}
+  .surah-title-box .num{background:var(--gold);color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .surah-title-box h1{font-family:'Amiri Quran',serif;font-size:32px;color:#3a2d13;font-weight:400}
+  .surah-meta{margin-top:10px;color:#8a7a5a;font-size:14px;display:flex;justify-content:center;gap:18px}
+  .basmala{text-align:center;font-family:'Amiri Quran',serif;font-size:28px;color:#2c5a3a;padding:18px 0 8px}
+  .tajweed-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:12px 16px;background:#fdf6e3;border-top:1px dashed #e6d5a8;border-bottom:1px dashed #e6d5a8;font-size:12px}
+  .tajweed-legend .item{display:flex;align-items:center;gap:6px;background:white;border-radius:20px;padding:4px 10px;border:1px solid #eee0bb}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .surah-text-container{padding:32px 32px 20px;line-height:2.9;font-family:'Scheherazade New','Amiri Quran',serif;font-size:32px;text-align:justify;text-align-last:center;color:#1e1e1e}
+  @media(max-width:600px){.surah-text-container{font-size:25px;padding:22px 18px;line-height:2.6}.basmala{font-size:22px}}
+  .ayah{display:inline;padding:2px 6px;border-radius:8px;transition:all .4s ease;cursor:pointer;position:relative}
+  .ayah.active{background:linear-gradient(180deg,#fff3b0 0%,#ffe082 100%);box-shadow:0 0 0 2px #ffca28,0 4px 16px rgba(255,202,40,.4);color:#3e2723}
+  .ayah-number{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;color:#5d4037;background:#fff;border:1.5px solid var(--gold);border-radius:50%;margin:0 4px;vertical-align:middle;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+  .ayah.active .ayah-number{background:var(--gold);color:white;border-color:var(--gold-dark);transform:scale(1.15)}
+  .ghunna{color:var(--green-ghunna);font-weight:700}.ikhfa{color:var(--blue-ikhfa);font-weight:700}.iqlab{color:var(--orange-iqlab);font-weight:700}.qalqala{color:var(--red-qalqala);font-weight:700}.madd{color:var(--purple-madd);font-weight:700}.idgham{color:var(--pink-idgham);font-weight:700}.tafkhim{color:#000;font-weight:900;text-shadow:0 0 .5px #000}
+  .intro-box,.outro-box{font-size:16px;font-family:'Tajawal';display:block;text-align:center;margin:16px 0;padding:12px;border-radius:12px;cursor:pointer;transition:.3s}
+  .intro-box{background:#f0f8e8;border:1px dashed #a3c48a}.outro-box{background:#fff3e0;border:1px dashed #e0a86a}
+  .intro-box.active,.outro-box.active{background:#ffe082;box-shadow:0 0 0 2px #ffca28}
+  .player-bar{position:sticky;bottom:0;background:linear-gradient(180deg,#ffffff 0%,#fdf6e3 100%);border-top:2px solid var(--gold);padding:14px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 -8px 30px rgba(0,0,0,.07);z-index:10}
+  .player-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .now-playing{display:flex;align-items:center;gap:10px;font-size:14px;color:#5d4037}
+  .pulse{width:10px;height:10px;background:#2e7d32;border-radius:50%;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}100%{transform:scale(1);opacity:1}}
+  .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .btn{border:none;border-radius:50px;padding:10px 18px;font-family:'Tajawal',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;font-size:14px}
+  .btn-primary{background:linear-gradient(135deg,#2e7d32 0%,#1b5e20 100%);color:white;box-shadow:0 4px 14px rgba(46,125,50,.3)}
+  .btn-primary:hover{transform:translateY(-1px)}
+  .btn-secondary{background:white;border:1.5px solid #e0d0a8;color:#5d4037}
+  .btn-secondary:hover{background:#fdf6e3}
+  .btn-gold{background:linear-gradient(135deg,#c5a059 0%,#8a6d3b 100%);color:white;box-shadow:0 4px 14px rgba(197,160,89,.3)}
+  .btn.active-gold{background:#2e7d32;color:white}
+  .progress-wrap{display:flex;align-items:center;gap:12px}
+  .progress-bar{flex:1;height:10px;background:#f0e6c8;border-radius:20px;overflow:hidden;position:relative}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#2e7d32);border-radius:20px;transition:width .3s}
+  .progress-fill-20{position:absolute;top:0;left:0;height:100%;width:0%;background:linear-gradient(90deg,#ff9800,#f44336);opacity:.3;border-radius:20px;transition:width .3s}
+  .time{font-size:12px;color:#8d7d5e;min-width:90px;text-align:left;font-variant-numeric:tabular-nums}
+  .mode-switch{display:flex;gap:6px;background:#f5ecd0;padding:4px;border-radius:30px}
+  .mode-switch button{border:none;background:transparent;padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Tajawal'}
+  .mode-switch button.active{background:white;box-shadow:0 2px 8px rgba(0,0,0,.1);font-weight:700;color:#3e2723}
+  .extra-info{text-align:center;padding:16px;font-size:13px;color:#8a7a5a;background:#fffdf7;line-height:1.8}
+  .badge-20{display:inline-block;background:linear-gradient(135deg,#ff6f00,#e65100);color:white;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-right:6px;animation:glow 2s infinite}
+  @keyframes glow{0%,100%{box-shadow:0 0 5px rgba(255,111,0,.4)}50%{box-shadow:0 0 15px rgba(255,111,0,.7)}}
+</style>
+</head>
+<body>
+
+<!-- Mobile & Laptop Quick Navigation Portal -->
+<div style="max-width: 880px; margin: 0 auto 14px; display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 18px; border-radius: 50px; border: 1.5px solid var(--gold); box-shadow: 0 4px 15px rgba(139,109,59,0.1); flex-wrap: wrap; gap: 8px;">
+  <div style="font-weight: 800; font-size: 13px; color: #5d4037; display: flex; align-items: center; gap: 6px;">
+    <span>📱 بوابة تعلم سليم، كارما، وكندة</span>
+  </div>
+  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <a href="/index.html" style="background: #fdf6e3; color: #5d4037; text-decoration: none; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid #e0d0a8;">📖 سورة البينة</a>
+    <a href="/سورة%20القدر/index.html" style="background: var(--gold); color: white; text-decoration: none; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;">✨ سورة القدر</a>
+    <a href="/رياضيات_سليم_خواص_الضرب/index.html" style="background: linear-gradient(135deg, #090d16, #1e1b4b); color: #00f2fe; text-decoration: none; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; border: 1px solid #00f2fe;">🚀 معمل الماث (4×5)</a>
+    <a href="/plant.html" style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; border: 1px solid #34d399;">🌱 ازرع نبتة سليم</a>
+  </div>
+</div>
+
+<div class="mushaf-container">
+  <div class="surah-header">
+    <div class="ornament-top">﷽ ۞ ﷽</div>
+    <div class="surah-title-box"><span class="num">97</span><h1>سُورَةُ القَدۡرِ</h1><span class="num">5</span></div>
+    <div class="surah-meta"><span>مكّيّة</span><span>•</span><span>ترتيبها 97</span><span>•</span><span>آياتها 5</span><span>•</span><span style="color:#2e7d32;font-weight:700">مجوّدة - صوت بنت</span></div>
+  </div>
+
+  <div class="basmala">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
+
+  <div class="tajweed-legend">
+    <div class="item"><span class="dot" style="background:var(--red-qalqala)"></span> قلقلة <span style="font-size:10px">القدر - أدراك - مطلع - الفجر</span></div>
+    <div class="item"><span class="dot" style="background:var(--blue-ikhfa)"></span> إخفاء <span style="font-size:10px">أنزلناه - من كل</span></div>
+    <div class="item"><span class="dot" style="background:var(--green-ghunna)"></span> غُنّة <span style="font-size:10px">إنّا</span></div>
+    <div class="item"><span class="dot" style="background:var(--purple-madd)"></span> مد <span style="font-size:10px">إنّآ - ومآ - الملائكة</span></div>
+    <div class="item"><span class="dot" style="background:var(--pink-idgham)"></span> إدغام <span style="font-size:10px">خيرٌ من</span></div>
+    <div class="item"><span class="dot" style="background:#000"></span> تفخيم الراء <span style="font-size:10px">ربهم</span></div>
+  </div>
+
+  <div class="surah-text-container" id="surahText">
+    <span class="intro-box ayah" id="ayah-intro" data-audio="audio/intro.mp3">
+      🎧 <b>مقدمة تعريفية</b> - سورة القدر وفضلها وأحكام التجويد (اضغط للاستماع)
+      <span class="ayah-number">م</span>
+    </span>
+
+    <span class="ayah" id="ayah-1" data-audio="audio/ayah1.mp3">
+      <span class="ghunna">إِنَّ</span><span class="madd">آ</span> <span class="ikhfa">أَنزَلۡ</span>نَٰهُ فِي لَيۡلَةِ ٱلۡ<span class="qalqala">قَدۡ</span>رِ
+      <span class="ayah-number">١</span>
+    </span>
+
+    <span class="ayah" id="ayah-2" data-audio="audio/ayah2.mp3">
+      وَمَ<span class="madd">آ</span> <span class="qalqala">أَدۡ</span>رَىٰكَ مَا لَيۡلَةُ ٱلۡ<span class="qalqala">قَدۡ</span>رِ
+      <span class="ayah-number">٢</span>
+    </span>
+
+    <span class="ayah" id="ayah-3" data-audio="audio/ayah3.mp3">
+      لَيۡلَةُ ٱلۡ<span class="qalqala">قَدۡ</span>رِ خَيۡ<span class="idgham">رٞ مِّنۡ</span> أَلۡفِ شَهۡرٖ
+      <span class="ayah-number">٣</span>
+    </span>
+
+    <span class="ayah" id="ayah-4" data-audio="audio/ayah4.mp3">
+      تَنَزَّلُ ٱلۡمَلَ<span class="madd">ٰٓئِ</span>كَةُ وَٱلرُّوحُ فِيهَا بِإِذۡنِ <span class="tafkhim">رَبِّهِم</span> <span class="ikhfa">مِّن كُ</span>لِّ أَمۡرٖ
+      <span class="ayah-number">٤</span>
+    </span>
+
+    <span class="ayah" id="ayah-5" data-audio="audio/ayah5.mp3">
+      سَلَٰمٌ هِيَ حَتَّىٰ <span class="qalqala">مَطۡ</span>لَعِ ٱلۡ<span class="qalqala">فَجۡ</span>رِ
+      <span class="ayah-number">٥</span>
+    </span>
+
+    <span class="outro-box ayah" id="ayah-outro" data-audio="audio/outro.mp3">
+      🎧 <b>خاتمة ودعاء</b> - تذكير بأحكام التجويد وفضل ليلة القدر (اضغط للاستماع)
+      <span class="ayah-number">خ</span>
+    </span>
+  </div>
+
+  <div class="player-bar">
+    <div class="player-top">
+      <div class="now-playing">
+        <div class="pulse" id="pulse" style="display:none"></div>
+        <span id="nowPlayingText">جاهز للتلاوة - صوت بنت مجوّدة - اضغط تشغيل</span>
+        <span class="badge-20" id="badge20">وضع 20 دقيقة</span>
+      </div>
+      <div class="mode-switch">
+        <button id="modeLearn" class="active">حفظ (3×)</button>
+        <button id="mode20" style="background:#ff6f00;color:white;font-weight:700">⏱ 20 دقيقة</button>
+        <button id="modeCont">متصلة</button>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill-20" id="progress20"></div>
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="time" id="timeDisplay">00:00 / 20:00</div>
+    </div>
+
+    <div class="player-top">
+      <div class="controls">
+        <button class="btn btn-primary" id="playPauseBtn">▶ تشغيل السورة كاملة</button>
+        <button class="btn btn-secondary" id="prevBtn">⏮ السابق</button>
+        <button class="btn btn-secondary" id="nextBtn">التالي ⏭</button>
+        <button class="btn btn-gold" id="btn20">⏱ تشغيل ورد 20 دقيقة</button>
+        <button class="btn btn-secondary" id="repeatBtn">🔁 تكرار</button>
+      </div>
+      <div style="font-size:11px;color:#8a7a5a;max-width:260px;line-height:1.4">
+        <span id="loopInfo">الختمة 1 من 5 - كل آية مكررة 3 مرات للتدبر، الإجمالي يصل 20 دقيقة</span>
+      </div>
+    </div>
+
+    <audio id="audioPlayer" preload="metadata"></audio>
+  </div>
+
+  <div class="extra-info">
+    <b>كيف تصل لـ 20 دقيقة؟</b><br>
+    كل آية مسجلة مكررة 3 مرات بصوت بنت مجوّدة (حوالي 4 دقائق للختمة الواحدة مع المقدمة والخاتمة). عند تفعيل <span style="background:#ff6f00;color:white;padding:2px 8px;border-radius:10px">وضع 20 دقيقة</span> يتم تكرار السورة 5 مرات تلقائياً مع المقدمة والخاتمة = <b>20 دقيقة تدبر وحفظ وتثبيت</b>.<br>
+    انقر على أي آية للاستماع الفردي. الألوان توضح أحكام التجويد كما في مصحف التجويد الملون.<br>
+    <span style="color:#2e7d32">●</span> غنة &nbsp; <span style="color:#1565c0">●</span> إخفاء &nbsp; <span style="color:#d32f2f">●</span> قلقلة &nbsp; <span style="color:#6a1b9a">●</span> مد &nbsp; <span style="color:#ad1457">●</span> إدغام
+  </div>
+</div>
+
+<script>
+const ayahs = Array.from(document.querySelectorAll('.ayah'));
+const mainAyahs = ayahs.filter(a => a.id.startsWith('ayah-') && !a.id.includes('intro') && !a.id.includes('outro'));
+const allSequence = ['ayah-intro','ayah-1','ayah-2','ayah-3','ayah-4','ayah-5','ayah-outro'];
+const audioPlayer = document.getElementById('audioPlayer');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const repeatBtn = document.getElementById('repeatBtn');
+const btn20 = document.getElementById('btn20');
+const mode20Btn = document.getElementById('mode20');
+const progressFill = document.getElementById('progressFill');
+const progress20 = document.getElementById('progress20');
+const timeDisplay = document.getElementById('timeDisplay');
+const nowPlayingText = document.getElementById('nowPlayingText');
+const pulse = document.getElementById('pulse');
+const modeLearnBtn = document.getElementById('modeLearn');
+const modeContBtn = document.getElementById('modeCont');
+const loopInfo = document.getElementById('loopInfo');
+
+let currentSeqIndex = 0;
+let isPlaying = false;
+let isRepeat = false;
+let mode = 'learn';
+let is20MinMode = false;
+let loopCount = 1;
+let totalLoopsFor20Min = 5;
+let totalElapsedSeconds = 0;
+let timerInterval = null;
+
+function getAyahById(id){ return document.getElementById(id); }
+function getCurrentAyahId(){ return allSequence[currentSeqIndex]; }
+
+function highlightAyahBySeq(idx){
+  ayahs.forEach(a=>a.classList.remove('active'));
+  const id = allSequence[idx];
+  const el = getAyahById(id);
+  if(el){ el.classList.add('active'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+}
+
+function updateNowPlaying(){
+  const id = getCurrentAyahId();
+  const el = getAyahById(id);
+  let label = '';
+  if(id==='ayah-intro') label='المقدمة التعريفية';
+  else if(id==='ayah-outro') label='الخاتمة والدعاء';
+  else label = `الآية ${id.replace('ayah-','')} من 5`;
+  const text = el ? el.innerText.replace(/[\d٠-٩]+/g,'').trim().slice(0,45) : '';
+  nowPlayingText.textContent = `${is20MinMode?`[${loopCount}/${totalLoopsFor20Min}] `:''}${label} - ${text}...`;
+}
+
+function playBySeq(idx){
+  if(idx<0 || idx>=allSequence.length){
+    if(is20MinMode){
+      loopCount++;
+      if(loopCount <= totalLoopsFor20Min){
+        currentSeqIndex = 0;
+        loopInfo.textContent = `الختمة ${loopCount} من ${totalLoopsFor20Min} - ورد 20 دقيقة - ${Math.round((loopCount/totalLoopsFor20Min)*100)}% مكتمل`;
+        progress20.style.width = ((loopCount-1)/totalLoopsFor20Min*100)+'%';
+        playBySeq(0);
+        return;
+      } else {
+        isPlaying=false; is20MinMode=false;
+        playPauseBtn.textContent='▶ تشغيل السورة كاملة';
+        pulse.style.display='none';
+        nowPlayingText.textContent='تم إكمال ورد 20 دقيقة - بارك الله فيكِ - تقبل الله';
+        progressFill.style.width='100%'; progress20.style.width='100%';
+        timeDisplay.textContent='20:00 / 20:00 مكتمل';
+        loopInfo.textContent='اكتمل ورد 20 دقيقة - 5 ختمات - أحسنتِ';
+        clearInterval(timerInterval);
+        return;
+      }
+    }
+    if(isRepeat){ currentSeqIndex=0; playBySeq(0); return; }
+    isPlaying=false; playPauseBtn.textContent='▶ تشغيل السورة كاملة'; pulse.style.display='none';
+    nowPlayingText.textContent='تمت التلاوة - بارك الله فيك';
+    return;
+  }
+  currentSeqIndex=idx;
+  const id = allSequence[idx];
+  const el = getAyahById(id);
+  const src = el.dataset.audio;
+  audioPlayer.src = src;
+  audioPlayer.play().then(()=>{
+    isPlaying=true;
+    playPauseBtn.textContent='⏸ إيقاف مؤقت';
+    pulse.style.display='block';
+    highlightAyahBySeq(idx);
+    updateNowPlaying();
+    if(!timerInterval && is20MinMode){
+      timerInterval=setInterval(()=>{
+        totalElapsedSeconds+=1;
+        const mins = Math.floor(totalElapsedSeconds/60);
+        const secs = totalElapsedSeconds%60;
+        const pct = Math.min(100, (totalElapsedSeconds / (20*60))*100);
+        progress20.style.width = pct+'%';
+        timeDisplay.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')} / 20:00`;
+        if(totalElapsedSeconds>=20*60){
+          clearInterval(timerInterval);
+        }
+      },1000);
+    }
+  }).catch(e=>{
+    nowPlayingText.textContent='اضغط مرة أخرى - المتصفح منع التشغيل التلقائي، اضغط تشغيل';
+  });
+}
+
+function playNext(){
+  playBySeq(currentSeqIndex+1);
+}
+function playPrev(){
+  playBySeq(Math.max(0,currentSeqIndex-1));
+}
+
+playPauseBtn.addEventListener('click',()=>{
+  if(!isPlaying){
+    if(!audioPlayer.src) playBySeq(0);
+    else { audioPlayer.play(); isPlaying=true; playPauseBtn.textContent='⏸ إيقاف مؤقت'; pulse.style.display='block'; }
+  } else {
+    audioPlayer.pause(); isPlaying=false; playPauseBtn.textContent='▶ متابعة'; pulse.style.display='none';
+  }
+});
+nextBtn.addEventListener('click',playNext);
+prevBtn.addEventListener('click',playPrev);
+
+repeatBtn.addEventListener('click',()=>{
+  isRepeat=!isRepeat;
+  repeatBtn.style.background=isRepeat?'#2e7d32':'white';
+  repeatBtn.style.color=isRepeat?'white':'#5d4037';
+  repeatBtn.textContent=isRepeat?'🔁 التكرار مفعل':'🔁 تكرار';
+});
+
+btn20.addEventListener('click',()=>{
+  is20MinMode=true; loopCount=1; totalElapsedSeconds=0; currentSeqIndex=0;
+  loopInfo.textContent=`بدأ ورد 20 دقيقة - الختمة ${loopCount} من ${totalLoopsFor20Min}`;
+  progress20.style.width='0%'; progressFill.style.width='0%';
+  mode20Btn.classList.add('active'); modeLearnBtn.classList.remove('active'); modeContBtn.classList.remove('active');
+  clearInterval(timerInterval); timerInterval=null;
+  playBySeq(0);
+});
+
+mode20Btn.addEventListener('click',()=> btn20.click());
+
+audioPlayer.addEventListener('ended',playNext);
+
+audioPlayer.addEventListener('timeupdate',()=>{
+  if(audioPlayer.duration){
+    const seqProgress = ((currentSeqIndex + (audioPlayer.currentTime/audioPlayer.duration)) / allSequence.length)*100;
+    progressFill.style.width = seqProgress+'%';
+    if(!is20MinMode){
+      const cur=formatTime(audioPlayer.currentTime);
+      const dur=formatTime(audioPlayer.duration);
+      timeDisplay.textContent=`${cur} / ${dur} (${getCurrentAyahId()})`;
+    }
+  }
+});
+
+function formatTime(s){ if(isNaN(s)) return '00:00'; const m=Math.floor(s/60).toString().padStart(2,'0'); const sec=Math.floor(s%60).toString().padStart(2,'0'); return `${m}:${sec}`; }
+
+ayahs.forEach((el)=>{
+  el.addEventListener('click',()=>{
+    const id=el.id;
+    const idx=allSequence.indexOf(id);
+    if(idx!==-1){ currentSeqIndex=idx; playBySeq(idx); }
+  });
+});
+
+modeLearnBtn.addEventListener('click',()=>{
+  mode='learn'; is20MinMode=false; clearInterval(timerInterval);
+  modeLearnBtn.classList.add('active'); modeContBtn.classList.remove('active'); mode20Btn.classList.remove('active');
+  nowPlayingText.textContent='وضع الحفظ: كل آية مكررة 3 مرات - حوالي 4 دقائق';
+  loopInfo.textContent='وضع الحفظ - كل آية مكررة 3 مرات للتدبر';
+  progress20.style.width='0%';
+});
+modeContBtn.addEventListener('click',()=>{
+  mode='cont'; is20MinMode=false; clearInterval(timerInterval);
+  modeContBtn.classList.add('active'); modeLearnBtn.classList.remove('active'); mode20Btn.classList.remove('active');
+  nowPlayingText.textContent='وضع التلاوة المتصلة - مرة واحدة بخشوع';
+  loopInfo.textContent='تلاوة متصلة - مرة واحدة';
+  progress20.style.width='0%';
+});
+
+document.addEventListener('keydown',(e)=>{
+  if(e.code==='Space'){ e.preventDefault(); playPauseBtn.click(); }
+  if(e.code==='ArrowRight') playPrev();
+  if(e.code==='ArrowLeft') playNext();
+});
+
+// Auto-highlight first on load
+highlightAyahBySeq(0);
+</script>
+
+</body>
+</html>
