@@ -1,0 +1,8 @@
+file '/home/user/selim_table3/episode4/audio/part_01.mp3'
+file '/home/user/selim_table3/episode4/audio/part_02.mp3'
+file '/home/user/selim_table3/episode4/audio/part_03.mp3'
+file '/home/user/selim_table3/episode4/audio/part_04.mp3'
+file '/home/user/selim_table3/episode4/audio/part_05.mp3'
+file '/home/user/selim_table3/episode4/audio/part_06.mp3'
+file '/home/user/selim_table3/episode4/audio/part_07.mp3'
+file '/home/user/selim_table3/episode4/audio/part_08.mp3'

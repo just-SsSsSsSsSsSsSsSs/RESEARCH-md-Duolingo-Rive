@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>سورة البينة — مصحف تفاعلي</title>
+<style>
+@font-face{font-family:'AmiriQ';src:url(data:font/woff2;base64,@FONTB64@) format('woff2');font-display:swap}
+:root{--gold:#b8860b;--frame:#c9a44a;--ink:#2b2115}
+*{box-sizing:border-box}
+body{margin:0;background:#ede4cf;font-family:'AmiriQ','Scheherazade','Traditional Arabic',serif;color:var(--ink);padding:14px 14px 130px}
+.page{max-width:760px;margin:0 auto;background:linear-gradient(#fdfaf1,#faf4e4);border:3px double var(--frame);border-radius:18px;box-shadow:0 8px 30px rgba(90,70,20,.18);padding:26px 22px 40px}
+.header{text-align:center;border-bottom:2px solid rgba(184,134,11,.35);padding-bottom:14px;margin-bottom:10px}
+.sur-name{font-size:44px;font-weight:700;color:#3d2c10}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.chip{background:#fff8e6;border:1px solid #e3cd8f;color:#7c5a12;border-radius:999px;padding:2px 14px;font-size:15px}
+.basmala{text-align:center;font-size:34px;margin:18px 0 8px;border-radius:12px;padding:6px 10px;transition:background .3s}
+.text{font-size:30px;line-height:2.15;text-align:justify}
+.ayah{border-radius:10px;padding:0 3px;transition:background .3s,box-shadow .3s;cursor:pointer}
+.ayah.cur{background:#ffe9a8;box-shadow:0 0 0 2px #e5b93d inset}
+.basmala.cur{background:#ffe9a8;box-shadow:0 0 0 2px #e5b93d inset}
+.anum{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;margin:0 6px;border-radius:50%;border:1.6px solid var(--gold);color:#8a6108;font-size:18px;background:radial-gradient(circle at 35% 30%,#fff7dd,#f3e3ad);vertical-align:middle}
+.madd{color:#d81b3a}.ghn{color:#15803d}.iql{color:#7c3aed}.sil{color:#b3b3b3}.llah{font-weight:700}
+body.noc .madd,body.noc .ghn,body.noc .iql,body.noc .sil{color:inherit}
+.legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0 4px;font-size:16px}
+.lg{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e7d9ac;border-radius:10px;padding:4px 12px}
+.dot{width:14px;height:14px;border-radius:50%;display:inline-block}
+.note{font-size:15px;color:#9a8560;text-align:center;margin-top:14px;line-height:1.9}
+#player{position:fixed;inset-inline:0;bottom:0;z-index:50;background:rgba(255,250,238,.96);backdrop-filter:blur(6px);border-top:2px solid var(--frame);box-shadow:0 -6px 24px rgba(90,70,20,.2);padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap}
+#pp{width:64px;height:64px;border-radius:50%;border:none;background:linear-gradient(#e7c765,#c79a25);color:#402d05;font-size:28px;cursor:pointer;box-shadow:0 4px 12px rgba(120,90,20,.35);font-family:inherit}
+#pp:active{transform:scale(.95)}
+#curay{font-size:17px;font-weight:700;color:#6d4c0d;min-width:120px;text-align:center}
+#time{font-variant-numeric:tabular-nums;direction:ltr;font-size:15px;color:#6d5a35}
+#prog{flex:1;min-width:120px;direction:ltr;accent-color:#c79a25;height:22px}
+button.sm{border:1px solid #d9bd74;background:#fff8e6;color:#6d4c0d;border-radius:10px;padding:6px 12px;font-size:15px;cursor:pointer;font-family:inherit}
+button.sm.on{background:#f5d668;font-weight:700}
+@media (max-width:520px){.text{font-size:24px}.sur-name{font-size:36px}.basmala{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="sur-name">سُورَةُ ٱلۡبَيِّنَةِ</div>
+    <div class="chips">
+      <span class="chip">مدنية</span>
+      <span class="chip">آياتها ٨</span>
+      <span class="chip">الجزء ٣٠ (عمّ)</span>
+      <span class="chip">ترتيبها في المصحف ٩٨</span>
+    </div>
+  </div>
+  <div class="basmala">@BASMALA@</div>
+  <div class="legend">
+    <span class="lg"><span class="dot" style="background:#d81b3a"></span> المد بأنواعه</span>
+    <span class="lg"><span class="dot" style="background:#15803d"></span> الغنة وأحكام النون والميم</span>
+    <span class="lg"><span class="dot" style="background:#7c3aed"></span> الإقلاب</span>
+    <span class="lg"><span class="dot" style="background:#b3b3b3"></span> حروف لا تُنطق</span>
+  </div>
+  <div class="text" id="text">
+@AYAHS@
+  </div>
+  <div class="note">☆ اضغط على أي آية للانتقال إلى تلاوتها • وأثناء السكوت في جولة الترديد كرّروا الآية بصوتٍ عالٍ ☆<br>تلقين صوتي آلي لمساعدة أبنائكم على الحفظ — وللتلاوة الاحترافية المُتقَنة استمعوا لقارئ مُجاز.</div>
+</div>
+<audio id="q" preload="auto" src="data:audio/mp3;base64,@AUDIOB64@"></audio>
+<div id="player">
+  <div class="row">
+    <button id="pp" title="تشغيل / إيقاف">▶</button>
+    <div id="curay">جاهزون للاستماع 📖</div>
+    <span id="time">0:00 / …</span>
+  </div>
+  <div class="row">
+    <input id="prog" type="range" min="0" max="1000" value="0">
+    <button class="sm" id="sp75">0.75×</button>
+    <button class="sm on" id="sp1">1×</button>
+    <button class="sm" id="sp125">1.25×</button>
+    <button class="sm" id="colb">🎨 إخفاء الألوان</button>
+  </div>
+</div>
+<script>
+const TL=@TIMELINE@, FIRSTS=@FIRSTS@;
+const q=document.getElementById('q'), pp=document.getElementById('pp'), cur=document.getElementById('curay'),
+      tim=document.getElementById('time'), prog=document.getElementById('prog'), colb=document.getElementById('colb');
+let lastA='x', seeking=false;
+const arn=n=>(''+n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+(''+(s%60)).padStart(2,'0');}
+function at(t){let lo=0,hi=TL.length-1;while(lo<=hi){const m=(lo+hi)>>1;if(t<TL[m].s)hi=m-1;else if(t>=TL[m].e)lo=m+1;else return TL[m];}return null;}
+function setCur(a){
+  if(a===lastA)return;lastA=a;
+  document.querySelectorAll('.cur').forEach(e=>e.classList.remove('cur'));
+  if(a===-1||a===null||a===undefined){cur.textContent='اسمعوا جيدًا 📖';return;}
+  const el=document.getElementById(a===0?'a0':'a'+a);
+  if(el){el.classList.add('cur');el.scrollIntoView({behavior:'smooth',block:'center'});}
+  cur.textContent=a===0?'البسملة':'الآية '+arn(a);
+}
+q.addEventListener('timeupdate',()=>{
+  const s=at(q.currentTime);setCur(s?s.a:-1);
+  if(!seeking&&q.duration)prog.value=Math.round(q.currentTime/q.duration*1000);
+  tim.textContent=fmt(q.currentTime)+' / '+fmt(q.duration||0);
+});
+q.addEventListener('loadedmetadata',()=>{tim.textContent='0:00 / '+fmt(q.duration);});
+pp.onclick=()=>{if(q.paused){q.play();pp.textContent='⏸';}else{q.pause();pp.textContent='▶';}};
+q.addEventListener('ended',()=>{pp.textContent='▶';setCur(-1);cur.textContent='ما شاء الله، تمت السورة! 🌟';});
+prog.addEventListener('input',()=>{seeking=true;if(q.duration)q.currentTime=prog.value/1000*q.duration;});
+prog.addEventListener('change',()=>{seeking=false;});
+[['sp75',0.75],['sp1',1],['sp125',1.25]].forEach(([id,v])=>{
+  document.getElementById(id).onclick=()=>{q.playbackRate=v;document.querySelectorAll('.sm').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');};
+});
+colb.onclick=()=>{document.body.classList.toggle('noc');colb.textContent=document.body.classList.contains('noc')?'🎨 إظهار الألوان':'🎨 إخفاء الألوان';};
+document.querySelectorAll('.ayah').forEach(el=>{
+  el.addEventListener('click',()=>{const a=+el.dataset.a,f=FIRSTS[a];if(f!=null){q.currentTime=f+0.02;if(q.paused)pp.click();}});
+});
+</script>
+</body>
+</html>

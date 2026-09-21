@@ -1,0 +1,4 @@
+file '/home/user/selim_table3/audio/part_01.mp3'
+file '/home/user/selim_table3/audio/part_02.mp3'
+file '/home/user/selim_table3/audio/part_03.mp3'
+file '/home/user/selim_table3/audio/part_04.mp3'

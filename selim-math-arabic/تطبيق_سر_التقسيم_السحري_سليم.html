@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🧺 سر التقسيم السحري — لعبة سليم</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin:0; padding:0;
+    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
+    background:#fffbe8;
+    color:#222;
+    user-select:none;
+  }
+  .topbar {
+    background:linear-gradient(180deg,#ffd93b,#ffc400);
+    padding:12px 16px; text-align:center;
+    font-size:22px; font-weight:800; color:#5a3c00;
+    border-bottom:4px solid #e8a800;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+  .wrap { max-width:620px; margin:0 auto; padding:14px 14px 40px; }
+  .hidden { display:none !important; }
+
+  /* ====== شاشة البداية ====== */
+  .card {
+    background:#fff; border-radius:20px; padding:22px 18px;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+    border:3px solid #ffe9a8; margin-top:14px; text-align:center;
+  }
+  .cat { font-size:74px; line-height:1; animation:bob 2.2s ease-in-out infinite; }
+  @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .bubble {
+    background:#e9f4ff; border:3px solid #9cc7ec; border-radius:18px;
+    padding:14px 16px; margin:14px 0; font-size:19px; line-height:1.9; text-align:right;
+  }
+  .bigbtn {
+    display:block; width:100%; margin:12px 0 4px; padding:16px;
+    font-size:24px; font-weight:800; color:#fff;
+    background:linear-gradient(180deg,#3f9d4c,#2e7d32);
+    border:none; border-radius:16px; cursor:pointer;
+    box-shadow:0 4px 0 #1b5e20, 0 6px 12px rgba(0,0,0,.15);
+    font-family:inherit;
+  }
+  .bigbtn:active { transform:translateY(3px); box-shadow:0 1px 0 #1b5e20; }
+  .parent-note { font-size:14px; color:#8a6d1f; background:#fff6d6; border-radius:12px; padding:10px 12px; margin-top:14px; line-height:1.8; text-align:right; }
+
+  /* ====== شاشة اللعب ====== */
+  .hud { display:flex; align-items:center; gap:10px; margin-top:12px; }
+  .stars { font-size:22px; font-weight:800; color:#b8860b; white-space:nowrap; }
+  .prog { flex:1; height:16px; background:#eee4c0; border-radius:10px; overflow:hidden; border:2px solid #d9c98a; }
+  .prog > div { height:100%; background:linear-gradient(90deg,#7bc47f,#3f9d4c); width:0%; transition:width .5s; border-radius:10px; }
+  .qnum { font-size:15px; color:#7a6420; font-weight:700; text-align:center; margin-top:6px; }
+
+  .qcard { background:#fff; border-radius:20px; padding:18px 14px; margin-top:12px; box-shadow:0 4px 14px rgba(0,0,0,.07); border:3px solid #cfe3ff; }
+  .qtitle { text-align:center; font-size:17px; color:#1e5aa8; font-weight:800; margin-bottom:8px; }
+  .bonusTag { background:#ffe27a; color:#7a5800; border-radius:20px; padding:2px 12px; font-size:14px; display:inline-block; margin-inline-start:6px; }
+
+  .equation { display:flex; justify-content:center; align-items:center; gap:10px; margin:10px 0 4px; }
+  .numball {
+    min-width:66px; height:66px; padding:0 10px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #fff3c4, #ffd93b);
+    border:3px solid #e8a800; display:flex; align-items:center; justify-content:center;
+    font-size:34px; font-weight:900; color:#4a3200;
+  }
+  .numball.basket { background:radial-gradient(circle at 30% 30%, #ffe3e3, #ff9d9d); border-color:#d66; color:#7a1a1a; }
+  .op { font-size:38px; font-weight:900; color:#555; }
+  .eqmark { font-size:26px; color:#888; font-weight:900; }
+
+  .step1 { margin-top:8px; }
+  .step1 p { text-align:center; font-size:18px; font-weight:700; color:#333; margin:6px 0 10px; }
+  .chips { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .chip {
+    padding:10px 16px; font-size:22px; font-weight:800; border-radius:14px;
+    background:#eef4ff; border:3px solid #9cc7ec; color:#1e5aa8; cursor:pointer;
+    font-family:inherit;
+  }
+  .chip.sel { background:#2e7d32; color:#fff; border-color:#1b5e20; transform:scale(1.06); }
+
+  .partials { margin-top:14px; }
+  .prow { display:flex; align-items:center; justify-content:center; gap:8px; margin:8px 0; font-size:26px; font-weight:800; }
+  .ansbox {
+    width:96px; height:60px; border-radius:12px; border:3px dashed #b3a05a;
+    background:#fffdf2; display:flex; align-items:center; justify-content:center;
+    font-size:30px; font-weight:900; color:#1e5aa8; cursor:pointer;
+  }
+  .ansbox.focus { border-color:#1e5aa8; border-style:solid; box-shadow:0 0 0 3px rgba(30,90,168,.2); }
+  .ansbox.wrong { border-color:#d33; background:#ffe5e5; animation:shake .4s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .funcbar { border-top:3px solid #e8d18a; padding-top:10px; margin-top:4px; }
+  .sumlabel { font-size:20px; font-weight:900; color:#7a6420; margin-inline-end:6px; }
+
+  .numpad { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; max-width:340px; margin:14px auto 6px; }
+  .padbtn {
+    padding:14px 0; font-size:26px; font-weight:900; border-radius:14px; border:3px solid #d9c98a;
+    background:#fff; color:#4a3200; cursor:pointer; font-family:inherit;
+  }
+  .padbtn:active { background:#ffe9a8; }
+  .padbtn.enter { grid-column:span 3; background:linear-gradient(180deg,#3f9d4c,#2e7d32); color:#fff; border-color:#1b5e20; font-size:22px; }
+
+  .hintbtn {
+    display:block; margin:10px auto 0; padding:10px 18px; font-size:17px; font-weight:800;
+    background:#fff6d6; border:3px solid #e8c860; color:#7a5800; border-radius:14px; cursor:pointer; font-family:inherit;
+  }
+  .hintbox { background:#e9f4ff; border:3px solid #9cc7ec; border-radius:14px; padding:10px 14px; margin-top:10px; font-size:17px; line-height:1.8; }
+  .feedback { text-align:center; font-size:20px; font-weight:800; min-height:34px; margin-top:8px; }
+  .feedback.good { color:#2e7d32; }
+  .feedback.try { color:#c8831b; }
+  .nextbtn { display:block; width:100%; margin-top:10px; padding:14px; font-size:22px; font-weight:800; color:#fff; background:linear-gradient(180deg,#3b82f6,#1e5aa8); border:none; border-radius:16px; cursor:pointer; box-shadow:0 4px 0 #16406e; font-family:inherit; }
+  .nextbtn:active { transform:translateY(3px); box-shadow:0 1px 0 #16406e; }
+
+  /* ====== شاشة النهاية ====== */
+  .endcard { text-align:center; padding-top:10px; }
+  .endcard .big-emoji { font-size:80px; }
+  .endcard h2 { color:#8a5a00; font-size:26px; margin:8px 0; }
+  .endcard p { font-size:19px; line-height:1.9; }
+  .goldstars { font-size:44px; letter-spacing:4px; }
+
+  .confetti { position:fixed; top:-40px; font-size:28px; z-index:99; pointer-events:none; }
+</style>
+</head>
+<body>
+<div class="topbar">🧺 سر التقسيم السحري — مع سليم وجدو حسن</div>
+<div class="wrap">
+
+  <!-- شاشة البداية -->
+  <div id="scrHome" class="card">
+    <div class="cat">🐱</div>
+    <div class="bubble">
+      أهلًا يا بطل! أنا <b>القطة الشقية</b> من كتابك، ومعانا <b>جدو حسن</b> تاجر البلح! 🌴<br>
+      النهاردة هنلعب بـ<b>سر التقسيم السحري</b>:<br>
+      الرقم الكبير؟ <b>نقسّمه</b> لحاجتين سهلين... <b>نضرب</b> كل حتة... و<b>نجمع</b> — والناتج دايمًا نفسه! ⭐
+    </div>
+    <button class="bigbtn" id="btnStart">يلا نلعب! 🎮</button>
+    <div class="parent-note">
+      👨‍👩‍👦 للبابا والماما: اللعبة بتتدرّب على <b>خاصية تجزئة المضروب</b> — درس خواص الضرب (الجزء التاني).
+      سيبوا سليم يحل لوحده، ولو اتعثر في زر <b>«ساعدني يا جدو 💡»</b>. مفيش "غلط" هنا — بس محاولات وتشجيع! 💛
+    </div>
+  </div>
+
+  <!-- شاشة اللعب -->
+  <div id="scrQuiz" class="hidden">
+    <div class="hud">
+      <div class="stars">⭐ <span id="starCount">٠</span></div>
+      <div class="prog"><div id="progFill"></div></div>
+    </div>
+    <div class="qnum" id="qnum"></div>
+
+    <div class="qcard">
+      <div class="qtitle" id="qtitle"></div>
+      <div class="equation" id="equation"></div>
+
+      <div class="step1" id="step1">
+        <p id="step1text"></p>
+        <div class="chips" id="chips"></div>
+      </div>
+
+      <div class="partials hidden" id="partials">
+        <div class="prow" id="row1"></div>
+        <div class="prow" id="row2"></div>
+        <div class="prow funcbar" id="rowSum"></div>
+      </div>
+
+      <div class="numpad hidden" id="numpad">
+        <button class="padbtn" data-d="1">١</button>
+        <button class="padbtn" data-d="2">٢</button>
+        <button class="padbtn" data-d="3">٣</button>
+        <button class="padbtn" data-d="4">٤</button>
+        <button class="padbtn" data-d="5">٥</button>
+        <button class="padbtn" data-d="6">٦</button>
+        <button class="padbtn" data-d="7">٧</button>
+        <button class="padbtn" data-d="8">٨</button>
+        <button class="padbtn" data-d="9">٩</button>
+        <button class="padbtn" data-d="back">⌫</button>
+        <button class="padbtn" data-d="0">٠</button>
+        <button class="padbtn" data-d="check">؟</button>
+        <button class="padbtn enter" id="btnCheck">اتأكد ✓</button>
+      </div>
+
+      <button class="hintbtn" id="btnHint">ساعدني يا جدو 💡</button>
+      <div class="hintbox hidden" id="hintbox"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="nextbtn hidden" id="btnNext">السؤال اللي بعده ⬅</button>
+    </div>
+  </div>
+
+  <!-- شاشة النهاية -->
+  <div id="scrEnd" class="card hidden endcard">
+    <div class="big-emoji">🏆</div>
+    <h2>خلّصت يا بطل!</h2>
+    <div class="goldstars" id="endStars"></div>
+    <p id="endMsg"></p>
+    <button class="bigbtn" id="btnAgain">العب من الأول 🎮</button>
+    <div class="parent-note">📖 كمّلوا التثبيت من كتاب المدرسة: تدريبات «وقت المحاولة» و«هيا نتدرّب» على نفس الخاصية.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var ARD = '٠١٢٣٤٥٦٧٨٩';
+  function toAr(n){ return String(n).replace(/\d/g, function(d){ return ARD[+d]; }); }
+  function toEn(s){ return String(s).replace(/[٠-٩]/g, function(d){ return ARD.indexOf(d); }); }
+
+  // ======== بيانات الأسئلة (خاصية تجزئة المضروب) ========
+  // f = العدد الثابت ، s = العدد اللي هنقسّمه ، dl/dr = العرض زي الكتاب
+  var QS = [
+    {dl:'٧', dr:'٩', f:7, s:9,  opts:[[5,4],[4,5],[7,2]], hint:'التسعة أحلى فِكَّة ليها: خمسة وأربعة! جدول الخمسة سهل، وسلّم الأربعة صاحبك من زمان 😉'},
+    {dl:'٥', dr:'٨', f:5, s:8,  opts:[[5,3],[4,4],[6,2]], hint:'التمانية: جرّب خمسة وتلاتة — جدول الخمسة صديقك الوفي!'},
+    {dl:'٦', dr:'٩', f:6, s:9,  opts:[[5,4],[6,3],[7,2]], hint:'التسعة برّه: خمسة وأربعة دايمًا مضمونة 😉'},
+    {dl:'٨', dr:'٧', f:7, s:8,  opts:[[4,4],[5,3],[6,2]], hint:'التمانية توأم حلو: أربعة وأربعة! ٢٨ زائد ٢٨ 😍'},
+    {dl:'٧', dr:'٧', f:7, s:7,  opts:[[4,3],[5,2],[6,1]], hint:'السبعة: أربعة وتلاتة! سلّم الأربعة وسلّم التلاتة مع بعض 😄'},
+    {dl:'٦', dr:'٨', f:6, s:8,  opts:[[5,3],[4,4],[6,2]], hint:'التمانية مع الستة: خمسة وتلاتة كويسة أوي — جدول الخمسة يفضّل شغلك!'},
+    {dl:'٤', dr:'١٢', f:4, s:12, opts:[[10,2],[6,6],[8,4]], hint:'الاتناشر: عشرة واتنين! أي عدد في عشرة سهل خالص ✨', bonus:true},
+    {dl:'٣', dr:'١٣', f:3, s:13, opts:[[10,3],[7,6],[8,5]], hint:'التلتاشر: عشرة وتلاتة! وبعدها سلّم التلاتة يخلّصك لوحده 😎', bonus:true},
+    {dl:'٥', dr:'١٤', f:5, s:14, opts:[[10,4],[7,7],[9,5]], hint:'الأربعتاشر: عشرة وأربعة! خمسة في عشرة؟ خمسين على طول! 🚀', bonus:true}
+  ];
+
+  var PRAISE = ['عاش يا وحش! 🦁','برافو عليك يا سليم! ⭐','ماشي يا معلم! 💪','عبقري الأرقام! 🚀','اللي فوق! 🌟','البلح كله اتعدّ صح! 🧺'];
+  var GENTLE = ['قريب أوي! ركّز وجِرّب تاني يا نجم 💛','ولا يهمك يا بطل، الغلط أول الصح! 🌈','هممم... بص على الخانة دي كده 🐱','شد حيلك يا معلم، انت قدّها! 💪'];
+
+  var qi = 0, stars = 0, tries = 0;
+  var cur = null;        // السؤال الحالي
+  var split = null;      // [x,y]
+  var boxes = [];        // قيم الخانات ['','','']
+  var active = 0;
+  var statedDone = false;
+
+  var el = function(id){ return document.getElementById(id); };
+  var audioCtx = null;
+  function chime(ok){
+    try{
+      audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+      var t = audioCtx.currentTime;
+      var notes = ok ? [523.25,659.25,783.99] : [330,262];
+      notes.forEach(function(f,i){
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = ok ? 'triangle' : 'sine';
+        o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t+i*0.12);
+        g.gain.exponentialRampToValueAtTime(0.25, t+i*0.12+0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, t+i*0.12+0.25);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(t+i*0.12); o.stop(t+i*0.12+0.3);
+      });
+    }catch(e){}
+  }
+  function confetti(){
+    var em = ['🎉','⭐','🧺','🌟','🎈','💛'];
+    for(var i=0;i<26;i++){
+      (function(){
+        var s = document.createElement('span');
+        s.className = 'confetti';
+        s.textContent = em[Math.floor(Math.random()*em.length)];
+        s.style.left = (Math.random()*95)+'vw';
+        s.style.transition = 'transform '+(1.2+Math.random())+'s ease-in, opacity 1.8s';
+        document.body.appendChild(s);
+        requestAnimationFrame(function(){
+          s.style.transform = 'translateY('+(window.innerHeight+80)+'px) rotate('+(Math.random()*720-360)+'deg)';
+          s.style.opacity = '0';
+        });
+        setTimeout(function(){ s.remove(); }, 2400);
+      })();
+    }
+  }
+
+  function render(){
+    cur = QS[qi]; split = null; boxes = ['','','']; active = 0; statedDone = false;
+    el('feedback').textContent = '';
+    el('feedback').className = 'feedback';
+    el('btnNext').classList.add('hidden');
+    el('hintbox').classList.add('hidden');
+    el('partials').classList.add('hidden');
+    el('numpad').classList.add('hidden');
+    el('step1').classList.remove('hidden');
+
+    el('qnum').textContent = 'سؤال ' + toAr(qi+1) + ' من ' + toAr(QS.length) + (cur.bonus ? ' — نجمة ذهبية! 🌟' : '');
+    el('progFill').style.width = Math.round(qi/QS.length*100)+'%';
+
+    el('qtitle').innerHTML = (cur.bonus ? '<span class="bonusTag">تحدي البونص</span>' : '') + ' احسب بالتجزئة: الرقم الكبير يتقسّم!';
+    el('equation').innerHTML =
+      '<div class="numball">'+cur.dl+'</div>'+
+      '<div class="op">×</div>'+
+      '<div class="numball basket">'+cur.dr+'</div>'+
+      '<div class="eqmark">= ؟</div>';
+
+    el('step1text').innerHTML = 'الخطوة ١: فكّك الـ <b>'+toAr(cur.s)+'</b> بطريقتك! (كل الطرق صح 😉)';
+    var chips = el('chips'); chips.innerHTML = '';
+    cur.opts.forEach(function(op){
+      var b = document.createElement('button');
+      b.className = 'chip';
+      b.textContent = toAr(cur.s)+' = '+toAr(op[0])+' + '+toAr(op[1]);
+      b.onclick = function(){ pick(op, b); };
+      chips.appendChild(b);
+    });
+  }
+
+  function pick(op, btn){
+    split = op; boxes = ['','','']; active = 0; statedDone = false;
+    var chips = el('chips').children;
+    for(var i=0;i<chips.length;i++) chips[i].classList.remove('sel');
+    btn.classList.add('sel');
+    el('feedback').textContent = '';
+    el('feedback').className = 'feedback';
+    el('btnNext').classList.add('hidden');
+    buildRows();
+    el('partials').classList.remove('hidden');
+    el('numpad').classList.remove('hidden');
+  }
+
+  function boxHTML(k){
+    return '<div class="ansbox'+(k===active?' focus':'')+'" data-k="'+k+'">'+(boxes[k]||'☐')+'</div>';
+  }
+  function buildRows(){
+    var f = cur.f, x = split[0], y = split[1];
+    el('row1').innerHTML = '<span>'+toAr(f)+' × '+toAr(x)+' = </span>'+boxHTML(0);
+    el('row2').innerHTML = '<span>'+toAr(f)+' × '+toAr(y)+' = </span>'+boxHTML(1);
+    el('rowSum').innerHTML = '<span class="sumlabel">المجموع =</span>'+boxHTML(2);
+    bindBoxes();
+  }
+  function bindBoxes(){
+    var bs = document.querySelectorAll('.ansbox');
+    bs.forEach(function(b){
+      b.onclick = function(){
+        active = +b.getAttribute('data-k');
+        document.querySelectorAll('.ansbox').forEach(function(x){ x.classList.remove('focus'); });
+        b.classList.add('focus');
+      };
+    });
+  }
+
+  function pressDigit(d){
+    if(statedDone) return;
+    if(d==='back'){ boxes[active] = boxes[active].slice(0,-1); }
+    else{
+      if(boxes[active].length>=3) return;
+      boxes[active] += toAr(+d);
+      if(boxes[active].length>=3){ active = Math.min(2, active+1); }
+    }
+    buildRows();
+  }
+
+  function check(){
+    if(statedDone){ return; }
+    if(boxes[0]==='' || boxes[1]==='' || boxes[2]===''){
+      el('feedback').textContent = 'كمّل الخانات التلاتة الأول يا نجم ✍️';
+      el('feedback').className = 'feedback try';
+      return;
+    }
+    var f = cur.f, s = cur.s, x = split[0], y = split[1];
+    var want = [f*x, f*y, f*s];
+    var got = [+toEn(boxes[0]), +toEn(boxes[1]), +toEn(boxes[2])];
+    if(got[0]===want[0] && got[1]===want[1] && got[2]===want[2]){
+      statedDone = true;
+      stars += tries===0 ? 2 : 1;
+      el('starCount').textContent = toAr(stars);
+      el('feedback').textContent = PRAISE[Math.floor(Math.random()*PRAISE.length)] + '  '+toAr(cur.dl)+' × '+toAr(cur.dr)+' = '+toAr(f*s);
+      el('feedback').className = 'feedback good';
+      chime(true); confetti();
+      tries = 0;
+      if(qi === QS.length-1){ el('btnNext').textContent = 'شوف نجومك! 🏆'; }
+      else { el('btnNext').textContent = 'السؤال اللي بعده ⬅'; }
+      el('btnNext').classList.remove('hidden');
+    } else {
+      tries++;
+      chime(false);
+      got.forEach(function(g,i){
+        var b = document.querySelector('.ansbox[data-k="'+i+'"]');
+        if(b){ if(g!==want[i]){ b.classList.add('wrong'); setTimeout(function(){ b.classList.remove('wrong'); },500); } }
+      });
+      el('feedback').textContent = GENTLE[Math.floor(Math.random()*GENTLE.length)];
+      el('feedback').className = 'feedback try';
+    }
+  }
+
+  function showHint(){
+    el('hintbox').textContent = '🧔🏻 جدو حسن بيقولك: '+cur.hint;
+    el('hintbox').classList.remove('hidden');
+  }
+
+  function next(){
+    qi++;
+    if(qi >= QS.length){ finish(); return; }
+    render();
+  }
+  function finish(){
+    el('scrQuiz').classList.add('hidden');
+    el('scrEnd').classList.remove('hidden');
+    var maxStars = QS.length*2;
+    var n = Math.min(10, Math.max(5, Math.round(stars/maxStars*10)));
+    var str = ''; for(var i=0;i<n;i++) str+='⭐';
+    el('endStars').textContent = str;
+    var msg = 'جمعت <b>'+toAr(stars)+' نجمة</b>! 🌟<br>سليم بقى رسميًا <b>تاجر بلح محترف</b> زي جدو حسن 🧺<br>افتكر القاعدة الذهبية: <b>نقسّم، نضرب، نجمع — والناتج دايمًا نفسه!</b>';
+    el('endMsg').innerHTML = msg;
+    chime(true); confetti();
+    el('progFill').style.width = '100%';
+  }
+
+  // أحداث
+  el('btnStart').onclick = function(){ el('scrHome').classList.add('hidden'); el('scrQuiz').classList.remove('hidden'); render(); };
+  el('btnAgain').onclick = function(){ qi=0; stars=0; tries=0; el('starCount').textContent='٠'; el('scrEnd').classList.add('hidden'); el('scrQuiz').classList.remove('hidden'); render(); };
+  el('btnCheck').onclick = check;
+  el('btnHint').onclick = showHint;
+  el('btnNext').onclick = next;
+
+  var pads = document.querySelectorAll('.padbtn[data-d]');
+  for (var pi = 0; pi < pads.length; pi++){
+    (function(b){
+      b.onclick = function(){
+        var d = b.getAttribute('data-d');
+        if (d === 'check'){ check(); return; }
+        pressDigit(d);
+      };
+    })(pads[pi]);
+  }
+
+  document.addEventListener('keydown', function(e){
+    if(el('scrQuiz').classList.contains('hidden')) return;
+    if(/^[0-9]$/.test(e.key)){ pressDigit(e.key); }
+    else if(ARD.indexOf(e.key) > -1){ pressDigit(String(ARD.indexOf(e.key))); }
+    else if(e.key==='Backspace'){ pressDigit('back'); }
+    else if(e.key==='Enter'){ check(); }
+  });
+})();
+</script>
+</body>
+</html>
+
+</body>
+</html>
