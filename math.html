@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 معمل أبطال الرياضيات: تفكيك الضرب - سليم الخارق 🦸‍♂️</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #090d16;
+    --card-dark: rgba(18, 24, 43, 0.82);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --neon-blue: #00f2fe;
+    --neon-purple: #9d4edd;
+    --neon-green: #00ff87;
+    --neon-gold: #ffd700;
+    --neon-pink: #ff2a7a;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --glow-blue: 0 0 20px rgba(0, 242, 254, 0.35);
+    --glow-green: 0 0 20px rgba(0, 255, 135, 0.4);
+    --glow-gold: 0 0 25px rgba(255, 215, 0, 0.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+  body {
+    background-color: var(--bg-dark);
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(157, 78, 221, 0.18) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(0, 242, 254, 0.18) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(0, 255, 135, 0.12) 0px, transparent 50%);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 16px;
+    overflow-x: hidden;
+  }
+  .container {
+    max-width: 1040px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Canvas Confetti */
+  #confettiCanvas {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Top Hero Banner */
+  .hero-panel {
+    background: var(--card-dark);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(0, 242, 254, 0.25);
+    border-radius: 28px;
+    padding: 24px 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 254, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue), var(--neon-green));
+  }
+  .hero-profile {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .avatar-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+  }
+  .avatar-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    border: 3px solid var(--neon-gold);
+    box-shadow: var(--glow-gold);
+    animation: avatarPulse 3s infinite alternate ease-in-out;
+  }
+  @keyframes avatarPulse {
+    0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+    100% { transform: scale(1.06); box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+  }
+  .hero-titles h1 {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(90deg, #ffffff, #a5f3fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-titles p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .hero-rank-tag {
+    display: inline-block;
+    background: rgba(157, 78, 221, 0.25);
+    border: 1px solid var(--neon-purple);
+    color: #d8b4fe;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  /* Stats Cards Grid */
+  .stats-cluster {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1.5px solid var(--card-border);
+    border-radius: 20px;
+    padding: 12px 18px;
+    min-width: 105px;
+    text-align: center;
+    transition: 0.3s;
+  }
+  .stat-card:hover {
+    border-color: var(--neon-blue);
+    transform: translateY(-2px);
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    margin-top: 2px;
+  }
+  .val-stars { color: var(--neon-gold); text-shadow: var(--glow-gold); }
+  .val-score { color: var(--neon-green); text-shadow: var(--glow-green); }
+  .val-streak { color: var(--neon-pink); }
+
+  /* Interactive Story Concept Banner */
+  .story-card {
+    background: linear-gradient(135deg, rgba(26, 34, 64, 0.7), rgba(15, 23, 42, 0.9));
+    border: 2px dashed rgba(255, 215, 0, 0.35);
+    border-radius: 24px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .story-mascot {
+    font-size: 50px;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+    animation: floatMascot 3s ease-in-out infinite alternate;
+  }
+  @keyframes floatMascot {
+    from { transform: translateY(0); }
+    to { transform: translateY(-8px); }
+  }
+  .story-content h3 {
+    color: var(--neon-gold);
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .story-content p {
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .story-tag {
+    background: rgba(255, 215, 0, 0.15);
+    color: var(--neon-gold);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+
+  /* Stage Headers */
+  .stage-divider {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 36px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  }
+  .stage-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    font-weight: 900;
+  }
+  .stage-badge {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .badge-1 { background: rgba(0, 242, 254, 0.15); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
+  .badge-2 { background: rgba(157, 78, 221, 0.2); color: #d8b4fe; border: 1px solid var(--neon-purple); }
+  .badge-3 { background: rgba(0, 255, 135, 0.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
+
+  /* Problem Cards Grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 22px;
+  }
+  .mission-card {
+    background: var(--card-dark);
+    border: 2px solid var(--card-border);
+    border-radius: 24px;
+    padding: 22px;
+    backdrop-filter: blur(16px);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .mission-card:hover {
+    border-color: rgba(0, 242, 254, 0.4);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 35px rgba(0,0,0,0.6), var(--glow-blue);
+  }
+  .mission-card.completed {
+    border-color: var(--neon-green) !important;
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.9)) !important;
+    box-shadow: var(--glow-green) !important;
+  }
+  .mission-card.has-error {
+    border-color: var(--neon-pink) !important;
+    animation: shakeCard 0.4s;
+  }
+  @keyframes shakeCard {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .index-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--text-muted);
+  }
+  .mission-target-eq {
+    font-family: 'Outfit', sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    direction: ltr;
+    letter-spacing: 1px;
+    color: #ffffff;
+    background: linear-gradient(90deg, #ffffff, #67e8f9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .split-hint-pill {
+    font-size: 12px;
+    background: rgba(255,255,255,0.05);
+    padding: 3px 10px;
+    border-radius: 12px;
+    color: #94a3b8;
+  }
+
+  /* Tree Structure Visuals */
+  .tree-container {
+    background: rgba(10, 15, 29, 0.6);
+    border: 1.5px solid rgba(255, 255, 255, 0.06);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .tree-branch-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    direction: ltr;
+  }
+  .tree-branch-row:last-of-type {
+    margin-bottom: 0;
+  }
+  .branch-connector {
+    color: var(--neon-blue);
+    font-family: 'Outfit';
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .sum-divider-row {
+    border-top: 1.5px solid rgba(255, 255, 255, 0.12);
+    margin-top: 14px;
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sum-label {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--neon-gold);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Interactive Neon Number Inputs */
+  input.digit-slot {
+    width: 60px;
+    height: 46px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: #ffffff;
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  input.digit-slot:focus {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+    background: #0f172a;
+    transform: scale(1.05);
+  }
+  input.digit-slot.is-correct {
+    border-color: var(--neon-green) !important;
+    background: rgba(0, 255, 135, 0.12) !important;
+    color: var(--neon-green) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 135, 0.4);
+  }
+  input.digit-slot.is-wrong {
+    border-color: var(--neon-pink) !important;
+    background: rgba(255, 42, 122, 0.15) !important;
+    color: #ff7597 !important;
+    box-shadow: 0 0 15px rgba(255, 42, 122, 0.4);
+  }
+
+  /* Problem Card Bottom Status */
+  .card-msg {
+    min-height: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .msg-success { color: var(--neon-green); }
+  .msg-alert { color: #ff7597; }
+
+  /* Quick-Numpad Chips Bar (Floating / Docked for Kids) */
+  .quick-chips-wrap {
+    background: rgba(18, 24, 43, 0.95);
+    backdrop-filter: blur(25px);
+    border: 2px solid rgba(0, 242, 254, 0.3);
+    border-radius: 30px;
+    padding: 12px 20px;
+    position: sticky;
+    bottom: 16px;
+    margin-top: 40px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    z-index: 100;
+  }
+  .chips-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px;
+    max-width: 580px;
+  }
+  .chips-scroll::-webkit-scrollbar { height: 4px; }
+  .chips-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+  .num-chip {
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .num-chip:hover {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: var(--glow-blue);
+    transform: translateY(-2px);
+  }
+  .btn-check-main {
+    background: linear-gradient(135deg, #00ff87 0%, #60efff 100%);
+    color: #042f2e;
+    font-size: 16px;
+    font-weight: 900;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(0, 255, 135, 0.4);
+    transition: 0.3s;
+  }
+  .btn-check-main:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 35px rgba(0, 255, 135, 0.7);
+  }
+  .btn-reset-main {
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-muted);
+    padding: 10px 18px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-reset-main:hover {
+    color: white;
+    border-color: white;
+  }
+
+  /* Audio player floating control */
+  .audio-lesson-bar {
+    background: rgba(18, 24, 43, 0.85);
+    border: 1.5px solid var(--neon-purple);
+    border-radius: 20px;
+    padding: 12px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    box-shadow: 0 8px 30px rgba(157, 78, 221, 0.2);
+  }
+  .audio-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .sound-wave {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 18px;
+  }
+  .sound-wave span {
+    width: 3px;
+    height: 100%;
+    background: var(--neon-purple);
+    border-radius: 10px;
+    animation: waveAnim 1.2s infinite ease-in-out alternate;
+  }
+  .sound-wave span:nth-child(2) { animation-delay: 0.2s; height: 60%; }
+  .sound-wave span:nth-child(3) { animation-delay: 0.4s; height: 80%; }
+  .sound-wave span:nth-child(4) { animation-delay: 0.1s; height: 40%; }
+  @keyframes waveAnim {
+    0% { transform: scaleY(0.3); }
+    100% { transform: scaleY(1); }
+  }
+
+  /* Grand Victory Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .winner-box {
+    background: linear-gradient(145deg, #111827, #0b0f19);
+    border: 3px solid var(--neon-gold);
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.4), inset 0 0 30px rgba(255, 215, 0, 0.1);
+    border-radius: 36px;
+    max-width: 520px;
+    width: 100%;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    animation: winnerPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes winnerPop {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .big-medal {
+    font-size: 85px;
+    filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.7));
+    margin-bottom: 12px;
+  }
+  .winner-box h2 {
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--neon-gold);
+    text-shadow: var(--glow-gold);
+    margin-bottom: 8px;
+  }
+  .winner-box p {
+    color: #e2e8f0;
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .certificate-badge {
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px dashed var(--neon-gold);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 24px;
+    font-weight: 800;
+    color: #fef08a;
+  }
+  .btn-celebrate {
+    background: linear-gradient(135deg, #ffd700 0%, #ff9f43 100%);
+    color: #000;
+    font-size: 18px;
+    font-weight: 900;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<div class="container">
+  <!-- Mobile & Laptop Quick Navigation Portal -->
+  <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(18, 24, 43, 0.9); padding: 10px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); flex-wrap: wrap; gap: 10px;">
+    <div style="font-weight: 800; font-size: 13px; color: var(--neon-gold); display: flex; align-items: center; gap: 6px;">
+      <span>📱 بوابة أبطال البيت (سليم، كارما، وكندة)</span>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <a href="/index.html" style="background: rgba(255,255,255,0.06); color: #ffd700; text-decoration: none; padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; border: 1px solid rgba(255,215,0,0.3);">📖 سورة البينة</a>
+      <a href="/سورة%20القدر/index.html" style="background: rgba(255,255,255,0.06); color: #67e8f9; text-decoration: none; padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; border: 1px solid rgba(103,232,249,0.3);">✨ سورة القدر</a>
+      <a href="/رياضيات_سليم_خواص_الضرب/index.html" style="background: rgba(0, 242, 254, 0.2); color: white; text-decoration: none; padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 800; border: 1px solid var(--neon-blue);">🚀 معمل الماث (4×5)</a>
+      <a href="/plant.html" style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 800; border: 1px solid #34d399;">🌱 ازرع نبتة سليم</a>
+    </div>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="hero-panel">
+    <div class="hero-profile">
+      <div class="avatar-wrap">
+        <div class="avatar-circle">🦸‍♂️</div>
+      </div>
+      <div class="hero-titles">
+        <h1>معمل أبطال الرياضيات: تفكيك الأعداد</h1>
+        <p>المنهج الجديد: كتاب الوزارة ص 10 وص 11 | إهداء للبطل سليم 🌟</p>
+        <span class="hero-rank-tag" id="rankTitle">🎖️ الرتبة: صائد مضاعفات الضرب</span>
+      </div>
+    </div>
+    <div class="stats-cluster">
+      <div class="stat-card">
+        <div class="stat-label">المسائل</div>
+        <div class="stat-value val-stars"><span id="solvedCount">0</span> / 12</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">الإنجاز</div>
+        <div class="stat-value val-score" id="percentScore">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">الحماس</div>
+        <div class="stat-value val-streak" id="streakVal">🔥 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Player Bar with Multi-Voice Switcher -->
+  <div class="audio-lesson-bar" style="flex-direction: column; align-items: stretch; gap: 14px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div class="audio-info">
+        <div class="sound-wave">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div>
+          <div style="font-weight:900; color:var(--neon-gold); font-size:16px;" id="currentPodcastTitle">🎙️ بودكاست سليم: لغز 4 × 5 العجيب (شاب مصري حماسي) ⚡</div>
+          <div style="font-size:12px; color:var(--text-muted);" id="currentPodcastDesc">تحدي بالعامية المصرية الصريحة يساعد سليم يفكك اللغز ويحل بنفسه 🚀</div>
+        </div>
+      </div>
+      <audio id="lessonAudio" controls style="height: 38px; border-radius: 20px; outline:none;" src="بودكاست_سليم_1_شاب_مصري_حماسي.mp3"></audio>
+    </div>
+    
+    <!-- Voice Selector Pills -->
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
+      <span style="font-size: 13px; font-weight: 800; color: var(--neon-blue);">🎙️ اختر صوت المذيع لسليم:</span>
+      <button onclick="switchVoice('بودكاست_سليم_1_شاب_مصري_حماسي.mp3', '🎙️ بودكاست سليم (شاب مصري حماسي) ⚡', 'تحدي بالعامية المصرية الصريحة يساعد سليم يفكك اللغز ويحل بنفسه 🚀', this)" class="voice-pill" style="background: rgba(0, 242, 254, 0.2); border: 1.5px solid var(--neon-blue); color: white; border-radius: 14px; padding: 6px 14px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.25s;">⚡ شاب مصري حماسي</button>
+      <button onclick="switchVoice('بودكاست_سليم_2_مذيع_كرتون_نتورك.mp3', '📺 بودكاست سليم (مذيع كرتون نتورك) 🦸‍♂️', 'نداء عاجل ومهمة خارقة لفك الأرقام بأسلوب كرتوني مشوق 🎮', this)" class="voice-pill" style="background: rgba(255, 255, 255, 0.05); border: 1.5px solid rgba(255,255,255,0.15); color: var(--text-muted); border-radius: 14px; padding: 6px 14px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.25s;">📺 كرتون نتورك بالعربي</button>
+      <button onclick="switchVoice('بودكاست_سليم_3_بنت_مصرية.mp3', '👧 بودكاست سليم (بنت مصرية شاطرة) 🌟', 'فزورة خفيفة ومرحة مع كارما وكندة بلعبة الحصالة والتفكيك 🎈', this)" class="voice-pill" style="background: rgba(255, 255, 255, 0.05); border: 1.5px solid rgba(255,255,255,0.15); color: var(--text-muted); border-radius: 14px; padding: 6px 14px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.25s;">👧 بنت مصرية شاطرة</button>
+    </div>
+  </div>
+
+  <!-- Concept Story Card -->
+  <div class="story-card">
+    <div class="story-mascot">🐱</div>
+    <div class="story-content">
+      <h3><span>💡</span> سر لعبة التفكيك (خاصية التوزيع):</h3>
+      <p>
+        يا سليم يا بطل.. لما يقابلك رقم كبير في الضرب زي <span class="story-tag">7</span> أو <span class="story-tag">8</span> أو <span class="story-tag">9</span>، متقلقش! بنكسر الرقم لرقمين طيبين وسهلين (زي <b>5 + 2</b> أو <b>4 + 4</b>)، نضرب كل فرع لوحده، وفي الآخر نجمع النواتج يطلع الحل الصح في ثواني! 🎯
+      </p>
+    </div>
+  </div>
+
+  <!-- STAGE 1: ص 10 استعدوا يا أصدقائي -->
+  <div class="stage-divider">
+    <div class="stage-title">
+      <span>🚀 المرحلة 1: تدريب الإحماء</span>
+      <span class="stage-badge badge-1">صفحة 10 (نموذج إرشادي)</span>
+    </div>
+    <div style="font-size:13px;color:var(--text-muted)">مسألتان للمران</div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Card 1: 8 x 4 -->
+    <div class="mission-card" id="mcard-1">
+      <div class="card-top">
+        <div class="index-circle">١</div>
+        <div class="mission-target-eq">8 × 4</div>
+        <div class="split-hint-pill">فككنا 8 ➔ (5 + 3)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>5 × 4 =</span>
+          <input type="number" class="digit-slot" data-ans="20" id="slot-1-1" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <input type="number" class="digit-slot" data-ans="3" id="slot-1-2" placeholder="؟">
+          <span>× 4 = 12</span>
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <div style="direction:ltr;display:flex;align-items:center;gap:6px">
+            <span style="font-size:15px;color:var(--text-muted)">20 + 12 =</span>
+            <input type="number" class="digit-slot" data-ans="32" id="slot-1-3" placeholder="؟">
+          </div>
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-1"></div>
+    </div>
+
+    <!-- Card 2: 6 x 7 -->
+    <div class="mission-card" id="mcard-2">
+      <div class="card-top">
+        <div class="index-circle">٢</div>
+        <div class="mission-target-eq">6 × 7</div>
+        <div class="split-hint-pill">فككنا 7 ➔ (5 + 2)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>6 × 5 =</span>
+          <input type="number" class="digit-slot" data-ans="30" id="slot-2-1" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>6 ×</span>
+          <input type="number" class="digit-slot" data-ans="2" id="slot-2-2" placeholder="؟">
+          <span>= 12</span>
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <div style="direction:ltr;display:flex;align-items:center;gap:6px">
+            <span style="font-size:15px;color:var(--text-muted)">30 + 12 =</span>
+            <input type="number" class="digit-slot" data-ans="42" id="slot-2-3" placeholder="؟">
+          </div>
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-2"></div>
+    </div>
+  </div>
+
+  <!-- STAGE 2: ص 11 وقت المحاولة -->
+  <div class="stage-divider">
+    <div class="stage-title">
+      <span>⏰ المرحلة 2: وقت المحاولة</span>
+      <span class="stage-badge badge-2">صفحة 11 (4 مسائل)</span>
+    </div>
+    <div style="font-size:13px;color:var(--text-muted)">تحدي المربعات الناقصة</div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Card 3: 7 x 9 -->
+    <div class="mission-card" id="mcard-3">
+      <div class="card-top">
+        <div class="index-circle">٣</div>
+        <div class="mission-target-eq">7 × 9</div>
+        <div class="split-hint-pill">فككنا 7 ➔ (4 + 3)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>4 × 9 =</span>
+          <input type="number" class="digit-slot" data-ans="36" id="slot-3-1" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <input type="number" class="digit-slot" data-ans="3" id="slot-3-2" placeholder="؟">
+          <span>× 9 =</span>
+          <input type="number" class="digit-slot" data-ans="27" id="slot-3-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="63" id="slot-3-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-3"></div>
+    </div>
+
+    <!-- Card 4: 8 x 5 -->
+    <div class="mission-card" id="mcard-4">
+      <div class="card-top">
+        <div class="index-circle">٤</div>
+        <div class="mission-target-eq">8 × 5</div>
+        <div class="split-hint-pill">فككنا 8 ➔ (6 + 2)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <input type="number" class="digit-slot" data-ans="6" id="slot-4-1" placeholder="؟">
+          <span>× 5 =</span>
+          <input type="number" class="digit-slot" data-ans="30" id="slot-4-2" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>2 × 5 =</span>
+          <input type="number" class="digit-slot" data-ans="10" id="slot-4-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="40" id="slot-4-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-4"></div>
+    </div>
+
+    <!-- Card 5: 9 x 5 -->
+    <div class="mission-card" id="mcard-5">
+      <div class="card-top">
+        <div class="index-circle">٥</div>
+        <div class="mission-target-eq">9 × 5</div>
+        <div class="split-hint-pill">فككنا 5 ➔ (3 + 2)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>9 × 3 =</span>
+          <input type="number" class="digit-slot" data-ans="27" id="slot-5-1" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>9 ×</span>
+          <input type="number" class="digit-slot" data-ans="2" id="slot-5-2" placeholder="؟">
+          <span>=</span>
+          <input type="number" class="digit-slot" data-ans="18" id="slot-5-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="45" id="slot-5-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-5"></div>
+    </div>
+
+    <!-- Card 6: 6 x 8 -->
+    <div class="mission-card" id="mcard-6">
+      <div class="card-top">
+        <div class="index-circle">٦</div>
+        <div class="mission-target-eq">6 × 8</div>
+        <div class="split-hint-pill">فككنا 8 ➔ (5 + 3)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>6 ×</span>
+          <input type="number" class="digit-slot" data-ans="5" id="slot-6-1" placeholder="؟">
+          <span>=</span>
+          <input type="number" class="digit-slot" data-ans="30" id="slot-6-2" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>6 × 3 =</span>
+          <input type="number" class="digit-slot" data-ans="18" id="slot-6-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="48" id="slot-6-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-6"></div>
+    </div>
+  </div>
+
+  <!-- STAGE 3: ص 11 هيا نتدرب -->
+  <div class="stage-divider">
+    <div class="stage-title">
+      <span>💪 المرحلة 3: تحدي الأبطال</span>
+      <span class="stage-badge badge-3">صفحة 11 هيا نتدرب (6 مسائل)</span>
+    </div>
+    <div style="font-size:13px;color:var(--text-muted)">الطريق نحو 100%</div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Card 7: 9 x 8 -->
+    <div class="mission-card" id="mcard-7">
+      <div class="card-top">
+        <div class="index-circle">٧</div>
+        <div class="mission-target-eq">9 × 8</div>
+        <div class="split-hint-pill">فككنا 9 ➔ (4 + 5)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>4 × 8 =</span>
+          <input type="number" class="digit-slot" data-ans="32" id="slot-7-1" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <input type="number" class="digit-slot" data-ans="5" id="slot-7-2" placeholder="؟">
+          <span>× 8 =</span>
+          <input type="number" class="digit-slot" data-ans="40" id="slot-7-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="72" id="slot-7-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-7"></div>
+    </div>
+
+    <!-- Card 8: 8 x 7 -->
+    <div class="mission-card" id="mcard-8">
+      <div class="card-top">
+        <div class="index-circle">٨</div>
+        <div class="mission-target-eq">8 × 7</div>
+        <div class="split-hint-pill">فككنا 8 ➔ (6 + 2)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <input type="number" class="digit-slot" data-ans="6" id="slot-8-1" placeholder="؟">
+          <span>× 7 =</span>
+          <input type="number" class="digit-slot" data-ans="42" id="slot-8-2" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>2 × 7 =</span>
+          <input type="number" class="digit-slot" data-ans="14" id="slot-8-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="56" id="slot-8-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-8"></div>
+    </div>
+
+    <!-- Card 9: 6 x 6 -->
+    <div class="mission-card" id="mcard-9">
+      <div class="card-top">
+        <div class="index-circle">٩</div>
+        <div class="mission-target-eq">6 × 6</div>
+        <div class="split-hint-pill">فككنا 6 ➔ (1 + 5)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>6 × 1 =</span>
+          <input type="number" class="digit-slot" data-ans="6" id="slot-9-1" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>6 ×</span>
+          <input type="number" class="digit-slot" data-ans="5" id="slot-9-2" placeholder="؟">
+          <span>=</span>
+          <input type="number" class="digit-slot" data-ans="30" id="slot-9-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="36" id="slot-9-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-9"></div>
+    </div>
+
+    <!-- Card 10: 7 x 7 -->
+    <div class="mission-card" id="mcard-10">
+      <div class="card-top">
+        <div class="index-circle">١٠</div>
+        <div class="mission-target-eq">7 × 7</div>
+        <div class="split-hint-pill">فككنا 7 ➔ (5 + 2)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>7 ×</span>
+          <input type="number" class="digit-slot" data-ans="5" id="slot-10-1" placeholder="؟">
+          <span>=</span>
+          <input type="number" class="digit-slot" data-ans="35" id="slot-10-2" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>7 × 2 =</span>
+          <input type="number" class="digit-slot" data-ans="14" id="slot-10-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="49" id="slot-10-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-10"></div>
+    </div>
+
+    <!-- Card 11: 8 x 8 -->
+    <div class="mission-card" id="mcard-11">
+      <div class="card-top">
+        <div class="index-circle">١١</div>
+        <div class="mission-target-eq">8 × 8</div>
+        <div class="split-hint-pill">فككنا 8 ➔ (2 + 6)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>8 × 2 =</span>
+          <input type="number" class="digit-slot" data-ans="16" id="slot-11-1" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>8 ×</span>
+          <input type="number" class="digit-slot" data-ans="6" id="slot-11-2" placeholder="؟">
+          <span>=</span>
+          <input type="number" class="digit-slot" data-ans="48" id="slot-11-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="64" id="slot-11-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-11"></div>
+    </div>
+
+    <!-- Card 12: 6 x 9 -->
+    <div class="mission-card" id="mcard-12">
+      <div class="card-top">
+        <div class="index-circle">١٢</div>
+        <div class="mission-target-eq">6 × 9</div>
+        <div class="split-hint-pill">فككنا 9 ➔ (5 + 4)</div>
+      </div>
+      <div class="tree-container">
+        <div class="tree-branch-row">
+          <span>6 ×</span>
+          <input type="number" class="digit-slot" data-ans="5" id="slot-12-1" placeholder="؟">
+          <span>=</span>
+          <input type="number" class="digit-slot" data-ans="30" id="slot-12-2" placeholder="؟">
+        </div>
+        <div class="tree-branch-row">
+          <span>6 × 4 =</span>
+          <input type="number" class="digit-slot" data-ans="24" id="slot-12-3" placeholder="؟">
+        </div>
+        <div class="sum-divider-row">
+          <span class="sum-label"><span>➕</span> المجموع:</span>
+          <input type="number" class="digit-slot" data-ans="54" id="slot-12-4" placeholder="؟">
+        </div>
+      </div>
+      <div class="card-msg" id="cmsg-12"></div>
+    </div>
+  </div>
+
+  <!-- Quick Floating Interactive Numpad & Controls -->
+  <div class="quick-chips-wrap">
+    <button class="btn-reset-main" id="btnResetAll">🔄 مسح من جديد</button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:12px;color:var(--neon-blue);font-weight:700">🔢 نقرة سريعة للأرقام:</span>
+      <div class="chips-scroll">
+        <span class="num-chip" onclick="insertChip(2)">2</span>
+        <span class="num-chip" onclick="insertChip(3)">3</span>
+        <span class="num-chip" onclick="insertChip(5)">5</span>
+        <span class="num-chip" onclick="insertChip(6)">6</span>
+        <span class="num-chip" onclick="insertChip(10)">10</span>
+        <span class="num-chip" onclick="insertChip(14)">14</span>
+        <span class="num-chip" onclick="insertChip(18)">18</span>
+        <span class="num-chip" onclick="insertChip(20)">20</span>
+        <span class="num-chip" onclick="insertChip(24)">24</span>
+        <span class="num-chip" onclick="insertChip(27)">27</span>
+        <span class="num-chip" onclick="insertChip(30)">30</span>
+        <span class="num-chip" onclick="insertChip(32)">32</span>
+        <span class="num-chip" onclick="insertChip(35)">35</span>
+        <span class="num-chip" onclick="insertChip(36)">36</span>
+        <span class="num-chip" onclick="insertChip(40)">40</span>
+        <span class="num-chip" onclick="insertChip(42)">42</span>
+        <span class="num-chip" onclick="insertChip(45)">45</span>
+        <span class="num-chip" onclick="insertChip(48)">48</span>
+        <span class="num-chip" onclick="insertChip(49)">49</span>
+        <span class="num-chip" onclick="insertChip(54)">54</span>
+        <span class="num-chip" onclick="insertChip(56)">56</span>
+        <span class="num-chip" onclick="insertChip(63)">63</span>
+        <span class="num-chip" onclick="insertChip(64)">64</span>
+        <span class="num-chip" onclick="insertChip(72)">72</span>
+      </div>
+    </div>
+    <button class="btn-check-main" id="btnSubmitAll">⚡ فحص النتيجة كاملة</button>
+  </div>
+</div>
+
+<!-- Winner Modal -->
+<div class="modal-overlay" id="victoryModal">
+  <div class="winner-box">
+    <div class="big-medal">🏆</div>
+    <h2>سليم.. عبقري الرياضيات الأسطوري!</h2>
+    <p>ما شاء الله تبارك الله! قفلت الـ 12 مسألة كاملة بنسبة 100%، وفككت كل أرقام جدول الضرب بكل سهولة واحتراف! سليم فخر العيلة كلها! 🦸‍♂️🔥</p>
+    <div class="certificate-badge">
+      🌟 وسام التميز والذكاء الخارق للبطل سليم (100/100) 🌟
+    </div>
+    <button class="btn-celebrate" onclick="closeModal()">استلمت الوسام الذهبي! 🎖️</button>
+  </div>
+</div>
+
+<script>
+// Sound Synth Web Audio API
+let audioCtx = null;
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freq, type, dur, gainVal=0.15) {
+  try {
+    const ctx = getCtx();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    g.gain.setValueAtTime(gainVal, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(g);
+    g.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+  } catch(e){}
+}
+function soundSuccess() {
+  playTone(523.25, 'triangle', 0.1, 0.2);
+  setTimeout(()=> playTone(659.25, 'triangle', 0.12, 0.2), 90);
+  setTimeout(()=> playTone(783.99, 'triangle', 0.22, 0.25), 180);
+}
+function soundError() {
+  playTone(220, 'sawtooth', 0.2, 0.15);
+  setTimeout(()=> playTone(196, 'sawtooth', 0.25, 0.15), 100);
+}
+function soundVictory() {
+  const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+  notes.forEach((n, idx) => {
+    setTimeout(()=> playTone(n, 'sine', 0.35, 0.25), idx * 130);
+  });
+}
+
+// Global state
+let currentActiveInput = null;
+let currentStreak = 0;
+const cards = [];
+for (let i = 1; i <= 12; i++) {
+  cards.push(document.getElementById('mcard-' + i));
+}
+const allSlots = document.querySelectorAll('input.digit-slot');
+
+allSlots.forEach(slot => {
+  slot.addEventListener('focus', () => {
+    currentActiveInput = slot;
+  });
+  slot.addEventListener('input', () => {
+    validateCard(slot.closest('.mission-card'));
+    checkGlobal();
+  });
+});
+
+function insertChip(val) {
+  if (currentActiveInput) {
+    currentActiveInput.value = val;
+    currentActiveInput.dispatchEvent(new Event('input'));
+    playTone(700, 'sine', 0.06, 0.1);
+  } else {
+    // find first empty
+    for (let s of allSlots) {
+      if (!s.value) {
+        s.value = val;
+        s.focus();
+        s.dispatchEvent(new Event('input'));
+        playTone(700, 'sine', 0.06, 0.1);
+        break;
+      }
+    }
+  }
+}
+
+function validateCard(card) {
+  if (!card) return false;
+  const cardIdx = cards.indexOf(card);
+  const slots = card.querySelectorAll('input.digit-slot');
+  const msg = document.getElementById('cmsg-' + (cardIdx + 1));
+  let isAllCorrect = true;
+  let hasEmpty = false;
+
+  slots.forEach(slot => {
+    const target = slot.dataset.ans.trim();
+    const val = slot.value.trim();
+    if (!val) {
+      hasEmpty = true;
+      isAllCorrect = false;
+      slot.classList.remove('is-correct', 'is-wrong');
+    } else if (val === target) {
+      slot.classList.add('is-correct');
+      slot.classList.remove('is-wrong');
+    } else {
+      slot.classList.add('is-wrong');
+      slot.classList.remove('is-correct');
+      isAllCorrect = false;
+    }
+  });
+
+  if (isAllCorrect) {
+    card.classList.add('completed');
+    card.classList.remove('has-error');
+    msg.innerHTML = '<span class="msg-success">✅ عاش يا سليم! التفكيك دقيق 100%!</span>';
+    return true;
+  } else if (!hasEmpty) {
+    card.classList.remove('completed');
+    card.classList.add('has-error');
+    msg.innerHTML = '<span class="msg-alert">❌ راجع الأرقام باللون الوردي يا بطل</span>';
+    return false;
+  } else {
+    card.classList.remove('completed', 'has-error');
+    msg.innerHTML = '';
+    return false;
+  }
+}
+
+function checkGlobal() {
+  let solved = 0;
+  cards.forEach(c => {
+    if (c.classList.contains('completed')) solved++;
+  });
+  document.getElementById('solvedCount').textContent = solved;
+  const pct = Math.round((solved / 12) * 100);
+  document.getElementById('percentScore').textContent = pct + '%';
+  document.getElementById('streakVal').textContent = '🔥 ' + solved;
+
+  // Update Rank Title
+  const rankEl = document.getElementById('rankTitle');
+  if (solved >= 12) {
+    rankEl.textContent = '👑 الرتبة: عبقري الرياضيات الأسطوري!';
+    rankEl.style.borderColor = 'var(--neon-gold)';
+    rankEl.style.color = 'var(--neon-gold)';
+  } else if (solved >= 6) {
+    rankEl.textContent = '⚡ الرتبة: محترف التفكيك السريع';
+  } else {
+    rankEl.textContent = '🎖️ الرتبة: صائد مضاعفات الضرب';
+  }
+
+  if (solved === 12) {
+    soundVictory();
+    triggerConfetti();
+    document.getElementById('victoryModal').classList.add('active');
+  }
+}
+
+document.getElementById('btnSubmitAll').addEventListener('click', () => {
+  let allWin = true;
+  cards.forEach(card => {
+    const ok = validateCard(card);
+    if (!ok) allWin = false;
+  });
+  checkGlobal();
+  if (allWin) {
+    soundVictory();
+    triggerConfetti();
+    document.getElementById('victoryModal').classList.add('active');
+  } else {
+    soundError();
+  }
+});
+
+document.getElementById('btnResetAll').addEventListener('click', () => {
+  if (confirm('هل تريد مسح كل الحلول والبدء من جديد يا سليم؟')) {
+    allSlots.forEach(s => {
+      s.value = '';
+      s.classList.remove('is-correct', 'is-wrong');
+    });
+    cards.forEach((c, idx) => {
+      c.classList.remove('completed', 'has-error');
+      document.getElementById('cmsg-' + (idx + 1)).innerHTML = '';
+    });
+    checkGlobal();
+  }
+});
+
+function closeModal() {
+  document.getElementById('victoryModal').classList.remove('active');
+}
+
+// Confetti Particle Engine
+function triggerConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = [];
+  const colors = ['#00f2fe', '#00ff87', '#ffd700', '#ff2a7a', '#9d4edd', '#ffffff'];
+  for (let i = 0; i < 150; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -canvas.height,
+      size: Math.random() * 9 + 5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speed: Math.random() * 6 + 3,
+      rot: Math.random() * 360,
+      rotSpeed: Math.random() * 10 - 5
+    });
+  }
+
+  let frame = 0;
+  function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y += p.speed;
+      p.rot += p.rotSpeed;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rot * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 220) requestAnimationFrame(loop);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  loop();
+}
+
+// Voice Switcher for Saleem's Podcast
+function switchVoice(src, title, desc, btn) {
+  const audio = document.getElementById('lessonAudio');
+  audio.src = src;
+  audio.play().catch(() => {});
+  document.getElementById('currentPodcastTitle').textContent = title;
+  document.getElementById('currentPodcastDesc').textContent = desc;
+  document.querySelectorAll('.voice-pill').forEach(p => {
+    p.style.background = 'rgba(255, 255, 255, 0.05)';
+    p.style.borderColor = 'rgba(255,255,255,0.15)';
+    p.style.color = 'var(--text-muted)';
+  });
+  btn.style.background = 'rgba(0, 242, 254, 0.2)';
+  btn.style.borderColor = 'var(--neon-blue)';
+  btn.style.color = 'white';
+}
+</script>
+
+</body>
+</html>
