@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌟 بوابة أبطال البيت: سليم، كارما، وكندة 🌟</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 49, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+      --neon-green: #10b981;
+      --neon-blue: #00f2fe;
+      --neon-gold: #f59e0b;
+      --neon-purple: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(0, 242, 254, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+      color: #f8fafc;
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+    }
+    .container { max-width: 680px; margin: 0 auto; }
+    
+    .hero {
+      text-align: center;
+      padding: 24px 16px;
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+      border: 1.5px solid var(--border);
+      border-radius: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid var(--neon-green);
+      color: #6ee7b7;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .names-pill {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .npill {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    
+    .apps-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .app-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-decoration: none;
+      color: white;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .app-card:active, .app-card:hover {
+      transform: translateY(-3px) scale(1.01);
+      border-color: rgba(255,255,255,0.3);
+    }
+    .app-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; width: 6px; height: 100%;
+    }
+    
+    /* Card Variants */
+    .card-plant { border-color: rgba(16, 185, 129, 0.4); }
+    .card-plant::before { background: var(--neon-green); }
+    .card-plant:hover { box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); }
+
+    .card-math { border-color: rgba(0, 242, 254, 0.4); }
+    .card-math::before { background: var(--neon-blue); }
+    .card-math:hover { box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3); }
+
+    .card-quran { border-color: rgba(245, 158, 11, 0.4); }
+    .card-quran::before { background: var(--neon-gold); }
+    .card-quran:hover { box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3); }
+
+    .card-podcast { border-color: rgba(168, 85, 247, 0.4); }
+    .card-podcast::before { background: var(--neon-purple); }
+    .card-podcast:hover { box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3); }
+
+    .icon-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.06);
+    }
+    .app-details { flex: 1; min-width: 0; }
+    .app-details h2 { font-size: 19px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .app-details p { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 700; }
+    .tag-green { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag-blue { background: rgba(0, 242, 254, 0.2); color: #67e8f9; }
+    .tag-gold { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    .tag-purple { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+
+    .arrow-go {
+      font-size: 22px;
+      color: #64748b;
+      transition: transform 0.2s;
+    }
+    .app-card:hover .arrow-go { transform: translateX(-4px); color: white; }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div class="hero">
+    <span class="hero-badge">🚀 المنصة التعليمية السحابية الشاملة</span>
+    <h1>بوابة أبطال البيت</h1>
+    <p>تطبيقات تفاعلية ذكية بالصوت والشرح الممتع.. شغالة في أي مكان ومن أي جهاز! 📱✨</p>
+    <div class="names-pill">
+      <span class="npill" style="color: #6ee7b7;">🦸‍♂️ سليم</span>
+      <span class="npill" style="color: #f472b6;">🌸 كارما</span>
+      <span class="npill" style="color: #67e8f9;">⭐ كندة</span>
+    </div>
+  </div>
+
+  <div class="apps-grid">
+
+    <!-- 1. ازرع نبتة -->
+    <a href="plant.html" class="app-card card-plant">
+      <div class="icon-box">🌱</div>
+      <div class="app-details">
+        <h2>ازرع نبتة <span class="tag tag-green">فصحى + شرح بالبلدي</span></h2>
+        <p>قصة مريم التفاعلية + حل التقويم والأسئلة بصوت تشجيعي وألعاب تفاعلية ونجوم!</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- 2. معمل الماث -->
+    <a href="math.html" class="app-card card-math">
+      <div class="icon-box">🚀</div>
+      <div class="app-details">
+        <h2>معمل أبطال الرياضيات (4×5) <span class="tag tag-blue">خواص الضرب</span></h2>
+        <p>المنهج الجديد: كتاب الوزارة ص 10-11 وتفكيك الأعداد بالصوت الحماسي والألعاب.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- 3. سورة البينة -->
+    <a href="quran-albayyinah/سورة_البينة_مصحف_تفاعلي.html" class="app-card card-quran">
+      <div class="icon-box">📖</div>
+      <div class="app-details">
+        <h2>سورة البينة <span class="tag tag-gold">مصحف التجويد التفاعلي</span></h2>
+        <p>تلاوة وتلقين الشيخ الحصري المعلم + تظليل أحكام التجويد الملونة آية بآية.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- 4. سر التقسيم السحري -->
+    <a href="selim-math-arabic/تطبيق_سر_التقسيم_السحري_سليم_بالصوت.html" class="app-card card-plant">
+      <div class="icon-box">⚡</div>
+      <div class="app-details">
+        <h2>سر التقسيم السحري <span class="tag tag-green">سليم البطل</span></h2>
+        <p>تطبيق تفاعلي بالصوت المصري الحماسي لحل مسائل جدول الضرب بطريقة السلم.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+    <!-- 5. حلقات البودكاست لسليم -->
+    <a href="episodes-selim/حلقة_سليم_جدول_٣.mp3" class="app-card card-podcast" target="_blank">
+      <div class="icon-box">🎧</div>
+      <div class="app-details">
+        <h2>استوديو بودكاست سليم <span class="tag tag-purple">صوت كرتوني</span></h2>
+        <p>حلقات تعليمية حماسية: جدول 3، جدول 4، وأركان الإيمان بصوت كرتون نتورك.</p>
+      </div>
+      <div class="arrow-go">⬅</div>
+    </a>
+
+  </div>
+
+  <div class="footer-note">
+    🌟 صُنع بكل حب لأبطالنا الصغار • شغال أونلاين 24 ساعة عبر GitHub Pages المجانية 🌍
+  </div>
+
+</div>
+
+</body>
+</html>
