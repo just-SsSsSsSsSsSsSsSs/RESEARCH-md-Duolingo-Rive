@@ -55,7 +55,7 @@ app/
 - [x] C3: engines/sound.js + engines/bubbles.js
 - [x] C4: engines xp/streak/hearts/badges/quests
 - [x] C5: ui/components.js (toast, modal, confetti, icons)
-- [ ] C6: views home + profile picker
+- [x] C6: views home + profile picker + subject + shell + bootstrap
 - [ ] C7: activities engines (quiz/truefalse/match/fillblank/order) + view play
 - [ ] C8: content/catalog.json + أنشطة JSON (جدول 3/4، خواص الضرب، البينة، القدر، ازرع نبتة)
 - [ ] C9: parent dashboard (PIN, تقارير أسبوعية SVG, تصدير/استيراد, إعدادات)
@@ -75,4 +75,5 @@ app/
 ---
 
 ## 🎯 الخطوة التالية فوراً (Next Immediate Action)
-👉 **C6:** views home.js + profile picker + app.js (bootstrap) + index.html shell ثم commit+push.
+👉 **C7:** content/catalog.json ثم activities engines (quiz/truefalse/match/fillblank/order/numpad) + view play ثم commit+push.
+- 2026-09-22T02:30 — reset #2 استعادة من remote (C1–C5 محفوظة)، أعيد بناء C6 ودُفع.
