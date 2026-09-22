@@ -65,7 +65,7 @@ app/
 
 ### المرحلة 3: الاختبار والدمج ⬜
 - [x] اختبار محلي (Playwright: e2e.py + behaviour.py) صفر أخطاء، صفر 404
-- [x] PR من `genspark_ai_developer` → `main` (الرابط في سجل الإنجازات)
+- [x] PR #1: https://github.com/html-mobile-audio/html-mobile-audio/pull/1
 
 ---
 
