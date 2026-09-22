@@ -40,32 +40,47 @@ with sync_playwright() as p:
     for s in cat['subjects']:
         go(page, f"/subject/{s['id']}", '.topbar')
         assert page.locator('.tile').count() >= 1, f"subject {s['id']} empty"
-    print(f"✔ {len(cat['subjects'])} subject pages")
+        if s.get('classic'):
+            # I6: classic <-> modern compare bar: classic hides modern list + shows original file in iframe, and back
+            assert page.locator('.subject-compare button[data-view="classic"]').count() == len(s['classic'])
+            page.locator('.subject-compare button[data-view="classic"]').first.click()
+            page.wait_for_selector('[data-classic-wrap] iframe.classic-frame', timeout=8000)
+            assert page.locator('[data-classic-wrap] iframe').get_attribute('src').endswith(s['classic'][0]['href'])
+            assert page.locator('[data-modern]:not(.hidden)').count() == 0, 'modern list still visible in classic mode'
+            page.locator('.subject-compare button[data-view="modern"]').click()
+            page.wait_for_timeout(150)
+            assert page.locator('[data-classic-wrap].hidden').count() == 1 and page.locator('[data-modern]:not(.hidden)').count() >= 2
+    print(f"✔ {len(cat['subjects'])} subject pages (+ classic<->modern compare bar)")
 
     # 4) every playable activity loads its intro
     playable = [i for i in cat['items'] if not i.get('external')]
     for it in playable:
         # story-type activities open a cover with a "listen" CTA instead of the classic "start" intro
-        go(page, f"/play/{it['id']}", '[data-act="listen"]' if it.get('type') == 'story' else '[data-act="start"]')
+        sel = {'story': '[data-act="listen"]', 'quran': '.mushaf .ayah'}.get(it.get('type'), '[data-act="start"]')
+        go(page, f"/play/{it['id']}", sel)
     print(f"✔ {len(playable)} activities load")
 
-    # 5) play one numpad activity to completion
+    # 5) play one (procedurally generated) math activity to completion, solving via the read-only window.__play hook
+    AR2EN = str.maketrans('٠١٢٣٤٥٦٧٨٩', '0123456789')
     go(page, '/play/mult_3', '[data-act="start"]')
     page.click('[data-act="start"]')
     for _ in range(40):
         if page.locator('[data-act="again"]').count(): break
         page.wait_for_selector('.q-card', timeout=8000)
-        qtext = page.locator('.q-text').inner_text()
-        if page.locator('.numpad').count():
-            # compute answer from question like "٣ × ٧ = ؟" or "٣ × ؟ = ٢١"
-            t = qtext.translate(str.maketrans('٠١٢٣٤٥٦٧٨٩', '0123456789'))
-            nums = [int(x) for x in re.findall(r'\d+', t)]
-            ans = nums[0] // nums[1] if '؟ =' in t or '× ؟' in t else nums[0] * nums[1]
-            if '× ؟' in t: ans = nums[1] // nums[0]
-            for ch in str(ans): page.locator('.numpad .btn').nth(['1','2','3','4','5','6','7','8','9','del','0','ok'].index(ch)).click()
+        q = page.evaluate('window.__play.q')
+        t = q['type']
+        if t == 'truefalse':
+            page.locator('.choices .choice').nth(0 if q['answer'] else 1).click()
+        elif t == 'pick':
+            for i in q['correct']: page.locator('.pick-grid .choice').nth(i).click()
+            page.locator('.q-card .btn-primary').click()
+        elif page.locator('.numpad').count():
+            for ch in str(q['answer']).translate(AR2EN): page.locator('.numpad .btn').nth(['1','2','3','4','5','6','7','8','9','del','0','ok'].index(ch)).click()
             page.locator('.numpad .btn').nth(11).click()
         else:
-            page.locator('.choice').first.click()
+            want = str(q['choices'][q['answer']]).translate(AR2EN)
+            for c in page.locator('.choices .choice').all():
+                if c.inner_text().strip().translate(AR2EN) == want: c.click(); break
         page.wait_for_selector('.feedback [data-act="next"]', timeout=8000)
         page.click('.feedback [data-act="next"]')
         page.wait_for_timeout(150)
@@ -96,9 +111,11 @@ with sync_playwright() as p:
     page.screenshot(path='/tmp/abtal_home.png')
     b.close()
 
-ignored = [e for e in errors if 'fonts.g' in e]
-errors = [e for e in errors if e not in ignored]
-failed = [f for f in failed if 'fonts.g' not in f]
+# ignored: Google Fonts (offline sandbox) + assets requested by the untouched classic originals inside the compare iframe
+# (legacy files reference podcast MP3s that are not part of this repo; those files are protected and must not be edited)
+def legacy(u): return '/app/' not in u and u.endswith('.mp3')
+failed = [f for f in failed if 'fonts.g' not in f and not legacy(f)]
+errors = [e for e in errors if 'fonts.g' not in e and not (('404' in e) and failed == [])]
 print('\nConsole errors:', errors or 'none')
 print('Failed requests:', failed or 'none')
 if errors or failed: sys.exit(1)

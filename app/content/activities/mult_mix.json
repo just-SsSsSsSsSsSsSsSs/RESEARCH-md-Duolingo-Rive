@@ -1,1 +1,65 @@
-{"intro":"تحدي الأبطال! أسئلة مختلطة من جداول ٢ إلى ٦ — كل مرة تلعب الأسئلة تتغيّر. جاهز؟","count": 12,"generator": [{"kind":"mult","tables": [2, 3, 4, 5, 6],"range": [2, 10],"count": 9,"types": ["numpad","quiz"] }, {"kind":"missing","tables": [2, 3, 4, 5, 6],"count": 3 }] }
+{
+ "intro": "تحدي الأبطال! أسئلة مختلطة من جداول ٢ إلى ٦ — آلة حاسبة، شبكة مصفوفات، واختيار النواتج. كل مرة تلعب الأسئلة تتغيّر. جاهز؟",
+ "count": 12,
+ "generator": [
+  {
+   "kind": "mult",
+   "tables": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "range": [
+    2,
+    10
+   ],
+   "count": 6,
+   "types": [
+    "numpad",
+    "quiz"
+   ]
+  },
+  {
+   "kind": "grid",
+   "tables": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "range": [
+    2,
+    9
+   ],
+   "count": 3,
+   "types": [
+    "numpad",
+    "quiz"
+   ]
+  },
+  {
+   "kind": "missing",
+   "tables": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "count": 2
+  },
+  {
+   "kind": "pickProducts",
+   "tables": [
+    3,
+    4,
+    5,
+    6
+   ],
+   "count": 1
+  }
+ ]
+}

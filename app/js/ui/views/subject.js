@@ -46,14 +46,37 @@ export async function render(root, { id }) {
   root.appendChild(h);
   const items = registry.items({ subject: id, hero: store.profile.id });
   const playable = items.filter((i) => !i.external), ext = items.filter((i) => i.external);
-  root.appendChild(el(`<div class="card center" style="border-color:${s.color}55;background:linear-gradient(140deg, ${s.color}22, var(--surface))"><div class="float" style="display:grid;place-items:center">${ico3d(s.icon, 64)}</div><h1 style="color:${s.color}">${esc(s.title)}</h1><p class="muted">${esc(s.desc || '')}</p></div>`));
+  // classic <-> modern compare bar (originals stay untouched; shown in an iframe)
+  const classics = Array.isArray(s.classic) ? s.classic : [];
+  let frameWrap = null;
+  if (classics.length) {
+    const bar = el(`<div class="story-bar subject-compare" role="tablist" aria-label="النسخة">
+      <div class="seg compare"><button type="button" class="on" data-view="modern" role="tab" aria-selected="true">${ico3d('sparkle', 18)} حديث</button>${classics.map((c, i) => `<button type="button" data-view="classic" data-i="${i}" role="tab" aria-selected="false">${ico3d('compare', 18)} ${esc(c.label)}</button>`).join('')}</div>
+      <span class="small muted grow">كلاسيك <-> حديث: قارن النسخة الأصلية بالنسخة التفاعلية</span></div>`);
+    frameWrap = el('<div class="card hidden" data-classic-wrap style="padding:0;overflow:hidden"></div>');
+    bar.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-view]'); if (!b) return;
+      sound.play('whoosh');
+      bar.querySelectorAll('button[data-view]').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+      const classic = b.dataset.view === 'classic';
+      root.querySelectorAll('[data-modern]').forEach((n) => n.classList.toggle('hidden', classic));
+      frameWrap.classList.toggle('hidden', !classic);
+      if (classic) {
+        const c = classics[+b.dataset.i] || classics[0]; const src = registry.href({ href: c.href });
+        frameWrap.innerHTML = `<div class="row" style="gap:8px;padding:12px 14px;border-bottom:1px solid var(--border)">${ico3d('compare', 28)}<div><b>${esc(c.label)}</b><div class="small muted">${esc(c.href)} — الملف الأصلي كما هو، بلا أي تعديل</div></div><a class="btn btn-ghost small" style="margin-inline-start:auto" href="${src}" target="_blank" rel="noopener">${ico('external')} فتح في تبويب</a></div><iframe class="classic-frame" src="${src}" title="${esc(c.label)}" loading="lazy"></iframe>`;
+      } else frameWrap.innerHTML = '';
+    });
+    root.appendChild(bar);
+  }
+  root.appendChild(el(`<div class="card center" data-modern style="border-color:${s.color}55;background:linear-gradient(140deg, ${s.color}22, var(--surface))"><div class="float" style="display:grid;place-items:center">${ico3d(s.icon, 64)}</div><h1 style="color:${s.color}">${esc(s.title)}</h1><p class="muted">${esc(s.desc || '')}</p></div>`));
+  if (frameWrap) root.appendChild(frameWrap);
   if (playable.length) {
-    root.appendChild(el(`<div class="section"><h2>${ico3d('gamepad')} أنشطة تفاعلية</h2><span class="tag ${TAGCLS[id] || ''}">${fmt(playable.length)}</span></div>`));
-    const g = el('<div class="grid-2"></div>'); playable.forEach((it) => g.appendChild(itemCard(it))); root.appendChild(g);
+    root.appendChild(el(`<div class="section" data-modern><h2>${ico3d('gamepad')} أنشطة تفاعلية</h2><span class="tag ${TAGCLS[id] || ''}">${fmt(playable.length)}</span></div>`));
+    const g = el('<div class="grid-2" data-modern></div>'); playable.forEach((it) => g.appendChild(itemCard(it))); root.appendChild(g);
   }
   if (ext.length) {
-    root.appendChild(el(`<div class="section"><h2>${ico3d('rocket')} تطبيقات وحلقات</h2><span class="tag tag-purple">${fmt(ext.length)}</span></div>`));
-    const g = el('<div class="grid-2"></div>'); ext.forEach((it) => g.appendChild(itemCard(it))); root.appendChild(g);
+    root.appendChild(el(`<div class="section" data-modern><h2>${ico3d('rocket')} تطبيقات وحلقات</h2><span class="tag tag-purple">${fmt(ext.length)}</span></div>`));
+    const g = el('<div class="grid-2" data-modern></div>'); ext.forEach((it) => g.appendChild(itemCard(it))); root.appendChild(g);
   }
   if (!items.length) root.appendChild(el('<div class="card center muted">لا يوجد محتوى بعد — قريباً ' + ico3d('sparkle') + '</div>'));
   root.appendChild(nav('home'));

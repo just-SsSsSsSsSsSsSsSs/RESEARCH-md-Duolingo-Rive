@@ -15,7 +15,7 @@ const shuffled = (q) => { if (q.noShuffle) return { choices: q.choices, answer: 
 export const renderers = {
   quiz(c, q0, ctx) {
     const q = { ...q0, ...shuffled(q0) };
-    c.appendChild(el(`<div class="q-text ${q.big ? 'big' : ''} ${fontCls(q, ctx)}">${esc(q.q)}</div>`));
+    if (q.q) c.appendChild(el(`<div class="q-text ${q.big ? 'big' : ''} ${fontCls(q, ctx)}">${esc(q.q)}</div>`));
     const grid = el('<div class="choices"></div>');
     q.choices.forEach((ch, i) => {
       const b = el(`<button class="choice ${fontCls(q, ctx)}">${esc(ch)}</button>`);
@@ -51,7 +51,7 @@ export const renderers = {
   },
 
   numpad(c, q, ctx) {
-    c.appendChild(el(`<div class="q-text big">${esc(q.q)}</div>`));
+    if (q.q) c.appendChild(el(`<div class="q-text big">${esc(q.q)}</div>`));
     const box = el('<div class="answer-box" aria-live="polite">&nbsp;</div>');
     c.appendChild(box);
     let val = '';
@@ -95,6 +95,26 @@ export const renderers = {
     left.forEach((o) => L.appendChild(mk('l', o))); right.forEach((o) => R.appendChild(mk('r', o)));
     c.appendChild(cols);
     c.appendChild(el('<p class="small muted center mt-3">اضغط عنصراً من كل عمود لتوصيلهما</p>'));
+  },
+
+  /** grid: rows×cols dots; answer via numpad (mode 'numpad') or 3 choices (mode 'quiz') */
+  grid(c, q, ctx) {
+    c.appendChild(el(`<div class="q-text">${esc(q.q)}</div>`));
+    const g = el(`<div class="dot-grid" style="--cols:${q.cols}" aria-label="${q.rows} صفوف × ${q.cols} أعمدة"></div>`);
+    for (let r = 0; r < q.rows; r++) for (let k = 0; k < q.cols; k++) g.appendChild(el(`<span class="dot" style="animation-delay:${(r * q.cols + k) * 18}ms"></span>`));
+    c.appendChild(g);
+    c.appendChild(el(`<p class="small muted center" style="margin:6px 0 10px">${fmt(q.rows)} × ${fmt(q.cols)}</p>`));
+    if (q.mode === 'quiz' && q.choices) return renderers.quiz(c, { ...q, q: '', noShuffle: true }, ctx);
+    return renderers.numpad(c, { ...q, q: '' }, ctx);
+  },
+  /** pick: multi-select all correct items then verify */
+  pick(c, q, ctx) {
+    c.appendChild(el(`<div class="q-text">${esc(q.q)}</div>`));
+    const grid = el('<div class="choices pick-grid"></div>'); const sel = new Set();
+    const okBtn = el(`<button class="btn btn-primary btn-block mt-4" disabled>${ico('check')} تحقّق</button>`);
+    q.items.forEach((t, i) => { const b = el(`<button class="choice" aria-pressed="false">${esc(t)}</button>`); b.onclick = () => { sound.play('tick'); sel.has(i) ? sel.delete(i) : sel.add(i); b.classList.toggle('selected', sel.has(i)); b.setAttribute('aria-pressed', String(sel.has(i))); okBtn.disabled = sel.size === 0; }; grid.appendChild(b); });
+    okBtn.onclick = () => { lock(c); const want = new Set(q.correct); let ok = sel.size === want.size; [...grid.children].forEach((b, i) => { const isC = want.has(i), picked = sel.has(i); if (isC) b.classList.add('correct'); if (picked && !isC) { b.classList.add('wrong'); ok = false; } if (isC && !picked) ok = false; }); ctx.done(ok, { picked: [...sel] }); };
+    c.appendChild(grid); c.appendChild(okBtn);
   },
 
   order(c, q, ctx) {

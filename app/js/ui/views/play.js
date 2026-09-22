@@ -22,6 +22,7 @@ export async function render(root, { id }) {
   const it = registry.item(id);
   if (!it) throw Object.assign(new Error('نشاط غير موجود'), { friendly: true });
   if (it.type === 'story') { const Story = await import('./story.js'); return Story.render(root, { id }); } // Phase 7: story mode
+  if (it.type === 'quran') { const R = await import('./quranReader.js'); return R.render(root, { id }); } // Phase 9: mushaf reader
   const activity = await registry.loadActivity(id);
   const h = hud({ back: true, title: it.title });
   root.appendChild(h);
@@ -66,6 +67,7 @@ export async function render(root, { id }) {
 
   function ask(s) {
     const q = s.current;
+    window.__play = { id, i: s.i, total: s.total, q, keys: s.questions?.map((x) => x.key || x.q) }; // E2E hook (read-only)
     stage.innerHTML = '';
     const head = el(`<div class="play-head"><span class="small muted">${fmt(s.i + 1)}/${fmt(s.total)}</span><div class="level-bar green"><span style="width:${s.progress}%"></span></div><button class="btn btn-icon btn-ghost" data-act="quit" aria-label="خروج">${ico('x')}</button></div>`);
     head.querySelector('[data-act="quit"]').onclick = async () => { if (await modal({ title: 'تخرج الآن؟', body: '<p class="muted">هتاخد نص النقاط بس على اللي جاوبته.</p>', actions: [{ label: 'أكمل اللعب', cls: 'btn-primary', value: false }, { label: 'خروج', cls: 'btn-ghost', value: true }] })) { finish(s, true); } };
