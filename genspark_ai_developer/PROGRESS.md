@@ -57,7 +57,7 @@ app/
 - [x] C5: ui/components.js (toast, modal, confetti, icons)
 - [x] C6: views home + profile picker + subject + shell + bootstrap
 - [x] C7: activities engines (session, generators, renderers) + view play
-- [ ] C8: content/catalog.json + أنشطة JSON (جدول 3/4، خواص الضرب، البينة، القدر، ازرع نبتة)
+- [x] C8: content/catalog.json + 13 أنشطة JSON (رياضيات، قرآن، عربي، دين)
 - [ ] C9: parent dashboard (PIN, تقارير أسبوعية SVG, تصدير/استيراد, إعدادات)
 - [ ] C10: certificates.js + طباعة
 - [ ] C11: PWA (manifest + sw) + index.html الجذر: زر دخول للمنصة الجديدة
@@ -75,5 +75,6 @@ app/
 ---
 
 ## 🎯 الخطوة التالية فوراً (Next Immediate Action)
-👉 **C8:** content/activities/*.json (mult_3, mult_4, mult_mix, distributive, commutative, bayyinah_order, bayyinah_fill, qadr_fill, tajweed_quiz, plant_tf, plant_quiz, plant_match, iman_quiz) ثم commit+push.
+👉 **C9:** views badges.js + quests.js ثم parent.js (PIN، تقارير، تصدير/استيراد) ثم commit+push.
 - 2026-09-22T02:30 — reset #2 استعادة من remote (C1–C5 محفوظة)، أعيد بناء C6 ودُفع.
+- 2026-09-22T02:40 — reset #3 استعادة من remote، أُكملت C8 (13 نشاط) + shuffle للاختيارات.

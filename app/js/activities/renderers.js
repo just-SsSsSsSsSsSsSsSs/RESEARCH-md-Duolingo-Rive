@@ -8,9 +8,12 @@ import { ico } from '../ui/icons.js';
 
 const fontCls = (q, ctx) => (q.font || ctx.font) === 'quran' ? 'quran' : '';
 const lock = (c) => c.querySelectorAll('button').forEach((b) => (b.disabled = true));
+/** shuffle choices at render-time so the correct answer position is unpredictable */
+const shuffled = (q) => { if (q.noShuffle) return { choices: q.choices, answer: q.answer }; const idx = shuffle(q.choices.map((_, i) => i)); return { choices: idx.map((i) => q.choices[i]), answer: idx.indexOf(q.answer) }; };
 
 export const renderers = {
-  quiz(c, q, ctx) {
+  quiz(c, q0, ctx) {
+    const q = { ...q0, ...shuffled(q0) };
     c.appendChild(el(`<div class="q-text ${q.big ? 'big' : ''} ${fontCls(q, ctx)}">${esc(q.q)}</div>`));
     const grid = el('<div class="choices"></div>');
     q.choices.forEach((ch, i) => {
@@ -32,7 +35,8 @@ export const renderers = {
     c.appendChild(grid);
   },
 
-  fillblank(c, q, ctx) {
+  fillblank(c, q0, ctx) {
+    const q = { ...q0, ...shuffled(q0) };
     const parts = q.q.split('___');
     const txt = el(`<div class="q-text ${fontCls(q, ctx)}">${parts.map((p, i) => esc(p) + (i < parts.length - 1 ? '<span class="blank">…</span>' : '')).join('')}</div>`);
     c.appendChild(txt);
