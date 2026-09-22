@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>بوابة أبطال البيت</title>
+  
+  <!-- PWA -->
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <link rel="stylesheet" href="/styles/components.css">
+  <link rel="stylesheet" href="/styles/phases.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="nav-brand">
+          <div class="nav-logo"><i class="ri-home-heart-fill"></i></div>
+          <span class="nav-title">أبطال البيت</span>
+        </a>
+        <div class="nav-right">
+          <div class="nav-links" id="navLinks">
+            <button class="nav-link active" data-filter="all">الكل</button>
+            <button class="nav-link" data-filter="quran">القرآن</button>
+            <button class="nav-link" data-filter="math">الرياضيات</button>
+            <button class="nav-link" data-filter="arabic">العربي</button>
+            <button class="nav-link" data-filter="podcast">البودكاست</button>
+          </div>
+          <div class="nav-actions">
+            <button class="btn-icon" id="soundToggle" title="الصوت"><i class="ri-volume-up-fill"></i></button>
+            <button class="btn-icon" id="themeToggle" title="الوضع"><i class="ri-moon-fill"></i></button>
+            <button class="btn-icon" id="localeToggle" title="اللغة">EN</button>
+            <button class="btn-icon mobile-menu-btn" id="mobileMenuBtn"><i class="ri-menu-fill"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge"><span class="badge-dot"></span> المنصة التعليمية التفاعلية</div>
+      <h1>بوابة <span class="gradient">أبطال البيت</span></h1>
+      <p class="hero-sub">تطبيقات تفاعلية متكاملة بالصوت والشرح الممتع وتلوين الأحكام.. شغالة في أي مكان ومن أي جهاز 📱✨</p>
+      
+      <!-- User Stats -->
+      <div class="user-stats">
+        <div class="stat-pill"><i class="ri-star-fill" style="color:#fbbf24"></i> <span id="xpDisplay">0</span> XP</div>
+        <div class="stat-pill"><i class="ri-trophy-fill" style="color:#6366f1"></i> <span id="levelDisplay">المستوى 1</span></div>
+        <div class="stat-pill"><i id="streakIcon" class="ri-fire-line" style="color:#94a3b8"></i> <span id="streakDisplay">0</span> يوم</div>
+        <div class="stat-pill" id="heartsDisplay"></div>
+      </div>
+      
+      <!-- Level Progress -->
+      <div class="level-progress-container">
+        <div class="level-info">
+          <span id="levelTitle">مبتدئ</span>
+          <span id="progressText">0 / 100 XP</span>
+        </div>
+        <div class="progress"><div class="progress-bar progress-primary" id="levelProgress" style="width:0%"></div></div>
+      </div>
+      
+      <div class="hero-chars">
+        <div class="char selim"><div class="char-dot"><i class="ri-user-star-fill"></i></div><span class="char-name">سليم</span></div>
+        <div class="char karma"><div class="char-dot"><i class="ri-user-heart-fill"></i></div><span class="char-name">كارما</span></div>
+        <div class="char kunda"><div class="char-dot"><i class="ri-user-star-fill"></i></div><span class="char-name">كندة</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main class="container">
+    
+    <!-- SEARCH -->
+    <div class="search-section">
+      <div class="search-bar">
+        <i class="ri-search-line"></i>
+        <input type="text" id="searchInput" placeholder="ابحث عن تطبيق أو موضوع..." autocomplete="off">
+        <button class="search-clear" id="searchClear"><i class="ri-close-fill"></i></button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats" id="stats">
+      <div class="stat-card"><div class="stat-icon"><i class="ri-apps-fill"></i></div><div class="stat-value" data-count="12">0</div><div class="stat-label">تطبيق تفاعلي</div></div>
+      <div class="stat-card"><div class="stat-icon"><i class="ri-book-open-fill"></i></div><div class="stat-value" data-count="3">0</div><div class="stat-label">سور قرآنية</div></div>
+      <div class="stat-card"><div class="stat-icon"><i class="ri-podcast-fill"></i></div><div class="stat-value" data-count="5">0</div><div class="stat-label">حلقات بودكاست</div></div>
+      <div class="stat-card"><div class="stat-icon"><i class="ri-heart-fill"></i></div><div class="stat-value" data-count="100" data-suffix="%">0</div><div class="stat-label">مجاني ومفتوح</div></div>
+    </div>
+
+    <!-- TABS: Gamification + Content -->
+    <div class="main-tabs">
+      <button class="main-tab active" data-tab="content"><i class="ri-apps-fill"></i> المحتوى</button>
+      <button class="main-tab" data-tab="gamification"><i class="ri-gamepad-fill"></i> التحديات</button>
+      <button class="main-tab" data-tab="leaderboard"><i class="ri-trophy-fill"></i> المتصدرين</button>
+      <button class="main-tab" data-tab="achievements"><i class="ri-award-fill"></i> الإنجازات</button>
+      <button class="main-tab" data-tab="community"><i class="ri-group-fill"></i> المجتمع</button>
+    </div>
+
+    <!-- CONTENT TAB -->
+    <div class="tab-content active" id="tab-content">
+      <!-- FILTERS -->
+      <div class="filter-section">
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all"><i class="ri-apps-fill"></i> الكل <span class="filter-count">12</span></button>
+          <button class="filter-tab" data-filter="quran"><i class="ri-book-open-fill"></i> القرآن <span class="filter-count">4</span></button>
+          <button class="filter-tab" data-filter="math"><i class="ri-calculator-fill"></i> الرياضيات <span class="filter-count">3</span></button>
+          <button class="filter-tab" data-filter="arabic"><i class="ri-plant-fill"></i> العربي <span class="filter-count">2</span></button>
+          <button class="filter-tab" data-filter="podcast"><i class="ri-headphone-fill"></i> البودكاست <span class="filter-count">2</span></button>
+        </div>
+      </div>
+
+      <div class="empty-state" id="emptyState"><div class="empty-icon"><i class="ri-search-line"></i></div><h3>لا توجد نتائج</h3><p>جرب البحث بكلمات مختلفة</p></div>
+
+      <!-- قسم القرآن -->
+      <section class="section" id="quran" data-category="quran">
+        <div class="section-head">
+          <div class="section-left"><div class="section-icon quran"><i class="ri-book-open-fill"></i></div><div><div class="section-title">مصاحف التجويد والقرآن الكريم</div><div class="section-meta">صوت بنت + الشيخ الحصري + تلوين الأحكام</div></div></div>
+          <div class="section-right"><span class="section-count">4 تطبيقات</span></div>
+        </div>
+        <div class="grid">
+          <a href="quran-alqadr/index.html" class="card" data-type="quran" data-search="سورة القدر مصحف التجويد تلاوة تلقين"><div class="card-header"><div class="card-icon"><i class="ri-sparkling-2-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>سورة القدر مصحف التجويد</h3><p>تلاوة وتلقين بصوت نقي + أحكام التجويد الملونة وفضائل ليلة القدر</p></div><div class="card-footer"><span class="card-tag"><i class="ri-book-marked-fill"></i> مصحف تفاعلي</span><span class="card-type"><i class="ri-code-s-slash-fill"></i> HTML</span></div></a>
+          <a href="albayyinah.html" class="card" data-type="quran" data-search="سورة البينة تجويد تلاوة حصري"><div class="card-header"><div class="card-icon"><i class="ri-book-read-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>سورة البينة — ٢٠ دقيقة تجويد</h3><p>تلاوة الحصري المعلم + صوت بنت مجودة وتظليل الأحكام آية بآية</p></div><div class="card-footer"><span class="card-tag"><i class="ri-palette-fill"></i> تلاوة + تلوين</span><span class="card-type"><i class="ri-code-s-slash-fill"></i> HTML</span></div></a>
+          <a href="quran-albayyinah/سورة_البينة_مصحف_تفاعلي.html" class="card" data-type="quran" data-search="سورة البينة عثماني مصحف تفاعلي حفظ تسميع"><div class="card-header"><div class="card-icon"><i class="ri-moon-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>سورة البينة تلقين عثماني</h3><p>مصحف تفاعلي بالرسم العثماني والصوت المدمج للحفظ والتسميع</p></div><div class="card-footer"><span class="card-tag"><i class="ri-quill-pen-fill"></i> رسم عثماني</span><span class="card-type"><i class="ri-code-s-slash-fill"></i> HTML</span></div></a>
+          <a href="quran-albayyinah/تلقين_سورة_البينة.mp3" class="card" data-type="quran" data-search="تلقين سورة البينة صوتي MP3 استماع"><div class="card-header"><div class="card-icon"><i class="ri-headphone-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>حلقة تلقين سورة البينة</h3><p>تسجيل ٢٠ دقيقة متواصلة: استماع ← ترديد ← تثبيت وسماع مباشر</p></div><div class="card-footer"><span class="card-tag"><i class="ri-file-music-fill"></i> MP3 صوتي</span><span class="card-type"><i class="ri-time-fill"></i> 20 min</span></div></a>
+        </div>
+      </section>
+
+      <!-- قسم الرياضيات -->
+      <section class="section" id="math" data-category="math">
+        <div class="section-head">
+          <div class="section-left"><div class="section-icon math"><i class="ri-calculator-fill"></i></div><div><div class="section-title">معمل الرياضيات والماث</div><div class="section-meta">المنهج الجديد وتفكيك الأعداد</div></div></div>
+          <div class="section-right"><span class="section-count">3 تطبيقات</span></div>
+        </div>
+        <div class="grid">
+          <a href="math.html" class="card" data-type="math" data-search="معمل أبطال الماث رياضيات ضرب ألعاب"><div class="card-header"><div class="card-icon"><i class="ri-rocket-2-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>معمل أبطال الماث (4×5) نيون</h3><p>كتاب الوزارة ص 10-11: تفكيك خواص الضرب بالأصوات والألعاب التفاعلية</p></div><div class="card-footer"><span class="card-tag"><i class="ri-gamepad-fill"></i> ألعاب تفاعلية</span><span class="card-type"><i class="ri-code-s-slash-fill"></i> HTML</span></div></a>
+          <a href="selim-math-arabic/تطبيق_سر_القسم_السحري_سليم_بالصوت.html" class="card" data-type="math" data-search="سر التقسيم السحري قسم ضرب صوت سليم"><div class="card-header"><div class="card-icon"><i class="ri-magic-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>سر التقسيم السحري بالصوت</h3><p>تجزئة المضروب في جدول الضرب مع نجوم وتلميحات جدو حسن لسليم</p></div><div class="card-footer"><span class="card-tag"><i class="ri-volume-up-fill"></i> صوت + تحديات</span><span class="card-type"><i class="ri-code-s-slash-fill"></i> HTML</span></div></a>
+          <a href="selim-math-arabic/سليم_رحلة_سر_القسم_السحري_خواص_الضرب.mp3" class="card" data-type="math" data-search="بودكاست رياضيات سر التقسيم رحلة ضرب"><div class="card-header"><div class="card-icon"><i class="ri-broadcast-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>قصة سر التقسيم السحري بودكاست</h3><p>حلقة صوتية شيقة (الجزء الثاني - ١٠ دقائق) لشرح خواص الضرب في رحلة ممتعة</p></div><div class="card-footer"><span class="card-tag"><i class="ri-podcast-fill"></i> بودكاست MP3</span><span class="card-type"><i class="ri-time-fill"></i> 10 min</span></div></a>
+        </div>
+      </section>
+
+      <!-- قسم اللغة العربية -->
+      <section class="section" id="arabic" data-category="arabic">
+        <div class="section-head">
+          <div class="section-left"><div class="section-icon arabic"><i class="ri-plant-fill"></i></div><div><div class="section-title">اللغة العربية والقصص التفاعلية</div><div class="section-meta">استماع + تقويم تفاعلي</div></div></div>
+          <div class="section-right"><span class="section-count">2 تطبيقات</span></div>
+        </div>
+        <div class="grid">
+          <a href="plant.html" class="card" data-type="arabic" data-search="ازرع نبتة فصحى عربي لغة مريم تفاعلية"><div class="card-header"><div class="card-icon"><i class="ri-seedling-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>ازرع نبتة فصحى + شرح بالبلدي</h3><p>قصة مريم التفاعلية وحل التقويم مع شرح كل سؤال بالعامية وأصوات تشجيعية</p></div><div class="card-footer"><span class="card-tag"><i class="ri-chat-smile-3-fill"></i> شرح بالعامية</span><span class="card-type"><i class="ri-code-s-slash-fill"></i> HTML</span></div></a>
+          <a href="selim-math-arabic/تطبيق_ازرع_نبتة_سليم.html" class="card" data-type="arabic" data-search="ازرع نبتة امتحاني تدريب استماع فصحى"><div class="card-header"><div class="card-icon"><i class="ri-file-list-3-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>ازرع نبتة فصحى امتحاني</h3><p>نسخة تقويم الاستماع الفصحى المباشرة للتدريب على نمط الامتحانات</p></div><div class="card-footer"><span class="card-tag"><i class="ri-pencil-ruler-2-fill"></i> تدريب امتحاني</span><span class="card-type"><i class="ri-code-s-slash-fill"></i> HTML</span></div></a>
+        </div>
+      </section>
+
+      <!-- قسم البودكاست -->
+      <section class="section" id="podcast" data-category="podcast">
+        <div class="section-head">
+          <div class="section-left"><div class="section-icon podcast"><i class="ri-headphone-fill"></i></div><div><div class="section-title">استوديو حلقات بودكاست سليم</div><div class="section-meta">صوت كرتون نتورك وشبابي حماسي</div></div></div>
+          <div class="section-right"><span class="section-count">2 تطبيقات</span></div>
+        </div>
+        <div class="grid">
+          <a href="episodes-selim/حلقة_سليم_جدول_٣.mp3" class="card" data-type="podcast" data-search="حلقة سليم بودكاست جدول ضرب 3 كرتوني"><div class="card-header"><div class="card-icon"><i class="ri-radio-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>حلقة سليم: جدول ٣ صوت كرتوني</h3><p>حلقة ممتعة لحفظ وإتقان جدول الضرب ٣ مع تحديات وألعاب صوتية</p></div><div class="card-footer"><span class="card-tag"><i class="ri-mic-fill"></i> بودكاست صوتي</span><span class="card-type"><i class="ri-file-music-fill"></i> MP3</span></div></a>
+          <a href="https://github.com/html-mobile-audio/html-mobile-audio/tree/main/episodes-selim" class="card" data-type="podcast" data-search="أرشيف حلقات سيناريوهات GitHub"><div class="card-header"><div class="card-icon"><i class="ri-folder-fill"></i></div><div class="card-arrow"><i class="ri-arrow-left-line"></i></div></div><div class="card-body"><h3>أرشيف الحلقات وسيناريوهات</h3><p>مجلد الحلقات والسيناريوهات المكتوبة على GitHub لمتابعة كافة الدروس</p></div><div class="card-footer"><span class="card-tag"><i class="ri-github-fill"></i> أرشيف GitHub</span><span class="card-type"><i class="ri-links-fill"></i> Repository</span></div></a>
+        </div>
+      </section>
+    </div>
+
+    <!-- GAMIFICATION TAB -->
+    <div class="tab-content" id="tab-gamification">
+      <div class="section-head"><div class="section-left"><div class="section-icon" style="background:var(--color-primary-100);color:var(--color-primary-600)"><i class="ri-gamepad-fill"></i></div><div><div class="section-title">التحديات الأسبوعية</div><div class="section-meta">أكمل التحديات واحصل على مكافآت</div></div></div></div>
+      <div id="rewardsDisplay"></div>
+      
+      <div style="margin-top:32px">
+        <div class="section-head"><div class="section-left"><div class="section-icon" style="background:var(--color-math-100);color:var(--color-math-600)"><i class="ri-questionnaire-fill"></i></div><div><div class="section-title">اختبارات تفاعلية</div><div class="section-meta">اختبر معلوماتك</div></div></div></div>
+        <div class="quiz-buttons">
+          <button class="btn btn-secondary" onclick="QuizSystem.startQuiz('quran')"><i class="ri-book-open-fill"></i> اختبار القرآن</button>
+          <button class="btn btn-secondary" onclick="QuizSystem.startQuiz('math')"><i class="ri-calculator-fill"></i> اختبار الرياضيات</button>
+          <button class="btn btn-secondary" onclick="QuizSystem.startQuiz('arabic')"><i class="ri-plant-fill"></i> اختبار العربي</button>
+        </div>
+        <div id="quizContainer" style="margin-top:24px"></div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD TAB -->
+    <div class="tab-content" id="tab-leaderboard">
+      <div class="section-head"><div class="section-left"><div class="section-icon" style="background:var(--color-warning-100);color:var(--color-warning-600)"><i class="ri-trophy-fill"></i></div><div><div class="section-title">لوحة المتصدرين</div><div class="section-meta">تنافس مع أصدقائك</div></div></div></div>
+      <div class="leaderboard-tabs">
+        <button class="filter-tab active" onclick="LeaderboardSystem.updateUI('weekly')">أسبوعي</button>
+        <button class="filter-tab" onclick="LeaderboardSystem.updateUI('allTime')">كل الأوقات</button>
+      </div>
+      <div id="leaderboardDisplay"></div>
+    </div>
+
+    <!-- ACHIEVEMENTS TAB -->
+    <div class="tab-content" id="tab-achievements">
+      <div class="section-head"><div class="section-left"><div class="section-icon" style="background:var(--color-success-100);color:var(--color-success-600)"><i class="ri-award-fill"></i></div><div><div class="section-title">الإنجازات والشهادات</div><div class="section-meta">تتبع تقدمك وإنجازاتك</div></div></div></div>
+      <div id="achievementsDisplay"></div>
+      <div style="margin-top:32px">
+        <div class="section-head"><div class="section-left"><div class="section-icon" style="background:var(--color-quran-100);color:var(--color-quran-600)"><i class="ri-file-paper-2-fill"></i></div><div><div class="section-title">الشهادات</div><div class="section-meta">شهادات الإنجاز</div></div></div></div>
+        <div id="certificatesDisplay"></div>
+      </div>
+    </div>
+
+    <!-- COMMUNITY TAB -->
+    <div class="tab-content" id="tab-community">
+      <div id="communityFeed"></div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <div class="footer-logo"><i class="ri-home-heart-fill"></i></div>
+          <div class="footer-info"><h4>بوابة أبطال البيت</h4><p>سليم، كارما، وكندة — للأطفال العرب في كل مكان</p></div>
+        </div>
+        <div class="footer-right">
+          <a href="https://github.com/html-mobile-audio/html-mobile-audio" class="footer-link" target="_blank"><i class="ri-github-fill"></i></a>
+          <button class="footer-link" id="shareBtn"><i class="ri-share-fill"></i></button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCROLL TOP -->
+  <button class="scroll-top" id="scrollTop"><i class="ri-arrow-up-line"></i></button>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><i class="ri-check-line"></i><span id="toastMessage"></span></div>
+
+  <!-- SCRIPTS -->
+  <script src="/app.js"></script>
+  <script src="/phase2.js"></script>
+  <script src="/phase3.js"></script>
+  <script src="/phase4.js"></script>
+  <script src="/phase5.js"></script>
+  <script>
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(() => console.log('✅ SW registered'));
+      });
+    }
+    
+    // Main Tabs
+    document.querySelectorAll('.main-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+
+  <style>
+    /* NAVBAR */
+    .navbar{position:sticky;top:0;z-index:100;background:var(--bg-primary);border-bottom:1px solid var(--border-primary);backdrop-filter:blur(16px);transition:var(--transition-base)}
+    .navbar.scrolled{box-shadow:var(--shadow-sm)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text-primary)}
+    .nav-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--color-primary-500),var(--color-podcast-500));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px}
+    .nav-title{font-weight:700;font-size:18px}
+    .nav-right{display:flex;align-items:center;gap:8px}
+    .nav-actions{display:flex;align-items:center;gap:4px}
+    .nav-links{display:flex;align-items:center;gap:4px}
+    .nav-link{padding:8px 16px;border-radius:var(--radius-lg);font-size:14px;font-weight:600;color:var(--text-secondary);text-decoration:none;transition:var(--transition-fast);cursor:pointer;border:none;background:none;font-family:inherit}
+    .nav-link:hover{color:var(--text-primary);background:var(--bg-tertiary)}
+    .nav-link.active{color:var(--color-primary-600);background:var(--color-primary-50)}
+    [data-theme="dark"] .nav-link.active{background:var(--color-primary-950)}
+    .mobile-menu-btn{display:none}
+    @media(max-width:768px){.nav-links{display:none}.mobile-menu-btn{display:flex}.nav-links.open{display:flex;position:absolute;top:64px;right:0;left:0;background:var(--bg-primary);border-bottom:1px solid var(--border-primary);padding:12px;flex-direction:column;box-shadow:var(--shadow-md)}.nav-links.open .nav-link{width:100%;text-align:center;padding:12px}}
+
+    /* HERO */
+    .hero{padding:80px 0 64px;text-align:center}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:var(--bg-primary);border:1px solid var(--border-primary);border-radius:var(--radius-full);font-size:14px;font-weight:600;color:var(--text-secondary);margin-bottom:32px;box-shadow:var(--shadow-sm)}
+    .badge-dot{width:8px;height:8px;background:var(--color-success-500);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .hero h1{font-size:clamp(40px,8vw,72px);font-weight:900;line-height:1.1;letter-spacing:-.03em;margin-bottom:24px}
+    .gradient{background:linear-gradient(135deg,var(--color-primary-500),var(--color-podcast-500),var(--color-error-500));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-sub{font-size:18px;line-height:1.8;color:var(--text-secondary);max-width:600px;margin:0 auto 32px}
+    .user-stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+    .stat-pill{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--bg-primary);border:1px solid var(--border-primary);border-radius:var(--radius-full);font-size:14px;font-weight:600;box-shadow:var(--shadow-xs)}
+    .level-progress-container{max-width:400px;margin:0 auto 48px}
+    .level-info{display:flex;justify-content:space-between;font-size:13px;color:var(--text-secondary);margin-bottom:8px}
+    .hero-chars{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+    .char{display:flex;align-items:center;gap:12px;padding:12px 24px 12px 14px;background:var(--bg-primary);border:1px solid var(--border-primary);border-radius:var(--radius-full);box-shadow:var(--shadow-sm);transition:var(--transition-fast)}
+    .char:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+    .char-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .char.selim .char-dot{background:var(--color-arabic-100);color:var(--color-arabic-600)}
+    .char.karma .char-dot{background:#fdf2f8;color:#ec4899}
+    .char.kunda .char-dot{background:#fff7ed;color:#f97316}
+    [data-theme="dark"] .char.karma .char-dot{background:#500724}
+    [data-theme="dark"] .char.kunda .char-dot{background:#431407}
+    .char-name{font-weight:700;font-size:15px}
+
+    /* SEARCH */
+    .search-section{margin-bottom:48px}
+    .search-bar{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--bg-primary);border:2px solid var(--border-primary);border-radius:var(--radius-xl);box-shadow:var(--shadow-sm);transition:var(--transition-fast)}
+    .search-bar:focus-within{border-color:var(--border-focus);box-shadow:0 0 0 4px rgba(99,102,241,.1)}
+    .search-bar i{color:var(--text-tertiary);font-size:20px}
+    .search-bar input{flex:1;border:none;background:none;font-size:16px;font-family:inherit;color:var(--text-primary);outline:none}
+    .search-bar input::placeholder{color:var(--text-tertiary)}
+    .search-clear{width:32px;height:32px;border-radius:var(--radius-lg);border:none;background:var(--bg-tertiary);color:var(--text-tertiary);display:none;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition-fast)}
+    .search-clear.visible{display:flex}
+    .search-clear:hover{background:var(--bg-secondary);color:var(--text-primary)}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:56px}
+    .stat-card{background:var(--bg-primary);border:1px solid var(--border-primary);border-radius:var(--radius-xl);padding:24px;text-align:center;transition:var(--transition-fast)}
+    .stat-card:hover{border-color:var(--color-primary-300);box-shadow:var(--shadow)}
+    .stat-icon{width:48px;height:48px;margin:0 auto 16px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:24px}
+    .stat-card:nth-child(1) .stat-icon{background:var(--color-math-100);color:var(--color-math-600)}
+    .stat-card:nth-child(2) .stat-icon{background:var(--color-quran-100);color:var(--color-quran-600)}
+    .stat-card:nth-child(3) .stat-icon{background:var(--color-podcast-100);color:var(--color-podcast-600)}
+    .stat-card:nth-child(4) .stat-icon{background:var(--color-arabic-100);color:var(--color-arabic-600)}
+    .stat-value{font-size:32px;font-weight:900;letter-spacing:-.03em;margin-bottom:4px}
+    .stat-label{font-size:14px;color:var(--text-secondary);font-weight:500}
+    @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+    /* MAIN TABS */
+    .main-tabs{display:flex;gap:8px;margin-bottom:32px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+    .main-tab{display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:var(--radius-full);border:1px solid var(--border-primary);background:var(--bg-primary);font-size:14px;font-weight:600;font-family:inherit;color:var(--text-secondary);cursor:pointer;transition:var(--transition-fast);white-space:nowrap;flex-shrink:0}
+    .main-tab:hover{color:var(--text-primary);border-color:var(--text-tertiary)}
+    .main-tab.active{background:var(--text-primary);color:var(--bg-primary);border-color:var(--text-primary)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* FILTERS */
+    .filter-section{margin-bottom:32px}
+    .filter-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+    .filter-tab{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-full);border:1px solid var(--border-primary);background:var(--bg-primary);font-size:14px;font-weight:600;font-family:inherit;color:var(--text-secondary);cursor:pointer;transition:var(--transition-fast);white-space:nowrap;flex-shrink:0}
+    .filter-tab:hover{color:var(--text-primary);border-color:var(--text-tertiary)}
+    .filter-tab.active{background:var(--text-primary);color:var(--bg-primary);border-color:var(--text-primary)}
+    .filter-tab i{font-size:18px}
+    .filter-count{background:var(--bg-tertiary);padding:2px 8px;border-radius:var(--radius-full);font-size:12px;font-weight:700}
+    .filter-tab.active .filter-count{background:rgba(255,255,255,.2);color:inherit}
+
+    /* SECTIONS */
+    .section{margin-bottom:64px;opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+    .section.visible{opacity:1;transform:translateY(0)}
+    .section.hidden{display:none}
+    .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border-primary)}
+    .section-left{display:flex;align-items:center;gap:16px}
+    .section-icon{width:48px;height:48px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:24px}
+    .section-icon.quran{background:var(--color-quran-100);color:var(--color-quran-600)}
+    .section-icon.math{background:var(--color-math-100);color:var(--color-math-600)}
+    .section-icon.arabic{background:var(--color-arabic-100);color:var(--color-arabic-600)}
+    .section-icon.podcast{background:var(--color-podcast-100);color:var(--color-podcast-600)}
+    .section-title{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+    .section-meta{font-size:14px;color:var(--text-tertiary)}
+    .section-right{display:flex;align-items:center;gap:12px}
+    .section-count{font-size:13px;color:var(--text-tertiary);font-weight:600;background:var(--bg-tertiary);padding:4px 12px;border-radius:var(--radius-full)}
+    @media(max-width:640px){.section-head{flex-direction:column;align-items:flex-start;gap:12px}}
+
+    /* GRID & CARDS */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+    @media(max-width:640px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--bg-primary);border:1px solid var(--border-primary);border-radius:var(--radius-xl);padding:24px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:20px;transition:var(--transition-slow);position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:0;right:0;left:0;height:3px;opacity:0;transition:opacity .3s}
+    .card:hover::before{opacity:1}
+    .card[data-type="quran"]::before{background:linear-gradient(90deg,var(--color-quran-500),var(--color-quran-300))}
+    .card[data-type="math"]::before{background:linear-gradient(90deg,var(--color-math-500),var(--color-math-300))}
+    .card[data-type="arabic"]::before{background:linear-gradient(90deg,var(--color-arabic-500),var(--color-arabic-300))}
+    .card[data-type="podcast"]::before{background:linear-gradient(90deg,var(--color-podcast-500),var(--color-podcast-300))}
+    .card:hover{border-color:transparent;box-shadow:var(--shadow-md);transform:translateY(-4px)}
+    .card[data-type="quran"]:hover{border-color:var(--color-quran-200)}
+    .card[data-type="math"]:hover{border-color:var(--color-math-200)}
+    .card[data-type="arabic"]:hover{border-color:var(--color-arabic-200)}
+    .card[data-type="podcast"]:hover{border-color:var(--color-podcast-200)}
+    .card.hidden{display:none}
+    .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+    .card-icon{width:52px;height:52px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+    .card[data-type="quran"] .card-icon{background:var(--color-quran-100);color:var(--color-quran-600)}
+    .card[data-type="math"] .card-icon{background:var(--color-math-100);color:var(--color-math-600)}
+    .card[data-type="arabic"] .card-icon{background:var(--color-arabic-100);color:var(--color-arabic-600)}
+    .card[data-type="podcast"] .card-icon{background:var(--color-podcast-100);color:var(--color-podcast-600)}
+    .card-arrow{width:36px;height:36px;border-radius:var(--radius-lg);background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);transition:var(--transition-fast);flex-shrink:0}
+    .card:hover .card-arrow{background:var(--text-primary);color:var(--bg-primary);transform:translateX(-4px)}
+    .card-body h3{font-size:17px;font-weight:700;line-height:1.4;margin-bottom:8px;letter-spacing:-.01em}
+    .card-body p{font-size:14px;line-height:1.7;color:var(--text-secondary)}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border-secondary);margin-top:auto}
+    .card-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:var(--radius-base)}
+    .card[data-type="quran"] .card-tag{background:var(--color-quran-100);color:var(--color-quran-700)}
+    .card[data-type="math"] .card-tag{background:var(--color-math-100);color:var(--color-math-700)}
+    .card[data-type="arabic"] .card-tag{background:var(--color-arabic-100);color:var(--color-arabic-700)}
+    .card[data-type="podcast"] .card-tag{background:var(--color-podcast-100);color:var(--color-podcast-700)}
+    .card-type{font-size:12px;color:var(--text-tertiary);font-weight:600;display:flex;align-items:center;gap:4px}
+
+    /* EMPTY STATE */
+    .empty-state{text-align:center;padding:64px 24px;display:none}
+    .empty-state.visible{display:block}
+    .empty-icon{width:80px;height:80px;margin:0 auto 24px;background:var(--bg-tertiary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--text-tertiary)}
+    .empty-state h3{font-size:20px;font-weight:700;margin-bottom:8px}
+    .empty-state p{color:var(--text-secondary);font-size:15px}
+
+    /* QUIZ BUTTONS */
+    .quiz-buttons{display:flex;gap:12px;flex-wrap:wrap}
+
+    /* LEADERBOARD TABS */
+    .leaderboard-tabs{display:flex;gap:8px;margin-bottom:24px}
+
+    /* FOOTER */
+    .footer{padding:48px 0;border-top:1px solid var(--border-primary);margin-top:80px}
+    .footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px}
+    .footer-left{display:flex;align-items:center;gap:16px}
+    .footer-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--color-primary-500),var(--color-podcast-500));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:20px}
+    .footer-info h4{font-size:16px;font-weight:700;margin-bottom:4px}
+    .footer-info p{font-size:14px;color:var(--text-secondary)}
+    .footer-right{display:flex;align-items:center;gap:16px}
+    .footer-link{width:40px;height:40px;border-radius:var(--radius-lg);border:1px solid var(--border-primary);background:var(--bg-primary);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none;transition:var(--transition-fast);cursor:pointer}
+    .footer-link:hover{color:var(--text-primary);background:var(--bg-tertiary);border-color:var(--text-tertiary)}
+
+    /* SCROLL TOP */
+    .scroll-top{position:fixed;bottom:24px;left:24px;width:48px;height:48px;border-radius:var(--radius-lg);background:var(--text-primary);color:var(--bg-primary);border:none;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(20px);transition:var(--transition-slow);box-shadow:var(--shadow-lg);z-index:50}
+    .scroll-top.visible{opacity:1;visibility:visible;transform:translateY(0)}
+    .scroll-top:hover{transform:translateY(-4px)}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--text-primary);color:var(--bg-primary);padding:16px 24px;border-radius:var(--radius-xl);font-size:14px;font-weight:600;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xl);transform:translateY(100px);opacity:0;transition:var(--transition-slow);z-index:200}
+    .toast.visible{transform:translateY(0);opacity:1}
+    .toast.success{background:var(--color-success-500)}
+    .toast.warning{background:var(--color-warning-500)}
+    .toast.error{background:var(--color-error-500)}
+    .toast i{font-size:20px}
+  </style>
+
+</body>
+</html>
