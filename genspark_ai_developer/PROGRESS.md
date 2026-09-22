@@ -104,7 +104,7 @@ app/
 - **Web Audio best practice**: تجنب sawtooth/square للأطفال؛ استخدم sine/triangle + lowpass + reverb بسيط (convolver noise tail) + humanize (±detune عشوائي).
 
 ### 🗺️ خطة التنفيذ (chunks — push بعد كل واحد)
-- [ ] L1: `sound.js` v2 — wrong لطيف، correct متنوع (5 أنماط + تصاعد سُلَّمي مع combo)، cheer متغير، pop متنوع، "sparkle", "whoosh" محسّنة
+- [x] L1: `sound.js` v2 — wrong لطيف، correct متنوع (5 أنماط + تصاعد سُلَّمي مع combo)، cheer متغير، pop متنوع، "sparkle", "whoosh" محسّنة
 - [ ] L2: `bubbles.js` v2 — فقاعات أوضح (أكبر، rim قوسي زجاجي، ألوان أزهى، حركة أحيا)، **celebrate(x,y,intensity)**: انفجار متعدد الأشكال (نجوم/قلوب/دوائر/حلقات) + موجة صدمة + فقاعات مكافأة تُفرقع تلقائياً
 - [ ] L3: `fx.js` — طبقة احتفال DOM: نص عائم (+XP / برافو!) + shake/pulse للكارت + combo counter
 - [ ] L4: `components.css` — أزرار 3D tactile (`--btn-depth`)، `.choice` 3D، hit ≥48px، hover فقط على `(hover:hover)`، `pointer:coarse` تباعد، `clamp()` typography، breakpoints tablet/desktop، `dvh`
@@ -112,4 +112,4 @@ app/
 - [ ] L6: اختبار Playwright بـ 4 viewports (Android 360, iPhone 390 @3x, iPad 820, Desktop 1280) + لقطات + E2E قديم أخضر
 - [ ] L7: PR #2
 
-**آخر تحديث:** بدء L1
+**آخر تحديث:** L1 مكتمل → بدء L2 (bubbles v2 + celebrate)
