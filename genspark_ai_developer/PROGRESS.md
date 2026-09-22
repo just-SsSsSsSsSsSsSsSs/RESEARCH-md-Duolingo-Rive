@@ -61,7 +61,7 @@ app/
 - [x] C9: badges + quests + parent dashboard (PIN SHA-256، تقارير ٧ أيام، جدول أنشطة، تصدير/استيراد، تحكم)
 - [x] C10: certificate.js شهادة فخمة A4 landscape قابلة للطباعة/PDF + مشاركة
 - [x] C11: PWA (manifest+sw+icon) + زر دخول في index.html الجذر + E2E Playwright أخضر (0 أخطاء، 0 طلبات فاشلة)
-- [ ] C12: RESEARCH.md إضافة مراجع 2026 (بدون حذف)
+- [x] C12: RESEARCH.md ملحق مراجع 2026 (append-only) + README قسم المنصة
 
 ### المرحلة 3: الاختبار والدمج ⬜
 - [ ] اختبار محلي (server + Playwright console) صفر أخطاء، صفر 404
