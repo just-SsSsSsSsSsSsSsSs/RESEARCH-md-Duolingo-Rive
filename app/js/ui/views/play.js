@@ -21,6 +21,7 @@ const OOPS = ['مش مشكلة، نتعلم من الخطأ ' + ico3d('muscle'),
 export async function render(root, { id }) {
   const it = registry.item(id);
   if (!it) throw Object.assign(new Error('نشاط غير موجود'), { friendly: true });
+  if (it.type === 'story') { const Story = await import('./story.js'); return Story.render(root, { id }); } // Phase 7: story mode
   const activity = await registry.loadActivity(id);
   const h = hud({ back: true, title: it.title });
   root.appendChild(h);

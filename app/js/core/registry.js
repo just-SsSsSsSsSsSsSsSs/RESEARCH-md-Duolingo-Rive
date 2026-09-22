@@ -8,7 +8,11 @@
  *    src: 'activities/xyz.json', level: 1..∞, xp: 20, tags: [], heroes: ['selim',...]|undefined, generator?: {...} }
  * External app: { id, subject, title, desc, icon, href, tags, external: true }
  */
-const BASE = new URL('../../', import.meta.url); // app/
+import { APP_VERSION } from './version.js';
+
+const BASE = new URL('../../', import.meta.url.split('?')[0]); // app/
+/** Versioned content URL (cache-busting for JSON payloads). */
+export const vurl = (rel) => { const u = new URL(rel, BASE); u.searchParams.set('v', APP_VERSION); return u; };
 
 let catalog = null;
 const activityCache = new Map();
@@ -17,7 +21,7 @@ export const registry = {
   base: BASE,
   async load() {
     if (catalog) return catalog;
-    const res = await fetch(new URL('content/catalog.json', BASE), { cache: 'no-cache' });
+    const res = await fetch(vurl('content/catalog.json'), { cache: 'no-cache' });
     if (!res.ok) throw new Error('تعذر تحميل الكتالوج');
     catalog = await res.json();
     // normalise
@@ -45,7 +49,7 @@ export const registry = {
     if (activityCache.has(id)) return activityCache.get(id);
     let data;
     if (it.src) {
-      const res = await fetch(new URL('content/' + it.src, BASE), { cache: 'no-cache' });
+      const res = await fetch(vurl('content/' + it.src), { cache: 'no-cache' });
       if (!res.ok) throw new Error('تعذر تحميل النشاط');
       data = await res.json();
     } else data = {};

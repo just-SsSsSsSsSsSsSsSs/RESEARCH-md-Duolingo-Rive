@@ -112,7 +112,7 @@ app/
 - [x] L6: e2e.py + viewports.py أخضر على 4 أجهزة (0 أخطاء، أهداف ≥44px، لا overflow، FX يعمل) + لقطات مراجَعة
 - [x] L7: PR #2 → https://github.com/html-mobile-audio/html-mobile-audio/pull/2
 
-**آخر تحديث:** ✅ المرحلة 4 مكتملة — PR #2 مفتوح للمراجعة. نقطة الاستئناف التالية: معالجة ملاحظات المراجعة على PR #2 أو Backlog RESEARCH.md §5.
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
 
 ---
 
@@ -136,9 +136,9 @@ app/
 - [x] K5: Party FX متنوعة: 6 أنواع (poppers شرائط، بلالين تطير وتفرقع، ألعاب نارية، نجوم متلألئة، مطر قلوب، حلقات ضوء) تُختار عشوائياً بدون تكرار متتالٍ + أصوات مطابقة (popper/balloon-pop/firework)
 - [x] K6: اختبار: e2e + viewports + اختبار جديد لتراكب البار (آخر عنصر مرئي كامل بعد scroll) + لقطات
 - [x] K7: PR #3 → https://github.com/html-mobile-audio/html-mobile-audio/pull/3 (commit مضغوط 3102f49+)
-**آخر تحديث:** K2 مكتمل (فقاعات ≤14، alpha 0.20–0.35، بلا هالة، كروت 0.92) → K3 مكتمل (SW v1.2.0 network-first + toast تحديث) → K4 مكتمل (badgeArt.js: 26 ميدالية SVG بطبقات معدنية/لمعة/ظل) → K5 مكتمل (7 أنواع حفلات عشوائية: poppers/balloons/fireworks/sparkles/heartRain/lightRings/confettiCannon + أصوات) → K6 مكتمل → K7 مكتمل.
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
 
-**آخر تحديث:** ✅ المرحلة 5 (Calm & Joy) مكتملة — PR #3 مفتوح للمراجعة: https://github.com/html-mobile-audio/html-mobile-audio/pull/3
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
 **نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #3، أو بعد الدمج: Backlog RESEARCH.md §5 (اقتراح: K8 شارات SVG لصفحة الـHome/Profile، K9 وضع Focus أيضاً في quests، K10 تحسين أداء الحفلات على أجهزة ≤2GB).
 
 ---
@@ -163,9 +163,9 @@ app/
 - [x] P5: `emoji_audit.py` = 0 + اختبار طبقات (fx canvas فوق الكارت) + e2e + viewports + navoverlap
 - [x] P6: → https://github.com/html-mobile-audio/html-mobile-audio/pull/4 (squash 683cec6) RESEARCH.md (Append-Only) مراجع المنصات + PROGRESS + PR #4
 
-**آخر تحديث:** P1 مكتمل (PWA محذوف + purgeLegacyPWA) → P2 مكتمل (#fx-canvas z-9999 + fx-layer/confetti 9999) → P3 مكتمل (83 أيقونة + EMOJI_MAP 92) → P4 مكتمل (emoji_sweep.py codemod، emoji_audit = 0/269، كل render sites عبر ico3d) → P5: parse errors أُصلحت؛ e2e ✅ viewports ✅ navoverlap ✅ layering ✅ (fx-canvas يرسم 4.8% من مساحة الكارت فوقه، BG 0.3%) → P5b: HUD العلوي (شعلة/برق/جوهرة/قلوب) إلى ico3d → مكتمل. إعادة كل الاختبارات: emoji_audit 0 ✅ layering ✅ e2e ✅ viewports ✅ navoverlap ✅ → P6 مكتمل.
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
 
-**آخر تحديث:** ✅ المرحلة 6 (Pure-Web & Arcade) مكتملة — PR #4 مفتوح للمراجعة: https://github.com/html-mobile-audio/html-mobile-audio/pull/4
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
 **نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #4، أو بعد الدمج: شخصية مرشدة ثابتة (Duo/Kodi-style) + تقارير أهل أسبوعية + Focus mode في quests (Backlog RESEARCH.md §5 + ملحق Pure-Web).
 
 ---
@@ -178,7 +178,56 @@ app/
 - [x] H2 svg_leak.py ✅ emoji_audit ✅ layering ✅ e2e ✅ viewports ✅ navoverlap ✅ (+ answer-box inline layout)
 - [x] H3 PR #5 → https://github.com/html-mobile-audio/html-mobile-audio/pull/5 (squash 263822a)
 
-**آخر تحديث:** H1 مكتمل → H2: svg_leak.py مُحدَّث (PIN عبر store.setMeta، numpad 99) → H2 مكتمل (6 suites خضراء) → H3 مكتمل.
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
 
-**آخر تحديث:** ✅ Hotfix مكتمل — PR #5 مفتوح للمراجعة: https://github.com/html-mobile-audio/html-mobile-audio/pull/5
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
 **نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #5، أو بعد الدمج: شخصية مرشدة ثابتة (Duo/Kodi-style) + تقارير أهل أسبوعية + Focus mode في quests (Backlog RESEARCH.md §5 + ملحق Pure-Web).
+
+---
+
+## المرحلة 7 — Grand Benchmark: «ازرع نبتة» الحديثة + Cache-Busting (PR #6)
+
+**المصدر:** Gist `b967caafc88f3cc48eccc9c4b50ac6f6` (4 ركائز) + رسالة المستخدم. **خط الأساس:** `origin/main @ f097e18` (PR #5 مدموج).
+**قاعدة ذهبية:** `plant.html` لا يُمَسّ (1,293,786 بايت — يُتحقق بـsha256 قبل/بعد).
+
+### جرد `plant.html` الأصلي (للمقارنة)
+- صوت: `SND` فصحى 12 مقطعاً (welcome/story/tf1-3/complete/q1-3/personal/praise/gentle) + `SNDX` بلدي 10 مقاطع (+map) = **22 مقطع MP3 base64** (~1.2MB)
+- نص القصة المشكول (9 جمل) + شرح بلدي لكل سؤال (`BALTXT`)
+- 9 خطوات تقويم: 3 صواب/خطأ، 1 أكمل، 2 فهم، خريطة ذهنية (6 فقاعات)، 1 فهم، سؤال تعبير شخصي
+- ما ينقصه: لا XP/جواهر/شارات، إيموجي كيبورد، كونفيتي DOM، بلا مشغل صوتي (تشغيل فقط)، لا ترتيب أحداث، لا مقارنة
+
+### الخطة (push-per-chunk)
+- [x] G1: استخراج الصوتيات إلى `app/content/audio/plant/{fusha,baladi}/*.mp3` (ملفات حقيقية بدل base64 → تحميل كسول + كاش متصفح) + `app/content/activities/plant_story.json` (نص/جمل/أسئلة/خريطة/ترتيب)
+- [x] G2: Cache-Busting — `?v=6.0` لكل CSS/JS في `index.html` + `import()` للراوتر بـ`APP_VERSION` + سكربت `tools/bump_version.py` + اختبار
+- [x] G3: أيقونات جديدة في `icons3d.js`: seed, sprout, pot, wateringCan, flower, book pages, play/pause/replay, speakerFusha/Baladi
+- [x] G4: `story` renderer/view جديد `app/js/ui/views/story.js` + مسار `#/play/plant_story`: مشغل صوتي مزدوج (فصحى/بلدي) بأزرار 3D، تقدم، تمييز الجملة الجارية، إظهار/إخفاء النص، تحكم سرعة
+- [x] G5: المراحل الأربع: TF (كروت) → MCQ (فهم+أكمل) → ترتيب أحداث (لمس/سحب) → خريطة ذهنية (6 فقاعات) → تعبير شخصي؛ XP/جواهر/إتقان/شارات/مهام + party FX أمامي عند الختام
+- [x] G6: زر مقارنة (كلاسيك ↔ حديث) في HUD الصفحة + catalog entry + شارة `plant_story_1`
+- [x] G7: RESEARCH.md (Append-Only): مواصفات icons3d + مقارنة Duolingo 3D/SF Symbols/Nintendo + رادار قصص (Duolingo Stories, Epic!, Reading Eggs, Vooks, Khan Kids)
+- [x] G8: اختبارات: `plant_story.py` جديد (صوت يشتغل، تبديل، 4 مراحل، XP) + كل الـsuites (emoji_audit 0، svg_leak، layering، e2e، viewports، navoverlap) + sha256 لـplant.html
+- [x] G9: PROGRESS + PR #6 بجدول مقارنة هندسي/تربوي
+
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+
+### نتائج المرحلة 7 (مُجمَّعة)
+- **صوت:** 22 مقطع MP3 مستخرج من plant.html (12 فصحى + 10 بلدي) إلى `app/content/audio/plant/{fusha,baladi}/` — plant.html sha256 `fb197ed2…722c` سليم 100%.
+- **محرك:** `engines/storyAudio.js` (تبديل لهجة أثناء التشغيل بنفس الموضع، سرعة، seek، fallback عند غياب مقطع).
+- **واجهة:** `views/story.js` + `views/storyQuestions.js` + `css/story.css` — غلاف → مشغّل 3D مع إضاءة الجملة → 4 مراحل (صحيح/خطأ، فهم+أكمل، ترتيب أحداث، خريطة ذهنية 6 فقاعات) → تعبير شخصي (دفتر) → نتائج مع حفلة أمامية.
+- **مقارنة:** زر «كلاسيك ↔ حديث» في شريط القصة يفتح plant.html الأصلي داخل iframe.
+- **Cache-Busting:** importmap + `?v=6.0` على 100% من CSS/JS/JSON/MP3؛ `tools/bump_version.py`؛ `tests/cachebust.py`.
+- **أيقونات:** 19 جديدة (102 إجمالاً). **شارات:** `plant_story_1`، `plant_story_master`.
+- **اختبارات:** 8 suites خضراء بما فيها `plant_story.py` (mobile+desktop).
+- **PR #6:** https://github.com/html-mobile-audio/html-mobile-audio/pull/6 (مفتوح — commit واحد مُجمَّع فوق main)
+
+---
+
+## المرحلة 8 — Story Polish (تُدمج داخل PR #6 قبل الدمج) — خطة مجمّدة
+
+> PR #6 ما زال مفتوحًا → نُكمل على نفس الفرع ثم نعيد الـsquash إلى commit واحد ونحدّث وصف PR #6.
+
+- [x] H1: توقيتات دقيقة للجُمل: تحليل `story.mp3` (فصحى + بلدي) لاستخراج أزمنة كل جملة → `story.timings.{fusha,baladi}` في `plant_story.json`؛ `story.js` يستخدمها إن وُجدت وإلا يعود للتقدير النسبي
+- [x] H2: واجهة «دفتري» في صفحة البروفايل لعرض إجابات التعبير الشخصي المحفوظة (`profile.journal`)
+- [x] H3: أيقونات backlog صغيرة: `soil`, `rainDrop`, `speechBubble`, `bookmark` (+ استخدامها في الدفتر/القصة)
+- [x] H4: اختبارات (plant_story.py يتحقق من timings + journal view) + كل الـsuites + squash + تحديث وصف PR #6
+
+**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)

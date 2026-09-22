@@ -527,3 +527,62 @@ Docker + CI/CD
 
 ### كيف نتفوّق
 - لدينا ما لا تملكه هذه المنصات للأسرة العربية: محتوى قرآن/تجويد + رياضيات + عربية في مظلة تحفيز واحدة بلا اشتراك؛ الخطوة التالية: شخصية مرشدة ثابتة (كما Duo/Kodi) وتقارير أهل أسبوعية.
+
+---
+
+## ملحق المرحلة 7 — THE GRAND BENCHMARK: أيقونات 3D، قصص تفاعلية، Cache-Busting (Append-Only)
+
+> تاريخ: 2026-09-22 · الفرع `genspark_ai_developer` · PR #6
+
+### 1) مواصفات `app/js/ui/icons3d.js` (النظام الحالي — 102 أيقونة)
+
+| البند | القيمة |
+|---|---|
+| viewBox | `0 0 64 64` ثابت لكل الأيقونات (مربّع؛ يُحجَّم بـ `width/height` فقط) |
+| البنية | `wrap(name, defs, body)` → `(size) => <svg class="i3d i3d-<name>" aria-hidden focusable=false>` |
+| معرّفات gradient | فريدة لكل نسخة عبر `g()` (base36 counter) لتجنّب تصادم `<defs>` عند تكرار الأيقونة في DOM واحد |
+| الظل | `feDropShadow dx=0 dy=2 stdDeviation=1.6 flood-opacity=.35` (ظل ناعم أسفل الجسم — الإضاءة من الأعلى) |
+| التدرّج الأساسي | `lin(id, light, dark, 0,0,0,1)` عمودي (فاتح فوق/غامق تحت) = top-light، أو `rad(id, light, dark)` بمركز `cx=.35 cy=.3` لإحساس الكروية |
+| اللمعة (gloss) | `<path fill=#fff opacity=.3–.55>` قوس صغير في الربع العلوي الأيسر — يُعطي «الزجاج» ثلاثي الأبعاد |
+| حدّ خارجي | `stroke` بلون غامق من نفس عائلة اللون بشفافية `.3–.4` وعرض `1.5` لفصل الشكل عن الخلفيات الداكنة |
+| لوحة الألوان | مطابقة لـ tokens.css: أخضر `#4ade80→#15803d`، سماوي `#7cf7ff→#0e7490`، ذهبي `#ffe680→#e6a100`، أرجواني `#b56cff→#5b21b6`، وردي `#ffb3d1→#e0114a`، برتقالي `#ffb84d→#e07a00`، أزرق `#4f8cff→#1e3fa8` |
+| الكاش | `ico3d(name,size)` يخزّن `name@size` — الرسم يُنشأ مرة واحدة ثم يُعاد كسلسلة |
+| Zero-Emoji | `EMOJI_MAP` + `deEmoji()` + `tests/emoji_audit.py` (0 إيموجي في app/) |
+
+**أيقونات المرحلة 7 (19 جديدة):** `seed, sprout, pot, flower, wateringCan, bookPages, home, play, pause, replay, speakerFusha, speakerBaladi, sort, eye, eyeOff, turtle, rabbit, compare, hand` — تغطي مراحل نمو النبتة (بذرة → شتلة → وردة)، الأصيص، صفحات الكتاب، ومشغّل صوتي كامل (تشغيل/إيقاف/إعادة/سرعة/سماعتان مميزتان لكل لهجة).
+
+### 2) مقارنة مع المعايير العالمية
+
+| المحور | Duolingo (3D assets) | Apple SF Symbols | Nintendo UI (Switch/Mario) | icons3d عندنا |
+|---|---|---|---|---|
+| المنهج | رندر 3D حقيقي (Blender) → PNG/WebP بطبقات إضاءة استوديو | مونوكروم/هيراركي، 9 أوزان × 3 مقاسات، متوافق مع الخط | Flat + bevel قوي، ألوان مشبعة، حدود سوداء/داكنة سميكة | SVG مُولَّد برمجيًا: gradient + gloss + drop-shadow |
+| الحجم | عشرات KB لكل أصل | 0 (خط نظام) | مبنية في المحرك | ~0.6–1.2 KB لكل أيقونة داخل bundle واحد، بلا طلبات شبكة |
+| الاتساق | إضاءة موحّدة من أعلى-يسار | شبكة هندسية موحّدة | لوحة ألوان موحّدة | viewBox + shadow + gloss موحّدة ✔ |
+| قابلية التلوين | لا (raster) | نعم (currentColor/palette) | لا | نعم جزئيًا (تعديل lin/rad في المصدر) |
+| الحركة | Lottie/Rive لأنيميشن الأيقونات | SF Symbol animations (iOS 17+) | Sprite animation | CSS `floatY/pulse/eq` على الغلاف + Web Animations للكارت |
+| الفجوة | ✗ لا يوجد rim-light ثانوي ولا ambient occlusion | ✗ لا نوفّر أوزانًا (weights) | ✗ لا نوفّر outline موحّد الكثافة | — |
+
+**أسرار القوة المستخلصة:** (1) إضاءة واحدة ثابتة لكل المكتبة (Duolingo) → عندنا top-light ✔؛ (2) المقاس البصري ≠ المقاس الهندسي: الأيقونات المستديرة تحتاج +8% (SF Symbols optical sizing) → تمّ تطبيقه في `.pbtn.main` (76px مقابل 52px)؛ (3) الحدود الداكنة تُنقذ الأيقونة فوق الخلفيات الفوضوية (Nintendo) → stroke `.35` ✔.
+
+**أيقونات ما زالت ناقصة (backlog):** `soil/earth`, `sunLight beam`, `rainDrop`, `calendarDay`, `speechBubble`, `microphoneRecord`, `bookmark`, `pageFlip`, `progressRing`, `volumeSlider`, أطوار نمو إضافية (`bud`, `wilted`) لسرد قصص المشاعر.
+
+### 3) رادار منصات القصص التفاعلية للأطفال
+
+| المنصة | الرابط | سرّ القوة | ما أخذناه |
+|---|---|---|---|
+| Duolingo Stories | https://www.duolingo.com/stories | حوار مُسجَّل بجُمل قصيرة + سؤال فهم كل 3–4 جمل + تمييز الجملة الجارية | تمييز الجملة أثناء التشغيل (sentence highlight) + أسئلة مباشرة بعد القصة |
+| Epic! Kids Books | https://www.getepic.com | «Read-to-Me» بتزامن كلمة-كلمة + شارات قراءة + وضع ليلي | زر النص إظهار/إخفاء + أيقونة لكل جملة + شارتان `plant_story_1/master` |
+| Reading Eggs | https://readingeggs.com | مسار خرائط (map path) واضح، مكافأة فورية، إعادة الاستماع بلا عقاب | شريط المراحل الخمس (استمع → ٤ مراحل) + «أعد الاستماع» من شاشة النتيجة |
+| Vooks | https://www.vooks.com | كتب متحركة بلا تفاعل مشتّت، راوٍ واحد دافئ، إيقاع بطيء | وضع «سلحفاة» (0.8×) + هدوء الفقاعات (`setFocus`) أثناء القراءة |
+| Khan Academy Kids | https://learn.khanacademy.org/khan-academy-kids/ | شخصية مرشدة تتكلّم بلهجة الطفل + تعزيز لطيف عند الخطأ | تفسير الخطأ (`why`) + مقاطع «gentle/praise» الصوتية + شريحة البلدي «يعني:…» |
+| Storyline Online | https://storylineonline.net | قارئ بشري بتعبيرات وجه + نص كامل مصاحب | مقطع ترحيب ثم قصة تلقائيًا (welcome → story chain) |
+| PBS Kids Games (stories) | https://pbskids.org/games/ | نتائج بلا إحباط: «حاول مرة أخرى» بلغة نمو | عناوين النتائج المرتبطة بالقصة («النبتة تكبر!» / «نحاول مثل مريم») |
+
+**مبادئ مشتركة رصدناها:** صوت أولًا والنص خيار؛ جملة واحدة مضاءة في كل لحظة؛ لا أكثر من 3 خيارات للسؤال؛ الخطأ يُشرح ولا يُعاقب مرتين؛ الاحتفال في المقدمة (foreground) لا في الخلفية؛ التقدّم مرئي دائمًا (steps bar).
+
+### 4) Cache-Busting — لماذا importmap؟
+
+- الحل التقليدي `?v=` على `<script src>` وحده لا يكفي مع ES modules: الوحدات المستوردة داخليًا (`import './x.js'`) تُحمَّل بعناوينها الأصلية ويحتفظ بها المتصفح.
+- **الحل المُطبَّق:** `<script type="importmap">` يعيد توجيه كل `./js/**.js` → `./js/**.js?v=6.0` تلقائيًا (30+ وحدة) دون تغيير أي سطر import. أداة `tools/bump_version.py <v>` تولّد الخريطة + `version.js` + `version.json` وتحدّث CSS.
+- ملفات JSON والصوت تُطلب عبر `vurl()`/`StoryAudio.url()` مع `?v=` أيضًا. اختبار `tests/cachebust.py` يتحقّق runtime أن 100% من الطلبات المحلية مُرقَّمة.
+- مراجع: importmap spec https://html.spec.whatwg.org/multipage/webappapis.html#import-maps · دعم المتصفحات https://caniuse.com/import-maps (Chrome 89+, Safari 16.4+, Firefox 108+).

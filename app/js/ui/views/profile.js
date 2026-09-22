@@ -72,6 +72,8 @@ function renderCard(root) {
     </div>
     <div class="section"><h2> شهاداتي</h2><span class="tag tag-gold">${fmt(p.certificates.length)}</span></div>
     <div class="stack">${p.certificates.length ? p.certificates.slice().reverse().map((c) => `<a href="#/certificate/${c.id}" class="card clickable tile glow-gold"><div class="icon-box">${ico3d('gradCap')}</div><div class="grow"><h3>${esc(c.title)}</h3><p>${new Date(c.date).toLocaleDateString('ar-EG')} • ${fmt(c.xp)} نقطة</p></div><span class="chev">${ico('chevronL')}</span></a>`).join('') : '<div class="card center muted">أكمل نشاطاً بإتقان كامل لتحصل على شهادة ' + ico3d('medal') + '</div>'}</div>
+    <div class="section"><h2>${ico3d('pen', 22)} دفتري</h2><span class="tag tag-purple">${fmt((p.journal || []).length)}</span></div>
+    <div class="stack journal">${(p.journal || []).length ? p.journal.slice().reverse().slice(0, 10).map((j) => `<div class="card journal-entry"><div class="row" style="gap:8px;align-items:flex-start">${ico3d('speechBubble', 26)}<div class="grow"><p class="small muted">${esc(j.q)}</p><p class="journal-a">${esc(j.a)}</p><p class="small muted" style="margin-top:4px">${new Date(j.at).toLocaleDateString('ar-EG')}</p></div></div></div>`).join('') : '<div class="card center muted">اكتب إجابتك في سؤال «عبّر عن نفسك» بعد أي قصة لتظهر هنا ' + ico3d('bookmark') + '</div>'}</div>
     <div class="section"><h2> إعدادات</h2></div>
     <div class="card stack">
       <div class="row between"><span> الوضع الليلي</span><button class="switch ${store.meta.theme !== 'light' ? 'on' : ''}" data-act="theme" aria-label="الوضع"></button></div>
