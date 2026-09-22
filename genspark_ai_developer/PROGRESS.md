@@ -58,7 +58,7 @@ app/
 - [x] C6: views home + profile picker + subject + shell + bootstrap
 - [x] C7: activities engines (session, generators, renderers) + view play
 - [x] C8: content/catalog.json + 13 أنشطة JSON (رياضيات، قرآن، عربي، دين)
-- [ ] C9: parent dashboard (PIN, تقارير أسبوعية SVG, تصدير/استيراد, إعدادات)
+- [x] C9: badges + quests + parent dashboard (PIN SHA-256، تقارير ٧ أيام، جدول أنشطة، تصدير/استيراد، تحكم)
 - [ ] C10: certificates.js + طباعة
 - [ ] C11: PWA (manifest + sw) + index.html الجذر: زر دخول للمنصة الجديدة
 - [ ] C12: RESEARCH.md إضافة مراجع 2026 (بدون حذف)
@@ -75,6 +75,6 @@ app/
 ---
 
 ## 🎯 الخطوة التالية فوراً (Next Immediate Action)
-👉 **C9:** views badges.js + quests.js ثم parent.js (PIN، تقارير، تصدير/استيراد) ثم commit+push.
+👉 **C10:** certificate.js (شهادة فخمة قابلة للطباعة) ثم commit+push.
 - 2026-09-22T02:30 — reset #2 استعادة من remote (C1–C5 محفوظة)، أعيد بناء C6 ودُفع.
 - 2026-09-22T02:40 — reset #3 استعادة من remote، أُكملت C8 (13 نشاط) + shuffle للاختيارات.
