@@ -161,6 +161,9 @@ app/
 - [x] P3: `icons3d.js` — أيقونات SVG مجسّمة: heart, gem, flame, bolt, trophy, crown, star, medal, book, quran, mosque, calc, pen, headphones, target, shield, gear, moon, sun, compass, owl, brain, rocket, check, x, lock, gift, chart, bubble, seedling…
 - [x] P4: كنس الإيموجي: HUD/components/home/profile/parent/play/quests/badges/subject/certificate/store/generators/renderers/fx/catalog.json/activities/*.json/index.html
 - [x] P5: `emoji_audit.py` = 0 + اختبار طبقات (fx canvas فوق الكارت) + e2e + viewports + navoverlap
-- [ ] P6: RESEARCH.md (Append-Only) مراجع المنصات + PROGRESS + PR #4
+- [x] P6: → https://github.com/html-mobile-audio/html-mobile-audio/pull/4 (squash 683cec6) RESEARCH.md (Append-Only) مراجع المنصات + PROGRESS + PR #4
 
-**آخر تحديث:** P1 مكتمل (PWA محذوف + purgeLegacyPWA) → P2 مكتمل (#fx-canvas z-9999 + fx-layer/confetti 9999) → P3 مكتمل (83 أيقونة + EMOJI_MAP 92) → P4 مكتمل (emoji_sweep.py codemod، emoji_audit = 0/269، كل render sites عبر ico3d) → P5: parse errors أُصلحت؛ e2e ✅ viewports ✅ navoverlap ✅ layering ✅ (fx-canvas يرسم 4.8% من مساحة الكارت فوقه، BG 0.3%) → P5b: HUD العلوي (شعلة/برق/جوهرة/قلوب) إلى ico3d → مكتمل. إعادة كل الاختبارات: emoji_audit 0 ✅ layering ✅ e2e ✅ viewports ✅ navoverlap ✅ → P6 squash + PR #4
+**آخر تحديث:** P1 مكتمل (PWA محذوف + purgeLegacyPWA) → P2 مكتمل (#fx-canvas z-9999 + fx-layer/confetti 9999) → P3 مكتمل (83 أيقونة + EMOJI_MAP 92) → P4 مكتمل (emoji_sweep.py codemod، emoji_audit = 0/269، كل render sites عبر ico3d) → P5: parse errors أُصلحت؛ e2e ✅ viewports ✅ navoverlap ✅ layering ✅ (fx-canvas يرسم 4.8% من مساحة الكارت فوقه، BG 0.3%) → P5b: HUD العلوي (شعلة/برق/جوهرة/قلوب) إلى ico3d → مكتمل. إعادة كل الاختبارات: emoji_audit 0 ✅ layering ✅ e2e ✅ viewports ✅ navoverlap ✅ → P6 مكتمل.
+
+**آخر تحديث:** ✅ المرحلة 6 (Pure-Web & Arcade) مكتملة — PR #4 مفتوح للمراجعة: https://github.com/html-mobile-audio/html-mobile-audio/pull/4
+**نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #4، أو بعد الدمج: شخصية مرشدة ثابتة (Duo/Kodi-style) + تقارير أهل أسبوعية + Focus mode في quests (Backlog RESEARCH.md §5 + ملحق Pure-Web).
