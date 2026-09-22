@@ -289,3 +289,7 @@
 /* HOTFIX: keep number + cross icon + correct answer on one line in the numpad answer box */
 .answer-box { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
 .answer-box .i3d { width: .9em; height: .9em; }
+
+/* Phase 8 — journal (دفتري) */
+.journal-entry { padding: 12px 14px; }
+.journal-a { font-size: 16px; line-height: 1.9; font-weight: 700; white-space: pre-wrap; }

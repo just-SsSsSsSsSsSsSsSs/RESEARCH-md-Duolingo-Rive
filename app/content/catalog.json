@@ -24,6 +24,7 @@
     {"id":"bayyinah_app2","subject":"quran","external": true,"title":"مصحف البينة (تلقين عثماني)","desc":"رسم عثماني وصوت مدمج آية بآية","icon":"moon","href":"quran-albayyinah/سورة_البينة_مصحف_تفاعلي.html","tags": ["تطبيق"] },
     {"id":"qadr_app","subject":"quran","external": true,"title":"مصحف سورة القدر","desc":"تلاوة وترتيل مع أحكام التجويد","icon":"sparkle","href":"quran-alqadr/index.html","tags": ["تطبيق"] },
 
+    {"id":"plant_story","subject":"arabic","type":"story","title":"ازرع نبتة — القصة الحديثة","desc":"استمع (فصحى/بلدي) ثم ٤ مراحل: صحيح/خطأ، فهم، ترتيب، خريطة القصة","icon":"sprout","xp": 120,"level": 1,"src":"activities/plant_story.json","tags": ["استماع","قصة","فهم","جديد"] },
     {"id":"plant_tf","subject":"arabic","type":"truefalse","title":"ازرع نبتة: صواب أم خطأ","desc":"قصة مريم — اختبر فهمك","icon":"seedling","xp": 25,"level": 1,"src":"activities/plant_tf.json","tags": ["استماع","فهم"] },
     {"id":"plant_quiz","subject":"arabic","type":"quiz","title":"ازرع نبتة: أسئلة الفهم","desc":"اختر الإجابة الصحيحة","icon":"plant","xp": 30,"level": 1,"src":"activities/plant_quiz.json","tags": ["فهم"] },
     {"id":"plant_match","subject":"arabic","type":"match","title":"وصّل الكلمة بمعناها","desc":"مفردات قصة ازرع نبتة","icon":"link","xp": 30,"level": 2,"src":"activities/plant_match.json","tags": ["مفردات"] },

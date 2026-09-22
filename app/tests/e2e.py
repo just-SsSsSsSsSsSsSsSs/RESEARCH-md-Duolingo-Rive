@@ -45,7 +45,8 @@ with sync_playwright() as p:
     # 4) every playable activity loads its intro
     playable = [i for i in cat['items'] if not i.get('external')]
     for it in playable:
-        go(page, f"/play/{it['id']}", '[data-act="start"]')
+        # story-type activities open a cover with a "listen" CTA instead of the classic "start" intro
+        go(page, f"/play/{it['id']}", '[data-act="listen"]' if it.get('type') == 'story' else '[data-act="start"]')
     print(f"✔ {len(playable)} activities load")
 
     # 5) play one numpad activity to completion
