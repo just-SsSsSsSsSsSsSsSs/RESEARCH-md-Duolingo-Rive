@@ -109,7 +109,7 @@ app/
 - [x] L3: `fx.js` — طبقة احتفال DOM: نص عائم (+XP / برافو!) + shake/pulse للكارت + combo counter
 - [x] L4: `fx.css` — أزرار 3D tactile، hit ≥48px، hover فقط على (hover:hover)، pointer:coarse، clamp()، dvh، breakpoints 360/700/1024/landscape
 - [x] L5: ربط play.js + renderers.js (celebrate على موضع الإصبع + combo + floaters) + إعداد "شدة الاحتفال" في البروفايل + كروت أشف لإظهار الفقاعات
-- [ ] L6: اختبار Playwright بـ 4 viewports (Android 360, iPhone 390 @3x, iPad 820, Desktop 1280) + لقطات + E2E قديم أخضر
+- [x] L6: e2e.py + viewports.py أخضر على 4 أجهزة (0 أخطاء، أهداف ≥44px، لا overflow، FX يعمل) + لقطات مراجَعة
 - [ ] L7: PR #2
 
-**آخر تحديث:** L5 مكتمل → L6 اختبار 4 viewports + E2E
+**آخر تحديث:** L6 مكتمل → L7 تحديث RESEARCH/README ثم PR #2
