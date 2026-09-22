@@ -143,6 +143,17 @@ const S = {
   badge() { [4, 8, 11, 16].forEach((s, i) => bell(NOTE(12 + s), { at: i * 0.1, vol: 0.28, dur: 0.8 })); S.sparkle(); },
   streak() { [0, 4, 7].forEach((s, i) => pluck(NOTE(s + 7), { at: i * 0.06, vol: 0.28 })); noise({ dur: 0.25, vol: 0.08, hp: 1500, lp: 8000, curve: 2 }); },
   heart() { tone({ freq: NOTE(0), slideTo: NOTE(-5), type: 'sine', dur: 0.35, vol: 0.22, lp: 1200, vib: 3 }); tone({ freq: NOTE(-12), type: 'sine', dur: 0.45, vol: 0.12, at: 0.05, lp: 500 }); },
+  /* ---- K5: party sounds ---- */
+  popper() { noise({ dur: 0.12, vol: 0.32, hp: 400, lp: 5000, curve: 2 }); tone({ freq: 180, slideTo: 60, type: 'triangle', dur: 0.16, vol: 0.25, attack: 0.001 }); for (let i = 0; i < 5; i++) noise({ dur: 0.05, vol: 0.06, at: 0.08 + i * 0.05, hp: 2500, lp: 9000, curve: 2 }); },
+  balloonPop() { const f = R(160, 260); tone({ freq: f, slideTo: f * 0.35, type: 'triangle', dur: 0.09, vol: 0.3, attack: 0.001 }); noise({ dur: 0.06, vol: 0.2, hp: 600, lp: 7000, curve: 2 }); },
+  balloonRise() { tone({ freq: 500, slideTo: 1100, type: 'sine', dur: 0.4, vol: 0.06, lp: 2500 }); },
+  firework() { noise({ dur: 0.35, vol: 0.3, hp: 100, lp: 2500, curve: 1.2 }); tone({ freq: 90, slideTo: 40, type: 'sine', dur: 0.4, vol: 0.28, attack: 0.001 }); for (let i = 0; i < 8; i++) tone({ freq: R(1500, 3200), type: 'sine', dur: 0.05, vol: 0.05, at: 0.12 + i * 0.045, pan: R(-0.8, 0.8) }); },
+  rocket() { noise({ dur: 0.45, vol: 0.08, hp: 800, lp: 4000, curve: 1.5 }); tone({ freq: 300, slideTo: 1400, type: 'sine', dur: 0.45, vol: 0.05 }); },
+  twinkle() { for (let i = 0; i < 9; i++) bell(NOTE(12 + pick(MAJOR)), { at: i * 0.05, vol: 0.09, dur: 0.5, pan: R(-0.7, 0.7) }); },
+  hearts() { [0, 4, 7, 12].forEach((s, i) => tone({ freq: NOTE(s), type: 'sine', dur: 0.35, vol: 0.14, at: i * 0.09, vib: 4, lp: 2200 })); },
+  rings() { for (let i = 0; i < 4; i++) tone({ freq: NOTE(i * 5), slideTo: NOTE(i * 5 + 12), type: 'sine', dur: 0.3, vol: 0.1, at: i * 0.08, lp: 3000 }); },
+  /** party sound matching a party type (from bubbles.party) */
+  party(type) { ({ poppers: S.popper, balloonParty: S.balloonRise, fireworks: S.rocket, sparkles: S.twinkle, heartRain: S.hearts, lightRings: S.rings, confettiCannon: S.popper })[type]?.(); },
   /** random short cheer melody for results */
   cheer() { pick([S.levelup, S.fanfare, () => { S.sparkle(); S.badge(); }])(); },
 };

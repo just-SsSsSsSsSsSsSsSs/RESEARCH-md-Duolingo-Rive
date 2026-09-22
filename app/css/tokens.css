@@ -5,8 +5,8 @@
   /* Surfaces */
   --bg: #070b14;
   --bg-2: #0d1322;
-  --surface: rgba(20, 28, 48, 0.58);
-  --surface-2: rgba(30, 41, 66, 0.80);
+  --surface: rgba(20, 28, 48, 0.92);
+  --surface-2: rgba(30, 41, 66, 0.96);
   --surface-solid: #131a2c;
   --border: rgba(255, 255, 255, 0.09);
   --border-strong: rgba(255, 255, 255, 0.18);
@@ -76,7 +76,7 @@
 [data-theme="light"] {
   --bg: #f3f6fc;
   --bg-2: #e9eef8;
-  --surface: rgba(255, 255, 255, 0.82);
+  --surface: rgba(255, 255, 255, 0.94);
   --surface-2: rgba(255, 255, 255, 0.95);
   --surface-solid: #ffffff;
   --border: rgba(10, 20, 40, 0.08);

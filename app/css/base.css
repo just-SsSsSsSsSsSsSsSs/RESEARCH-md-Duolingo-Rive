@@ -44,14 +44,17 @@ input, select, textarea { font: inherit; color: inherit; }
 #app {
   position: relative; z-index: 1;
   min-height: 100%;
-  padding: calc(var(--s-4) + var(--safe-t)) var(--s-3) calc(var(--nav-h) + var(--s-6) + var(--safe-b));
+  padding: calc(var(--s-4) + var(--safe-t)) var(--s-3) calc(var(--nav-h, 72px) + 36px + var(--safe-b));
+  scroll-padding-bottom: calc(var(--nav-h, 72px) + 36px + var(--safe-b));
   pointer-events: none; /* let bubbles receive taps on empty areas */
 }
 #app > * { pointer-events: auto; }
 .container { max-width: var(--max-w); margin: 0 auto; }
 
 /* Views transitions */
-.view { animation: viewIn var(--dur-slow) var(--ease) both; }
+/* K1: `both` → `backwards` so no residual transform lingers on .view (a transformed ancestor would become the
+   containing block of the fixed .nav and pin it to the content bottom, covering the last card). */
+.view { animation: viewIn var(--dur-slow) var(--ease) backwards; }
 @keyframes viewIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 /* Typography helpers */

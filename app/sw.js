@@ -1,11 +1,12 @@
-/* Service Worker — offline-first for app shell; network-first for content JSON (fallback cache). */
-const VERSION = 'abtal-v1.1.0';
+/* Service Worker v1.2.0 — K3: network-first for app shell (no more stale JS), cache fallback offline;
+   network-first for content JSON; fonts cache-first. skipWaiting + clients.claim + client notification. */
+const VERSION = 'abtal-v1.2.0';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './assets/icon.svg',
   './css/tokens.css', './css/base.css', './css/components.css', './css/fx.css',
   './js/app.js', './js/core/bus.js', './js/core/store.js', './js/core/registry.js', './js/core/router.js',
   './js/engines/sound.js', './js/engines/bubbles.js', './js/engines/xp.js', './js/engines/streak.js', './js/engines/hearts.js', './js/engines/badges.js', './js/engines/quests.js', './js/engines/fx.js',
   './js/activities/session.js', './js/activities/generators.js', './js/activities/renderers.js',
-  './js/ui/icons.js', './js/ui/components.js',
+  './js/ui/icons.js', './js/ui/components.js', './js/ui/badgeArt.js',
   './js/ui/views/home.js', './js/ui/views/profile.js', './js/ui/views/subject.js', './js/ui/views/play.js', './js/ui/views/badges.js', './js/ui/views/quests.js', './js/ui/views/parent.js', './js/ui/views/certificate.js',
   './content/catalog.json'];
 
@@ -29,10 +30,14 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(fetch(req).then((r) => { if (r.ok) caches.open(VERSION).then((c) => c.put(req, r.clone())); return r; }).catch(() => caches.match(req)));
     return;
   }
-  // shell: cache-first, revalidate in background
-  e.respondWith(caches.match(req).then((hit) => {
-    const net = fetch(req).then((r) => { if (r.ok) caches.open(VERSION).then((c) => c.put(req, r.clone())); return r; }).catch(() => hit);
-    return hit || net;
-  }));
+  // shell: NETWORK-FIRST (fresh JS/CSS always when online), cache fallback when offline
+  e.respondWith(fetch(req, { cache: 'no-cache' }).then((r) => {
+    if (r.ok) caches.open(VERSION).then((c) => c.put(req, r.clone()));
+    return r;
+  }).catch(async () => (await caches.match(req)) || (req.mode === 'navigate' ? caches.match('./index.html') : new Response('', { status: 504 }))));
 });
 self.addEventListener('message', (e) => { if (e.data === 'skipWaiting') self.skipWaiting(); });
+// tell open pages a new version took over (they show a gentle "update" toast)
+self.addEventListener('activate', (e) => {
+  e.waitUntil(self.clients.matchAll({ type: 'window' }).then((cs) => cs.forEach((c) => c.postMessage({ type: 'SW_UPDATED', version: VERSION }))));
+});
