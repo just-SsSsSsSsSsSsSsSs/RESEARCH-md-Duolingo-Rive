@@ -50,7 +50,7 @@ app/
 - [x] تجميد الخطة أعلاه
 
 ### المرحلة 2: النواة والواجهة 🔄
-- [ ] C1: app/css tokens+base+components
+- [x] C1: app/css tokens+base+components
 - [ ] C2: js/core (bus, store, registry, router)
 - [ ] C3: engines/sound.js + engines/bubbles.js
 - [ ] C4: engines xp/streak/hearts/badges/quests
@@ -75,4 +75,4 @@ app/
 ---
 
 ## 🎯 الخطوة التالية فوراً (Next Immediate Action)
-👉 **C1:** إنشاء `app/css/tokens.css`, `base.css`, `components.css` ثم commit+push.
+👉 **C2:** js/core (bus.js, store.js, registry.js, router.js) ثم commit+push.
