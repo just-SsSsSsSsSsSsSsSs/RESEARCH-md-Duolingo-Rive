@@ -110,6 +110,6 @@ app/
 - [x] L4: `fx.css` — أزرار 3D tactile، hit ≥48px، hover فقط على (hover:hover)، pointer:coarse، clamp()، dvh، breakpoints 360/700/1024/landscape
 - [x] L5: ربط play.js + renderers.js (celebrate على موضع الإصبع + combo + floaters) + إعداد "شدة الاحتفال" في البروفايل + كروت أشف لإظهار الفقاعات
 - [x] L6: e2e.py + viewports.py أخضر على 4 أجهزة (0 أخطاء، أهداف ≥44px، لا overflow، FX يعمل) + لقطات مراجَعة
-- [ ] L7: PR #2
+- [x] L7: PR #2 → https://github.com/html-mobile-audio/html-mobile-audio/pull/2
 
-**آخر تحديث:** L6 مكتمل → L7 تحديث RESEARCH/README ثم PR #2
+**آخر تحديث:** ✅ المرحلة 4 مكتملة — PR #2 مفتوح للمراجعة. نقطة الاستئناف التالية: معالجة ملاحظات المراجعة على PR #2 أو Backlog RESEARCH.md §5.
