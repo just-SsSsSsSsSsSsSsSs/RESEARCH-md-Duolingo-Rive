@@ -1,0 +1,148 @@
+/**
+ * Play view — runs a Session for an activity id.
+ */
+import store from '../../core/store.js';
+import registry from '../../core/registry.js';
+import router from '../../core/router.js';
+import sound from '../../engines/sound.js';
+import hearts from '../../engines/hearts.js';
+import Session from '../../activities/session.js';
+import renderers from '../../activities/renderers.js';
+import { el, esc, fmt, hud, modal, confetti, toast } from '../components.js';
+import { ico } from '../icons.js';
+import { crown } from './subject.js';
+
+const CHEERS = ['ممتاز! 🌟', 'برافو! 👏', 'عبقري! 🧠', 'رهيب! 🚀', 'صح ١٠٠٪ 💯', 'أنت بطل! 🦸', 'استمر هكذا! 🔥'];
+const OOPS = ['مش مشكلة، نتعلم من الخطأ 💪', 'قريب جداً! 🤏', 'حاول تركّز في المرة الجاية 🎯', 'كل بطل يغلط ويكمّل 🌱'];
+
+export async function render(root, { id }) {
+  const it = registry.item(id);
+  if (!it) throw Object.assign(new Error('نشاط غير موجود'), { friendly: true });
+  const activity = await registry.loadActivity(id);
+  const h = hud({ back: true, title: it.title });
+  root.appendChild(h);
+  const stage = el('<div class="stage"></div>');
+  root.appendChild(stage);
+  let cleanups = [];
+  const cleanup = () => { cleanups.forEach((f) => f()); cleanups = []; h.__cleanup?.(); document.querySelector('.feedback')?.remove(); };
+
+  hearts.regen();
+  if (!activity.practice && hearts.count <= 0) { await noHearts(); if (hearts.count <= 0) { router.go(`/subject/${it.subject}`, true); return cleanup; } }
+
+  intro();
+  return cleanup;
+
+  /* ---------- intro ---------- */
+  function intro() {
+    const st = store.profile.activities[id];
+    stage.innerHTML = '';
+    stage.appendChild(el(`<div class="card q-card">
+      <div style="font-size:72px" class="float">${it.icon}</div>
+      <h1 class="mt-3">${esc(it.title)}</h1>
+      <p class="muted">${esc(it.desc || '')}</p>
+      ${activity.intro ? `<p class="mt-3" style="line-height:1.8">${esc(activity.intro)}</p>` : ''}
+      <div class="row mt-4" style="justify-content:center;gap:14px;flex-wrap:wrap">
+        <span class="tag tag-gold">+${fmt(it.xp || 20)} XP</span>
+        ${activity.practice ? '<span class="tag tag-green">تدريب بدون قلوب</span>' : '<span class="tag tag-rose">❤️ الخطأ يكلّف قلباً</span>'}
+        ${st ? `<span class="row" style="gap:6px">${crown(st.mastery)}<span class="small muted">أفضل ${fmt(st.best)}٪</span></span>` : ''}
+      </div>
+      <button class="btn btn-primary btn-lg btn-block mt-6" data-act="start">${ico('play')} ابدأ!</button>
+    </div>`));
+    stage.querySelector('[data-act="start"]').onclick = () => { sound.play('whoosh'); start(); };
+  }
+
+  /* ---------- run ---------- */
+  function start() {
+    const s = new Session(activity);
+    if (!s.total) { toast('لا توجد أسئلة في هذا النشاط', { type: 'error' }); return; }
+    ask(s);
+  }
+
+  function ask(s) {
+    const q = s.current;
+    stage.innerHTML = '';
+    const head = el(`<div class="play-head"><span class="small muted">${fmt(s.i + 1)}/${fmt(s.total)}</span><div class="level-bar green"><span style="width:${s.progress}%"></span></div><button class="btn btn-icon btn-ghost" data-act="quit" aria-label="خروج">${ico('x')}</button></div>`);
+    head.querySelector('[data-act="quit"]').onclick = async () => { if (await modal({ title: 'تخرج الآن؟', body: '<p class="muted">هتاخد نص النقاط بس على اللي جاوبته.</p>', actions: [{ label: 'أكمل اللعب', cls: 'btn-primary', value: false }, { label: 'خروج', cls: 'btn-ghost', value: true }] })) { finish(s, true); } };
+    stage.appendChild(head);
+    const card = el('<div class="card q-card"></div>');
+    stage.appendChild(card);
+    requestAnimationFrame(() => { card.animate([{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.4,0,.2,1)' }); });
+    const r = renderers[q.type] || renderers.quiz;
+    let answered = false;
+    const ctx = {
+      font: activity.font,
+      onCleanup: (f) => cleanups.push(f),
+      done(ok, meta) {
+        if (answered) return; answered = true;
+        s.answer(ok, meta);
+        sound.play(ok ? 'correct' : 'wrong'); sound.haptic(ok ? [15, 30, 15] : 60);
+        if (ok && Math.random() < 0.35) window.__bubbles?.burst(innerWidth / 2, innerHeight * 0.4, 4);
+        feedback(s, ok, q);
+      },
+    };
+    if (q.speak && sound.enabled) setTimeout(() => sound.speak(q.speak), 200);
+    r(card, q, ctx);
+  }
+
+  function feedback(s, ok, q) {
+    document.querySelector('.feedback')?.remove();
+    const outHearts = s.outOfHearts;
+    const f = el(`<div class="feedback ${ok ? 'good' : 'bad'}">
+      <div class="container row">
+        <div class="grow">
+          <div class="f-title">${ok ? CHEERS[Math.floor(Math.random() * CHEERS.length)] : OOPS[Math.floor(Math.random() * OOPS.length)]}</div>
+          ${q.explain ? `<div class="f-exp">${esc(q.explain)}</div>` : ''}
+          ${outHearts ? '<div class="f-exp" style="color:var(--neon-rose)">💔 خلصت القلوب!</div>' : ''}
+        </div>
+        <button class="btn ${ok ? 'btn-primary' : 'btn-rose'} btn-lg" data-act="next">${s.i + 1 < s.total && !outHearts ? 'التالي' : 'النتيجة'} ${ico('fwd')}</button>
+      </div></div>`);
+    document.body.appendChild(f);
+    const go = () => { f.remove(); if (outHearts) return finish(s, true); if (s.next()) ask(s); else finish(s); };
+    f.querySelector('[data-act="next"]').onclick = go;
+    const onKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { window.removeEventListener('keydown', onKey); go(); } };
+    setTimeout(() => window.addEventListener('keydown', onKey), 300);
+    cleanups.push(() => window.removeEventListener('keydown', onKey));
+  }
+
+  /* ---------- results ---------- */
+  function finish(s, aborted = false) {
+    document.querySelector('.feedback')?.remove();
+    const r = s.finish(aborted);
+    const emoji = r.perfect ? '🏆' : r.score >= 80 ? '🌟' : r.score >= 50 ? '👍' : '💪';
+    if (r.perfect) { confetti({ count: 200 }); sound.play('fanfare'); } else if (r.score >= 80) { confetti({ count: 80 }); sound.play('levelup'); }
+    stage.innerHTML = '';
+    stage.appendChild(el(`<div class="card q-card">
+      <div class="result-big">${emoji}</div>
+      <h1>${r.perfect ? 'إجابات كاملة!' : r.score >= 80 ? 'أداء رائع!' : r.score >= 50 ? 'شغل حلو!' : aborted ? 'نكمّل المرة الجاية' : 'محتاج تدريب أكثر'}</h1>
+      <p class="muted">${esc(it.title)}</p>
+      <div class="stats">
+        <div class="stat"><b style="color:var(--neon-green)">${fmt(r.correct)}</b><span>صحيح</span></div>
+        <div class="stat"><b style="color:var(--neon-rose)">${fmt(r.wrong)}</b><span>خطأ</span></div>
+        <div class="stat"><b>${fmt(r.score)}٪</b><span>النتيجة</span></div>
+        <div class="stat"><b style="color:var(--neon-gold)">+${fmt(r.xp)}</b><span>XP</span></div>
+        <div class="stat"><b>${fmt(Math.floor(r.secs / 60))}:${String(r.secs % 60).padStart(2, '0')}</b><span>الوقت</span></div>
+        <div class="stat"><b>${crown(r.mastery)}</b><span>الإتقان ${r.mastery > r.masteryBefore ? '⬆️' : r.mastery < r.masteryBefore ? '⬇️' : ''}</span></div>
+      </div>
+      ${r.streakUp ? '<p class="tag tag-gold" style="display:inline-block">🔥 شعلة اليوم اشتعلت!</p>' : ''}
+      ${r.certificate ? `<a href="#/certificate/${r.certificate.id}" class="card clickable tile glow-gold mt-3" style="text-align:start"><div class="icon-box">🎓</div><div class="grow"><h3>شهادة إتقان جديدة!</h3><p>اضغط لعرضها وطباعتها</p></div><span class="chev">${ico('chevronL')}</span></a>` : ''}
+      ${r.newBadges.length ? `<div class="row wrap mt-3" style="justify-content:center">${r.newBadges.map((b) => `<span class="tag tag-gold" style="font-size:13px;padding:6px 12px">${b.icon} ${esc(b.name)}</span>`).join('')}</div>` : ''}
+      <div class="row mt-6" style="gap:10px">
+        <button class="btn btn-primary btn-lg grow" data-act="again">${ico('refresh')} مرة أخرى</button>
+        <a href="#/subject/${it.subject}" class="btn btn-lg grow">${ico('home')} المادة</a>
+      </div>
+    </div>`));
+    stage.querySelector('[data-act="again"]').onclick = () => { sound.play('whoosh'); hearts.regen(); if (!activity.practice && hearts.count <= 0) noHearts().then(() => hearts.count > 0 && start()); else start(); };
+  }
+
+  async function noHearts() {
+    const p = store.profile; const ms = hearts.nextIn(); const mins = Math.ceil(ms / 60000);
+    await modal({
+      title: '💔 خلصت القلوب!',
+      body: `<p class="muted">القلب الجاي يرجع بعد <b>${fmt(mins)}</b> دقيقة.<br>عندك <b>${fmt(p.gems)} 💎</b> — تقدر تملأ القلوب بـ 20 جوهرة، أو تفرقع فقاعات وتستنى 😄</p>`,
+      actions: [
+        { label: 'املأ القلوب (20 💎)', cls: 'btn-primary', icon: 'heart', onClick: () => { if (!hearts.refill(20)) { toast('جواهر غير كافية 💎', { type: 'error' }); return false; } toast('❤️ رجعت القلوب!', { type: 'success' }); } },
+        { label: 'رجوع', cls: 'btn-ghost' },
+      ],
+    });
+  }
+}

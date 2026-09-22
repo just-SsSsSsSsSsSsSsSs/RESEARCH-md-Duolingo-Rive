@@ -402,3 +402,57 @@ Docker + CI/CD
   - [Kolibri](https://github.com/learningequality/kolibri) — منصة تعليمية كاملة للعمل بدون إنترنت للمناطق النائية
   - [Scratch Blocks](https://github.com/scratchfoundation/scratch-blocks) — واجهة برمجة وألعاب تفاعلية للأطفال
 - **آلية التوثيق المستمر:** أي موقع أو منصة أو أداة جديدة يكتشفها أي وكيل أو مطور يتم توثيقها فوراً في هذا الملف وسجل المراجع.
+
+---
+
+## 🧭 ملحق مراجع 2026 — ما تم اكتشافه وتطبيقه فعلياً في منصة `app/` (Genspark AI Developer)
+
+> أُضيف هذا القسم دون حذف أي محتوى سابق. كل بند أدناه إمّا طُبِّق مباشرة في `app/` أو وُثِّق كمرجع للتوسع القادم.
+
+### 1) أطر التحفيز وعلم التعلّم (Learning Science) — المطبَّق
+| المبدأ | المصدر | التطبيق في `app/` |
+|---|---|---|
+| **Mastery Crowns** (تيجان الإتقان 0-5 بدل "نجاح/فشل") | Duolingo Crown Levels, Khan Academy Mastery | `Session.finish()` +1/+2/-1 حسب النتيجة، الشهادة عند 5 تيجان |
+| **Spaced Repetition / Recency** | Leitner, Anki, Duolingo "Practice Hub" | `recommend()` يفضّل الأقل إتقاناً والأقدم لعباً |
+| **Streak + Streak Freeze** | Duolingo (أعلى retention driver) | `streak.js` تجميد يُكسب كل 7 أيام أو يُشترى بالجواهر |
+| **Hearts w/ time regen + gems refill** | Duolingo Hearts | `hearts.js` 1 قلب / 20 دقيقة |
+| **Daily Quests (seeded)** | Duolingo Daily Quests | `quests.js` مولَّدة بـ FNV-hash للتاريخ ← نفس المهام على كل جهاز |
+| **Infinite level curve** | RPG design (xp = 60·(n-1)^1.55) | `xp.js` بلا سقف، ألقاب تدور مع أرقام رومانية |
+| **Immediate explanatory feedback** | Khan Academy hints, Bloom's 2-sigma | `explain` بكل سؤال + شريط feedback سفلي |
+| **Procedural generation** | Prodigy Math adaptive engine | `generators.js` (mult/missing/commutative/distributive/add/sub) |
+
+### 2) تقنيات الويب الحديثة المستخدمة (بدون أي framework)
+- **Web Audio API synthesis** — أصوات pop/correct/wrong/levelup/fanfare مولَّدة برمجياً (OscillatorNode + BiquadFilter + DynamicsCompressor + noise buffers). مرجع: [MDN Web Audio](https://developer.mozilla.org/docs/Web/API/Web_Audio_API)، [Tone.js](https://github.com/Tonejs/Tone.js) (دُرس ولم يُستخدم لتجنب الحجم).
+- **Canvas 2D bubble physics** — طفو + رياح + تنافر O(n²) + DPR + إيقاف عند `visibilitychange` + تكيّف مع `navigator.deviceMemory`. مراجع: [tsParticles](https://github.com/tsparticles/tsparticles)، [Matter.js](https://github.com/liabru/matter-js) (فيزياء كاملة، أثقل مما نحتاج).
+- **ES Modules + hash router** — يعمل على GitHub Pages والسيرفر المحلي بلا build step.
+- **Service Worker** — cache-first للـ shell، network-first للمحتوى JSON، cache للخطوط. مرجع: [Workbox strategies](https://developer.chrome.com/docs/workbox/).
+- **Web Crypto SHA-256** للـ PIN — لا يُخزَّن الرقم صريحاً.
+- **Speech Synthesis (ar-EG)** اختياري عبر `q.speak`.
+- **`env(safe-area-inset-*)`** و `viewport-fit=cover` لأجهزة iPhone.
+- **Inline SVG icon set** بأسلوب [Lucide](https://lucide.dev) — صفر طلبات شبكة.
+
+### 3) مشاريع Open Source إضافية دُرست (مرجع للتوسع)
+- [Anki](https://github.com/ankitects/anki) — خوارزمية FSRS للتكرار المتباعد (مرشحة لاستبدال recency البسيط).
+- [Open Spaced Repetition / ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) — تنفيذ FSRS بـ TypeScript خفيف.
+- [H5P](https://github.com/h5p) — أنواع أنشطة تفاعلية (Drag&Drop, Hotspot) لإلهام أنواع جديدة في `renderers.js`.
+- [Kolibri](https://github.com/learningequality/kolibri) — نموذج المحتوى الهرمي (Channel→Topic→Node) شبيه بـ `catalog.json`.
+- [Quran.com API / quran-json](https://github.com/risan/quran-json) — لتوسيع سور جديدة ديناميكياً بنص عثماني.
+- [Tarteel](https://www.tarteel.ai) — تسميع بالذكاء الاصطناعي (مرجع لميزة تسميع مستقبلية عبر Web Speech API).
+- [Phaser](https://github.com/phaserjs/phaser) — إذا لزم mini-games أكثر تعقيداً.
+- [PWA Builder](https://www.pwabuilder.com) — تغليف المنصة كتطبيق Android/iOS متجر.
+
+### 4) قرارات معمارية موثَّقة
+1. **Data-driven 100%**: إضافة مادة/نشاط = تعديل JSON فقط (`content/catalog.json` + `content/activities/*.json`).
+2. **3 ملفات مستقلة** (سليم/كارما/كندة) بـ schema versioning + migrate() + export/import.
+3. **ممنوع لمس** ملفات الجذر المحمية (قانون البيت في `push.sh`) — المنصة الجديدة في `app/` فقط، وكارت واحد أُضيف في `index.html`.
+4. **اختبار E2E** حقيقي بـ Playwright (`app/tests/e2e.py`): كل المسارات + لعب نشاط كامل + PIN + الفقاعات = 0 أخطاء.
+
+### 5) أفكار الجيل التالي (Backlog مرتَّب بالأولوية)
+- [ ] تسميع القرآن بالميكروفون (Web Speech API `ar-SA`) مع مقارنة تقريبية.
+- [ ] Boss Battles أسبوعية (نشاط مختلط بمؤقّت) + Leaderboard عائلي محلي بين الأبطال الثلاثة.
+- [ ] FSRS scheduling بدل recency.
+- [ ] مولّد أنشطة عربية (تحليل كلمات/جمع ومفرد) من قوائم مفردات JSON.
+- [ ] مزامنة سحابية اختيارية (GitHub Gist / Firebase) للنسخ الاحتياطي التلقائي.
+- [ ] وضع "معلّم" لتأليف أنشطة من داخل المنصة وتصديرها JSON.
+
+**آخر تحديث للملحق:** 2026-09-22 — Genspark AI Developer (فرع `genspark_ai_developer`)

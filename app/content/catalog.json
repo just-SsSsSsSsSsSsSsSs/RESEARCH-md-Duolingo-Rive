@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "subjects": [
+    { "id": "quran", "title": "القرآن والتجويد", "icon": "📖", "color": "#ffc233", "desc": "حفظ وتسميع وأحكام التجويد بالصوت والتلوين" },
+    { "id": "math", "title": "الرياضيات", "icon": "🔢", "color": "#19e6ff", "desc": "جداول الضرب، خواص الضرب، وألعاب الأرقام" },
+    { "id": "arabic", "title": "اللغة العربية", "icon": "✍️", "color": "#22e39b", "desc": "قصص وفهم واستماع وتعبير" },
+    { "id": "deen", "title": "التربية الدينية", "icon": "🕌", "color": "#ff8a3d", "desc": "أركان الإيمان وواجب الدين" },
+    { "id": "podcast", "title": "بودكاست سليم", "icon": "🎧", "color": "#b56cff", "desc": "حلقات صوتية كرتونية ممتعة" }
+  ],
+  "items": [
+    { "id": "mult_3", "subject": "math", "type": "numpad", "title": "جدول الضرب ٣", "desc": "أجب بسرعة على مضاعفات الثلاثة", "icon": "3️⃣", "xp": 25, "level": 1, "src": "activities/mult_3.json", "tags": ["ضرب", "جدول"] },
+    { "id": "mult_4", "subject": "math", "type": "numpad", "title": "جدول الضرب ٤", "desc": "سلّم الأربعة السحري", "icon": "4️⃣", "xp": 25, "level": 1, "src": "activities/mult_4.json", "tags": ["ضرب", "جدول"] },
+    { "id": "mult_mix", "subject": "math", "type": "numpad", "title": "تحدي الجداول المختلطة", "desc": "من ٢ إلى ٦ — أسئلة مولَّدة لا تتكرر", "icon": "🎲", "xp": 35, "level": 2, "src": "activities/mult_mix.json", "tags": ["ضرب", "تحدي"] },
+    { "id": "distributive", "subject": "math", "type": "mixed", "title": "خواص الضرب: التفكيك", "desc": "٤×٥ = (٤×٢) + (٤×٣) — خاصية التوزيع", "icon": "🧩", "xp": 40, "level": 2, "src": "activities/distributive.json", "tags": ["خواص الضرب", "توزيع"] },
+    { "id": "commutative", "subject": "math", "type": "mixed", "title": "الخاصية التبديلية", "desc": "٣×٤ = ٤×٣ — اكتشف السر", "icon": "🔄", "xp": 30, "level": 1, "src": "activities/commutative.json", "tags": ["خواص الضرب"] },
+    { "id": "math_lab", "subject": "math", "external": true, "title": "معمل أبطال الماث (٤×٥)", "desc": "كتاب الوزارة ص ١٠-١١ بالأصوات والألعاب", "icon": "🚀", "href": "math.html", "tags": ["تطبيق"] },
+    { "id": "math_split", "subject": "math", "external": true, "title": "سر التقسيم السحري", "desc": "تجزئة المضروب مع جدو حسن بالصوت", "icon": "🧺", "href": "selim-math-arabic/تطبيق_سر_التقسيم_السحري_سليم_بالصوت.html", "tags": ["تطبيق"] },
+
+    { "id": "bayyinah_order", "subject": "quran", "type": "order", "title": "ترتيب آيات سورة البينة", "desc": "رتّب الآيات بالترتيب الصحيح", "icon": "📜", "xp": 35, "level": 2, "src": "activities/bayyinah_order.json", "tags": ["البينة", "حفظ"] },
+    { "id": "bayyinah_fill", "subject": "quran", "type": "fillblank", "title": "أكمل الآية — سورة البينة", "desc": "اختر الكلمة الناقصة", "icon": "🧠", "xp": 30, "level": 1, "src": "activities/bayyinah_fill.json", "tags": ["البينة", "حفظ"] },
+    { "id": "qadr_fill", "subject": "quran", "type": "fillblank", "title": "أكمل الآية — سورة القدر", "desc": "اختر الكلمة الناقصة", "icon": "✨", "xp": 25, "level": 1, "src": "activities/qadr_fill.json", "tags": ["القدر", "حفظ"] },
+    { "id": "tajweed_quiz", "subject": "quran", "type": "quiz", "title": "أحكام التجويد", "desc": "قلقلة، غنة، إخفاء، إقلاب، مد", "icon": "🎼", "xp": 35, "level": 2, "src": "activities/tajweed_quiz.json", "tags": ["تجويد"] },
+    { "id": "bayyinah_app", "subject": "quran", "external": true, "title": "مصحف البينة (تجويد ٢٠ دقيقة)", "desc": "الحصري المعلم + صوت بنت مجوّدة + تلوين الأحكام", "icon": "📖", "href": "albayyinah.html", "tags": ["تطبيق"] },
+    { "id": "bayyinah_app2", "subject": "quran", "external": true, "title": "مصحف البينة (تلقين عثماني)", "desc": "رسم عثماني وصوت مدمج آية بآية", "icon": "🌙", "href": "quran-albayyinah/سورة_البينة_مصحف_تفاعلي.html", "tags": ["تطبيق"] },
+    { "id": "qadr_app", "subject": "quran", "external": true, "title": "مصحف سورة القدر", "desc": "تلاوة وترتيل مع أحكام التجويد", "icon": "✨", "href": "quran-alqadr/index.html", "tags": ["تطبيق"] },
+
+    { "id": "plant_tf", "subject": "arabic", "type": "truefalse", "title": "ازرع نبتة: صواب أم خطأ", "desc": "قصة مريم — اختبر فهمك", "icon": "🌱", "xp": 25, "level": 1, "src": "activities/plant_tf.json", "tags": ["استماع", "فهم"] },
+    { "id": "plant_quiz", "subject": "arabic", "type": "quiz", "title": "ازرع نبتة: أسئلة الفهم", "desc": "اختر الإجابة الصحيحة", "icon": "🪴", "xp": 30, "level": 1, "src": "activities/plant_quiz.json", "tags": ["فهم"] },
+    { "id": "plant_match", "subject": "arabic", "type": "match", "title": "وصّل الكلمة بمعناها", "desc": "مفردات قصة ازرع نبتة", "icon": "🔗", "xp": 30, "level": 2, "src": "activities/plant_match.json", "tags": ["مفردات"] },
+    { "id": "plant_app", "subject": "arabic", "external": true, "title": "ازرع نبتة (فصحى + بلدي)", "desc": "قصة مريم بالصوت وحل التقويم", "icon": "🌱", "href": "plant.html", "tags": ["تطبيق"] },
+    { "id": "plant_app2", "subject": "arabic", "external": true, "title": "ازرع نبتة (فصحى امتحاني)", "desc": "نمط الامتحان المباشر", "icon": "📖", "href": "selim-math-arabic/تطبيق_ازرع_نبتة_سليم.html", "tags": ["تطبيق"] },
+
+    { "id": "iman_quiz", "subject": "deen", "type": "mixed", "title": "أركان الإيمان الستة", "desc": "بيت الإيمان — اعرف الأركان ورتّبها", "icon": "🕌", "xp": 35, "level": 1, "src": "activities/iman_quiz.json", "tags": ["إيمان"] },
+
+    { "id": "ep_table3", "subject": "podcast", "external": true, "title": "حلقة سليم: جدول ٣", "desc": "حفظ جدول ٣ بصوت كرتوني حماسي", "icon": "📻", "href": "episodes-selim/حلقة_سليم_جدول_٣.mp3", "tags": ["mp3"] },
+    { "id": "ep_ladder3", "subject": "podcast", "external": true, "title": "رحلة السلم السحري (جدول ٣)", "desc": "الحلقة الثانية", "icon": "🪜", "href": "episodes-selim/episode2/رحلة_السلم_السحري_سليم_جدول_٣.mp3", "tags": ["mp3"] },
+    { "id": "ep_ladder4", "subject": "podcast", "external": true, "title": "رحلة سلم الأربعة", "desc": "سليم وكارما وكندة", "icon": "🎢", "href": "episodes-selim/episode3/رحلة_سلم_الأربعة_سليم_وكرمة_وكندا.mp3", "tags": ["mp3"] },
+    { "id": "ep_iman", "subject": "podcast", "external": true, "title": "واجب الدين وبيت الإيمان", "desc": "الحلقة الرابعة", "icon": "🕌", "href": "episodes-selim/episode4/واجب_الدين_بيت_الإيمان_سليم.mp3", "tags": ["mp3"] },
+    { "id": "ep_split", "subject": "podcast", "external": true, "title": "قصة سر التقسيم السحري", "desc": "خواص الضرب في رحلة ممتعة", "icon": "⚡", "href": "selim-math-arabic/سليم_رحلة_سر_التقسيم_السحري_خواص_الضرب.mp3", "tags": ["mp3"] },
+    { "id": "ep_bayyinah", "subject": "podcast", "external": true, "title": "تلقين سورة البينة (٢٠ دقيقة)", "desc": "استماع ← ترديد ← تثبيت", "icon": "🕋", "href": "quran-albayyinah/تلقين_سورة_البينة.mp3", "tags": ["mp3"] }
+  ]
+}

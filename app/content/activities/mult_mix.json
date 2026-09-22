@@ -1,0 +1,1 @@
+{ "intro": "تحدي الأبطال! أسئلة مختلطة من جداول ٢ إلى ٦ — كل مرة تلعب الأسئلة تتغيّر. جاهز؟", "count": 12, "generator": [{ "kind": "mult", "tables": [2, 3, 4, 5, 6], "range": [2, 10], "count": 9, "types": ["numpad", "quiz"] }, { "kind": "missing", "tables": [2, 3, 4, 5, 6], "count": 3 }] }
