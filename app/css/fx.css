@@ -156,3 +156,6 @@ body.fx-shake #app { animation: fxShake .38s var(--ease); }
 @media (prefers-reduced-motion: reduce) {
   .fx-float, .fx-combo, .fx-good, .fx-bad, body.fx-shake #app { animation: none !important; }
 }
+/* topbar on narrow screens: keep HUD on one row, title truncates */
+@media (max-width: 420px) { .topbar { flex-wrap: nowrap; overflow: hidden; } .topbar .hud.gems, .topbar .hud.fire { display: none; } .play-head .topbar .hud { display: none; } }
+@media (max-width: 420px) { .topbar .hud.hearts svg { width: 15px; height: 15px; } }

@@ -81,7 +81,7 @@ export function hud({ back = false, title = '' } = {}) {
   const node = el(`
     <div class="topbar">
       ${back ? `<button class="btn btn-icon btn-ghost" data-act="back" aria-label="رجوع">${ico('back')}</button>` : `<a href="#/profile" class="avatar" style="--hero:${hero.hex}" title="${esc(p.name)}">${p.emoji}</a>`}
-      ${title ? `<b class="grow" style="font-size:16px">${esc(title)}</b>` : `<div class="grow" style="min-width:90px"><div class="row" style="gap:6px;font-size:13px;font-weight:800"><span>${esc(p.name)}</span><span class="tag tag-gold">مستوى ${fmt(li.level)}</span></div><div class="level-bar" style="height:8px;margin-top:3px"><span style="width:${li.pct}%"></span></div></div>`}
+      ${title ? `<b class="grow" style="font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(title)}</b>` : `<div class="grow" style="min-width:90px"><div class="row" style="gap:6px;font-size:13px;font-weight:800"><span>${esc(p.name)}</span><span class="tag tag-gold">مستوى ${fmt(li.level)}</span></div><div class="level-bar" style="height:8px;margin-top:3px"><span style="width:${li.pct}%"></span></div></div>`}
       <span class="hud fire" data-hud="streak">${ico('flame')}<span>${fmt(p.streak.count)}</span></span>
       <span class="hud xp" data-hud="xp">${ico('zap')}<span>${fmt(p.xp)}</span></span>
       <span class="hud gems" data-hud="gems">${ico('gem')}<span>${fmt(p.gems)}</span></span>
