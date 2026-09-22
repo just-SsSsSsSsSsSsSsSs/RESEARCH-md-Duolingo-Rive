@@ -11,7 +11,7 @@ import { ico3d } from '../icons3d.js';
 function untilMidnight() { const n = new Date(), m = new Date(n); m.setHours(24, 0, 0, 0); const s = Math.floor((m - n) / 1000); return `${fmt(Math.floor(s / 3600))} س ${fmt(Math.floor((s % 3600) / 60))} د`; }
 
 export async function render(root) {
-  const h = hud({ back: true, title: ico3d('target') + ' مهام اليوم' });
+  const h = hud({ back: true, icon: 'target', title: 'مهام اليوم' });
   root.appendChild(h);
   const wrap = el('<div class="stack"></div>');
   root.appendChild(el(`<div class="card center glow-cyan"><div style="font-size:56px" class="float">${ico3d('target')}</div><h1>مهام اليوم</h1><p class="muted">مهام جديدة كل يوم — تتجدد بعد <b class="tt">${untilMidnight()}</b></p></div>`));

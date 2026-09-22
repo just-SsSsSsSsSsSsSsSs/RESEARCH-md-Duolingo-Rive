@@ -167,3 +167,15 @@ app/
 
 **آخر تحديث:** ✅ المرحلة 6 (Pure-Web & Arcade) مكتملة — PR #4 مفتوح للمراجعة: https://github.com/html-mobile-audio/html-mobile-audio/pull/4
 **نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #4، أو بعد الدمج: شخصية مرشدة ثابتة (Duo/Kodi-style) + تقارير أهل أسبوعية + Focus mode في quests (Backlog RESEARCH.md §5 + ملحق Pure-Web).
+
+---
+
+## Hotfix — PR #5: تسريب كود SVG كنص (innerHTML + hud title escaping)
+
+**التشخيص:** (1) `renderers.js:66` استخدم `textContent` مع ناتج `ico3d('cross')`؛ (2) `parent.js:48` نفس الشيء في رسالة PIN؛ (3) `hud()` يمرّ `title` عبر `esc()` بينما badges/quests/subject تحقن SVG داخل العنوان.
+**الإصلاح:** `innerHTML` في الموضعين؛ `hud({ icon, title })` — الأيقونة اسم موثوق يُصيَّر HTML، والعنوان نص دائماً مُهرَّب. اختبار انحدار جديد `svg_leak.py` (ثابت + وقت تشغيل: لا `<svg` في `innerText` على أي صفحة، وأيقونة العنوان عنصر حقيقي).
+- [x] H1 إصلاح renderers/parent/hud/views + CSS
+- [x] H2 svg_leak.py ✅ emoji_audit ✅ layering ✅ e2e ✅ viewports ✅ navoverlap ✅ (+ answer-box inline layout)
+- [ ] H3 PR #5
+
+**آخر تحديث:** H1 مكتمل → H2: svg_leak.py مُحدَّث (PIN عبر store.setMeta، numpad 99) → H2 مكتمل (6 suites خضراء) → H3 squash + PR #5
