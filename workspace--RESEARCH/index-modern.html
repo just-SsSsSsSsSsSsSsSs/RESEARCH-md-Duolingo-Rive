@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة أبطال البيت</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --text-tertiary: #94a3b8;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      
+      --quran: #f59e0b;
+      --quran-light: #fffbeb;
+      --quran-border: #fde68a;
+      
+      --math: #6366f1;
+      --math-light: #eef2ff;
+      --math-border: #c7d2fe;
+      
+      --arabic: #10b981;
+      --arabic-light: #ecfdf5;
+      --arabic-border: #a7f3d0;
+      
+      --podcast: #8b5cf6;
+      --podcast-light: #f5f3ff;
+      --podcast-border: #ddd6fe;
+      
+      --accent: #6366f1;
+      --accent-light: #eef2ff;
+      
+      --radius: 16px;
+      --radius-sm: 12px;
+      --radius-xs: 8px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow: 0 4px 12px rgba(0,0,0,0.05);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0c0a09;
+        --surface: #1c1917;
+        --surface-hover: #292524;
+        --text: #fafaf9;
+        --text-secondary: #a8a29e;
+        --text-tertiary: #78716c;
+        --border: #292524;
+        --border-light: #1c1917;
+        
+        --quran-light: #1c1507;
+        --quran-border: #78350f;
+        --math-light: #1e1b4b;
+        --math-border: #3730a3;
+        --arabic-light: #022c22;
+        --arabic-border: #065f46;
+        --podcast-light: #2e1065;
+        --podcast-border: #5b21b6;
+        --accent-light: #1e1b4b;
+        
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+        --shadow: 0 4px 12px rgba(0,0,0,0.3);
+        --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+        --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===== LAYOUT ===== */
+    .wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    @media (max-width: 640px) {
+      .wrapper { padding: 0 16px; }
+    }
+
+    /* ===== NAVBAR ===== */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .nav-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+
+    .nav-title {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link {
+      padding: 8px 16px;
+      border-radius: var(--radius-xs);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+    }
+
+    .nav-link.active {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 80px 0 64px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 8vw, 64px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-chars {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .char {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+      cursor: default;
+    }
+
+    .char:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+
+    .char-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .char.selim .char-dot { background: #ecfdf5; color: #10b981; }
+    .char.karma .char-dot { background: #fdf2f8; color: #ec4899; }
+    .char.kunda .char-dot { background: #fff7ed; color: #f97316; }
+
+    @media (prefers-color-scheme: dark) {
+      .char.selim .char-dot { background: #022c22; }
+      .char.karma .char-dot { background: #500724; }
+      .char.kunda .char-dot { background: #431407; }
+    }
+
+    .char-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    /* ===== SECTION ===== */
+    .section {
+      margin-bottom: 56px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .section-icon.quran { background: var(--quran-light); color: var(--quran); }
+    .section-icon.math { background: var(--math-light); color: var(--math); }
+    .section-icon.arabic { background: var(--arabic-light); color: var(--arabic); }
+    .section-icon.podcast { background: var(--podcast-light); color: var(--podcast); }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-meta {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    @media (max-width: 640px) {
+      .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+
+    /* ===== GRID ===== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card.quran::before { background: var(--quran); }
+    .card.math::before { background: var(--math); }
+    .card.arabic::before { background: var(--arabic); }
+    .card.podcast::before { background: var(--podcast); }
+
+    .card:hover {
+      border-color: transparent;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .card.quran:hover { border-color: var(--quran-border); }
+    .card.math:hover { border-color: var(--math-border); }
+    .card.arabic:hover { border-color: var(--arabic-border); }
+    .card.podcast:hover { border-color: var(--podcast-border); }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .card-icon.quran { background: var(--quran-light); color: var(--quran); }
+    .card-icon.math { background: var(--math-light); color: var(--math); }
+    .card-icon.arabic { background: var(--arabic-light); color: var(--arabic); }
+    .card-icon.podcast { background: var(--podcast-light); color: var(--podcast); }
+
+    .card-arrow {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-xs);
+      background: var(--surface-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .card:hover .card-arrow {
+      background: var(--text);
+      color: var(--surface);
+    }
+
+    .card-body h3 {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .card-body p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .card-tag.quran { background: var(--quran-light); color: var(--quran); }
+    .card-tag.math { background: var(--math-light); color: var(--math); }
+    .card-tag.arabic { background: var(--arabic-light); color: var(--arabic); }
+    .card-tag.podcast { background: var(--podcast-light); color: var(--podcast); }
+
+    .card-type {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    /* ===== STATS BAR ===== */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 56px;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 80px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+    }
+
+    .footer-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .footer-right {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeInUp 0.4s ease forwards;
+      opacity: 0;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.1s; }
+    .card:nth-child(3) { animation-delay: 0.15s; }
+    .card:nth-child(4) { animation-delay: 0.2s; }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="nav">
+    <div class="wrapper">
+      <div class="nav-inner">
+        <a href="#" class="nav-brand">
+          <div class="nav-logo">
+            <i class="ri-home-heart-fill"></i>
+          </div>
+          <span class="nav-title">أبطال البيت</span>
+        </a>
+        <div class="nav-links">
+          <a href="#quran" class="nav-link active">القرآن</a>
+          <a href="#math" class="nav-link">الرياضيات</a>
+          <a href="#arabic" class="nav-link">العربي</a>
+          <a href="#podcast" class="nav-link">البودكاست</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrapper">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        المنصة التعليمية التفاعلية
+      </div>
+      <h1>بوابة أبطال البيت</h1>
+      <p class="hero-sub">
+        تطبيقات تفاعلية متكاملة بالصوت والشرح الممتع وتلوين الأحكام.. شغالة في أي مكان ومن أي جهاز
+      </p>
+      <div class="hero-chars">
+        <div class="char selim">
+          <div class="char-dot"><i class="ri-user-star-fill"></i></div>
+          <span class="char-name">سليم</span>
+        </div>
+        <div class="char karma">
+          <div class="char-dot"><i class="ri-user-heart-fill"></i></div>
+          <span class="char-name">كارما</span>
+        </div>
+        <div class="char kunda">
+          <div class="char-dot"><i class="ri-user-star-fill"></i></div>
+          <span class="char-name">كندة</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="wrapper">
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value">12+</div>
+        <div class="stat-label">تطبيق تفاعلي</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">3</div>
+        <div class="stat-label">سور قرآنية</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">5+</div>
+        <div class="stat-label">حلقات بودكاست</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">100%</div>
+        <div class="stat-label">مجاني ومفتوح</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="wrapper">
+
+    <!-- قسم القرآن -->
+    <section class="section" id="quran">
+      <div class="section-head">
+        <div class="section-left">
+          <div class="section-icon quran">
+            <i class="ri-book-open-fill"></i>
+          </div>
+          <div>
+            <div class="section-title">مصاحف التجويد والقرآن الكريم</div>
+            <div class="section-meta">صوت بنت + الشيخ الحصري + تلوين الأحكام</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <a href="quran-alqadr/index.html" class="card quran">
+          <div class="card-header">
+            <div class="card-icon quran">
+              <i class="ri-sparkling-2-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>سورة القدر مصحف التجويد</h3>
+            <p>تلاوة وتلقين بصوت نقي + أحكام التجويد الملونة وفضائل ليلة القدر</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag quran">
+              <i class="ri-book-marked-fill"></i>
+              مصحف تفاعلي
+            </span>
+            <span class="card-type">HTML</span>
+          </div>
+        </a>
+
+        <a href="albayyinah.html" class="card quran">
+          <div class="card-header">
+            <div class="card-icon quran">
+              <i class="ri-book-read-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>سورة البينة — ٢٠ دقيقة تجويد</h3>
+            <p>تلاوة الحصري المعلم + صوت بنت مجودة وتظليل الأحكام آية بآية</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag quran">
+              <i class="ri-palette-fill"></i>
+              تلاوة + تلوين
+            </span>
+            <span class="card-type">HTML</span>
+          </div>
+        </a>
+
+        <a href="quran-albayyinah/سورة_البينة_مصحف_تفاعلي.html" class="card quran">
+          <div class="card-header">
+            <div class="card-icon quran">
+              <i class="ri-moon-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>سورة البينة تلقين عثماني</h3>
+            <p>مصحف تفاعلي بالرسم العثماني والصوت المدمج للحفظ والتسميع</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag quran">
+              <i class="ri-quill-pen-fill"></i>
+              رسم عثماني
+            </span>
+            <span class="card-type">HTML</span>
+          </div>
+        </a>
+
+        <a href="quran-albayyinah/تلقين_سورة_البينة.mp3" class="card quran">
+          <div class="card-header">
+            <div class="card-icon quran">
+              <i class="ri-headphone-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>حلقة تلقين سورة البينة</h3>
+            <p>تسجيل ٢٠ دقيقة متواصلة: استماع ← ترديد ← تثبيت وسماع مباشر</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag quran">
+              <i class="ri-file-music-fill"></i>
+              MP3 صوتي
+            </span>
+            <span class="card-type">20 min</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- قسم الرياضيات -->
+    <section class="section" id="math">
+      <div class="section-head">
+        <div class="section-left">
+          <div class="section-icon math">
+            <i class="ri-calculator-fill"></i>
+          </div>
+          <div>
+            <div class="section-title">معمل الرياضيات والماث</div>
+            <div class="section-meta">المنهج الجديد وتفكيك الأعداد</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <a href="math.html" class="card math">
+          <div class="card-header">
+            <div class="card-icon math">
+              <i class="ri-rocket-2-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>معمل أبطال الماث (4×5) نيون</h3>
+            <p>كتاب الوزارة ص 10-11: تفكيك خواص الضرب بالأصوات والألعاب التفاعلية</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag math">
+              <i class="ri-gamepad-fill"></i>
+              ألعاب تفاعلية
+            </span>
+            <span class="card-type">HTML</span>
+          </div>
+        </a>
+
+        <a href="selim-math-arabic/تطبيق_سر_القسم_السحري_سليم_بالصوت.html" class="card math">
+          <div class="card-header">
+            <div class="card-icon math">
+              <i class="ri-magic-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>سر التقسيم السحري بالصوت</h3>
+            <p>تجزئة المضروب في جدول الضرب مع نجوم وتلميحات جدو حسن لسليم</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag math">
+              <i class="ri-volume-up-fill"></i>
+              صوت + تحديات
+            </span>
+            <span class="card-type">HTML</span>
+          </div>
+        </a>
+
+        <a href="selim-math-arabic/سليم_رحلة_سر_القسم_السحري_خواص_الضرب.mp3" class="card math">
+          <div class="card-header">
+            <div class="card-icon math">
+              <i class="ri-broadcast-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>قصة سر التقسيم السحري بودكاست</h3>
+            <p>حلقة صوتية شيقة (الجزء الثاني - ١٠ دقائق) لشرح خواص الضرب في رحلة ممتعة</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag math">
+              <i class="ri-podcast-fill"></i>
+              بودكاست MP3
+            </span>
+            <span class="card-type">10 min</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- قسم اللغة العربية -->
+    <section class="section" id="arabic">
+      <div class="section-head">
+        <div class="section-left">
+          <div class="section-icon arabic">
+            <i class="ri-plant-fill"></i>
+          </div>
+          <div>
+            <div class="section-title">اللغة العربية والقصص التفاعلية</div>
+            <div class="section-meta">استماع + تقويم تفاعلي</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <a href="plant.html" class="card arabic">
+          <div class="card-header">
+            <div class="card-icon arabic">
+              <i class="ri-seedling-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>ازرع نبتة فصحى + شرح بالبلدي</h3>
+            <p>قصة مريم التفاعلية وحل التقويم مع شرح كل سؤال بالعامية وأصوات تشجيعية</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag arabic">
+              <i class="ri-chat-smile-3-fill"></i>
+              شرح بالعامية
+            </span>
+            <span class="card-type">HTML</span>
+          </div>
+        </a>
+
+        <a href="selim-math-arabic/تطبيق_ازرع_نبتة_سليم.html" class="card arabic">
+          <div class="card-header">
+            <div class="card-icon arabic">
+              <i class="ri-file-list-3-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>ازرع نبتة فصحى امتحاني</h3>
+            <p>نسخة تقويم الاستماع الفصحى المباشرة للتدريب على نمط الامتحانات</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag arabic">
+              <i class="ri-pencil-ruler-2-fill"></i>
+              تدريب امتحاني
+            </span>
+            <span class="card-type">HTML</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- قسم البودكاست -->
+    <section class="section" id="podcast">
+      <div class="section-head">
+        <div class="section-left">
+          <div class="section-icon podcast">
+            <i class="ri-headphone-fill"></i>
+          </div>
+          <div>
+            <div class="section-title">استوديو حلقات بودكاست سليم</div>
+            <div class="section-meta">صوت كرتون نتورك وشبابي حماسي</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <a href="episodes-selim/حلقة_سليم_جدول_٣.mp3" class="card podcast">
+          <div class="card-header">
+            <div class="card-icon podcast">
+              <i class="ri-radio-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>حلقة سليم: جدول ٣ صوت كرتوني</h3>
+            <p>حلقة ممتعة لحفظ وإتقان جدول الضرب ٣ مع تحديات وألعاب صوتية</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag podcast">
+              <i class="ri-mic-fill"></i>
+              بودكاست صوتي
+            </span>
+            <span class="card-type">MP3</span>
+          </div>
+        </a>
+
+        <a href="https://github.com/html-mobile-audio/html-mobile-audio/tree/main/episodes-selim" class="card podcast">
+          <div class="card-header">
+            <div class="card-icon podcast">
+              <i class="ri-folder-fill"></i>
+            </div>
+            <div class="card-arrow">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>أرشيف الحلقات وسيناريوهات</h3>
+            <p>مجلد الحلقات والسيناريوهات المكتوبة على GitHub لمتابعة كافة الدروس</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag podcast">
+              <i class="ri-github-fill"></i>
+              أرشيف GitHub
+            </span>
+            <span class="card-type">Repository</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="wrapper">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <div class="footer-logo">
+            <i class="ri-home-heart-fill"></i>
+          </div>
+          <span class="footer-text">بوابة أبطال البيت — سليم، كارما، وكندة</span>
+        </div>
+        <div class="footer-right">
+          صُمّمت بـ ❤️ للأطفال العرب
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
