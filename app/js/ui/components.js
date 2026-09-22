@@ -12,7 +12,7 @@ import { ico } from './icons.js';
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const fmt = (n) => new Intl.NumberFormat('ar-EG').format(n);
 export const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-export function el(html) { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
+export function el(html) { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.children.length > 1 ? t.content : t.content.firstElementChild; }
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ---- toast ---- */
