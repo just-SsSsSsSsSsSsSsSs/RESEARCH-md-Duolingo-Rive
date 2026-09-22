@@ -75,14 +75,16 @@ export function confetti({ count = 120, x, y, spread = 1 } = {}) {
 }
 
 /* ---- HUD topbar ---- */
-export function hud({ back = false, title = '' } = {}) {
+export function hud({ back = false, title = '', icon = '' } = {}) {
+  // HOTFIX: icon is a trusted icons3d name rendered as HTML; title is ALWAYS escaped plain text (no SVG leakage)
+  const iconHtml = icon ? `<span class="hud-ico">${ico3d(icon, 22)}</span>` : '';
   const p = store.profile; const hero = store.hero; const li = levelInfo();
   hearts.regen();
   const heartsHtml = Array.from({ length: MAX_HEARTS }, (_, i) => `<span class="hb ${i < p.hearts ? '' : 'off'}">${ico3d('heart', 18)}</span>`).join('');
   const node = el(`
     <div class="topbar ${title ? 'has-title' : ''}">
       ${back ? `<button class="btn btn-icon btn-ghost" data-act="back" aria-label="رجوع">${ico('back')}</button>` : `<a href="#/profile" class="avatar" style="--hero:${hero.hex}" title="${esc(p.name)}">${ico3d(p.emoji, 26)}</a>`}
-      ${title ? `<b class="grow" style="font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(title)}</b>` : `<div class="grow" style="min-width:90px"><div class="row" style="gap:6px;font-size:13px;font-weight:800"><span>${esc(p.name)}</span><span class="tag tag-gold">مستوى ${fmt(li.level)}</span></div><div class="level-bar" style="height:8px;margin-top:3px"><span style="width:${li.pct}%"></span></div></div>`}
+      ${title ? `<b class="grow" style="font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:8px">${iconHtml}<span class="hud-title-text">${esc(title)}</span></b>` : `<div class="grow" style="min-width:90px"><div class="row" style="gap:6px;font-size:13px;font-weight:800"><span>${esc(p.name)}</span><span class="tag tag-gold">مستوى ${fmt(li.level)}</span></div><div class="level-bar" style="height:8px;margin-top:3px"><span style="width:${li.pct}%"></span></div></div>`}
       <span class="hud fire" data-hud="streak">${ico3d('flame', 20)}<span>${fmt(p.streak.count)}</span></span>
       <span class="hud xp" data-hud="xp">${ico3d('bolt', 20)}<span>${fmt(p.xp)}</span></span>
       <span class="hud gems" data-hud="gems">${ico3d('gem', 20)}<span>${fmt(p.gems)}</span></span>

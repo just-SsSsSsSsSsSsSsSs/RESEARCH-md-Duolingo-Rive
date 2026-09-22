@@ -11,7 +11,7 @@ import { ico3d } from '../icons3d.js';
 const TIER = { 1: ['برونزية', 'tag-cyan'], 2: ['فضية', 'tag-purple'], 3: ['ذهبية', 'tag-gold'] };
 
 export async function render(root) {
-  const h = hud({ back: true, title: ico3d('trophy') + ' الشارات' });
+  const h = hud({ back: true, icon: 'trophy', title: 'الشارات' });
   root.appendChild(h);
   const list = badges.list(registry.items());
   const earned = list.filter((b) => b.earned).length;

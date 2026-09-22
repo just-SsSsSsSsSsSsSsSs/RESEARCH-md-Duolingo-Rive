@@ -63,7 +63,7 @@ export const renderers = {
       b.onclick = () => {
         sound.play('tick');
         if (k === 'del') val = val.slice(0, -1);
-        else if (k === 'ok') { if (!val) return; lock(c); const ok = Number(val) === Number(q.answer); box.style.borderColor = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; box.style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; if (!ok) box.textContent = `${fmt(Number(val))} ${ico3d('cross')}  الصحيح ${fmt(q.answer)}`; ctx.done(ok, { picked: Number(val) }); return; }
+        else if (k === 'ok') { if (!val) return; lock(c); const ok = Number(val) === Number(q.answer); box.style.borderColor = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; box.style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; if (!ok) box.innerHTML = `${fmt(Number(val))} ${ico3d('cross', 18)} الصحيح ${fmt(q.answer)}`; ctx.done(ok, { picked: Number(val) }); return; }
         else if (val.length < 5) val += k;
         upd();
       };

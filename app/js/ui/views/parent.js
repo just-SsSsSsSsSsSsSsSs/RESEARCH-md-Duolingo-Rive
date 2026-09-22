@@ -45,7 +45,7 @@ function renderPin(root) {
         const hsh = await hash(code);
         if (!hasPin) { store.setMeta({ parentPin: hsh }); toast(ico3d('lock') + ' تم حفظ الرقم السري', { type: 'success' }); unlockedAt = Date.now(); sound.play('correct'); renderDashInto(root); }
         else if (hsh === store.meta.parentPin) { unlockedAt = Date.now(); sound.play('correct'); renderDashInto(root); }
-        else { sound.play('wrong'); msg.textContent = 'رقم غير صحيح ' + ico3d('cross'); inputs.forEach((x) => (x.value = '')); inputs[0].focus(); }
+        else { sound.play('wrong'); msg.innerHTML = 'رقم غير صحيح ' + ico3d('cross', 18); inputs.forEach((x) => (x.value = '')); inputs[0].focus(); }
       }
     });
     inp.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus(); });
