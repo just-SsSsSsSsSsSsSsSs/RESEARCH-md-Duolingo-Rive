@@ -300,3 +300,36 @@
 @media (max-width: 420px) { .dot-grid .dot { width: 22px; height: 22px; } .dot-grid { gap: 5px; max-width: min(100%, calc(var(--cols, 5) * 30px)); } }
 .pick-grid { grid-template-columns: repeat(3, 1fr); }
 .pick-grid .choice { font-size: 26px; font-weight: 900; min-height: 64px; }
+
+/* ---------- Phase 10: "يعني إيه يا بابا؟" ---------- */
+.explain-btn { width: 100%; margin-top: 14px; min-height: 60px; font-size: 19px; font-weight: 900; justify-content: center; gap: 10px; border-radius: 18px; background: linear-gradient(135deg, rgba(181,108,255,.28), rgba(25,230,255,.22)); border: 2px solid rgba(181,108,255,.55); color: var(--text); box-shadow: 0 8px 26px rgba(181,108,255,.25); }
+.explain-btn:active { transform: scale(.97); }
+.explain-btn .i3d { width: 30px; height: 30px; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; max-height: 88vh; overflow: auto; padding: 10px 16px calc(18px + var(--safe-b)); background: var(--surface-solid); border-top: 3px solid rgba(181,108,255,.8); border-radius: 26px 26px 0 0; box-shadow: 0 -14px 50px rgba(0,0,0,.55); animation: slideUp var(--dur-slow) var(--ease-spring) both; display: grid; gap: 12px; }
+.sheet-grab { width: 56px; height: 5px; border-radius: 99px; background: var(--border); margin: 0 auto 2px; }
+body.has-sheet .feedback { z-index: 35; }
+.explain-head { display: flex; align-items: center; gap: 10px; font-size: 18px; }
+.k-text { font-size: clamp(22px, 5.4vw, 30px); line-height: 1.9; font-weight: 800; text-align: start; margin: 0; }
+.k-text .kw { display: inline-block; padding: 0 4px; border-radius: 8px; transition: background var(--dur), color var(--dur), transform var(--dur); }
+.k-text .kw.now { background: linear-gradient(135deg, #ffd166, #ff9f1c); color: #1a1200; transform: scale(1.08); box-shadow: 0 4px 16px rgba(255,159,28,.45); }
+.k-text .kw.said { color: var(--neon-green); }
+.explain-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.explain-actions .btn-primary { grid-column: 1 / -1; }
+.explain-actions .btn.pulse { animation: pulseGlow 1.1s ease-in-out infinite; }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,227,155,.55); } 50% { box-shadow: 0 0 0 12px rgba(34,227,155,0); } }
+.explain-dots { display: flex; justify-content: center; gap: 8px; }
+.explain-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--border); display: inline-block; }
+.explain-dots i.on { background: #b56cff; transform: scale(1.3); }
+.step-ask { font-size: 22px; font-weight: 900; text-align: center; margin-top: 6px; color: #19e6ff; }
+.step-choices { grid-template-columns: repeat(3, 1fr); }
+.step-choices .choice { font-size: 24px; min-height: 64px; }
+.step-final { text-align: center; font-size: 22px; font-weight: 900; padding: 10px; border-radius: 14px; background: rgba(34,227,155,.14); border: 1px solid rgba(34,227,155,.4); }
+@media (min-width: 720px) { .sheet { left: 50%; right: auto; width: min(680px, 96vw); transform: translateX(-50%); } }
+
+/* ---------- Phase 10: parent insights ---------- */
+.weak-row + .weak-row { border-top: 1px solid var(--border); padding-top: 10px; }
+.recent-dots { display: inline-flex; gap: 3px; }
+.recent-dots i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--neon-rose); }
+.recent-dots i.ok { background: var(--neon-green); }
+.rec + .rec { border-top: 1px solid var(--border); padding-top: 8px; }
+.tag-rose { background: rgba(255,92,138,.18); color: #ff9db8; }

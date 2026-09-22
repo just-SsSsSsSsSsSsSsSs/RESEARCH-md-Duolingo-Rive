@@ -13,6 +13,7 @@ import hearts from '../../engines/hearts.js';
 import xp from '../../engines/xp.js';
 import fx from '../../engines/fx.js';
 import Session from '../../activities/session.js';
+import explainSheet from '../explainSheet.js';
 import StoryAudio from '../../engines/storyAudio.js';
 import { Q } from './storyQuestions.js';
 import { badgeSVG } from '../badgeArt.js';
@@ -186,7 +187,7 @@ export async function render(root, { id }) {
   }
 
   function ask(s) {
-    const q = s.current, ph = q.phase, phIdx = a.phases.indexOf(ph);
+    const q = s.current, ph = q.phase, phIdx = a.phases.indexOf(ph); s.shown();
     const inPhase = s.questions.filter((x) => x.phase === ph), k = inPhase.indexOf(q) + 1;
     stage.innerHTML = ''; stage.appendChild(bar());
     stage.appendChild(el(`<div class="story-steps"><div class="st done">${ico3d('headphones')}استمع</div>${a.phases.map((p, i) => `<div class="st ${i < phIdx ? 'done' : i === phIdx ? 'now' : ''}">${ico3d(p.icon || PHASE_ICON[p.id])}${esc(p.title.split(' ')[0])}</div>`).join('')}</div>`));
@@ -210,7 +211,7 @@ export async function render(root, { id }) {
       onCleanup: (f) => cleanups.push(f),
       done(ok, meta = {}) {
         if (answered) return; answered = true;
-        audio.stop(); s.answer(ok, meta);
+        audio.stop(); explainSheet.close(); s.answer(ok, meta);
         const r = card.getBoundingClientRect(), pt = last || { x: r.left + r.width / 2, y: r.top + r.height / 2 };
         if (ok) { sound.play('correct'); fx.celebrate({ x: pt.x, y: pt.y, xp: Math.max(1, Math.round((it.xp || 100) / s.total)), combo: sound.combo, el: card }); if (audio.lang === 'fusha' && audio.has('praise', 'fusha') && Math.random() < 0.5) setTimeout(() => audio.play('praise'), 350); }
         else { sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: card }); if (audio.lang === 'fusha' && audio.has('gentle', 'fusha')) setTimeout(() => audio.play('gentle'), 350); }
@@ -218,6 +219,7 @@ export async function render(root, { id }) {
       },
     };
     (Q[q.type] || Q.quiz)(card, q, ctx);
+    cleanups.push(explainSheet.mount(card, { q, session: s })); // Phase 10: "يعني إيه يا بابا؟"
     if (!showText) card.querySelectorAll('.q-text').forEach((x) => x.classList.add('hidden'));
   }
 

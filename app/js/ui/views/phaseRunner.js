@@ -12,6 +12,7 @@ import hearts from '../../engines/hearts.js';
 import xp from '../../engines/xp.js';
 import fx from '../../engines/fx.js';
 import Session from '../../activities/session.js';
+import explainSheet from '../explainSheet.js';
 import { Q } from './storyQuestions.js';
 import { badgeSVG } from '../badgeArt.js';
 import { el, esc, fmt, modal, confetti, toast } from '../components.js';
@@ -29,7 +30,7 @@ export function runPhases(o) {
   return s;
 
   function ask(s) {
-    const q = s.current, ph = q.phase, phIdx = phases.indexOf(ph);
+    const q = s.current, ph = q.phase, phIdx = phases.indexOf(ph); s.shown();
     const inPhase = s.questions.filter((x) => x.phase === ph), k = inPhase.indexOf(q) + 1;
     stage.innerHTML = ''; stage.appendChild(bar());
     stage.appendChild(el(`<div class="story-steps" style="grid-template-columns:repeat(${phases.length + 1},1fr)"><div class="st done">${ico3d(stepIcon)}${esc(stepLabel)}</div>${phases.map((p, i) => `<div class="st ${i < phIdx ? 'done' : i === phIdx ? 'now' : ''}">${ico3d(p.icon || 'check')}${esc(p.title.split(' ')[0])}</div>`).join('')}</div>`));
@@ -52,7 +53,7 @@ export function runPhases(o) {
       font: q.font || activity.font, onCleanup: (f) => cleanups.push(f),
       done(ok, meta = {}) {
         if (answered) return; answered = true;
-        audio?.stop(); s.answer(ok, meta);
+        audio?.stop(); explainSheet.close(); s.answer(ok, meta);
         const r = card.getBoundingClientRect(), pt = last || { x: r.left + r.width / 2, y: r.top + r.height / 2 };
         if (ok) { sound.play('correct'); fx.celebrate({ x: pt.x, y: pt.y, xp: Math.max(1, Math.round((it.xp || 100) / s.total)), combo: sound.combo, el: card }); o.onCorrect?.(); }
         else { sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: card }); o.onWrong?.(); }
@@ -60,6 +61,7 @@ export function runPhases(o) {
       },
     };
     (Q[q.type] || Q.quiz)(card, q, ctx);
+    cleanups.push(explainSheet.mount(card, { q, session: s })); // Phase 10: "يعني إيه يا بابا؟"
     if ((q.font || activity.font) === 'quran') {
       const paint = () => card.querySelectorAll('.q-text, .choice, .chip').forEach((x) => x.classList.add('quran'));
       paint(); const mo = new MutationObserver(paint); mo.observe(card, { childList: true, subtree: true }); cleanups.push(() => mo.disconnect());

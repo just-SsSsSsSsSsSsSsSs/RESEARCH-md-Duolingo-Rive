@@ -5,6 +5,8 @@ import store from '../../core/store.js';
 import registry from '../../core/registry.js';
 import router from '../../core/router.js';
 import sound from '../../engines/sound.js';
+import explainSheet from '../explainSheet.js';
+import { targetedPractice, adaptive } from '../../engines/insights.js';
 import hearts from '../../engines/hearts.js';
 import Session from '../../activities/session.js';
 import renderers from '../../activities/renderers.js';
@@ -19,11 +21,14 @@ const CHEERS = ['ممتاز! ' + ico3d('star'), 'برافو! ' + ico3d('clap'), 
 const OOPS = ['مش مشكلة، نتعلم من الخطأ ' + ico3d('muscle'), 'قريب جداً! ' + ico3d('pinch'), 'حاول تركّز في المرة الجاية ' + ico3d('target'), 'كل بطل يغلط ويكمّل ' + ico3d('seedling')];
 
 export async function render(root, { id }) {
-  const it = registry.item(id);
-  if (!it) throw Object.assign(new Error('نشاط غير موجود'), { friendly: true });
+  const virtual = id === 'targeted_practice' ? targetedPractice(store.profile) : null; // Phase 10: adaptive practice built from the child's weakest skills
+  const it = virtual || registry.item(id);
+  if (!it) throw Object.assign(new Error(virtual === null && id === 'targeted_practice' ? 'لسه مفيش بيانات كافية للتدريب المخصص — العب شوية أنشطة الأول' : 'نشاط غير موجود'), { friendly: true });
   if (it.type === 'story') { const Story = await import('./story.js'); return Story.render(root, { id }); } // Phase 7: story mode
   if (it.type === 'quran') { const R = await import('./quranReader.js'); return R.render(root, { id }); } // Phase 9: mushaf reader
-  const activity = await registry.loadActivity(id);
+  const activity = virtual || await registry.loadActivity(id);
+  const adapt = adaptive(store.profile); // { delayMs, breakAfterMin, preferStrategy }
+  window.__adaptive = adapt; // E2E hook (read-only)
   const h = hud({ back: true, title: it.title });
   root.appendChild(h);
   const stage = el('<div class="stage"></div>');
@@ -66,7 +71,7 @@ export async function render(root, { id }) {
   }
 
   function ask(s) {
-    const q = s.current;
+    const q = s.current; s.shown();
     window.__play = { id, i: s.i, total: s.total, q, keys: s.questions?.map((x) => x.key || x.q) }; // E2E hook (read-only)
     stage.innerHTML = '';
     const head = el(`<div class="play-head"><span class="small muted">${fmt(s.i + 1)}/${fmt(s.total)}</span><div class="level-bar green"><span style="width:${s.progress}%"></span></div><button class="btn btn-icon btn-ghost" data-act="quit" aria-label="خروج">${ico('x')}</button></div>`);
@@ -76,12 +81,16 @@ export async function render(root, { id }) {
     stage.appendChild(card);
     requestAnimationFrame(() => { card.animate([{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.4,0,.2,1)' }); });
     const r = renderers[q.type] || renderers.quiz;
-    let answered = false;
+    let answered = false; const askedAt = Date.now();
     const ctx = {
       font: activity.font,
       onCleanup: (f) => cleanups.push(f),
       done(ok, meta) {
-        if (answered) return; answered = true;
+        if (answered) return;
+        // adaptive: impulsive child -> ignore taps that land before a short settle delay (choices only), ask to look again
+        if (adapt.delayMs && (q.type === 'quiz' || q.type === 'truefalse' || q.type === 'grid') && Date.now() - askedAt < adapt.delayMs) { sound.play('tap'); fx.floater?.('بصّ كويس الأول ' + ico3d('eye')); return; }
+        answered = true;
+        explainSheet.close();
         s.answer(ok, meta);
         const pt = meta.point || { x: innerWidth / 2, y: innerHeight * 0.45 };
         if (ok) {
@@ -97,6 +106,8 @@ export async function render(root, { id }) {
     };
     if (q.speak && sound.enabled) setTimeout(() => sound.speak(q.speak), 200);
     r(card, q, ctx);
+    cleanups.push(explainSheet.mount(card, { q, session: s })); // Phase 10: "يعني إيه يا بابا؟"
+    card.addEventListener('pointerdown', () => s.touch(), { once: true, passive: true });
   }
 
   function feedback(s, ok, q) {
@@ -112,11 +123,21 @@ export async function render(root, { id }) {
         <button class="btn ${ok ? 'btn-primary' : 'btn-rose'} btn-lg" data-act="next">${s.i + 1 < s.total && !outHearts ? 'التالي' : 'النتيجة'} ${ico('fwd')}</button>
       </div></div>`);
     document.body.appendChild(f); document.body.classList.add('has-feedback');
-    const go = () => { f.remove(); document.body.classList.remove('has-feedback'); if (outHearts) return finish(s, true); if (s.next()) ask(s); else finish(s); };
+    const go = () => { f.remove(); document.body.classList.remove('has-feedback'); if (outHearts) return finish(s, true); if (!s.next()) return finish(s); if (adapt.breakAfterMin && !s._breakShown && Date.now() - s.startedAt > adapt.breakAfterMin * 60000) { s._breakShown = true; return breakCard(s); } ask(s); };
     f.querySelector('[data-act="next"]').onclick = go;
     const onKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { window.removeEventListener('keydown', onKey); go(); } };
     setTimeout(() => window.addEventListener('keydown', onKey), 300);
     cleanups.push(() => window.removeEventListener('keydown', onKey));
+  }
+
+  /** adaptive: gentle rest suggestion when the insights engine detected fatigue after N minutes */
+  function breakCard(s) {
+    stage.innerHTML = '';
+    const c = el(`<div class="card q-card center" data-break><div class="float" style="display:grid;place-items:center">${ico3d('turtle', 84)}</div><h2 class="mt-3">خد نفس يا بطل</h2><p class="muted" style="font-size:18px;line-height:1.8">لعبت حلو! اشرب مية واتحرّك دقيقة، وبعدين كمّل وانت مركّز.</p><div class="row mt-4" style="justify-content:center;gap:12px;flex-wrap:wrap"><button class="btn btn-lg btn-primary" data-act="continue">${ico3d('muscle', 22)} كمّل</button><button class="btn btn-lg btn-ghost" data-act="stop">${ico3d('flag', 22)} كفاية النهاردة</button></div></div>`);
+    c.querySelector('[data-act="continue"]').onclick = () => { sound.play('whoosh'); ask(s); };
+    c.querySelector('[data-act="stop"]').onclick = () => { sound.play('whoosh'); finish(s, true); };
+    stage.appendChild(c);
+    if (sound.enabled) setTimeout(() => sound.speak('خد نفس يا بطل. اشرب مية وارجع.'), 200);
   }
 
   /* ---------- results ---------- */

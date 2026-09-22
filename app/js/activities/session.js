@@ -21,6 +21,7 @@ import badges from '../engines/badges.js';
 import registry from '../core/registry.js';
 import { shuffle } from '../ui/components.js';
 import { generate } from './generators.js';
+import telemetry, { stopwatch } from '../engines/telemetry.js';
 
 export class Session {
   constructor(activity) {
@@ -38,15 +39,35 @@ export class Session {
     this.answers = [];
     this.startedAt = Date.now();
     this.ended = false;
+    this.explained = 0;      // explanations requested during this session
+    this._sw = null;         // stopwatch of the current question
   }
   get current() { return this.questions[this.i]; }
+  /** mark the current question as shown (starts its stopwatch + logs question_shown) - idempotent per question */
+  shown() {
+    if (this._sw && this._sw.i === this.i) return this._sw;
+    const q = this.current; this._sw = Object.assign(stopwatch(), { i: this.i, explained: 0, strategies: [] });
+    telemetry.log('question_shown', { act: this.a.id, subject: this.a.subject, key: q?.key || q?.q, skill: this.skillOf(q), qtype: q?.type });
+    return this._sw;
+  }
+  /** child interacted with the question (first tap) */
+  touch() { this.shown().touch(); }
+  /** child asked "what does it mean?" - remember the strategy for explanation_result */
+  explained_with(strategy) { const sw = this.shown(); sw.explained++; sw.strategies.push(strategy); this.explained++; telemetry.log('explanation_requested', { act: this.a.id, subject: this.a.subject, key: this.current?.key || this.current?.q, skill: this.skillOf(this.current), strategy, nth: sw.explained }); }
+  skillOf(q) { return q?.skill || (q?.phase?.title ? `${this.a.title}: ${q.phase.title}` : null) || this.a.skill || this.a.title || this.a.id; }
   get total() { return this.questions.length; }
   get progress() { return Math.round((this.i / this.total) * 100); }
 
   /** record an answer for the current question */
   answer(ok, meta = {}) {
     const p = store.profile;
-    this.answers.push({ i: this.i, ok, ...meta });
+    const q = this.current, sw = this.shown(); sw.attempt();
+    const snap = sw.snapshot();
+    this.answers.push({ i: this.i, ok, ...meta, ...snap, skill: this.skillOf(q) });
+    telemetry.log('question_attempted', { act: this.a.id, subject: this.a.subject, key: q?.key || q?.q, skill: this.skillOf(q), qtype: q?.type, correct: !!ok, ...snap,
+      wrong_value: ok ? undefined : (meta.picked != null ? String(meta.picked).slice(0, 24) : undefined), expected: q?.answer != null && typeof q.answer !== 'object' ? String(q.answer).slice(0, 24) : undefined,
+      pos: this.i, total: this.total, session_ms: Date.now() - this.startedAt, hour: new Date().getHours(), after_explain: sw.explained ? sw.strategies[sw.strategies.length - 1] : undefined });
+    if (sw.explained) sw.strategies.forEach((st) => telemetry.log('explanation_result', { act: this.a.id, subject: this.a.subject, key: q?.key || q?.q, skill: this.skillOf(q), strategy: st, solved: !!ok }));
     p.counters.answers++;
     if (ok) { this.correct++; p.counters.correct++; }
     else { this.wrong++; if (!this.practice) hearts.lose(); }
@@ -98,7 +119,8 @@ export class Session {
       certificate = { id: `${this.a.id}_${Date.now().toString(36)}`, activityId: this.a.id, title: this.a.title, subject: this.a.subject, date: Date.now(), xp: p.xp, name: p.name };
       p.certificates.push(certificate); store.save();
     }
-    bus.emit('activity:complete', { id: this.a.id, subject: this.a.subject, score, perfect, aborted });
+    telemetry.log(aborted ? 'session_quit' : 'stage_completed', { act: this.a.id, subject: this.a.subject, score, perfect, aborted, duration_ms: Date.now() - this.startedAt, total: this.total, correct: this.correct, pos: this.i, explained: this.explained });
+    bus.emit('activity:complete', { id: this.a.id, subject: this.a.subject, score, perfect, aborted, secs, total: this.total, correct: this.correct });
     const newBadges = badges.evaluate(registry.items());
     this.result = { score, perfect, correct: this.correct, wrong: this.wrong, total: this.total, secs, xp: xpRes.gained, levelUp: xpRes.levelUp, mastery: st.mastery, masteryBefore: before, streakUp, certificate, newBadges, aborted };
     return this.result;

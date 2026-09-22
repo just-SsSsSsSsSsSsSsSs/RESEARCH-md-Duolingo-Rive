@@ -12,6 +12,8 @@ import { BADGES } from '../../engines/badges.js';
 import { el, fmt, esc, hud, nav, modal, confirm, toast } from '../components.js';
 import { ico } from '../icons.js';
 import { ico3d } from '../icons3d.js';
+import { renderSettings } from './parentSettings.js';
+import { renderInsights } from './parentInsights.js';
 
 async function hash(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('abtal:' + s)); return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join(''); }
 let unlockedAt = 0;
@@ -116,6 +118,8 @@ function renderDash(root) {
     body.appendChild(el(`<div class="card" style="overflow:auto">${played.length ? `<table class="table"><thead><tr><th>النشاط</th><th>مرات</th><th>أفضل</th><th>دقة</th><th>إتقان</th><th>آخر لعب</th></tr></thead><tbody>
       ${played.map(({ it, st }) => `<tr><td>${ico3d(it.icon, 18)} ${esc(it.title)}</td><td>${fmt(st.plays)}</td><td>${fmt(st.best)}٪</td><td>${st.total ? fmt(Math.round((st.correct / st.total) * 100)) : '—'}٪</td><td>${ico3d('crown').repeat(st.mastery)}${'·'.repeat(5 - st.mastery)}</td><td class="small muted">${new Date(st.lastPlayed).toLocaleDateString('ar-EG')}</td></tr>`).join('')}</tbody></table>` : '<p class="muted center">لم يلعب أي نشاط بعد</p>'}</div>`));
 
+    renderInsights(body, { hero, p }); // Phase 10: weakness & behaviour report (parent-only)
+
     // badges & certificates
     const earned = BADGES.filter((b) => p.badges[b.id]);
     body.appendChild(el(`<div class="section"><h2>${ico3d('medal')} شارات وشهادات</h2><span class="tag tag-gold">${fmt(earned.length)} شارة • ${fmt(p.certificates.length)} شهادة</span></div>`));
@@ -136,6 +140,7 @@ function renderDash(root) {
     ctl.querySelector('[data-act="gems"]').onclick = () => { p.gems += 20; saveProfile(hero.id, p); toast(ico3d('gem') + ' +٢٠ جوهرة', { type: 'gold' }); drawChild(); };
     ctl.querySelector('[data-act="reset"]').onclick = async () => { if (await confirm('تصفير التقدم؟', `<p class="muted">سيتم حذف كل نقاط وشارات وشهادات <b>${esc(hero.name)}</b>. لا يمكن التراجع.</p>`, 'نعم، صفّر', 'إلغاء')) { store.resetProfile(hero.id); toast('تم التصفير', { type: 'info' }); location.reload(); } };
     body.appendChild(ctl);
+    renderSettings(body, { hero, p, save: () => saveProfile(hero.id, p) }); // Phase 10: celebration + explain + privacy
   };
   drawTabs(); drawChild();
 
