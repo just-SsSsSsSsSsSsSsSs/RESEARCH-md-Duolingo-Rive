@@ -135,5 +135,8 @@ app/
 - [x] K4: شارات SVG مجسمة: مولّد `badgeSVG(id)` (درع/دائرة/نجمة متدرجة + ظل + لمعة + أيقونة SVG) بدل الإيموجي، حالة مقفولة رمادية
 - [x] K5: Party FX متنوعة: 6 أنواع (poppers شرائط، بلالين تطير وتفرقع، ألعاب نارية، نجوم متلألئة، مطر قلوب، حلقات ضوء) تُختار عشوائياً بدون تكرار متتالٍ + أصوات مطابقة (popper/balloon-pop/firework)
 - [x] K6: اختبار: e2e + viewports + اختبار جديد لتراكب البار (آخر عنصر مرئي كامل بعد scroll) + لقطات
-- [ ] K7: PR #3
-**آخر تحديث:** K2 مكتمل (فقاعات ≤14، alpha 0.20–0.35، بلا هالة، كروت 0.92) → K3 مكتمل (SW v1.2.0 network-first + toast تحديث) → K4 مكتمل (badgeArt.js: 26 ميدالية SVG بطبقات معدنية/لمعة/ظل) → K5 مكتمل (7 أنواع حفلات عشوائية: poppers/balloons/fireworks/sparkles/heartRain/lightRings/confettiCannon + أصوات) → K6 مكتمل (e2e ✅ viewports ✅ navoverlap ✅) → K7 توثيق + PR #3
+- [x] K7: PR #3 → https://github.com/html-mobile-audio/html-mobile-audio/pull/3 (commit مضغوط 3102f49+)
+**آخر تحديث:** K2 مكتمل (فقاعات ≤14، alpha 0.20–0.35، بلا هالة، كروت 0.92) → K3 مكتمل (SW v1.2.0 network-first + toast تحديث) → K4 مكتمل (badgeArt.js: 26 ميدالية SVG بطبقات معدنية/لمعة/ظل) → K5 مكتمل (7 أنواع حفلات عشوائية: poppers/balloons/fireworks/sparkles/heartRain/lightRings/confettiCannon + أصوات) → K6 مكتمل → K7 مكتمل.
+
+**آخر تحديث:** ✅ المرحلة 5 (Calm & Joy) مكتملة — PR #3 مفتوح للمراجعة: https://github.com/html-mobile-audio/html-mobile-audio/pull/3
+**نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #3، أو بعد الدمج: Backlog RESEARCH.md §5 (اقتراح: K8 شارات SVG لصفحة الـHome/Profile، K9 وضع Focus أيضاً في quests، K10 تحسين أداء الحفلات على أجهزة ≤2GB).
