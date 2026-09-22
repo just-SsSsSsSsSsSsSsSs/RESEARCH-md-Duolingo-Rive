@@ -456,3 +456,24 @@ Docker + CI/CD
 - [ ] وضع "معلّم" لتأليف أنشطة من داخل المنصة وتصديرها JSON.
 
 **آخر تحديث للملحق:** 2026-09-22 — Genspark AI Developer (فرع `genspark_ai_developer`)
+
+---
+
+## 🎉 ملحق "The Leap" — ما تعلّمناه من اختبار الأطفال الحي وما طبّقناه (PR #2)
+
+### تشخيص صادق لأسباب "التجربة الباهتة" في v1
+1. **الفقاعات**: compositing إضافي (`lighter`) بـ alpha 0.35→0 على خلفية داكنة + rim 1.4px → خطوط شبحية. **الحل**: تعبئة زجاجية مشبعة + rim سميك بلمعة + هالة خارجية + highlights دوّارة + تنفّس، وكروت أشف (0.58) لتظهر خلفها.
+2. **لا احتفال**: كان الاحتفال احتمالياً (35%) وفي مركز الشاشة. **الحل**: `celebrate(x,y,intensity)` على **موضع الإصبع** بجسيمات متعددة الأشكال (★ ♥ ● ✦) + موجات صدمة + فقاعات مكافأة تُفرقع تلقائياً بتسلسل صوتي + نصوص عائمة + combo badge + XP floater.
+3. **صوت الخطأ**: `sawtooth/square` = buzzer صناعي. **الحل**: نغمتان sine هابطتان لطيفتان مع vibrato ولوباس، بصوت منخفض، ثم "encourage" boop.
+4. **رتابة الصح**: **الحل**: 6 أنماط ميلودية (bells/pluck/cascade) بمفتاح متغيّر + humanize (detune/timing) + تصاعد سُلَّمي مع combo + shimmer متزايد.
+5. **الأزرار**: مسطحة و46px. **الحل**: 3D tactile (`box-shadow 0 5px` ينضغط بـ `translateY(5px)`) بلون عمق لكل نوع + لمعة علوية، ≥48px، `hover` فقط على `(hover:hover)`، `pointer:coarse` لمسافات أوسع، `clamp()` للخط، `100dvh`، breakpoints 360/700/1024/landscape.
+
+### مراجع أُضيفت
+- Duolingo Design (tactile buttons, streak/combo feedback loops) — https://design.duolingo.com
+- Material 3 touch targets 48dp — https://m3.material.io/foundations/accessible-design/accessibility-basics
+- Apple HIG 44pt — https://developer.apple.com/design/human-interface-guidelines/accessibility
+- MDN: `@media (hover)` / `(pointer)` — https://developer.mozilla.org/docs/Web/CSS/@media/hover
+- Web Audio: Convolver reverb from noise impulse — https://developer.mozilla.org/docs/Web/API/ConvolverNode
+- Game feel / juice: "Juice it or lose it" (Jonasson & Purho) — مبادئ الاهتزاز/التضخيم/التنويع المطبّقة في fx.js
+
+**آخر تحديث للملحق:** 2026-09-22 — PR #2
