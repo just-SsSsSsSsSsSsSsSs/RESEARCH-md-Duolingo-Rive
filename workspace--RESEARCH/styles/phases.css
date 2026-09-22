@@ -1,0 +1,326 @@
+/* ============================================
+ * Phase 2-5 Styles — بوابة أبطال البيت
+ * ============================================ */
+
+/* ===== CHALLENGES ===== */
+.challenge-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  transition: var(--transition-fast);
+}
+.challenge-card:hover { border-color: var(--color-primary-300); }
+.challenge-card.completed { border-color: var(--color-success-500); background: var(--color-success-50); }
+.challenge-icon { font-size: 32px; }
+.challenge-info { flex: 1; }
+.challenge-name { font-weight: 700; margin-bottom: 8px; }
+.challenge-progress { display: flex; align-items: center; gap: 12px; }
+.challenge-progress span { font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
+.challenge-reward { font-weight: 700; color: var(--color-primary-600); }
+
+/* ===== LEADERBOARD ===== */
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  transition: var(--transition-fast);
+}
+.leaderboard-item:hover { border-color: var(--color-primary-300); }
+.leaderboard-item.top-3 { border-color: var(--color-warning-300); background: var(--color-warning-50); }
+.leaderboard-item .rank { font-size: 24px; font-weight: 900; min-width: 40px; text-align: center; }
+.leaderboard-item .user-info { flex: 1; }
+.leaderboard-item .user-name { font-weight: 700; margin-bottom: 4px; }
+.leaderboard-item .user-stats { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); }
+
+/* ===== ACHIEVEMENTS ===== */
+.achievement-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  transition: var(--transition-fast);
+}
+.achievement-card.unlocked { border-color: var(--color-success-300); }
+.achievement-card.locked { opacity: 0.6; }
+.achievement-icon { font-size: 32px; }
+.achievement-info { flex: 1; }
+.achievement-name { font-weight: 700; margin-bottom: 4px; }
+.achievement-desc { font-size: 13px; color: var(--text-secondary); }
+
+/* ===== PARENT DASHBOARD ===== */
+.child-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.child-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.child-avatar { font-size: 48px; }
+.child-info { flex: 1; }
+.child-info h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.child-grade { font-size: 14px; color: var(--text-secondary); }
+.child-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.child-stat {
+  text-align: center;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+}
+.child-stat .stat-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+.child-stat .stat-value { font-size: 20px; font-weight: 700; display: block; }
+.child-stat .stat-label { font-size: 12px; color: var(--text-secondary); }
+.child-progress { margin-top: 16px; }
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* ===== NOTIFICATIONS ===== */
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.notification-item:hover { background: var(--bg-tertiary); }
+.notification-item.unread { background: var(--color-primary-50); }
+.notification-icon { font-size: 24px; }
+.notification-content { flex: 1; }
+.notification-title { font-weight: 600; margin-bottom: 4px; }
+.notification-body { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.notification-time { font-size: 11px; color: var(--text-tertiary); }
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary-500);
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+/* ===== QUIZ ===== */
+.quiz-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.quiz-progress { font-size: 14px; color: var(--text-secondary); }
+.quiz-question { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+.quiz-options { display: flex; flex-direction: column; gap: 12px; }
+.quiz-option {
+  padding: 16px;
+  background: var(--bg-tertiary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  font-size: 16px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: right;
+}
+.quiz-option:hover { border-color: var(--color-primary-300); background: var(--color-primary-50); }
+.quiz-results {
+  text-align: center;
+  padding: 32px;
+}
+.results-icon { font-size: 64px; margin-bottom: 16px; }
+.results-xp {
+  display: inline-block;
+  padding: 8px 24px;
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  margin: 16px 0;
+}
+.results-actions { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+
+/* ===== CERTIFICATES ===== */
+.certificate-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  transition: var(--transition-fast);
+}
+.certificate-card:hover { border-color: var(--color-warning-300); }
+.certificate-icon { font-size: 32px; }
+.certificate-info { flex: 1; }
+.certificate-info h4 { font-weight: 700; margin-bottom: 4px; }
+.certificate-info p { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.certificate-date { font-size: 11px; color: var(--text-tertiary); }
+
+/* ===== TEACHER PORTAL ===== */
+.teacher-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.classes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+.class-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+}
+.class-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.class-header h3 { font-size: 18px; font-weight: 700; }
+.student-count {
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+.class-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.class-stat {
+  text-align: center;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+}
+.class-stat .stat-value { font-size: 24px; font-weight: 700; display: block; }
+.class-stat .stat-label { font-size: 12px; color: var(--text-secondary); }
+.class-leaderboard { margin-top: 16px; }
+.class-leaderboard h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.student-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-secondary);
+}
+.student-row:last-child { border-bottom: none; }
+.student-row .rank { font-weight: 700; min-width: 24px; }
+.student-row .name { flex: 1; }
+.student-row .xp { font-size: 13px; color: var(--text-secondary); }
+
+/* ===== COMMUNITY ===== */
+.community-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.posts-feed { display: flex; flex-direction: column; gap: 16px; }
+.post-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+}
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.post-avatar { font-size: 32px; }
+.post-meta { flex: 1; }
+.post-author { font-weight: 700; display: block; }
+.post-time { font-size: 12px; color: var(--text-secondary); }
+.post-topic {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+.badge-quran { background: var(--color-quran-100); color: var(--color-quran-700); }
+.badge-math { background: var(--color-math-100); color: var(--color-math-700); }
+.badge-arabic { background: var(--color-arabic-100); color: var(--color-arabic-700); }
+.badge-podcast { background: var(--color-podcast-100); color: var(--color-podcast-700); }
+.badge-general { background: var(--bg-tertiary); color: var(--text-secondary); }
+.post-content { font-size: 15px; line-height: 1.6; margin-bottom: 16px; }
+.post-actions { display: flex; gap: 24px; }
+.post-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition-fast);
+}
+.post-action:hover { color: var(--color-primary-600); }
+
+/* ===== RECOMMENDATIONS ===== */
+.recommendation-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+}
+.recommendation-card.high { border-color: var(--color-error-300); background: var(--color-error-50); }
+.recommendation-card.medium { border-color: var(--color-warning-300); background: var(--color-warning-50); }
+.recommendation-card.low { border-color: var(--color-success-300); background: var(--color-success-50); }
+.recommendation-icon { font-size: 24px; }
+.recommendation-text { font-size: 14px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .child-stats { grid-template-columns: repeat(2, 1fr); }
+  .classes-grid { grid-template-columns: 1fr; }
+  .leaderboard-item .user-stats { flex-direction: column; gap: 4px; }
+  .quiz-card { padding: 20px; }
+  .results-actions { flex-direction: column; }
+}
