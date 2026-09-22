@@ -8,6 +8,7 @@ import sound from '../../engines/sound.js';
 import hearts from '../../engines/hearts.js';
 import Session from '../../activities/session.js';
 import renderers from '../../activities/renderers.js';
+import { badgeSVG } from '../badgeArt.js';
 import { el, esc, fmt, hud, modal, confetti, toast } from '../components.js';
 import { ico } from '../icons.js';
 import { crown } from './subject.js';
@@ -25,7 +26,8 @@ export async function render(root, { id }) {
   const stage = el('<div class="stage"></div>');
   root.appendChild(stage);
   let cleanups = [];
-  const cleanup = () => { cleanups.forEach((f) => f()); cleanups = []; h.__cleanup?.(); document.querySelector('.feedback')?.remove(); };
+  window.__bubbles?.setFocus?.(true); // K2: calm background while reading questions
+  const cleanup = () => { window.__bubbles?.setFocus?.(false); cleanups.forEach((f) => f()); cleanups = []; h.__cleanup?.(); document.querySelector('.feedback')?.remove(); document.body.classList.remove('has-feedback'); };
 
   hearts.regen();
   if (!activity.practice && hearts.count <= 0) { await noHearts(); if (hearts.count <= 0) { router.go(`/subject/${it.subject}`, true); return cleanup; } }
@@ -105,8 +107,8 @@ export async function render(root, { id }) {
         </div>
         <button class="btn ${ok ? 'btn-primary' : 'btn-rose'} btn-lg" data-act="next">${s.i + 1 < s.total && !outHearts ? 'التالي' : 'النتيجة'} ${ico('fwd')}</button>
       </div></div>`);
-    document.body.appendChild(f);
-    const go = () => { f.remove(); if (outHearts) return finish(s, true); if (s.next()) ask(s); else finish(s); };
+    document.body.appendChild(f); document.body.classList.add('has-feedback');
+    const go = () => { f.remove(); document.body.classList.remove('has-feedback'); if (outHearts) return finish(s, true); if (s.next()) ask(s); else finish(s); };
     f.querySelector('[data-act="next"]').onclick = go;
     const onKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { window.removeEventListener('keydown', onKey); go(); } };
     setTimeout(() => window.addEventListener('keydown', onKey), 300);
@@ -115,7 +117,7 @@ export async function render(root, { id }) {
 
   /* ---------- results ---------- */
   function finish(s, aborted = false) {
-    document.querySelector('.feedback')?.remove();
+    document.querySelector('.feedback')?.remove(); document.body.classList.remove('has-feedback');
     const r = s.finish(aborted);
     const emoji = r.perfect ? '🏆' : r.score >= 80 ? '🌟' : r.score >= 50 ? '👍' : '💪';
     if (r.perfect) { confetti({ count: 220 }); sound.play('fanfare'); fx.celebrate({ big: true, xp: r.xp, combo: 1 }); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.25, innerHeight * 0.35, 2), 350); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.75, innerHeight * 0.35, 2), 700); } else if (r.score >= 80) { confetti({ count: 100 }); sound.play('cheer'); fx.celebrate({ xp: r.xp, combo: 2 }); } else if (r.score >= 50) { sound.play('streak'); fx.floater('شغل حلو! 👍'); } else { sound.play('encourage'); }
@@ -134,7 +136,7 @@ export async function render(root, { id }) {
       </div>
       ${r.streakUp ? '<p class="tag tag-gold" style="display:inline-block">🔥 شعلة اليوم اشتعلت!</p>' : ''}
       ${r.certificate ? `<a href="#/certificate/${r.certificate.id}" class="card clickable tile glow-gold mt-3" style="text-align:start"><div class="icon-box">🎓</div><div class="grow"><h3>شهادة إتقان جديدة!</h3><p>اضغط لعرضها وطباعتها</p></div><span class="chev">${ico('chevronL')}</span></a>` : ''}
-      ${r.newBadges.length ? `<div class="row wrap mt-3" style="justify-content:center">${r.newBadges.map((b) => `<span class="tag tag-gold" style="font-size:13px;padding:6px 12px">${b.icon} ${esc(b.name)}</span>`).join('')}</div>` : ''}
+      ${r.newBadges.length ? `<div class="row wrap mt-3" style="justify-content:center">${r.newBadges.map((b) => `<span class="tag tag-gold" style="font-size:13px;padding:6px 12px;gap:6px">${badgeSVG(b.id, b.tier, { size: 26 })} ${esc(b.name)}</span>`).join('')}</div>` : ''}
       <div class="row mt-6" style="gap:10px">
         <button class="btn btn-primary btn-lg grow" data-act="again">${ico('refresh')} مرة أخرى</button>
         <a href="#/subject/${it.subject}" class="btn btn-lg grow">${ico('home')} المادة</a>

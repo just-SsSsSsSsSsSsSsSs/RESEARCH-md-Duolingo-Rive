@@ -52,6 +52,9 @@ export const router = {
     try {
       const cleanup = await m.view.render(el, { ...m.params, ...info.query });
       if (typeof cleanup === 'function') current.cleanup = cleanup;
+      // K1: hoist the fixed bottom nav out of the animated .view (its transform animation would otherwise
+      // become the nav's containing block, pinning the bar to the *content* bottom and covering the last card)
+      const navEl = el.querySelector(':scope > .nav'); if (navEl) root.appendChild(navEl);
     } catch (e) {
       if (!e?.friendly) console.error(e);
       el.innerHTML = `<div class="card center"><div style="font-size:48px">😵</div><h2>حصلت مشكلة</h2><p class="muted">${e.message || e}</p><button class="btn btn-primary mt-4" onclick="location.hash='#/home'">الرئيسية</button></div>`;

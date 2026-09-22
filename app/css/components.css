@@ -161,7 +161,9 @@
 /* ---- Badges grid ---- */
 .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--s-3); }
 .badge { text-align: center; padding: var(--s-4) var(--s-2); border-radius: var(--r-lg); background: var(--surface); border: 1.5px solid var(--border); transition: transform var(--dur) var(--ease-spring); }
-.badge .b-icon { font-size: 40px; line-height: 1; margin-bottom: 8px; filter: grayscale(1) opacity(.35); transition: filter var(--dur-slow); }
+.badge .b-icon { font-size: 40px; line-height: 1; margin-bottom: 8px; filter: grayscale(1) opacity(.35); transition: filter var(--dur-slow); display: grid; place-items: center; }
+.badge .b-icon .badge-art { width: 72px; height: 72px; max-width: 100%; }
+.badge.earned .b-icon .badge-art { filter: drop-shadow(0 6px 12px rgba(255,194,51,.35)); }
 .badge.earned .b-icon { filter: none; animation: shine 2.4s ease-in-out infinite; }
 .badge.earned { border-color: rgba(255,194,51,.5); background: linear-gradient(160deg, rgba(255,194,51,.12), var(--surface)); }
 .badge:hover { transform: translateY(-3px) scale(1.03); }

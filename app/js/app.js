@@ -53,7 +53,25 @@ async function boot() {
   addEventListener('pagehide', () => store.flush());
   router.start();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-    navigator.serviceWorker.register(new URL('../sw.js', import.meta.url)).catch(() => {});
+    // K3: register + gentle update toast with one-tap reload (no more users stuck on old JS)
+    navigator.serviceWorker.register(new URL('../sw.js', import.meta.url)).then((reg) => {
+      const offerUpdate = () => {
+        if (document.body.dataset.updateOffered) return; document.body.dataset.updateOffered = '1';
+        const t = toast('نسخة جديدة جاهزة ✨ — اضغط للتحديث', { type: 'info', icon: '🔄', ms: 12000 });
+        t.style.cursor = 'pointer'; t.setAttribute('role', 'button');
+        t.onclick = () => { reg.waiting?.postMessage('skipWaiting'); setTimeout(() => location.reload(), 150); };
+      };
+      if (reg.waiting && navigator.serviceWorker.controller) offerUpdate();
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing; if (!nw) return;
+        nw.addEventListener('statechange', () => { if (nw.state === 'installed' && navigator.serviceWorker.controller) offerUpdate(); });
+      });
+      // periodic check while app is open (every 30 min)
+      setInterval(() => reg.update().catch(() => {}), 30 * 60 * 1000);
+    }).catch(() => {});
+    navigator.serviceWorker.addEventListener('message', (e) => {
+      if (e.data?.type === 'SW_UPDATED' && navigator.serviceWorker.controller) document.body.dataset.swVersion = e.data.version;
+    });
   }
 }
 boot();

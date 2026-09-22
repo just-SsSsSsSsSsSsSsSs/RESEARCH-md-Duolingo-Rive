@@ -113,3 +113,27 @@ app/
 - [x] L7: PR #2 → https://github.com/html-mobile-audio/html-mobile-audio/pull/2
 
 **آخر تحديث:** ✅ المرحلة 4 مكتملة — PR #2 مفتوح للمراجعة. نقطة الاستئناف التالية: معالجة ملاحظات المراجعة على PR #2 أو Backlog RESEARCH.md §5.
+
+---
+
+## 🌿 المرحلة 5 — "Calm & Joy": راحة العين + بهجة مفاجئة (PR #3)
+**المصدر:** Gist pijsal1-tech/55b6e6f0… (3 تكليفات) + توجيه المالك: (1) راحة عين بدون زغللة، (2) بهجة/حفلات مفاجئة عند الصح.
+
+### 🔬 التشخيص
+| المشكلة | السبب الجذري | الملف |
+|---|---|---|
+| البار السفلي يغطي آخر الكروت | `#app{padding-bottom: calc(var(--nav-h)+24px)}` لكن `@media(pointer:coarse){.nav{--nav-h:70px}}` يغيّر المتغير على `.nav` فقط، فـ `#app` يظل يحسب 64px، والهامش 24px غير كافٍ | `base.css`, `fx.css` |
+| فقاعات فاقعة تُجهد العين | v2 بالغت: alpha 0.75–1، هالة `r*1.6`، rim `0.95*A` سميك، حتى 34 فقاعة، وكروت شفافة 0.58 | `bubbles.js`, `tokens.css` |
+| الكاش القديم يعلق | SW cache-first بدون إشعار تحديث؛ `skipWaiting` موجود لكن لا يوجد reload/toast | `sw.js`, `app.js` |
+| شارات إيموجي قديمة | `badges.js` يستخدم `icon: '🚀'` نصياً | `badges.js`, `badges.css` |
+| الاحتفال متشابه | `celebrate()` نوع واحد (burst) | `bubbles.js`, `fx.js` |
+
+### 🗺️ الخطة (chunks)
+- [x] K1: إصلاح تراكب البار: `--nav-h` على `:root` داخل `pointer:coarse` + `padding-bottom: calc(var(--nav-h) + 36px + safe)` + `scroll-padding-bottom`
+- [x] K2: فقاعات هادئة (Ambient Calm Mode): 8–12 فقاعة، alpha 0.18–0.32، بلا هالة، rim ناعم 1.5px، سرعة أبطأ، **تتلاشى تحت الكروت** (كروت معتمة 0.92) — و**تختفي تدريجياً أثناء القراءة (السؤال ظاهر)** وتعود عند الاحتفال
+- [x] K3: SW v1.2 network-first للـ shell + toast "نسخة جديدة — تحديث" + auto-reload عند controllerchange
+- [x] K4: شارات SVG مجسمة: مولّد `badgeSVG(id)` (درع/دائرة/نجمة متدرجة + ظل + لمعة + أيقونة SVG) بدل الإيموجي، حالة مقفولة رمادية
+- [x] K5: Party FX متنوعة: 6 أنواع (poppers شرائط، بلالين تطير وتفرقع، ألعاب نارية، نجوم متلألئة، مطر قلوب، حلقات ضوء) تُختار عشوائياً بدون تكرار متتالٍ + أصوات مطابقة (popper/balloon-pop/firework)
+- [x] K6: اختبار: e2e + viewports + اختبار جديد لتراكب البار (آخر عنصر مرئي كامل بعد scroll) + لقطات
+- [ ] K7: PR #3
+**آخر تحديث:** K2 مكتمل (فقاعات ≤14، alpha 0.20–0.35، بلا هالة، كروت 0.92) → K3 مكتمل (SW v1.2.0 network-first + toast تحديث) → K4 مكتمل (badgeArt.js: 26 ميدالية SVG بطبقات معدنية/لمعة/ظل) → K5 مكتمل (7 أنواع حفلات عشوائية: poppers/balloons/fireworks/sparkles/heartRain/lightRings/confettiCannon + أصوات) → K6 مكتمل (e2e ✅ viewports ✅ navoverlap ✅) → K7 توثيق + PR #3

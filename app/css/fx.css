@@ -106,7 +106,7 @@ body.fx-shake #app { animation: fxShake .38s var(--ease); }
 }
 /* fingers: more room */
 @media (pointer: coarse) {
-  .nav { --nav-h: 70px; }
+  :root { --nav-h: 72px; }
   .nav a svg { width: 26px; height: 26px; }
   .btn-icon { width: 48px; height: 48px; }
   .hud { padding: 8px 12px; }
@@ -159,3 +159,8 @@ body.fx-shake #app { animation: fxShake .38s var(--ease); }
 /* topbar on narrow screens: keep HUD on one row, title truncates */
 @media (max-width: 420px) { .topbar { flex-wrap: nowrap; overflow: hidden; } .topbar.has-title .hud.gems, .topbar.has-title .hud.fire { display: none; } }
 @media (max-width: 420px) { .topbar .hud.hearts svg { width: 15px; height: 15px; } }
+
+/* ===== K1: nav-overlap safety (Phase 5) ===== */
+.view > :last-child:not(.nav) { margin-bottom: var(--s-4); }
+.view { padding-bottom: var(--s-2); }
+body.has-feedback #app { padding-bottom: calc(150px + var(--safe-b)); }

@@ -3,7 +3,8 @@
  *  • floater(text, x, y, cls): rising, fading text ("+25 XP", "برافو!", emoji)
  *  • comboBadge(n): big animated combo counter that grows with streak
  *  • react(el, 'good'|'bad'): card bounce / gentle wiggle
- *  • celebrate({x, y, xp, combo}): orchestrates bubbles.celebrate + floaters + sound + haptics
+ *  • celebrate({x, y, xp, combo}): orchestrates bubbles.celebrate + a RANDOM surprise party (poppers/balloons/fireworks/
+ *    sparkles/heart-rain/light-rings/confetti-cannon — never the same twice in a row) + floaters + sound + haptics
  *  • encourage({x, y}): friendly wrong-answer feedback (soft puff + hint floater)
  * Respects prefers-reduced-motion and the parent's "celebration intensity" setting (meta.celebration 0..3).
  */
@@ -48,7 +49,11 @@ export function react(el, kind = 'good') {
 export function celebrate({ x = innerWidth / 2, y = innerHeight * 0.45, xp = 0, combo = 1, el = null, big = false } = {}) {
   const I = intensity(); const B = window.__bubbles;
   const level = big ? 3 : combo >= 7 ? 3 : combo >= 3 ? 2 : 1;
-  if (I > 0 && B && !reduce()) B.celebrate(x, y, I === 1 ? 1 : Math.min(level, 3));
+  if (I > 0 && B && !reduce()) {
+    const lvl = I === 1 ? 1 : Math.min(level, 3);
+    B.celebrate(x, y, Math.max(1, lvl - 1));                       // base burst at the finger
+    if (I >= 2 && B.party) { const type = B.party(x, y, lvl); sound.play('party', type); }  // K5: surprise party (random each time)
+  }
   floater(CHEERS[Math.floor(Math.random() * CHEERS.length)], x, y - 40, 'cheer');
   if (xp) setTimeout(() => floater(`+${AR(xp)} XP`, x + 30, y - 10, 'xp'), 120);
   if (combo >= 2 && I >= 1) comboBadge(combo);
