@@ -107,9 +107,9 @@ app/
 - [x] L1: `sound.js` v2 — wrong لطيف، correct متنوع (5 أنماط + تصاعد سُلَّمي مع combo)، cheer متغير، pop متنوع، "sparkle", "whoosh" محسّنة
 - [x] L2: `bubbles.js` v2 — فقاعات أوضح (أكبر، rim قوسي زجاجي، ألوان أزهى، حركة أحيا)، **celebrate(x,y,intensity)**: انفجار متعدد الأشكال (نجوم/قلوب/دوائر/حلقات) + موجة صدمة + فقاعات مكافأة تُفرقع تلقائياً
 - [x] L3: `fx.js` — طبقة احتفال DOM: نص عائم (+XP / برافو!) + shake/pulse للكارت + combo counter
-- [ ] L4: `components.css` — أزرار 3D tactile (`--btn-depth`)، `.choice` 3D، hit ≥48px، hover فقط على `(hover:hover)`، `pointer:coarse` تباعد، `clamp()` typography، breakpoints tablet/desktop، `dvh`
+- [x] L4: `fx.css` — أزرار 3D tactile، hit ≥48px، hover فقط على (hover:hover)، pointer:coarse، clamp()، dvh، breakpoints 360/700/1024/landscape
 - [ ] L5: ربط في `play.js` + `renderers.js` (celebrate على موضع الإصبع، combo، floaters) + إعدادات (شدة الاحتفال)
 - [ ] L6: اختبار Playwright بـ 4 viewports (Android 360, iPhone 390 @3x, iPad 820, Desktop 1280) + لقطات + E2E قديم أخضر
 - [ ] L7: PR #2
 
-**آخر تحديث:** L3 مكتمل → L4 fx.css
+**آخر تحديث:** L4 مكتمل → L5 ربط play.js + renderers.js + إعداد شدة الاحتفال
