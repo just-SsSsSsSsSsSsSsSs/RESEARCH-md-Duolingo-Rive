@@ -117,4 +117,16 @@ export const renderers = {
     redraw();
   },
 };
+
+/* Track the last pointer position inside each question card so celebrations
+   burst exactly where the child's finger touched. Wrap every renderer once. */
+for (const key of Object.keys(renderers)) {
+  const orig = renderers[key];
+  renderers[key] = (c, q, ctx) => {
+    let last = null;
+    c.addEventListener('pointerdown', (e) => { last = { x: e.clientX, y: e.clientY }; }, { passive: true, capture: true });
+    const wrapped = { ...ctx, done(ok, meta = {}) { const r = c.getBoundingClientRect(); ctx.done(ok, { ...meta, point: last || { x: r.left + r.width / 2, y: r.top + r.height / 2 }, card: c }); } };
+    return orig(c, q, wrapped);
+  };
+}
 export default renderers;

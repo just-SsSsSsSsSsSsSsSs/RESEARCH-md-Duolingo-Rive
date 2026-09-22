@@ -11,6 +11,7 @@ import renderers from '../../activities/renderers.js';
 import { el, esc, fmt, hud, modal, confetti, toast } from '../components.js';
 import { ico } from '../icons.js';
 import { crown } from './subject.js';
+import fx from '../../engines/fx.js';
 
 const CHEERS = ['ممتاز! 🌟', 'برافو! 👏', 'عبقري! 🧠', 'رهيب! 🚀', 'صح ١٠٠٪ 💯', 'أنت بطل! 🦸', 'استمر هكذا! 🔥'];
 const OOPS = ['مش مشكلة، نتعلم من الخطأ 💪', 'قريب جداً! 🤏', 'حاول تركّز في المرة الجاية 🎯', 'كل بطل يغلط ويكمّل 🌱'];
@@ -54,6 +55,7 @@ export async function render(root, { id }) {
   /* ---------- run ---------- */
   function start() {
     const s = new Session(activity);
+    sound.resetCombo();
     if (!s.total) { toast('لا توجد أسئلة في هذا النشاط', { type: 'error' }); return; }
     ask(s);
   }
@@ -75,8 +77,15 @@ export async function render(root, { id }) {
       done(ok, meta) {
         if (answered) return; answered = true;
         s.answer(ok, meta);
-        sound.play(ok ? 'correct' : 'wrong'); sound.haptic(ok ? [15, 30, 15] : 60);
-        if (ok && Math.random() < 0.35) window.__bubbles?.burst(innerWidth / 2, innerHeight * 0.4, 4);
+        const pt = meta.point || { x: innerWidth / 2, y: innerHeight * 0.45 };
+        if (ok) {
+          sound.play('correct');
+          const perQ = Math.max(1, Math.round((it.xp || 20) / s.total));
+          fx.celebrate({ x: pt.x, y: pt.y, xp: perQ, combo: sound.combo, el: meta.card });
+        } else {
+          sound.play('wrong');
+          fx.encourage({ x: pt.x, y: pt.y, el: meta.card });
+        }
         feedback(s, ok, q);
       },
     };
@@ -109,7 +118,7 @@ export async function render(root, { id }) {
     document.querySelector('.feedback')?.remove();
     const r = s.finish(aborted);
     const emoji = r.perfect ? '🏆' : r.score >= 80 ? '🌟' : r.score >= 50 ? '👍' : '💪';
-    if (r.perfect) { confetti({ count: 200 }); sound.play('fanfare'); } else if (r.score >= 80) { confetti({ count: 80 }); sound.play('levelup'); }
+    if (r.perfect) { confetti({ count: 220 }); sound.play('fanfare'); fx.celebrate({ big: true, xp: r.xp, combo: 1 }); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.25, innerHeight * 0.35, 2), 350); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.75, innerHeight * 0.35, 2), 700); } else if (r.score >= 80) { confetti({ count: 100 }); sound.play('cheer'); fx.celebrate({ xp: r.xp, combo: 2 }); } else if (r.score >= 50) { sound.play('streak'); fx.floater('شغل حلو! 👍'); } else { sound.play('encourage'); }
     stage.innerHTML = '';
     stage.appendChild(el(`<div class="card q-card">
       <div class="result-big">${emoji}</div>
