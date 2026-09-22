@@ -405,90 +405,38 @@ Docker + CI/CD
 
 ---
 
-## 🧭 ملحق مراجع 2026 — ما تم اكتشافه وتطبيقه فعلياً في منصة `app/` (Genspark AI Developer)
+## 🌍 رادار المنصات العالمية وتطبيقات ألعاب الأطفال (Global EdTech & Gaming Radar 2026)
+> 📌 **مبدأ الإضافة المستمرة (Append-Only):** توثيق مستمر لكل منصة وتطبيق ومشروع عالمي للاستلهام والتفوق عليه وابتكار ما لم يسبق لأحد تنفيذه.
 
-> أُضيف هذا القسم دون حذف أي محتوى سابق. كل بند أدناه إمّا طُبِّق مباشرة في `app/` أو وُثِّق كمرجع للتوسع القادم.
+### 🎮 منصات ألعاب وتطبيقات الأطفال الرائدة عالمياً (World-Class Benchmarks):
 
-### 1) أطر التحفيز وعلم التعلّم (Learning Science) — المطبَّق
-| المبدأ | المصدر | التطبيق في `app/` |
-|---|---|---|
-| **Mastery Crowns** (تيجان الإتقان 0-5 بدل "نجاح/فشل") | Duolingo Crown Levels, Khan Academy Mastery | `Session.finish()` +1/+2/-1 حسب النتيجة، الشهادة عند 5 تيجان |
-| **Spaced Repetition / Recency** | Leitner, Anki, Duolingo "Practice Hub" | `recommend()` يفضّل الأقل إتقاناً والأقدم لعباً |
-| **Streak + Streak Freeze** | Duolingo (أعلى retention driver) | `streak.js` تجميد يُكسب كل 7 أيام أو يُشترى بالجواهر |
-| **Hearts w/ time regen + gems refill** | Duolingo Hearts | `hearts.js` 1 قلب / 20 دقيقة |
-| **Daily Quests (seeded)** | Duolingo Daily Quests | `quests.js` مولَّدة بـ FNV-hash للتاريخ ← نفس المهام على كل جهاز |
-| **Infinite level curve** | RPG design (xp = 60·(n-1)^1.55) | `xp.js` بلا سقف، ألقاب تدور مع أرقام رومانية |
-| **Immediate explanatory feedback** | Khan Academy hints, Bloom's 2-sigma | `explain` بكل سؤال + شريط feedback سفلي |
-| **Procedural generation** | Prodigy Math adaptive engine | `generators.js` (mult/missing/commutative/distributive/add/sub) |
+1. **[Duolingo (Gamification & Streak System)](https://www.duolingo.com/)**
+   - **السر:** أزرار ثلاثية الأبعاد (3D Tactile Push Buttons) مع عمق 5-7px وظلال واقعية تعطي متعة اللمس.
+   - **الاحتفال:** شخصيات تنبض بالحياة، مفرقعات وأصوات فرحة متدرجة مع كل إجابة صحيحة (Combo Chains).
+   - **نظام القلوب والأرواح:** تجديد زمني مع إمكانية التعبئة بالجواهر.
 
-### 2) تقنيات الويب الحديثة المستخدمة (بدون أي framework)
-- **Web Audio API synthesis** — أصوات pop/correct/wrong/levelup/fanfare مولَّدة برمجياً (OscillatorNode + BiquadFilter + DynamicsCompressor + noise buffers). مرجع: [MDN Web Audio](https://developer.mozilla.org/docs/Web/API/Web_Audio_API)، [Tone.js](https://github.com/Tonejs/Tone.js) (دُرس ولم يُستخدم لتجنب الحجم).
-- **Canvas 2D bubble physics** — طفو + رياح + تنافر O(n²) + DPR + إيقاف عند `visibilitychange` + تكيّف مع `navigator.deviceMemory`. مراجع: [tsParticles](https://github.com/tsparticles/tsparticles)، [Matter.js](https://github.com/liabru/matter-js) (فيزياء كاملة، أثقل مما نحتاج).
-- **ES Modules + hash router** — يعمل على GitHub Pages والسيرفر المحلي بلا build step.
-- **Service Worker** — cache-first للـ shell، network-first للمحتوى JSON، cache للخطوط. مرجع: [Workbox strategies](https://developer.chrome.com/docs/workbox/).
-- **Web Crypto SHA-256** للـ PIN — لا يُخزَّن الرقم صريحاً.
-- **Speech Synthesis (ar-EG)** اختياري عبر `q.speak`.
-- **`env(safe-area-inset-*)`** و `viewport-fit=cover` لأجهزة iPhone.
-- **Inline SVG icon set** بأسلوب [Lucide](https://lucide.dev) — صفر طلبات شبكة.
+2. **[Khan Academy Kids](https://learn.khanacademy.org/khan-academy-kids/)**
+   - **السر:** راحة العين المطلقة؛ خلفيات دافئة غير مجهدة، نصوص واضحة بخطوط كبيرة، وغياب تام للمشتتات البصرية خلف الأسئلة.
+   - **التربية الصوتية:** أصوات تشجيعية ناعمة جداً عند الخطأ، لا تسبب أي إحباط بل تحث على المحاولة بابتسامة.
 
-### 3) مشاريع Open Source إضافية دُرست (مرجع للتوسع)
-- [Anki](https://github.com/ankitects/anki) — خوارزمية FSRS للتكرار المتباعد (مرشحة لاستبدال recency البسيط).
-- [Open Spaced Repetition / ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) — تنفيذ FSRS بـ TypeScript خفيف.
-- [H5P](https://github.com/h5p) — أنواع أنشطة تفاعلية (Drag&Drop, Hotspot) لإلهام أنواع جديدة في `renderers.js`.
-- [Kolibri](https://github.com/learningequality/kolibri) — نموذج المحتوى الهرمي (Channel→Topic→Node) شبيه بـ `catalog.json`.
-- [Quran.com API / quran-json](https://github.com/risan/quran-json) — لتوسيع سور جديدة ديناميكياً بنص عثماني.
-- [Tarteel](https://www.tarteel.ai) — تسميع بالذكاء الاصطناعي (مرجع لميزة تسميع مستقبلية عبر Web Speech API).
-- [Phaser](https://github.com/phaserjs/phaser) — إذا لزم mini-games أكثر تعقيداً.
-- [PWA Builder](https://www.pwabuilder.com) — تغليف المنصة كتطبيق Android/iOS متجر.
+3. **[Prodigy Math](https://www.prodigygame.com/)**
+   - **السر:** تحويل مسائل الرياضيات إلى مغامرة RPG ومعارك سحرية؛ كل إجابة صحيحة تطلق ضربة سحرية أو مفرقعات ومفاجآت متجددة.
 
-### 4) قرارات معمارية موثَّقة
-1. **Data-driven 100%**: إضافة مادة/نشاط = تعديل JSON فقط (`content/catalog.json` + `content/activities/*.json`).
-2. **3 ملفات مستقلة** (سليم/كارما/كندة) بـ schema versioning + migrate() + export/import.
-3. **ممنوع لمس** ملفات الجذر المحمية (قانون البيت في `push.sh`) — المنصة الجديدة في `app/` فقط، وكارت واحد أُضيف في `index.html`.
-4. **اختبار E2E** حقيقي بـ Playwright (`app/tests/e2e.py`): كل المسارات + لعب نشاط كامل + PIN + الفقاعات = 0 أخطاء.
+4. **[Lingokids — Playlearning™](https://lingokids.com/)**
+   - **السر:** ألعاب تفاعلية ذات فيزياء ملموسة (Physical Touch Interactivity) مع بلالين تفرقع ومفاجآت تظهر في الواجهة الأمامية مباشرة أمام عيون الطفل.
 
-### 5) أفكار الجيل التالي (Backlog مرتَّب بالأولوية)
-- [ ] تسميع القرآن بالميكروفون (Web Speech API `ar-SA`) مع مقارنة تقريبية.
-- [ ] Boss Battles أسبوعية (نشاط مختلط بمؤقّت) + Leaderboard عائلي محلي بين الأبطال الثلاثة.
-- [ ] FSRS scheduling بدل recency.
-- [ ] مولّد أنشطة عربية (تحليل كلمات/جمع ومفرد) من قوائم مفردات JSON.
-- [ ] مزامنة سحابية اختيارية (GitHub Gist / Firebase) للنسخ الاحتياطي التلقائي.
-- [ ] وضع "معلّم" لتأليف أنشطة من داخل المنصة وتصديرها JSON.
+5. **[Toca Boca & Sago Mini](https://tocaboca.com/)**
+   - **السر:** حرية استكشاف غير مقيدة، مؤثرات صوتية عضوية ومرحة (Pop / Boop / Squeak)، واستخدام أيقونات جرافيك ثلاثية الأبعاد 100% بدون أي خطوط إيموجي نصية عادية.
 
-**آخر تحديث للملحق:** 2026-09-22 — Genspark AI Developer (فرع `genspark_ai_developer`)
+6. **[PlayStation & Nintendo Switch Kids UI](https://www.nintendo.com/)**
+   - **السر:** واجهات ألعاب احترافية خالية تماماً من إيموجيات الكيبورد (Zero Text Emojis)، كل عنصر عبارة عن شارة أو أيقونة فيكتور مجسمة (3D Vector Badges) مع لمعات معدنية وانعكاسات ضوئية حية.
+
+7. **[Brilliant.org](https://brilliant.org/)**
+   - **السر:** التعلم التفاعلي القائم على حل المشكلات والاستكشاف البصري للمفاهيم الرياضية والفيزيائية بدون تلقين.
 
 ---
 
-## 🎉 ملحق "The Leap" — ما تعلّمناه من اختبار الأطفال الحي وما طبّقناه (PR #2)
-
-### تشخيص صادق لأسباب "التجربة الباهتة" في v1
-1. **الفقاعات**: compositing إضافي (`lighter`) بـ alpha 0.35→0 على خلفية داكنة + rim 1.4px → خطوط شبحية. **الحل**: تعبئة زجاجية مشبعة + rim سميك بلمعة + هالة خارجية + highlights دوّارة + تنفّس، وكروت أشف (0.58) لتظهر خلفها.
-2. **لا احتفال**: كان الاحتفال احتمالياً (35%) وفي مركز الشاشة. **الحل**: `celebrate(x,y,intensity)` على **موضع الإصبع** بجسيمات متعددة الأشكال (★ ♥ ● ✦) + موجات صدمة + فقاعات مكافأة تُفرقع تلقائياً بتسلسل صوتي + نصوص عائمة + combo badge + XP floater.
-3. **صوت الخطأ**: `sawtooth/square` = buzzer صناعي. **الحل**: نغمتان sine هابطتان لطيفتان مع vibrato ولوباس، بصوت منخفض، ثم "encourage" boop.
-4. **رتابة الصح**: **الحل**: 6 أنماط ميلودية (bells/pluck/cascade) بمفتاح متغيّر + humanize (detune/timing) + تصاعد سُلَّمي مع combo + shimmer متزايد.
-5. **الأزرار**: مسطحة و46px. **الحل**: 3D tactile (`box-shadow 0 5px` ينضغط بـ `translateY(5px)`) بلون عمق لكل نوع + لمعة علوية، ≥48px، `hover` فقط على `(hover:hover)`، `pointer:coarse` لمسافات أوسع، `clamp()` للخط، `100dvh`، breakpoints 360/700/1024/landscape.
-
-### مراجع أُضيفت
-- Duolingo Design (tactile buttons, streak/combo feedback loops) — https://design.duolingo.com
-- Material 3 touch targets 48dp — https://m3.material.io/foundations/accessible-design/accessibility-basics
-- Apple HIG 44pt — https://developer.apple.com/design/human-interface-guidelines/accessibility
-- MDN: `@media (hover)` / `(pointer)` — https://developer.mozilla.org/docs/Web/CSS/@media/hover
-- Web Audio: Convolver reverb from noise impulse — https://developer.mozilla.org/docs/Web/API/ConvolverNode
-- Game feel / juice: "Juice it or lose it" (Jonasson & Purho) — مبادئ الاهتزاز/التضخيم/التنويع المطبّقة في fx.js
-
-**آخر تحديث للملحق:** 2026-09-22 — PR #2
-
----
-
-## ملحق Calm & Joy (PR #3 — سبتمبر 2026)
-
-**التغذية الراجعة (Gist):** زغللة عين من الفقاعات (alpha 0.75–1، هالة r×1.6، حتى 34 فقاعة)، البار السفلي يغطي آخر كارت، مستخدمون معلّقون على JS قديم، شارات إيموجي، احتفالات متكررة.
-
-**القرارات المطبّقة:**
-1. **راحة العين:** عدد الفقاعات ≤14 (area/90000، حد أدنى 5)، alpha 0.20–0.35، إلغاء الهالة الإضافية (`lighter`)، حافة 1.5px ناعمة، سرعة أبطأ 35%، وضع Focus أثناء السؤال (×0.6 عدد، ×0.7 شفافية). الكروت أصبحت معتمة 0.92/0.96 لقراءة مريحة.
-2. **تراكب البار — السبب الجذري:** أنيميشن `.view` (`transform` مع `fill-mode: both`) كان يحوّل `.view` إلى containing block للـ `.nav` الثابت فيلتصق بأسفل *المحتوى* لا الشاشة. الحل: رفع `.nav` إلى `#app` من الراوتر + `fill-mode: backwards` + `--nav-h` على `:root` + padding-bottom = nav + 36px + safe-area. اختبار انحدار `navoverlap.py` يقيس الفجوة على 3 أحجام شاشة × 4 صفحات (≥55px).
-3. **SW v1.2.0:** network-first لملفات الـshell مع fallback للكاش أوفلاين، `skipWaiting`+`clients.claim`، toast "نسخة جديدة" بضغطة واحدة للتحديث، فحص دوري كل 30 دقيقة.
-4. **شارات SVG:** `badgeArt.js` يولّد 26 ميدالية بطبقات (حلقة معدنية حسب الفئة برونز/فضة/ذهب، قرص لمّاع، ظل، رمز مخصص لكل شارة). المقفولة تظهر grayscale عبر CSS.
-5. **حفلات المفاجأة:** 7 أنواع (مفرقعات بشرائط، بالونات تطير وتنفجر، صواريخ ألعاب نارية بأربعة أنماط انفجار، بريق، مطر قلوب، حلقات ضوء، مدفع كونفيتي) تُختار عشوائياً بلا تكرار متتالٍ، مع أصوات مركّبة مطابقة، وتُشغَّل فقط عند الإجابة الصحيحة وعند intensity ≥ 2.
-
-**مرجعيات:** Nielsen Norman (تقليل الحركة الخلفية أثناء القراءة)، WCAG 2.3.3 Animation from Interactions، CSS Containing Block spec (transform يُنشئ containing block للعناصر fixed)، Duolingo badge design language.
+### 🚀 أفكار حصرية غير مسبوقة لبوابة "أبطال البيت" للتفوق عالمياً:
+- **المفرقعات المفاجئة التفاعلية (Party Foreground Poppers):** انفجارات مبهجة وبلالين تطير وتفرقع **فوق الكروت في الواجهة الأمامية**، بحيث تملأ الشاشة فرحة متجددة كل مرة.
+- **تصفير إيموجيات الكيبورد (Zero Font Emojis):** اعتماد نظام أيقونات وشارات جرافيكية ثلاثية الأبعاد مرسومة بالكامل للمنصة.
+- **توازن الراحة والبهجة:** خلفية هادئة بفقاعات شفافة ناعمة أثناء القراءة لمنع أي زغللة، وانفجار مفرقعات واحتفالات مبهجة فور تحقيق الإنجاز.
