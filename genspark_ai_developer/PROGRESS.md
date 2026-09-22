@@ -52,7 +52,7 @@ app/
 ### المرحلة 2: النواة والواجهة 🔄
 - [x] C1: app/css tokens+base+components
 - [x] C2: js/core (bus, store, registry, router)
-- [ ] C3: engines/sound.js + engines/bubbles.js
+- [x] C3: engines/sound.js + engines/bubbles.js
 - [ ] C4: engines xp/streak/hearts/badges/quests
 - [ ] C5: ui/components.js (toast, modal, confetti, icons)
 - [ ] C6: views home + profile picker
@@ -75,4 +75,4 @@ app/
 ---
 
 ## 🎯 الخطوة التالية فوراً (Next Immediate Action)
-👉 **C3:** engines/sound.js (Web Audio synth) + engines/bubbles.js (Canvas physics) ثم commit+push.
+👉 **C4:** engines xp.js / streak.js / hearts.js / badges.js / quests.js ثم commit+push.
