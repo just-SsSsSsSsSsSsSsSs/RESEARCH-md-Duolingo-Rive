@@ -5,8 +5,8 @@
   /* Surfaces */
   --bg: #070b14;
   --bg-2: #0d1322;
-  --surface: rgba(20, 28, 48, 0.72);
-  --surface-2: rgba(30, 41, 66, 0.85);
+  --surface: rgba(20, 28, 48, 0.58);
+  --surface-2: rgba(30, 41, 66, 0.80);
   --surface-solid: #131a2c;
   --border: rgba(255, 255, 255, 0.09);
   --border-strong: rgba(255, 255, 255, 0.18);
