@@ -14,9 +14,9 @@ const KEY_META = `${NS}:v${VERSION}:meta`;
 const keyProfile = (id) => `${NS}:v${VERSION}:profile:${id}`;
 
 export const HEROES = [
-  { id: 'selim', name: 'سليم', emoji: '🦸‍♂️', color: 'var(--hero-selim)', hex: '#22e39b', grade: 'الصف الثالث' },
-  { id: 'karma', name: 'كارما', emoji: '🌸', color: 'var(--hero-karma)', hex: '#ff5c8a', grade: '' },
-  { id: 'kenda', name: 'كندة', emoji: '⭐', color: 'var(--hero-kenda)', hex: '#19e6ff', grade: '' },
+  { id: 'selim', name: 'سليم', emoji: 'hero', color: 'var(--hero-selim)', hex: '#22e39b', grade: 'الصف الثالث' },
+  { id: 'karma', name: 'كارما', emoji: 'blossom', color: 'var(--hero-karma)', hex: '#ff5c8a', grade: '' },
+  { id: 'kenda', name: 'كندة', emoji: 'star', color: 'var(--hero-kenda)', hex: '#19e6ff', grade: '' },
 ];
 
 export function todayKey(d = new Date()) {

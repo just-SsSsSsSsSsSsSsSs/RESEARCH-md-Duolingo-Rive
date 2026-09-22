@@ -7,6 +7,7 @@ import sound from '../engines/sound.js';
 import { levelInfo } from '../engines/xp.js';
 import hearts, { MAX_HEARTS } from '../engines/hearts.js';
 import { ico } from './icons.js';
+import { ico3d } from './icons3d.js';
 
 /* ---- helpers ---- */
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -77,14 +78,14 @@ export function confetti({ count = 120, x, y, spread = 1 } = {}) {
 export function hud({ back = false, title = '' } = {}) {
   const p = store.profile; const hero = store.hero; const li = levelInfo();
   hearts.regen();
-  const heartsHtml = Array.from({ length: MAX_HEARTS }, (_, i) => ico(i < p.hearts ? 'heart' : 'heartOff')).join('');
+  const heartsHtml = Array.from({ length: MAX_HEARTS }, (_, i) => `<span class="hb ${i < p.hearts ? '' : 'off'}">${ico3d('heart', 18)}</span>`).join('');
   const node = el(`
     <div class="topbar ${title ? 'has-title' : ''}">
-      ${back ? `<button class="btn btn-icon btn-ghost" data-act="back" aria-label="رجوع">${ico('back')}</button>` : `<a href="#/profile" class="avatar" style="--hero:${hero.hex}" title="${esc(p.name)}">${p.emoji}</a>`}
+      ${back ? `<button class="btn btn-icon btn-ghost" data-act="back" aria-label="رجوع">${ico('back')}</button>` : `<a href="#/profile" class="avatar" style="--hero:${hero.hex}" title="${esc(p.name)}">${ico3d(p.emoji, 26)}</a>`}
       ${title ? `<b class="grow" style="font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(title)}</b>` : `<div class="grow" style="min-width:90px"><div class="row" style="gap:6px;font-size:13px;font-weight:800"><span>${esc(p.name)}</span><span class="tag tag-gold">مستوى ${fmt(li.level)}</span></div><div class="level-bar" style="height:8px;margin-top:3px"><span style="width:${li.pct}%"></span></div></div>`}
-      <span class="hud fire" data-hud="streak">${ico('flame')}<span>${fmt(p.streak.count)}</span></span>
-      <span class="hud xp" data-hud="xp">${ico('zap')}<span>${fmt(p.xp)}</span></span>
-      <span class="hud gems" data-hud="gems">${ico('gem')}<span>${fmt(p.gems)}</span></span>
+      <span class="hud fire" data-hud="streak">${ico3d('flame', 20)}<span>${fmt(p.streak.count)}</span></span>
+      <span class="hud xp" data-hud="xp">${ico3d('bolt', 20)}<span>${fmt(p.xp)}</span></span>
+      <span class="hud gems" data-hud="gems">${ico3d('gem', 20)}<span>${fmt(p.gems)}</span></span>
       <span class="hud hearts" data-hud="hearts" title="القلوب">${heartsHtml}</span>
       <button class="btn btn-icon btn-ghost no-print" data-act="sound" aria-label="الصوت">${ico(sound.enabled ? 'volume' : 'volumeOff')}</button>
     </div>`);
@@ -94,7 +95,7 @@ export function hud({ back = false, title = '' } = {}) {
     bus.on('xp:gain', ({ total }) => bumpSet(node, 'xp', fmt(total))),
     bus.on('gems:change', ({ total }) => bumpSet(node, 'gems', fmt(total))),
     bus.on('streak:update', ({ count }) => bumpSet(node, 'streak', fmt(count))),
-    bus.on('hearts:change', ({ hearts: h }) => { const n = node.querySelector('[data-hud="hearts"]'); if (n) { n.innerHTML = Array.from({ length: MAX_HEARTS }, (_, i) => ico(i < h ? 'heart' : 'heartOff')).join(''); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump'); } }),
+    bus.on('hearts:change', ({ hearts: h }) => { const n = node.querySelector('[data-hud="hearts"]'); if (n) { n.innerHTML = Array.from({ length: MAX_HEARTS }, (_, i) => `<span class="hb ${i < h ? '' : 'off'}">${ico3d('heart', 18)}</span>`).join(''); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump'); } }),
     bus.on('level:up', () => { const li2 = levelInfo(); node.querySelector('.tag-gold') && (node.querySelector('.tag-gold').textContent = `مستوى ${fmt(li2.level)}`); }),
   ];
   node.__cleanup = () => offs.forEach((f) => f());
@@ -114,10 +115,10 @@ export function nav(active) {
 let attached = false;
 export function attachGlobalFeedback() {
   if (attached) return; attached = true;
-  bus.on('level:up', ({ to, title }) => { confetti({ count: 160 }); sound.play('fanfare'); toast(`🎉 مستوى جديد ${fmt(to)} — ${title}!`, { type: 'gold', ms: 4000 }); window.__bubbles?.burst(innerWidth / 2, innerHeight / 2, 12); });
-  bus.on('badge:earned', (b) => { confetti({ count: 90 }); toast(`${b.icon} شارة جديدة: ${b.name}`, { type: 'gold', ms: 3800 }); });
-  bus.on('quest:done', (q) => toast(`${q.icon} مهمة مكتملة: ${q.name}`, { type: 'success', ms: 3000 }));
-  bus.on('streak:frozen', ({ used }) => toast(`❄️ تم استخدام ${fmt(used)} تجميد لحماية شعلتك!`, { type: 'info', ms: 3600 }));
-  bus.on('streak:lost', ({ lost }) => lost > 1 && toast(`💔 انقطعت شعلة ${fmt(lost)} يوم.. نبدأ من جديد!`, { type: 'error', ms: 3600 }));
-  bus.on('streak:update', ({ count }) => count > 1 && toast(`🔥 ${fmt(count)} يوم متتالي!`, { type: 'gold' }));
+  bus.on('level:up', ({ to, title }) => { confetti({ count: 160 }); sound.play('fanfare'); toast(`${ico3d('party')} مستوى جديد ${fmt(to)} — ${title}!`, { type: 'gold', ms: 4000 }); window.__bubbles?.burst(innerWidth / 2, innerHeight / 2, 12); });
+  bus.on('badge:earned', (b) => { confetti({ count: 90 }); toast(`شارة جديدة: ${b.name}`, { icon: ico3d(b.icon, 22), type: 'gold', ms: 3800 }); });
+  bus.on('quest:done', (q) => toast(`مهمة مكتملة: ${q.name}`, { icon: ico3d(q.icon, 22), type: 'success', ms: 3000 }));
+  bus.on('streak:frozen', ({ used }) => toast(`${ico3d('snow')} تم استخدام ${fmt(used)} تجميد لحماية شعلتك!`, { type: 'info', ms: 3600 }));
+  bus.on('streak:lost', ({ lost }) => lost > 1 && toast(`${ico3d('heartBroken')} انقطعت شعلة ${fmt(lost)} يوم.. نبدأ من جديد!`, { type: 'error', ms: 3600 }));
+  bus.on('streak:update', ({ count }) => count > 1 && toast(`${ico3d('flame')} ${fmt(count)} يوم متتالي!`, { type: 'gold' }));
 }

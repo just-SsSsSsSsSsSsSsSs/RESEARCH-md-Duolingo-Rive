@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-  <title>🌟 أبطال البيت — منصة التعلّم التفاعلية</title>
+  <title>أبطال البيت — منصة التعلّم التفاعلية</title>
   <meta name="description" content="منصة تعليمية تفاعلية لسليم وكارما وكندة: قرآن، رياضيات، لغة عربية، مهام يومية، شارات، شهادات.">
   <meta name="theme-color" content="#070b14">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="أبطال البيت">
-  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,9 +20,10 @@
 </head>
 <body>
   <canvas id="bubbles" aria-hidden="true"></canvas>
+  <canvas id="fx-canvas" aria-hidden="true"></canvas>
   <main id="app">
     <div class="container" style="padding-top:20vh;text-align:center;pointer-events:auto">
-      <div style="font-size:64px" class="float">🫧</div>
+      <div class="float" style="display:grid;place-items:center"><svg width="72" height="72" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="ldg" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#7cf7ff"/></radialGradient></defs><circle cx="30" cy="34" r="22" fill="url(#ldg)" opacity=".85"/><circle cx="30" cy="34" r="22" fill="none" stroke="#19e6ff" stroke-width="2"/><circle cx="50" cy="16" r="8" fill="url(#ldg)" opacity=".8"/><ellipse cx="20" cy="24" rx="6" ry="3.5" fill="#fff" transform="rotate(-35 20 24)"/></svg></div>
       <h1 style="margin-top:12px">أبطال البيت</h1>
       <p class="muted">جارٍ التحميل…</p>
       <noscript><p style="color:#ff5c8a">يلزم تفعيل JavaScript لتشغيل المنصة.</p></noscript>

@@ -10,10 +10,11 @@
  */
 import store from '../core/store.js';
 import sound from './sound.js';
+import { ico3d } from '../ui/icons3d.js';
 
-const CHEERS = ['برافو! 👏', 'ممتاز! 🌟', 'عبقري! 🧠', 'رهيب! 🚀', 'صح ١٠٠٪ 💯', 'أنت بطل! 🦸', 'واو! ✨', 'هايل! 🎉', 'استمر! 🔥', 'شاطر! 🏅', 'خارق! ⚡', 'يا سلام! 🎈'];
-const COMBO_WORDS = { 3: 'ثلاثية! 🔥', 5: 'خماسية!! 🌋', 7: 'لا يُوقَف!!! ☄️', 10: 'أسطوري!!!! 👑' };
-const SOFT = ['قريب جداً! 🤏', 'مش مشكلة 💪', 'حاول تاني 🌱', 'أنت قادر! ✨', 'ركّز شوية 🎯', 'كلنا نغلط 😊'];
+const CHEERS = ['برافو! ' + ico3d('clap'), 'ممتاز! ' + ico3d('star'), 'عبقري! ' + ico3d('brain'), 'رهيب! ' + ico3d('rocket'), 'صح ١٠٠٪ ' + ico3d('hundred'), 'أنت بطل! ' + ico3d('hero'), 'واو! ' + ico3d('sparkle'), 'هايل! ' + ico3d('party'), 'استمر! ' + ico3d('flame'), 'شاطر! ' + ico3d('medal'), 'خارق! ' + ico3d('bolt'), 'يا سلام! ' + ico3d('balloon')];
+const COMBO_WORDS = { 3: 'ثلاثية! ' + ico3d('flame'), 5: 'خماسية!! ' + ico3d('volcano'), 7: 'لا يُوقَف!!! ' + ico3d('comet'), 10: 'أسطوري!!!! ' + ico3d('crown') };
+const SOFT = ['قريب جداً! ' + ico3d('pinch'), 'مش مشكلة ' + ico3d('muscle'), 'حاول تاني ' + ico3d('seedling'), 'أنت قادر! ' + ico3d('sparkle'), 'ركّز شوية ' + ico3d('target'), 'كلنا نغلط ' + ico3d('smile')];
 const AR = (n) => new Intl.NumberFormat('ar-EG').format(n);
 
 let layer;
@@ -23,7 +24,7 @@ export const intensity = () => (store.meta.celebration ?? 2); // 0 calm, 1 norma
 
 export function floater(text, x = innerWidth / 2, y = innerHeight / 2, cls = '') {
   const el = document.createElement('div');
-  el.className = `fx-float ${cls}`; el.textContent = text;
+  el.className = `fx-float ${cls}`; el.innerHTML = text;
   el.style.left = `${x}px`; el.style.top = `${y}px`;
   el.style.setProperty('--dx', `${(Math.random() - 0.5) * 60}px`);
   el.style.setProperty('--rot', `${(Math.random() - 0.5) * 16}deg`);

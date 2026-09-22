@@ -35,6 +35,8 @@ input, select, textarea { font: inherit; color: inherit; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Bubble canvas sits behind everything */
+/* Phase 6: foreground celebration canvas — ABOVE cards, calculator, modals, nav. Never blocks taps. */
+#fx-canvas { position: fixed; inset: 0; z-index: 9999; pointer-events: none; width: 100%; height: 100%; }
 #bubbles {
   position: fixed; inset: 0; z-index: 0;
   width: 100%; height: 100%;
@@ -52,7 +54,7 @@ input, select, textarea { font: inherit; color: inherit; }
 .container { max-width: var(--max-w); margin: 0 auto; }
 
 /* Views transitions */
-/* K1: `both` → `backwards` so no residual transform lingers on .view (a transformed ancestor would become the
+/* K1: `both` -> `backwards` so no residual transform lingers on .view (a transformed ancestor would become the
    containing block of the fixed .nav and pin it to the content bottom, covering the last card). */
 .view { animation: viewIn var(--dur-slow) var(--ease) backwards; }
 @keyframes viewIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
@@ -82,7 +84,7 @@ h3 { font-size: var(--fs-lg); }
 
 /* Print */
 @media print {
-  #bubbles, .nav, .topbar, .no-print { display: none !important; }
+  #bubbles, #fx-canvas, .nav, .topbar, .no-print { display: none !important; }
   body { background: #fff !important; color: #000; }
   #app { padding: 0; }
 }

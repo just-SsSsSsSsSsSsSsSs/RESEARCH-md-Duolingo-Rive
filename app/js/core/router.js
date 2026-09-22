@@ -3,6 +3,7 @@
  * Each view: { render(root, params) => cleanup?() }
  */
 import bus from './bus.js';
+import { ico3d } from '../ui/icons3d.js';
 
 const routes = new Map();
 let current = { cleanup: null, path: null };
@@ -57,7 +58,7 @@ export const router = {
       const navEl = el.querySelector(':scope > .nav'); if (navEl) root.appendChild(navEl);
     } catch (e) {
       if (!e?.friendly) console.error(e);
-      el.innerHTML = `<div class="card center"><div style="font-size:48px">😵</div><h2>حصلت مشكلة</h2><p class="muted">${e.message || e}</p><button class="btn btn-primary mt-4" onclick="location.hash='#/home'">الرئيسية</button></div>`;
+      el.innerHTML = `<div class="card center"><div style="font-size:48px">${ico3d('dizzy')}</div><h2>حصلت مشكلة</h2><p class="muted">${e.message || e}</p><button class="btn btn-primary mt-4" onclick="location.hash='#/home'">الرئيسية</button></div>`;
     }
     bus.emit('route:change', info);
   },

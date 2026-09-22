@@ -1,1 +1,1 @@
-{ "intro": "سلّم الأربعة! كل درجة = ٤ زيادة: ٤، ٨، ١٢، ١٦... وتذكّر: ٤ × أي عدد = ضعف (٢ × العدد).", "count": 10, "generator": [{ "kind": "mult", "tables": [4], "range": [1, 10], "count": 7, "types": ["numpad", "numpad", "quiz"] }, { "kind": "missing", "tables": [4], "count": 3 }] }
+{"intro":"سلّم الأربعة! كل درجة = ٤ زيادة: ٤، ٨، ١٢، ١٦... وتذكّر: ٤ × أي عدد = ضعف (٢ × العدد).","count": 10,"generator": [{"kind":"mult","tables": [4],"range": [1, 10],"count": 7,"types": ["numpad","numpad","quiz"] }, {"kind":"missing","tables": [4],"count": 3 }] }

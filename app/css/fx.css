@@ -3,7 +3,7 @@
    cross-device ergonomics (hover-only-on-hover, coarse pointer, dvh, clamp)
    Loaded AFTER components.css — intentionally overrides button/choice styles.
    ============================================================ */
-#fx-layer { position: fixed; inset: 0; z-index: 85; pointer-events: none; overflow: hidden; }
+#fx-layer { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; } /* Phase 6: floaters + combo badge in foreground */
 
 /* ---------- floating text ---------- */
 .fx-float {

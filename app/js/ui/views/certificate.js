@@ -8,6 +8,7 @@ import sound from '../../engines/sound.js';
 import { levelInfo } from '../../engines/xp.js';
 import { el, fmt, esc, toast, confetti } from '../components.js';
 import { ico } from '../icons.js';
+import { ico3d } from '../icons3d.js';
 
 const CSS = `
 .cert-wrap{max-width:900px;margin:0 auto}
@@ -18,7 +19,7 @@ const CSS = `
 .cert .corner.tl{top:18px;left:18px}.cert .corner.tr{top:18px;right:18px;transform:scaleX(-1)}.cert .corner.bl{bottom:18px;left:18px;transform:scaleY(-1)}.cert .corner.br{bottom:18px;right:18px;transform:scale(-1)}
 .cert .seal{position:absolute;bottom:34px;left:44px;width:92px;height:92px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe08a,#c9962b 60%,#8a5f10);box-shadow:0 6px 18px rgba(0,0,0,.25),inset 0 0 0 4px rgba(255,255,255,.35);display:grid;place-items:center;font-size:40px;color:#fff}
 .cert .ribbon{position:absolute;top:0;right:60px;width:46px;height:120px;background:linear-gradient(#e11d48,#be123c);clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);box-shadow:0 6px 16px rgba(0,0,0,.25)}
-.cert .ribbon::after{content:'★';position:absolute;top:28px;left:0;right:0;text-align:center;color:#ffe08a;font-size:22px}
+.cert .ribbon::after{content:'';position:absolute;top:28px;left:0;right:0;text-align:center;color:#ffe08a;font-size:22px}
 .cert h1{font-family:'Changa','Tajawal',sans-serif;font-size:42px;color:#8a5f10;letter-spacing:1px;margin:0;text-align:center}
 .cert .sub{text-align:center;color:#6b7280;font-size:15px;margin-top:2px}
 .cert .name{font-family:'Changa','Tajawal',sans-serif;font-size:52px;color:#b45309;text-align:center;margin:18px 0 6px;text-shadow:0 2px 0 rgba(255,255,255,.7)}
@@ -48,7 +49,7 @@ export async function render(root, { id, parent }) {
   setTimeout(() => { confetti({ count: 120 }); sound.play('fanfare'); }, 300);
 
   root.appendChild(el(`<div class="cert-wrap">
-    <div class="topbar cert-actions no-print"><a href="#/${parent ? 'parent' : 'profile'}" class="btn btn-icon btn-ghost" aria-label="رجوع">${ico('back')}</a><b class="grow">🎓 شهادة إتقان</b>
+    <div class="topbar cert-actions no-print"><a href="#/${parent ? 'parent' : 'profile'}" class="btn btn-icon btn-ghost" aria-label="رجوع">${ico('back')}</a><b class="grow"> شهادة إتقان</b>
       <button class="btn btn-gold" data-act="print">${ico('printer')} طباعة / PDF</button>
       ${navigator.share ? `<button class="btn" data-act="share">مشاركة</button>` : ''}
     </div>
@@ -57,10 +58,10 @@ export async function render(root, { id, parent }) {
       <div class="ribbon"></div>
       <h1>شهادة تقدير وإتقان</h1>
       <div class="sub">منصة أبطال البيت التعليمية</div>
-      <div class="stars">★ ★ ★ ★ ★</div>
-      <div class="name">${esc(c.name || p.name)} ${p.emoji}</div>
+      <div class="stars">    </div>
+      <div class="name">${esc(c.name || p.name)} ${ico3d(p.emoji, 28)}</div>
       <div class="line"></div>
-      <p class="text">تشهد منصة <b>أبطال البيت</b> بأن البطل/البطلة <b>${esc(c.name || p.name)}</b> قد أتقن(ت) نشاط <b>«${esc(c.title)}»</b> في مادة <b>${esc(subj.title || '')}</b> ${subj.icon || ''} وحصل(ت) على التيجان الخمسة الكاملة 👑👑👑👑👑 بعد جهد ومثابرة يستحقان كل التقدير.</p>
+      <p class="text">تشهد منصة <b>أبطال البيت</b> بأن البطل/البطلة <b>${esc(c.name || p.name)}</b> قد أتقن(ت) نشاط <b>«${esc(c.title)}»</b> في مادة <b>${esc(subj.title || '')}</b> ${subj.icon || ''} وحصل(ت) على التيجان الخمسة الكاملة  بعد جهد ومثابرة يستحقان كل التقدير.</p>
       <div class="meta">
         <div><small>التاريخ</small><b>${new Date(c.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</b></div>
         <div><small>المستوى عند الإتقان</small><b>مستوى ${fmt(li.level)} — ${esc(li.title)}</b></div>
@@ -68,11 +69,11 @@ export async function render(root, { id, parent }) {
         <div><small>رقم الشهادة</small><b style="font-family:monospace;font-size:13px">${esc(c.id.toUpperCase())}</b></div>
       </div>
       <div class="sig"><div>ولي الأمر</div><div>منصة أبطال البيت</div></div>
-      <div class="seal">${it.icon || '🏅'}</div>
+      <div class="seal">${ico3d(it.icon || 'medal', 44)}</div>
     </div>
-    <p class="center small muted mt-4 no-print">💡 للحفظ كـ PDF: اضغط طباعة ثم اختر «حفظ كـ PDF» — الاتجاه الأفقي (Landscape) هو الأفضل.</p>
+    <p class="center small muted mt-4 no-print"> للحفظ كـ PDF: اضغط طباعة ثم اختر «حفظ كـ PDF» — الاتجاه الأفقي (Landscape) هو الأفضل.</p>
   </div>`));
   root.querySelector('[data-act="print"]').onclick = () => { sound.play('tap'); window.print(); };
-  root.querySelector('[data-act="share"]')?.addEventListener('click', async () => { try { await navigator.share({ title: 'شهادة إتقان', text: `${c.name || p.name} أتقن(ت) «${c.title}» على منصة أبطال البيت 🎓👑` }); } catch { /* cancelled */ } });
+  root.querySelector('[data-act="share"]')?.addEventListener('click', async () => { try { await navigator.share({ title: 'شهادة إتقان', text: `${c.name || p.name} أتقن(ت) «${c.title}» على منصة أبطال البيت ${ico3d('gradCap')}${ico3d('crown')}` }); } catch { /* cancelled */ } });
   return () => {};
 }

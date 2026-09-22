@@ -7,15 +7,15 @@ import bus from '../core/bus.js';
 import xp from './xp.js';
 
 const TEMPLATES = [
-  { id: 'answers', name: 'أجب على {n} سؤالاً', icon: '❓', n: [10, 15, 20, 30], reward: (n) => n * 2, evt: 'activity:answer', inc: () => 1 },
-  { id: 'correct', name: 'أجب إجابة صحيحة {n} مرة', icon: '✅', n: [8, 12, 16], reward: (n) => n * 3, evt: 'activity:answer', inc: (e) => (e.correct ? 1 : 0) },
-  { id: 'complete', name: 'أكمل {n} نشاطاً', icon: '🏁', n: [1, 2, 3], reward: (n) => n * 15, evt: 'activity:complete', inc: () => 1 },
-  { id: 'perfect', name: 'أكمل نشاطاً بدون أي خطأ', icon: '💯', n: [1], reward: () => 40, evt: 'activity:complete', inc: (e) => (e.perfect ? 1 : 0) },
-  { id: 'xp', name: 'اجمع {n} نقطة خبرة', icon: '⭐', n: [50, 80, 120], reward: (n) => Math.round(n / 4), evt: 'xp:gain', inc: (e) => e.gained },
-  { id: 'bubbles', name: 'فرقع {n} فقاعة', icon: '🫧', n: [10, 20, 30], reward: (n) => n, evt: 'bubble:pop', inc: () => 1 },
-  { id: 'subject_math', name: 'أكمل نشاط رياضيات', icon: '🔢', n: [1], reward: () => 20, evt: 'activity:complete', inc: (e) => (e.subject === 'math' ? 1 : 0) },
-  { id: 'subject_quran', name: 'أكمل نشاط قرآن', icon: '📖', n: [1], reward: () => 20, evt: 'activity:complete', inc: (e) => (e.subject === 'quran' ? 1 : 0) },
-  { id: 'subject_arabic', name: 'أكمل نشاط لغة عربية', icon: '✍️', n: [1], reward: () => 20, evt: 'activity:complete', inc: (e) => (e.subject === 'arabic' ? 1 : 0) },
+  { id: 'answers', name: 'أجب على {n} سؤالاً', icon: 'question', n: [10, 15, 20, 30], reward: (n) => n * 2, evt: 'activity:answer', inc: () => 1 },
+  { id: 'correct', name: 'أجب إجابة صحيحة {n} مرة', icon: 'check', n: [8, 12, 16], reward: (n) => n * 3, evt: 'activity:answer', inc: (e) => (e.correct ? 1 : 0) },
+  { id: 'complete', name: 'أكمل {n} نشاطاً', icon: 'flag', n: [1, 2, 3], reward: (n) => n * 15, evt: 'activity:complete', inc: () => 1 },
+  { id: 'perfect', name: 'أكمل نشاطاً بدون أي خطأ', icon: 'hundred', n: [1], reward: () => 40, evt: 'activity:complete', inc: (e) => (e.perfect ? 1 : 0) },
+  { id: 'xp', name: 'اجمع {n} نقطة خبرة', icon: 'star', n: [50, 80, 120], reward: (n) => Math.round(n / 4), evt: 'xp:gain', inc: (e) => e.gained },
+  { id: 'bubbles', name: 'فرقع {n} فقاعة', icon: 'bubble', n: [10, 20, 30], reward: (n) => n, evt: 'bubble:pop', inc: () => 1 },
+  { id: 'subject_math', name: 'أكمل نشاط رياضيات', icon: 'numbers', n: [1], reward: () => 20, evt: 'activity:complete', inc: (e) => (e.subject === 'math' ? 1 : 0) },
+  { id: 'subject_quran', name: 'أكمل نشاط قرآن', icon: 'quran', n: [1], reward: () => 20, evt: 'activity:complete', inc: (e) => (e.subject === 'quran' ? 1 : 0) },
+  { id: 'subject_arabic', name: 'أكمل نشاط لغة عربية', icon: 'pen', n: [1], reward: () => 20, evt: 'activity:complete', inc: (e) => (e.subject === 'arabic' ? 1 : 0) },
 ];
 
 function seeded(str) { let h = 2166136261; for (const ch of str) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }

@@ -11,6 +11,7 @@ import { levelInfo } from '../../engines/xp.js';
 import { BADGES } from '../../engines/badges.js';
 import { el, fmt, esc, hud, nav, modal, confirm, toast } from '../components.js';
 import { ico } from '../icons.js';
+import { ico3d } from '../icons3d.js';
 
 async function hash(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('abtal:' + s)); return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join(''); }
 let unlockedAt = 0;
@@ -25,7 +26,7 @@ export async function render(root) {
 function renderPin(root) {
   const hasPin = !!store.meta.parentPin;
   root.innerHTML = `
-    <div class="center" style="padding:6vh 0 16px"><div style="font-size:60px" class="float">🔐</div><h1>لوحة الأهل</h1><p class="muted">${hasPin ? 'أدخل الرقم السري (٤ أرقام)' : 'أول مرة؟ اختر رقماً سرياً من ٤ أرقام'}</p></div>
+    <div class="center" style="padding:6vh 0 16px"><div class="float" style="display:grid;place-items:center">${ico3d('lock', 72)}</div><h1>لوحة الأهل</h1><p class="muted">${hasPin ? 'أدخل الرقم السري (٤ أرقام)' : 'أول مرة؟ اختر رقماً سرياً من ٤ أرقام'}</p></div>
     <div class="card" style="max-width:380px;margin:0 auto">
       <div class="pin">${[0, 1, 2, 3].map((i) => `<input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="رقم ${i + 1}">`).join('')}</div>
       <p class="small muted center mt-3 msg"></p>
@@ -42,9 +43,9 @@ function renderPin(root) {
       const code = inputs.map((x) => x.value).join('');
       if (code.length === 4) {
         const hsh = await hash(code);
-        if (!hasPin) { store.setMeta({ parentPin: hsh }); toast('🔐 تم حفظ الرقم السري', { type: 'success' }); unlockedAt = Date.now(); sound.play('correct'); renderDashInto(root); }
+        if (!hasPin) { store.setMeta({ parentPin: hsh }); toast(ico3d('lock') + ' تم حفظ الرقم السري', { type: 'success' }); unlockedAt = Date.now(); sound.play('correct'); renderDashInto(root); }
         else if (hsh === store.meta.parentPin) { unlockedAt = Date.now(); sound.play('correct'); renderDashInto(root); }
-        else { sound.play('wrong'); msg.textContent = 'رقم غير صحيح ❌'; inputs.forEach((x) => (x.value = '')); inputs[0].focus(); }
+        else { sound.play('wrong'); msg.textContent = 'رقم غير صحيح ' + ico3d('cross'); inputs.forEach((x) => (x.value = '')); inputs[0].focus(); }
       }
     });
     inp.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus(); });
@@ -55,19 +56,19 @@ function renderDashInto(root) { root.innerHTML = ''; renderDash(root); }
 /* ---------- Dashboard ---------- */
 function renderDash(root) {
   const items = registry.items();
-  root.appendChild(el(`<div class="topbar"><a href="#/profile" class="btn btn-icon btn-ghost" aria-label="رجوع">${ico('back')}</a><b class="grow">👨‍👩‍👧 لوحة الأهل</b><span class="tag tag-green">${ico('lock')} مفتوحة ١٠ دقائق</span></div>`));
+  root.appendChild(el(`<div class="topbar"><a href="#/profile" class="btn btn-icon btn-ghost" aria-label="رجوع">${ico('back')}</a><b class="grow">${ico3d('family')} لوحة الأهل</b><span class="tag tag-green">${ico('lock')} مفتوحة ١٠ دقائق</span></div>`));
 
   const profiles = store.listProfiles();
   const tabs = el('<div class="row wrap mb-4"></div>');
   const body = el('<div class="stack"></div>');
   let active = profiles.find((p) => p.state)?.hero.id || HEROES[0].id;
-  const drawTabs = () => { tabs.innerHTML = ''; profiles.forEach(({ hero, state }) => { const b = el(`<button class="btn ${hero.id === active ? 'btn-primary' : ''}" style="${hero.id === active ? `background:${hero.hex};color:#04311f;box-shadow:0 6px 18px ${hero.hex}55` : ''}">${hero.emoji} ${esc(hero.name)} ${state ? '' : '<span class="small muted">(لم يبدأ)</span>'}</button>`); b.onclick = () => { active = hero.id; sound.play('tap'); drawTabs(); drawChild(); }; tabs.appendChild(b); }); };
+  const drawTabs = () => { tabs.innerHTML = ''; profiles.forEach(({ hero, state }) => { const b = el(`<button class="btn ${hero.id === active ? 'btn-primary' : ''}" style="${hero.id === active ? `background:${hero.hex};color:#04311f;box-shadow:0 6px 18px ${hero.hex}55` : ''}">${ico3d(hero.emoji, 20)} ${esc(hero.name)} ${state ? '' : '<span class="small muted">(لم يبدأ)</span>'}</button>`); b.onclick = () => { active = hero.id; sound.play('tap'); drawTabs(); drawChild(); }; tabs.appendChild(b); }); };
   root.appendChild(tabs); root.appendChild(body);
 
   const drawChild = () => {
     body.innerHTML = '';
     const { hero, state: p } = profiles.find((x) => x.hero.id === active);
-    if (!p) { body.appendChild(el(`<div class="card center muted">${hero.emoji} ${esc(hero.name)} لم يبدأ بعد — اختر البطل من الصفحة الرئيسية لبدء رحلته.</div>`)); return; }
+    if (!p) { body.appendChild(el(`<div class="card center muted">${ico3d(hero.emoji, 22)} ${esc(hero.name)} لم يبدأ بعد — اختر البطل من الصفحة الرئيسية لبدء رحلته.</div>`)); return; }
     const li = levelInfo(p.xp);
     const acc = p.counters.answers ? Math.round((p.counters.correct / p.counters.answers) * 100) : 0;
     const days = lastDays(p, 7);
@@ -76,10 +77,10 @@ function renderDash(root) {
     const activeDays = days.filter((d) => d.activities.length).length;
 
     body.appendChild(el(`<div class="card" style="border-color:${hero.hex}55">
-      <div class="row"><div style="font-size:48px">${hero.emoji}</div><div class="grow"><h2 style="color:${hero.hex}">${esc(hero.name)}</h2><p class="muted small">مستوى ${fmt(li.level)} • ${esc(li.title)} • انضم ${new Date(p.createdAt).toLocaleDateString('ar-EG')}</p></div></div>
+      <div class="row"><div style="display:grid;place-items:center">${ico3d(hero.emoji, 56)}</div><div class="grow"><h2 style="color:${hero.hex}">${esc(hero.name)}</h2><p class="muted small">مستوى ${fmt(li.level)} • ${esc(li.title)} • انضم ${new Date(p.createdAt).toLocaleDateString('ar-EG')}</p></div></div>
       <div class="stats" style="grid-template-columns:repeat(4,1fr)">
         <div class="stat"><b>${fmt(p.xp)}</b><span>XP إجمالي</span></div>
-        <div class="stat"><b>${fmt(p.streak.count)}🔥</b><span>شعلة (أفضل ${fmt(p.streak.best)})</span></div>
+        <div class="stat"><b>${fmt(p.streak.count)}</b><span>شعلة (أفضل ${fmt(p.streak.best)})</span></div>
         <div class="stat"><b>${fmt(acc)}٪</b><span>الدقة الكلية</span></div>
         <div class="stat"><b>${fmt(p.counters.minutes)}</b><span>دقيقة تعلّم</span></div>
       </div>
@@ -97,7 +98,7 @@ function renderDash(root) {
     </div>`));
 
     // subjects breakdown
-    body.appendChild(el(`<div class="section"><h2>📚 المواد</h2></div>`));
+    body.appendChild(el(`<div class="section"><h2>${ico3d('book')} المواد</h2></div>`));
     const subj = el('<div class="card stack"></div>');
     for (const s of registry.subjects()) {
       const its = items.filter((i) => i.subject === s.id && !i.external);
@@ -105,52 +106,52 @@ function renderDash(root) {
       const done = its.filter((i) => p.activities[i.id]?.plays).length;
       const mastered = its.filter((i) => p.activities[i.id]?.mastery >= 5).length;
       const stats = its.reduce((a, i) => { const st = p.activities[i.id]; if (st) { a.c += st.correct; a.t += st.total; } return a; }, { c: 0, t: 0 });
-      subj.appendChild(el(`<div class="row"><span style="font-size:24px">${s.icon}</span><div class="grow"><div class="row between"><b class="small">${esc(s.title)}</b><span class="small muted">${fmt(done)}/${fmt(its.length)} مجرَّب • ${fmt(mastered)} متقن • دقة ${stats.t ? fmt(Math.round((stats.c / stats.t) * 100)) : '—'}٪</span></div><div class="level-bar" style="height:8px;margin-top:4px"><span style="width:${Math.round((done / its.length) * 100)}%;background:${s.color}"></span></div></div></div>`));
+      subj.appendChild(el(`<div class="row"><span class="i3d-lg">${ico3d(s.icon, 28)}</span><div class="grow"><div class="row between"><b class="small">${esc(s.title)}</b><span class="small muted">${fmt(done)}/${fmt(its.length)} مجرَّب • ${fmt(mastered)} متقن • دقة ${stats.t ? fmt(Math.round((stats.c / stats.t) * 100)) : '—'}٪</span></div><div class="level-bar" style="height:8px;margin-top:4px"><span style="width:${Math.round((done / its.length) * 100)}%;background:${s.color}"></span></div></div></div>`));
     }
     body.appendChild(subj);
 
     // activities table
     const played = Object.entries(p.activities).map(([id, st]) => ({ it: registry.item(id), st })).filter((x) => x.it).sort((a, b) => b.st.lastPlayed - a.st.lastPlayed);
-    body.appendChild(el(`<div class="section"><h2>📝 تفاصيل الأنشطة</h2><span class="tag tag-purple">${fmt(played.length)}</span></div>`));
+    body.appendChild(el(`<div class="section"><h2>${ico3d('note')} تفاصيل الأنشطة</h2><span class="tag tag-purple">${fmt(played.length)}</span></div>`));
     body.appendChild(el(`<div class="card" style="overflow:auto">${played.length ? `<table class="table"><thead><tr><th>النشاط</th><th>مرات</th><th>أفضل</th><th>دقة</th><th>إتقان</th><th>آخر لعب</th></tr></thead><tbody>
-      ${played.map(({ it, st }) => `<tr><td>${it.icon} ${esc(it.title)}</td><td>${fmt(st.plays)}</td><td>${fmt(st.best)}٪</td><td>${st.total ? fmt(Math.round((st.correct / st.total) * 100)) : '—'}٪</td><td>${'👑'.repeat(st.mastery)}${'·'.repeat(5 - st.mastery)}</td><td class="small muted">${new Date(st.lastPlayed).toLocaleDateString('ar-EG')}</td></tr>`).join('')}</tbody></table>` : '<p class="muted center">لم يلعب أي نشاط بعد</p>'}</div>`));
+      ${played.map(({ it, st }) => `<tr><td>${ico3d(it.icon, 18)} ${esc(it.title)}</td><td>${fmt(st.plays)}</td><td>${fmt(st.best)}٪</td><td>${st.total ? fmt(Math.round((st.correct / st.total) * 100)) : '—'}٪</td><td>${ico3d('crown').repeat(st.mastery)}${'·'.repeat(5 - st.mastery)}</td><td class="small muted">${new Date(st.lastPlayed).toLocaleDateString('ar-EG')}</td></tr>`).join('')}</tbody></table>` : '<p class="muted center">لم يلعب أي نشاط بعد</p>'}</div>`));
 
     // badges & certificates
     const earned = BADGES.filter((b) => p.badges[b.id]);
-    body.appendChild(el(`<div class="section"><h2>🏅 شارات وشهادات</h2><span class="tag tag-gold">${fmt(earned.length)} شارة • ${fmt(p.certificates.length)} شهادة</span></div>`));
+    body.appendChild(el(`<div class="section"><h2>${ico3d('medal')} شارات وشهادات</h2><span class="tag tag-gold">${fmt(earned.length)} شارة • ${fmt(p.certificates.length)} شهادة</span></div>`));
     body.appendChild(el(`<div class="card"><div class="row wrap" style="gap:6px">${earned.length ? earned.map((b) => `<span class="tag tag-gold" style="font-size:13px;padding:5px 10px">${b.icon} ${esc(b.name)}</span>`).join('') : '<span class="muted small">لا شارات بعد</span>'}</div>
-      ${p.certificates.length ? `<div class="stack mt-3">${p.certificates.slice().reverse().map((c) => `<a href="#/certificate/${c.id}?parent=1" class="row small" style="padding:8px;border-radius:10px;background:rgba(255,255,255,.04)"><span>🎓</span><b class="grow">${esc(c.title)}</b><span class="muted">${new Date(c.date).toLocaleDateString('ar-EG')}</span>${ico('printer')}</a>`).join('')}</div>` : ''}</div>`));
+      ${p.certificates.length ? `<div class="stack mt-3">${p.certificates.slice().reverse().map((c) => `<a href="#/certificate/${c.id}?parent=1" class="row small" style="padding:8px;border-radius:10px;background:rgba(255,255,255,.04)"><span></span><b class="grow">${esc(c.title)}</b><span class="muted">${new Date(c.date).toLocaleDateString('ar-EG')}</span>${ico('printer')}</a>`).join('')}</div>` : ''}</div>`));
 
     // controls for this child
     body.appendChild(el(`<div class="section"><h2>${ico('settings')} إعدادات ${esc(hero.name)}</h2></div>`));
     const ctl = el(`<div class="card stack">
       <div class="row between"><span>مستوى الصعوبة للأسئلة المولَّدة</span><select class="input" style="width:auto" data-act="diff"><option value="easy">سهل</option><option value="auto">تلقائي</option><option value="hard">صعب</option></select></div>
-      <div class="row between"><span>إعادة القلوب الآن ❤️</span><button class="btn btn-sm" data-act="hearts">املأ القلوب</button></div>
-      <div class="row between"><span>منح جواهر مكافأة 💎</span><button class="btn btn-sm btn-gold" data-act="gems">+٢٠ جوهرة</button></div>
+      <div class="row between"><span>إعادة القلوب الآن </span><button class="btn btn-sm" data-act="hearts">املأ القلوب</button></div>
+      <div class="row between"><span>منح جواهر مكافأة </span><button class="btn btn-sm btn-gold" data-act="gems">+٢٠ جوهرة</button></div>
       <div class="row between"><span style="color:var(--neon-rose)">تصفير كل تقدم ${esc(hero.name)}</span><button class="btn btn-sm btn-rose" data-act="reset">${ico('eraser')} تصفير</button></div>
     </div>`);
     ctl.querySelector('[data-act="diff"]').value = p.settings?.difficulty || 'auto';
-    ctl.querySelector('[data-act="diff"]').onchange = (e) => { p.settings.difficulty = e.target.value; saveProfile(hero.id, p); toast('تم الحفظ ✔️', { type: 'success' }); };
-    ctl.querySelector('[data-act="hearts"]').onclick = () => { p.hearts = 5; p.heartsLostAt = null; saveProfile(hero.id, p); toast('❤️ القلوب مليانة', { type: 'success' }); };
-    ctl.querySelector('[data-act="gems"]').onclick = () => { p.gems += 20; saveProfile(hero.id, p); toast('💎 +٢٠ جوهرة', { type: 'gold' }); drawChild(); };
+    ctl.querySelector('[data-act="diff"]').onchange = (e) => { p.settings.difficulty = e.target.value; saveProfile(hero.id, p); toast('تم الحفظ ' + ico3d('check'), { type: 'success' }); };
+    ctl.querySelector('[data-act="hearts"]').onclick = () => { p.hearts = 5; p.heartsLostAt = null; saveProfile(hero.id, p); toast(ico3d('heart') + ' القلوب مليانة', { type: 'success' }); };
+    ctl.querySelector('[data-act="gems"]').onclick = () => { p.gems += 20; saveProfile(hero.id, p); toast(ico3d('gem') + ' +٢٠ جوهرة', { type: 'gold' }); drawChild(); };
     ctl.querySelector('[data-act="reset"]').onclick = async () => { if (await confirm('تصفير التقدم؟', `<p class="muted">سيتم حذف كل نقاط وشارات وشهادات <b>${esc(hero.name)}</b>. لا يمكن التراجع.</p>`, 'نعم، صفّر', 'إلغاء')) { store.resetProfile(hero.id); toast('تم التصفير', { type: 'info' }); location.reload(); } };
     body.appendChild(ctl);
   };
   drawTabs(); drawChild();
 
   // global controls
-  root.appendChild(el(`<div class="section"><h2>🗄️ النسخ الاحتياطي والأمان</h2></div>`));
+  root.appendChild(el(`<div class="section"><h2>${ico3d('archive')} النسخ الاحتياطي والأمان</h2></div>`));
   const g = el(`<div class="card stack">
     <p class="small muted">البيانات محفوظة على هذا الجهاز فقط. صدّر نسخة احتياطية لنقلها لجهاز آخر أو للحفظ.</p>
     <div class="row wrap"><button class="btn btn-cyan grow" data-act="export">${ico('download')} تصدير نسخة (JSON)</button><label class="btn grow" style="cursor:pointer">${ico('upload')} استيراد نسخة<input type="file" accept="application/json" hidden data-act="import"></label></div>
     <div class="row between"><span>تغيير الرقم السري</span><button class="btn btn-sm" data-act="pin">${ico('lock')} تغيير</button></div>
-    <div class="row between"><span>🔊 الأصوات (عام)</span><button class="switch ${sound.enabled ? 'on' : ''}" data-act="sound"></button></div>
+    <div class="row between"><span> الأصوات (عام)</span><button class="switch ${sound.enabled ? 'on' : ''}" data-act="sound"></button></div>
     <div class="row between"><span style="color:var(--neon-rose)">مسح كل بيانات المنصة</span><button class="btn btn-sm btn-rose" data-act="wipe">مسح الكل</button></div>
   </div>`);
-  g.querySelector('[data-act="export"]').onclick = () => { const blob = new Blob([store.exportAll()], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `abtal_backup_${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(a.href); toast('📦 تم التصدير', { type: 'success' }); };
-  g.querySelector('[data-act="import"]').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; try { store.importAll(await f.text()); toast('✅ تم الاستيراد', { type: 'success' }); setTimeout(() => location.reload(), 600); } catch (err) { toast('ملف غير صالح ❌', { type: 'error' }); } };
+  g.querySelector('[data-act="export"]').onclick = () => { const blob = new Blob([store.exportAll()], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `abtal_backup_${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(a.href); toast(ico3d('box') + ' تم التصدير', { type: 'success' }); };
+  g.querySelector('[data-act="import"]').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; try { store.importAll(await f.text()); toast(ico3d('check') + ' تم الاستيراد', { type: 'success' }); setTimeout(() => location.reload(), 600); } catch (err) { toast('ملف غير صالح ' + ico3d('cross'), { type: 'error' }); } };
   g.querySelector('[data-act="pin"]').onclick = async () => {
-    const bdPromise = modal({ title: 'رقم سري جديد', body: '<input class="input" inputmode="numeric" maxlength="4" placeholder="٤ أرقام" data-np style="text-align:center;font-size:24px;letter-spacing:6px">', actions: [{ label: 'إلغاء', cls: 'btn-ghost', value: null }, { label: 'حفظ', cls: 'btn-primary', value: 'ok', onClick: async (bd) => { const val = bd.querySelector('[data-np]').value.replace(/\D/g, ''); if (val.length !== 4) { toast('٤ أرقام بالضبط', { type: 'error' }); return false; } store.setMeta({ parentPin: await hash(val) }); toast('🔐 تم تغيير الرقم', { type: 'success' }); } }] });
+    const bdPromise = modal({ title: 'رقم سري جديد', body: '<input class="input" inputmode="numeric" maxlength="4" placeholder="٤ أرقام" data-np style="text-align:center;font-size:24px;letter-spacing:6px">', actions: [{ label: 'إلغاء', cls: 'btn-ghost', value: null }, { label: 'حفظ', cls: 'btn-primary', value: 'ok', onClick: async (bd) => { const val = bd.querySelector('[data-np]').value.replace(/\D/g, ''); if (val.length !== 4) { toast('٤ أرقام بالضبط', { type: 'error' }); return false; } store.setMeta({ parentPin: await hash(val) }); toast(ico3d('lock') + ' تم تغيير الرقم', { type: 'success' }); } }] });
     await bdPromise;
   };
   g.querySelector('[data-act="sound"]').onclick = (e) => { const on = sound.toggle(); e.currentTarget.classList.toggle('on', on); };
