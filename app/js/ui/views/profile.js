@@ -75,6 +75,7 @@ function renderCard(root) {
     <div class="card stack">
       <div class="row between"><span>🌙 الوضع الليلي</span><button class="switch ${store.meta.theme !== 'light' ? 'on' : ''}" data-act="theme" aria-label="الوضع"></button></div>
       <div class="row between"><span>🔊 الأصوات</span><button class="switch ${sound.enabled ? 'on' : ''}" data-act="sound" aria-label="الصوت"></button></div>
+      <div class="row between"><span>🎉 شدة الاحتفال</span><select class="input" style="width:auto;min-height:40px" data-act="celebration"><option value="0">هادي</option><option value="1">عادي</option><option value="2">حفلة 🎊</option><option value="3">أقصى 🌋</option></select></div>
       <div class="row between"><span>🫧 تقليل الفقاعات (أجهزة ضعيفة)</span><button class="switch ${store.meta.reduceBubbles ? 'on' : ''}" data-act="bubbles" aria-label="الفقاعات"></button></div>
       <button class="btn btn-block" data-act="switch">${ico('refresh')} تبديل البطل</button>
     </div>`));
@@ -83,6 +84,8 @@ function renderCard(root) {
   root.querySelector('[data-act="theme"]').onclick = (e) => { const on = e.currentTarget.classList.toggle('on'); store.setMeta({ theme: on ? 'dark' : 'light' }); sound.play('tap'); };
   root.querySelector('[data-act="sound"]').onclick = (e) => { const on = sound.toggle(); e.currentTarget.classList.toggle('on', on); };
   root.querySelector('[data-act="bubbles"]').onclick = (e) => { const on = e.currentTarget.classList.toggle('on'); store.setMeta({ reduceBubbles: on }); window.__bubbles?.setIntensity(on ? 0.4 : 1); sound.play('tap'); };
+  const celSel = root.querySelector('[data-act="celebration"]'); celSel.value = String(store.meta.celebration ?? 2);
+  celSel.onchange = (e) => { store.setMeta({ celebration: Number(e.target.value) }); sound.play('correct'); import('../../engines/fx.js').then((m) => m.celebrate({ x: innerWidth / 2, y: innerHeight * 0.4, xp: 0, combo: Number(e.target.value) >= 2 ? 3 : 1 })); };
   root.querySelector('[data-act="switch"]').onclick = () => { sound.play('swipe'); store.logout(); router.go('/profile', true); };
   root.querySelector('[data-act="freeze"]').onclick = (e) => { if (streak.buyFreeze(30)) { toast('❄️ حصلت على تجميد شعلة!', { type: 'info' }); e.currentTarget.disabled = true; } };
   return () => h.__cleanup?.();

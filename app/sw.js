@@ -1,9 +1,9 @@
 /* Service Worker — offline-first for app shell; network-first for content JSON (fallback cache). */
-const VERSION = 'abtal-v1.0.0';
+const VERSION = 'abtal-v1.1.0';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './assets/icon.svg',
-  './css/tokens.css', './css/base.css', './css/components.css',
+  './css/tokens.css', './css/base.css', './css/components.css', './css/fx.css',
   './js/app.js', './js/core/bus.js', './js/core/store.js', './js/core/registry.js', './js/core/router.js',
-  './js/engines/sound.js', './js/engines/bubbles.js', './js/engines/xp.js', './js/engines/streak.js', './js/engines/hearts.js', './js/engines/badges.js', './js/engines/quests.js',
+  './js/engines/sound.js', './js/engines/bubbles.js', './js/engines/xp.js', './js/engines/streak.js', './js/engines/hearts.js', './js/engines/badges.js', './js/engines/quests.js', './js/engines/fx.js',
   './js/activities/session.js', './js/activities/generators.js', './js/activities/renderers.js',
   './js/ui/icons.js', './js/ui/components.js',
   './js/ui/views/home.js', './js/ui/views/profile.js', './js/ui/views/subject.js', './js/ui/views/play.js', './js/ui/views/badges.js', './js/ui/views/quests.js', './js/ui/views/parent.js', './js/ui/views/certificate.js',

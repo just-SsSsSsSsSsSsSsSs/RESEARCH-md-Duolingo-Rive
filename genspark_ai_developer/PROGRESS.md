@@ -81,3 +81,35 @@ app/
 - 2026-09-22T02:49 — C9/C10/C11 مكتملة. E2E: 13 نشاط، 5 مواد، لعب كامل، PIN، فقاعات — كله أخضر. أُضيف كارت الدخول للمنصة في index.html الجذر.
 - 2026-09-22T02:55 — reset #4 استعادة. C1–C12 كلها على remote. جارٍ C13 hardening.
 - 2026-09-22T03:00 — C13 hardening مكتمل: behaviour.py أخضر (قلوب→modal→تعبئة بالجواهر، شهادة، ثيم، PIN، تصدير). فتح PR.
+
+---
+
+## 🎯 المرحلة 4 — "The Leap": استجابة لملاحظات اختبار الأطفال الحي (PR #2)
+
+### 🔬 التشخيص الذاتي (Root Causes) — لماذا خرجت التجربة باهتة؟
+| العرض | السبب الجذري في كودي | الملف |
+|---|---|---|
+| فقاعات "شبه ميتة" | الخلفية داكنة جداً + `globalCompositeOperation='lighter'` مع alpha ضعيفة (0.35 → 0.10 → 0) ورسم `lineWidth 1.4` — الفقاعة تظهر كخط رفيع باهت. سرعة طفو 0.25–0.7px/frame بلا حياة. الـ canvas خلف `#app` وكل الكروت زجاجية تغطيها. | `bubbles.js` |
+| لا احتفال عند الإجابة الصحيحة | `ctx.done()` يستدعي `burst(…,4)` بنسبة 35% فقط + confetti فقط في النتيجة النهائية. لا انفجار على موضع الإصبع. | `play.js` |
+| صوت الخطأ منفّر | `sawtooth 220→140Hz` + `square` = صوت "buzzer إنذار" صناعي. | `sound.js#wrong` |
+| صوت الصح رتيب | نفس 3 نغمات C-E-G كل مرة. | `sound.js#correct` |
+| أزرار مسطحة | `.btn/.choice`: border 1.5px + ظل ضعيف + `scale(.96)` — لا عمق ولا "ضغطة" حقيقية. `min-height 46` أقل من 48px (Material) و 44pt (Apple). | `components.css` |
+| توافق الأجهزة | لا `clamp()` للخطوط، لا `@media (hover:none)` (hover يعلق على اللمس)، لا `dvh`، لا حجم أكبر للتابلت/ديسكتوب. | `tokens/base/components.css` |
+
+### 📚 مراجع الابتكار 2026 (ألعاب أطفال عالمية)
+- **Duolingo**: أزرار 3D بـ `border-bottom: 4px` تنضغط (`translateY(4px)`) — "tactile press". أصوات صح متنوعة من مكتبة، خطأ = "thud" ناعم منخفض بدون sawtooth.
+- **Khan Academy Kids / Sago Mini / Toca Boca**: انفجار particles على موضع اللمس، أشكال متعددة (نجوم/قلوب/دوائر)، bounce بـ spring easing، نصوص تشجيعية عائمة (+XP floaters).
+- **Endless Alphabet / PBS Kids**: أصوات مولَّدة بـ "musical scale" — كل إجابة نغمة أعلى (تصاعد) تبني إثارة؛ "wrong" = نغمتان هابطتان لطيفتان بـ sine + vibrato.
+- **Apple HIG / Material 3**: hit target ≥44pt/48dp، `@media (hover: hover)` فقط للـ hover، `pointer: coarse` لتكبير المسافات، `100dvh` للموبايل.
+- **Web Audio best practice**: تجنب sawtooth/square للأطفال؛ استخدم sine/triangle + lowpass + reverb بسيط (convolver noise tail) + humanize (±detune عشوائي).
+
+### 🗺️ خطة التنفيذ (chunks — push بعد كل واحد)
+- [x] L1: `sound.js` v2 — wrong لطيف، correct متنوع (5 أنماط + تصاعد سُلَّمي مع combo)، cheer متغير، pop متنوع، "sparkle", "whoosh" محسّنة
+- [x] L2: `bubbles.js` v2 — فقاعات أوضح (أكبر، rim قوسي زجاجي، ألوان أزهى، حركة أحيا)، **celebrate(x,y,intensity)**: انفجار متعدد الأشكال (نجوم/قلوب/دوائر/حلقات) + موجة صدمة + فقاعات مكافأة تُفرقع تلقائياً
+- [x] L3: `fx.js` — طبقة احتفال DOM: نص عائم (+XP / برافو!) + shake/pulse للكارت + combo counter
+- [x] L4: `fx.css` — أزرار 3D tactile، hit ≥48px، hover فقط على (hover:hover)، pointer:coarse، clamp()، dvh، breakpoints 360/700/1024/landscape
+- [x] L5: ربط play.js + renderers.js (celebrate على موضع الإصبع + combo + floaters) + إعداد "شدة الاحتفال" في البروفايل + كروت أشف لإظهار الفقاعات
+- [x] L6: e2e.py + viewports.py أخضر على 4 أجهزة (0 أخطاء، أهداف ≥44px، لا overflow، FX يعمل) + لقطات مراجَعة
+- [x] L7: PR #2 → https://github.com/html-mobile-audio/html-mobile-audio/pull/2
+
+**آخر تحديث:** ✅ المرحلة 4 مكتملة — PR #2 مفتوح للمراجعة. نقطة الاستئناف التالية: معالجة ملاحظات المراجعة على PR #2 أو Backlog RESEARCH.md §5.
