@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌟 بوابة أبطال البيت: سليم، كارما، وكندة 🌟</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafbff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #6b7280;
+      --accent-quran: #f59e0b;
+      --accent-math: #6366f1;
+      --accent-arabic: #10b981;
+      --accent-podcast: #8b5cf6;
+      --accent-selim: #06b6d4;
+      --accent-karma: #ec4899;
+      --accent-kunda: #f97316;
+      --radius: 20px;
+      --radius-sm: 14px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.06);
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.12);
+      --glass: rgba(255,255,255,0.7);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f0f23;
+        --bg-card: #1a1a2e;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --shadow: 0 4px 20px rgba(0,0,0,0.3);
+        --shadow-hover: 0 8px 30px rgba(0,0,0,0.5);
+        --glass: rgba(26,26,46,0.8);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      background-image: 
+        radial-gradient(at 20% 80%, rgba(99,102,241,0.08) 0%, transparent 50%),
+        radial-gradient(at 80% 20%, rgba(236,72,153,0.08) 0%, transparent 50%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 0 0 80px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ========== NAVBAR ========== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      padding: 14px 0;
+    }
+
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent-selim), var(--accent-math));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent-selim), var(--accent-math));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      -webkit-text-fill-color: white;
+    }
+
+    /* ========== HERO ========== */
+    .hero {
+      text-align: center;
+      padding: 60px 24px 50px;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1));
+      border: 1px solid rgba(99,102,241,0.2);
+      color: var(--accent-math);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 6vw, 48px);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+
+    /* Character Pills */
+    .characters {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .char-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border-radius: 60px;
+      box-shadow: var(--shadow);
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+
+    .char-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .char-pill.selim { border-color: rgba(6,182,212,0.3); }
+    .char-pill.selim:hover { border-color: rgba(6,182,212,0.6); }
+    .char-pill.karma { border-color: rgba(236,72,153,0.3); }
+    .char-pill.karma:hover { border-color: rgba(236,72,153,0.6); }
+    .char-pill.kunda { border-color: rgba(249,115,22,0.3); }
+    .char-pill.kunda:hover { border-color: rgba(249,115,22,0.6); }
+
+    .char-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .char-pill.selim .char-avatar { background: rgba(6,182,212,0.15); }
+    .char-pill.karma .char-avatar { background: rgba(236,72,153,0.15); }
+    .char-pill.kunda .char-avatar { background: rgba(249,115,22,0.15); }
+
+    .char-name {
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    /* ========== SECTIONS ========== */
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 0 4px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .section-icon.quran { background: rgba(245,158,11,0.12); }
+    .section-icon.math { background: rgba(99,102,241,0.12); }
+    .section-icon.arabic { background: rgba(16,185,129,0.12); }
+    .section-icon.podcast { background: rgba(139,92,246,0.12); }
+
+    .section-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: rgba(0,0,0,0.04);
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .section-badge { background: rgba(255,255,255,0.06); }
+    }
+
+    /* ========== CARDS GRID ========== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .card { border-color: rgba(255,255,255,0.06); }
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+      border-radius: 0 0 var(--radius) var(--radius);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover::after {
+      opacity: 1;
+    }
+
+    .card.quran::after { background: linear-gradient(90deg, var(--accent-quran), #fbbf24); }
+    .card.math::after { background: linear-gradient(90deg, var(--accent-math), #818cf8); }
+    .card.arabic::after { background: linear-gradient(90deg, var(--accent-arabic), #34d399); }
+    .card.podcast::after { background: linear-gradient(90deg, var(--accent-podcast), #a78bfa); }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .card-emoji {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .card-emoji.quran { background: rgba(245,158,11,0.1); }
+    .card-emoji.math { background: rgba(99,102,241,0.1); }
+    .card-emoji.arabic { background: rgba(16,185,129,0.1); }
+    .card-emoji.podcast { background: rgba(139,92,246,0.1); }
+
+    .card-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .card-arrow { background: rgba(255,255,255,0.06); }
+    }
+
+    .card:hover .card-arrow {
+      background: var(--text-primary);
+      color: var(--bg);
+      transform: translateX(-4px);
+    }
+
+    .card-content h3 {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .card-content p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      margin-top: 8px;
+      width: fit-content;
+    }
+
+    .card-tag.quran { background: rgba(245,158,11,0.1); color: #d97706; }
+    .card-tag.math { background: rgba(99,102,241,0.1); color: #6366f1; }
+    .card-tag.arabic { background: rgba(16,185,129,0.1); color: #059669; }
+    .card-tag.podcast { background: rgba(139,92,246,0.1); color: #7c3aed; }
+
+    @media (prefers-color-scheme: dark) {
+      .card-tag.quran { color: #fbbf24; }
+      .card-tag.math { color: #818cf8; }
+      .card-tag.arabic { color: #34d399; }
+      .card-tag.podcast { color: #a78bfa; }
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    footer a {
+      color: var(--accent-math);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeInUp 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.1s; }
+    .card:nth-child(3) { animation-delay: 0.15s; }
+    .card:nth-child(4) { animation-delay: 0.2s; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 640px) {
+      .hero {
+        padding: 40px 16px 36px;
+      }
+
+      .characters {
+        gap: 10px;
+      }
+
+      .char-pill {
+        padding: 10px 16px;
+      }
+
+      .char-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo">
+        <div class="logo-icon">🏠</div>
+        أبطال البيت
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">
+        🚀 المنصة التعليمية التفاعلية
+      </div>
+      <h1> بوابة أبطال البيت</h1>
+      <p class="hero-subtitle">
+        تطبيقات تفاعلية متكاملة بالصوت والشرح الممتع وتلوين الأحكام.. شغالة في أي مكان ومن أي جهاز 📱✨
+      </p>
+      <div class="characters">
+        <div class="char-pill selim">
+          <div class="char-avatar">🦸‍♂️</div>
+          <span class="char-name">سليم</span>
+        </div>
+        <div class="char-pill karma">
+          <div class="char-avatar">🌸</div>
+          <span class="char-name">كارما</span>
+        </div>
+        <div class="char-pill kunda">
+          <div class="char-avatar">⭐</div>
+          <span class="char-name">كندة</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم القرآن الكريم -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon quran">📖</div>
+          مصاحف التجويد والقرآن الكريم
+        </div>
+        <span class="section-badge">صوت بنت + الشيخ الحصري</span>
+      </div>
+      <div class="cards-grid">
+        
+        <a href="quran-alqadr/index.html" class="card quran">
+          <div class="card-top">
+            <div class="card-emoji quran">✨</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>سورة القدر مصحف التجويد</h3>
+            <p>تلاوة وتلقين بصوت نقي + أحكام التجويد الملونة وفضائل ليلة القدر.</p>
+            <div class="card-tag quran">مصحف تفاعلي</div>
+          </div>
+        </a>
+
+        <a href="albayyinah.html" class="card quran">
+          <div class="card-top">
+            <div class="card-emoji quran">📖</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>سورة البينة (٢٠ دقيقة تجويد)</h3>
+            <p>تلاوة الحصري المعلم + صوت بنت مجودة وتظليل الأحكام آية بآية.</p>
+            <div class="card-tag quran">تلاوة + تلوين</div>
+          </div>
+        </a>
+
+        <a href="quran-albayyinah/سورة_البينة_مصحف_تفاعلي.html" class="card quran">
+          <div class="card-top">
+            <div class="card-emoji quran">🌙</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>سورة البينة تلقين عثماني</h3>
+            <p>مصحف تفاعلي بالرسم العثماني والصوت المدمج للحفظ والتسميع.</p>
+            <div class="card-tag quran">رسم عثماني</div>
+          </div>
+        </a>
+
+        <a href="quran-albayyinah/تلقين_سورة_البينة.mp3" class="card quran">
+          <div class="card-top">
+            <div class="card-emoji quran">🕌</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>حلقة تلقين سورة البينة</h3>
+            <p>تسجيل ٢٠ دقيقة متواصلة: استماع ← ترديد ← تثبيت وسماع مباشر.</p>
+            <div class="card-tag quran">MP3 صوتي</div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- قسم الرياضيات -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon math">🚀</div>
+          معمل الرياضيات والماث
+        </div>
+        <span class="section-badge">المنهج الجديد وتفكيك الأعداد</span>
+      </div>
+      <div class="cards-grid">
+
+        <a href="math.html" class="card math">
+          <div class="card-top">
+            <div class="card-emoji math">🚀</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>معمل أبطال الماث (4×5) نيون</h3>
+            <p>كتاب الوزارة ص 10-11: تفكيك خواص الضرب بالأصوات والألعاب التفاعلية.</p>
+            <div class="card-tag math">ألعاب تفاعلية</div>
+          </div>
+        </a>
+
+        <a href="selim-math-arabic/تطبيق_سر_القسم_السحري_سليم_بالصوت.html" class="card math">
+          <div class="card-top">
+            <div class="card-emoji math">🧺</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>سر التقسيم السحري بالصوت</h3>
+            <p>تجزئة المضروب في جدول الضرب مع نجوم وتلميحات جدو حسن لسليم.</p>
+            <div class="card-tag math">صوت + تحديات</div>
+          </div>
+        </a>
+
+        <a href="selim-math-arabic/سليم_رحلة_سر_القسم_السحري_خواص_الضرب.mp3" class="card math">
+          <div class="card-top">
+            <div class="card-emoji math">⚡</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>قصة سر التقسيم السحري بودكاست</h3>
+            <p>حلقة صوتية شيقة (الجزء الثاني - ١٠ دقائق) لشرح خواص الضرب في رحلة ممتعة.</p>
+            <div class="card-tag math">بودكاست MP3</div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- قسم اللغة العربية -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon arabic">🌱</div>
+          اللغة العربية والقصص التفاعلية
+        </div>
+        <span class="section-badge">استماع + تقويم تفاعلي</span>
+      </div>
+      <div class="cards-grid">
+
+        <a href="plant.html" class="card arabic">
+          <div class="card-top">
+            <div class="card-emoji arabic">🌱</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>ازرع نبتة فصحى + شرح بالبلدي</h3>
+            <p>قصة مريم التفاعلية وحل التقويم مع شرح كل سؤال بالعامية وأصوات تشجيعية.</p>
+            <div class="card-tag arabic">شرح بالعامية</div>
+          </div>
+        </a>
+
+        <a href="selim-math-arabic/تطبيق_ازرع_نبتة_سليم.html" class="card arabic">
+          <div class="card-top">
+            <div class="card-emoji arabic">📖</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>ازرع نبتة فصحى امتحاني</h3>
+            <p>نسخة تقويم الاستماع الفصحى المباشرة للتدريب على نمط الامتحانات.</p>
+            <div class="card-tag arabic">تدريب امتحاني</div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- قسم البودكاست -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon podcast">🎧</div>
+          استوديو حلقات بودكاست سليم
+        </div>
+        <span class="section-badge">صوت كرتون نتورك وشبابي</span>
+      </div>
+      <div class="cards-grid">
+
+        <a href="episodes-selim/حلقة_سليم_جدول_٣.mp3" class="card podcast">
+          <div class="card-top">
+            <div class="card-emoji podcast">📻</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>حلقة سليم: جدول ٣ صوت كرتوني</h3>
+            <p>حلقة ممتعة لحفظ وإتقان جدول الضرب ٣ مع تحديات وألعاب صوتية.</p>
+            <div class="card-tag podcast">بودكاست صوتي</div>
+          </div>
+        </a>
+
+        <a href="https://github.com/html-mobile-audio/html-mobile-audio/tree/main/episodes-selim" class="card podcast">
+          <div class="card-top">
+            <div class="card-emoji podcast">📂</div>
+            <div class="card-arrow">←</div>
+          </div>
+          <div class="card-content">
+            <h3>أرشيف الحلقات وسيناريوهات</h3>
+            <p>مجلد الحلقات والسيناريوهات المكتوبة على GitHub لمتابعة كافة الدروس.</p>
+            <div class="card-tag podcast">أرشيف GitHub</div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>🏠 بوابة أبطال البيت — سليم، كارما، وكندة</p>
+    <p>صُمّمت بـ ❤️ للأطفال العرب في كل مكان</p>
+  </footer>
+
+</body>
+</html>
