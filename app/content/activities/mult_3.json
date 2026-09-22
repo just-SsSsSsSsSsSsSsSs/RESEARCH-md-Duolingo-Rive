@@ -1,0 +1,1 @@
+{ "intro": "يلا نطلع سلّم الثلاثة السحري! كل درجة = ٣ زيادة: ٣، ٦، ٩، ١٢... اكتب الناتج بالأرقام.", "count": 10, "generator": [{ "kind": "mult", "tables": [3], "range": [1, 10], "count": 7, "types": ["numpad", "numpad", "quiz"] }, { "kind": "missing", "tables": [3], "count": 3 }] }
