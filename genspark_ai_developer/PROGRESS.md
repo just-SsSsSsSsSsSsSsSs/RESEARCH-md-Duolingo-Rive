@@ -54,7 +54,7 @@ app/
 - [x] C2: js/core (bus, store, registry, router)
 - [x] C3: engines/sound.js + engines/bubbles.js
 - [x] C4: engines xp/streak/hearts/badges/quests
-- [ ] C5: ui/components.js (toast, modal, confetti, icons)
+- [x] C5: ui/components.js (toast, modal, confetti, icons)
 - [ ] C6: views home + profile picker
 - [ ] C7: activities engines (quiz/truefalse/match/fillblank/order) + view play
 - [ ] C8: content/catalog.json + أنشطة JSON (جدول 3/4، خواص الضرب، البينة، القدر، ازرع نبتة)
@@ -75,4 +75,4 @@ app/
 ---
 
 ## 🎯 الخطوة التالية فوراً (Next Immediate Action)
-👉 **C5:** ui/components.js (icons SVG, toast, modal, confetti, HUD) ثم commit+push.
+👉 **C6:** views home.js + profile picker + app.js (bootstrap) + index.html shell ثم commit+push.
