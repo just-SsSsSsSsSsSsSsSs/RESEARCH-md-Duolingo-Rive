@@ -3,7 +3,7 @@
  * Replaces keyboard emoji with vector medallions: tiered metallic ring, glossy inner disc,
  * drop shadow, sparkle, and a per-badge stylized symbol. Locked badges render grayscale via CSS.
  *
- *   badgeSVG(id, tier, { size })  → SVG string (inline-safe, uses unique gradient ids)
+ *   badgeSVG(id, tier, { size })  - SVG string (inline-safe, uses unique gradient ids)
  */
 
 const TIERS = {

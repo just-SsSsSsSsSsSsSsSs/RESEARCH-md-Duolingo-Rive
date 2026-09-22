@@ -492,3 +492,38 @@ Docker + CI/CD
 5. **حفلات المفاجأة:** 7 أنواع (مفرقعات بشرائط، بالونات تطير وتنفجر، صواريخ ألعاب نارية بأربعة أنماط انفجار، بريق، مطر قلوب، حلقات ضوء، مدفع كونفيتي) تُختار عشوائياً بلا تكرار متتالٍ، مع أصوات مركّبة مطابقة، وتُشغَّل فقط عند الإجابة الصحيحة وعند intensity ≥ 2.
 
 **مرجعيات:** Nielsen Norman (تقليل الحركة الخلفية أثناء القراءة)، WCAG 2.3.3 Animation from Interactions، CSS Containing Block spec (transform يُنشئ containing block للعناصر fixed)، Duolingo badge design language.
+
+---
+
+## ملحق Pure-Web & Arcade (PR #4 — سبتمبر 2026) — رادار المنصات العالمية
+
+**التوجيهات المصدرية:** Gist `2cbbacc528490ed49f2492cdac99b6c0` (4 توجيهات: إلغاء PWA، احتفالات أمامية z-9999، صفر إيموجي، رادار بحث).
+
+### ما طُبّق
+| المحور | القرار | التنفيذ |
+|---|---|---|
+| Pure-Web | لا PWA/أوفلاين؛ GitHub Pages فقط | حذف `sw.js` + `manifest.webmanifest`، `purgeLegacyPWA()` عند الإقلاع (unregister + caches.delete + reload مرة واحدة) |
+| Foreground FX | الاحتفال أمام الكارت لا خلفه | كانفاس ثانٍ `#fx-canvas` (`fixed; inset:0; z-index:9999; pointer-events:none`) — المحرك يرسم الفقاعات المحيطة على `#bubbles` (z 0) وكل جسيمات الحفلة/البالونات/الحلقات/الفلاش على الأمامي؛ `#fx-layer` و`#confetti` إلى 9999 |
+| Zero-Emoji | 269 → 0 | `icons3d.js` (83 أيقونة SVG مجسّمة: تدرجات + لمعة + ظل) + `EMOJI_MAP` (92) + codemod `emoji_sweep.py` + فحص آلي `emoji_audit.py` |
+
+### المنصات المرجعية (روابط مباشرة + أسرار القوة)
+1. **Duolingo** — https://www.duolingo.com · مدونة التصميم https://blog.duolingo.com/hub/design/  
+   أسرار القوة: لغة بصرية موحّدة بلا إيموجي نظام (أيقونات مرسومة ثلاثية الأبعاد للجواهر/الشعلة/الكنوز)، Streak + Streak Freeze (تقليل churn)، XP على كل فعل، شارات شهرية بتدرجات معدنية، احتفال «Perfect lesson» بشخصيات متحركة أمام المحتوى. دراسة حالة: https://trophy.so/blog/duolingo-gamification-case-study · تحليل UX: https://www.925studios.co/blog/duolingo-design-breakdown
+2. **Khan Academy Kids** — https://www.khanacademy.org/kids  
+   أسرار القوة: شخصيات مرشدة (Kodi)، صوت سردي يقرأ كل شيء، مسار تكيّفي حسب المستوى، مكافآت جمع (collectibles) بدلاً من نقاط مجردة، واجهة بأزرار كبيرة جداً وألوان مشبعة، بلا إعلانات — تصنيف 5 نجوم من Common Sense Media.
+3. **Prodigy Math** — https://www.prodigygame.com  
+   أسرار القوة: RPG كامل (معارك، تعويذات، عالم مفتوح) حيث كل سؤال رياضيات هو «هجمة»؛ الاحتفال جزء من ميكانيكا القتال؛ لوحة أهل منفصلة بتقارير المهارات.
+4. **Lingokids** — https://lingokids.com  
+   أسرار القوة: «Playlearning» — مقاطع قصيرة ≤ 3 دقائق، شخصيات حيوانية ثابتة عبر كل الألعاب، مكافآت ملصقات، بلا نصوص كثيفة على الشاشة.
+5. **Toca Boca** — https://tocaboca.com  
+   أسرار القوة: لا نقاط ولا فشل — لعب مفتوح؛ أيقونات مرسومة بسمك خط واحد ولمعة واحدة (مرجع لأسلوب `icons3d`)، تفاعل لمسي بردّ فعل فوري (squash & stretch).
+6. **PlayStation UI (PS5 System / PlayStation Stars)** — https://www.playstation.com/en-us/playstation-stars/  
+   أسرار القوة: مجموعات رقمية «Digital Collectibles» ثلاثية الأبعاد بلمعة معدنية وظل (مرجع الميداليات)، طبقات UI فوق المحتوى بشفافية زجاجية، حركة هادئة في الخلفية وصاخبة عند الإنجاز فقط.
+7. **مكتبات/مراجع هندسية**  
+   - Canvas 2D layering + `pointer-events:none` للطبقات الأمامية: https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events  
+   - Unicode Emoji ranges (لأداة الفحص الآلي): https://www.unicode.org/Public/UCD/latest/ucd/emoji/emoji-data.txt  
+   - إزالة Service Worker بأمان (`getRegistrations` + `unregister`): https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/unregister  
+   - Game feel / juice (Vlambeer «The art of screenshake»): https://www.youtube.com/watch?v=AJdEqssNZ-U
+
+### كيف نتفوّق
+- لدينا ما لا تملكه هذه المنصات للأسرة العربية: محتوى قرآن/تجويد + رياضيات + عربية في مظلة تحفيز واحدة بلا اشتراك؛ الخطوة التالية: شخصية مرشدة ثابتة (كما Duo/Kodi) وتقارير أهل أسبوعية.

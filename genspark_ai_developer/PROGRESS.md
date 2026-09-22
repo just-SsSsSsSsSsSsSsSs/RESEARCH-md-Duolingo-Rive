@@ -140,3 +140,27 @@ app/
 
 **آخر تحديث:** ✅ المرحلة 5 (Calm & Joy) مكتملة — PR #3 مفتوح للمراجعة: https://github.com/html-mobile-audio/html-mobile-audio/pull/3
 **نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #3، أو بعد الدمج: Backlog RESEARCH.md §5 (اقتراح: K8 شارات SVG لصفحة الـHome/Profile، K9 وضع Focus أيضاً في quests، K10 تحسين أداء الحفلات على أجهزة ≤2GB).
+
+---
+
+## المرحلة 6 — Pure-Web & Arcade (PR #4)
+
+**المصدر:** Gist `2cbbacc528490ed49f2492cdac99b6c0` (4 توجيهات معمارية) + رسالة المستخدم.
+**خط الأساس:** `origin/main @ 4f10d21` (PR #3 مدموج). `emoji_audit.py` = **269 إيموجي في 27 ملف**.
+
+### التشخيص
+| # | المشكلة | السبب | الحل |
+|---|---|---|---|
+| 1 | كاش معلّق / تحديثات لا تصل | SW + manifest (PWA) | حذف `sw.js` + `manifest.webmanifest`، إزالة `<link rel=manifest>`، كود إلغاء تسجيل + مسح كاش عند الإقلاع |
+| 2 | الحفلات خلف الكارت | `#bubbles` z-index 0 والكروت معتمة 0.92 | كانفاس ثانٍ `#fx-canvas` (`fixed; inset:0; z-index:9999; pointer-events:none`) يرسم كل جسيمات الاحتفال؛ الفقاعات المحيطة تبقى خلفاً |
+| 3 | 269 إيموجي كيبورد | نصوص/كتالوج/شارات/HUD | مكتبة `icons3d.js` (SVG مجسّمة بتدرجات+لمعة+ظل) + `ico3d(name)` + استبدال شامل + فحص آلي = 0 |
+
+### الخطة (push-per-chunk)
+- [x] P1: إزالة PWA (sw.js/manifest/link) + كود unregister/caches.delete في app.js
+- [x] P2: طبقة FX أمامية: `#fx-canvas` z-index 9999، تقسيم محرك bubbles → ambient (خلف) / fx (أمام)، floaters/combo z-index 9999
+- [x] P3: `icons3d.js` — أيقونات SVG مجسّمة: heart, gem, flame, bolt, trophy, crown, star, medal, book, quran, mosque, calc, pen, headphones, target, shield, gear, moon, sun, compass, owl, brain, rocket, check, x, lock, gift, chart, bubble, seedling…
+- [x] P4: كنس الإيموجي: HUD/components/home/profile/parent/play/quests/badges/subject/certificate/store/generators/renderers/fx/catalog.json/activities/*.json/index.html
+- [x] P5: `emoji_audit.py` = 0 + اختبار طبقات (fx canvas فوق الكارت) + e2e + viewports + navoverlap
+- [ ] P6: RESEARCH.md (Append-Only) مراجع المنصات + PROGRESS + PR #4
+
+**آخر تحديث:** P1 مكتمل (PWA محذوف + purgeLegacyPWA) → P2 مكتمل (#fx-canvas z-9999 + fx-layer/confetti 9999) → P3 مكتمل (83 أيقونة + EMOJI_MAP 92) → P4 مكتمل (emoji_sweep.py codemod، emoji_audit = 0/269، كل render sites عبر ico3d) → P5: parse errors أُصلحت؛ e2e ✅ viewports ✅ navoverlap ✅ layering ✅ (fx-canvas يرسم 4.8% من مساحة الكارت فوقه، BG 0.3%) → P5b: HUD العلوي (شعلة/برق/جوهرة/قلوب) إلى ico3d → مكتمل. إعادة كل الاختبارات: emoji_audit 0 ✅ layering ✅ e2e ✅ viewports ✅ navoverlap ✅ → P6 squash + PR #4

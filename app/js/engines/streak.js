@@ -1,7 +1,7 @@
 /**
  * Streak Engine — consecutive active days with Streak Freeze protection.
  * A day counts when the child completes ≥1 activity (call `touch()`).
- * On load, `check()` evaluates gaps: 1 missed day + freeze available → consumes freeze; else reset.
+ * On load, `check()` evaluates gaps: 1 missed day + freeze available  consumes freeze; else reset.
  */
 import store, { todayKey } from '../core/store.js';
 import bus from '../core/bus.js';

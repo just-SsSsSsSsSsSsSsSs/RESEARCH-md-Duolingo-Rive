@@ -1,7 +1,7 @@
 /**
  * Sound Engine v2 — 100% procedural Web Audio (no files, zero latency, offline).
  * Design principles (kids UX):
- *  • Only sine/triangle timbres + lowpass + soft reverb tail → warm, never harsh.
+ *  • Only sine/triangle timbres + lowpass + soft reverb tail  warm, never harsh.
  *  • "wrong" is a gentle, friendly two-note "hmm?" — encouraging, never a buzzer.
  *  • "correct" is VARIED: 6 melodic patterns, randomized key, humanized timing/detune,
  *    and escalates with combo (each streak of right answers climbs the scale).

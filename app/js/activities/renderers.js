@@ -5,6 +5,7 @@
 import { el, esc, shuffle, fmt } from '../ui/components.js';
 import sound from '../engines/sound.js';
 import { ico } from '../ui/icons.js';
+import { ico3d } from '../ui/icons3d.js';
 
 const fontCls = (q, ctx) => (q.font || ctx.font) === 'quran' ? 'quran' : '';
 const lock = (c) => c.querySelectorAll('button').forEach((b) => (b.disabled = true));
@@ -27,7 +28,7 @@ export const renderers = {
   truefalse(c, q, ctx) {
     c.appendChild(el(`<div class="q-text ${fontCls(q, ctx)}">${esc(q.q)}</div>`));
     const grid = el('<div class="choices"></div>');
-    [[true, '✅ صواب', 'btn-primary'], [false, '❌ خطأ', 'btn-rose']].forEach(([v, label]) => {
+    [[true, ico3d('check') + ' صواب', 'btn-primary'], [false, ico3d('cross') + ' خطأ', 'btn-rose']].forEach(([v, label]) => {
       const b = el(`<button class="choice">${label}</button>`);
       b.onclick = () => { lock(c); const ok = v === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) [...grid.children].find((x) => x !== b)?.classList.add('correct'); ctx.done(ok, { picked: v }); };
       grid.appendChild(b);
@@ -62,7 +63,7 @@ export const renderers = {
       b.onclick = () => {
         sound.play('tick');
         if (k === 'del') val = val.slice(0, -1);
-        else if (k === 'ok') { if (!val) return; lock(c); const ok = Number(val) === Number(q.answer); box.style.borderColor = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; box.style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; if (!ok) box.textContent = `${fmt(Number(val))} ✗  الصحيح ${fmt(q.answer)}`; ctx.done(ok, { picked: Number(val) }); return; }
+        else if (k === 'ok') { if (!val) return; lock(c); const ok = Number(val) === Number(q.answer); box.style.borderColor = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; box.style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; if (!ok) box.textContent = `${fmt(Number(val))} ${ico3d('cross')}  الصحيح ${fmt(q.answer)}`; ctx.done(ok, { picked: Number(val) }); return; }
         else if (val.length < 5) val += k;
         upd();
       };

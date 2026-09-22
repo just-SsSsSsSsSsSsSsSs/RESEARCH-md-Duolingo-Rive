@@ -1,13 +1,13 @@
 /**
  * Bubbles Engine v3 — calm ambient bubbles (eye-comfort) + full celebration particle system.
  *
- * Why v1 felt "dead": additive 'lighter' compositing on a dark bg with 0.35→0 alpha and a 1.4px rim
+ * Why v1 felt "dead": additive 'lighter' compositing on a dark bg with 0.350 alpha and a 1.4px rim
  * rendered as faint wisps; drift was 0.25–0.7px/frame; no reaction to answers.
  *
  * v2:
  *  • Bubbles are bigger, brighter (saturated fill + thick glossy rim + twin highlights + soft outer glow),
  *    with lively wobble, spin of highlight, and a gentle "breathing" scale.
- *  • celebrate(x, y, intensity): multi-shape particle burst (stars ★, hearts ♥, circles, sparkles ✦, rings)
+ *  • celebrate(x, y, intensity): multi-shape particle burst (stars , hearts , circles, sparkles , rings)
  *    from the tap point, shockwave ring, floating reward bubbles that auto-pop in sequence with sound,
  *    and rising glow embers. Scales with combo/intensity.
  *  • sad(x, y): soft "deflate" puff on wrong answers (small, non-punishing).
@@ -24,9 +24,11 @@ const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = (a) => a[(Math.random() * a.length) | 0];
 
 export class Bubbles {
-  constructor(canvas) {
+  constructor(canvas, fxCanvas = null) {
     this.c = canvas;
     this.ctx = canvas.getContext('2d', { alpha: true });
+    // Phase 6: foreground FX canvas (z-index 9999) — every celebration particle draws here, ABOVE cards/calculator
+    this.fc = fxCanvas; this.fctx = fxCanvas ? fxCanvas.getContext('2d', { alpha: true }) : this.ctx;
     this.bubbles = []; this.parts = []; this.rings = []; this.embers = []; this.rewards = [];
     this.balloons = []; this.trails = []; this.rockets = []; this.lastParty = -1; // K5 party FX
     this.pointer = { x: -1e9, y: -1e9, active: false };
@@ -54,9 +56,12 @@ export class Bubbles {
   resize() {
     this.dpr = Math.min(window.devicePixelRatio || 1, 2.5);
     this.w = innerWidth; this.h = innerHeight;
-    this.c.width = this.w * this.dpr; this.c.height = this.h * this.dpr;
-    this.c.style.width = this.w + 'px'; this.c.style.height = this.h + 'px';
-    this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    for (const [c, g] of [[this.c, this.ctx], [this.fc, this.fctx]]) {
+      if (!c) continue;
+      c.width = this.w * this.dpr; c.height = this.h * this.dpr;
+      c.style.width = this.w + 'px'; c.style.height = this.h + 'px';
+      g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    }
   }
   make(fromBottom = true) {
     const small = Math.min(this.w, this.h) < 500;
@@ -257,9 +262,9 @@ export class Bubbles {
 
   /* ---------- drawing ---------- */
   rgba(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${Math.max(0, Math.min(1, a)).toFixed(3)})`; }
-  drawBubble(g, b) {
+  drawBubble(g, b, boost = 1) {
     const { x, y, r, color: c } = b;
-    const A = b.alpha * (this.focusMode ? 0.7 : 1);
+    const A = Math.min(1, b.alpha * (this.focusMode && boost === 1 ? 0.7 : 1) * boost);
     // K2 (Calm): no additive halo — soft soap-bubble body, thin rim, gentle highlight
     g.globalCompositeOperation = 'source-over';
     const body = g.createRadialGradient(x - r * 0.25, y - r * 0.3, r * 0.15, x, y, r);
@@ -301,18 +306,23 @@ export class Bubbles {
     g.restore();
   }
   draw() {
-    const g = this.ctx; g.clearRect(0, 0, this.w, this.h);
-    if (this.flash > 0) { g.fillStyle = `rgba(255,255,255,${this.flash * 0.35})`; g.fillRect(0, 0, this.w, this.h); }
-    for (const b of this.bubbles) this.drawBubble(g, b);
-    for (const b of this.balloons) this.drawBalloon(g, b);
-    g.globalCompositeOperation = 'lighter';
-    for (const e of this.embers) { g.globalAlpha = e.life; g.fillStyle = e.color; g.beginPath(); g.arc(e.x, e.y, e.r, 0, TAU); g.fill(); }
-    for (const t of this.trails) { g.globalAlpha = t.life; g.fillStyle = t.color; g.beginPath(); g.arc(t.x, t.y, t.r, 0, TAU); g.fill(); }
-    g.globalAlpha = 1;
-    for (const r of this.rings) { if (r.delay > 0) continue; g.strokeStyle = this.rgba(r.color, r.life * 0.9); g.lineWidth = r.w * r.life + 0.5; g.beginPath(); g.arc(r.x, r.y, r.r, 0, TAU); g.stroke(); }
-    g.globalCompositeOperation = 'source-over';
-    for (const p of this.parts) this.drawShape(g, p);
-    g.globalAlpha = 1;
+    const g = this.ctx, f = this.fctx, split = f !== g;
+    g.clearRect(0, 0, this.w, this.h); if (split) f.clearRect(0, 0, this.w, this.h);
+    // --- background layer: calm ambient bubbles only ---
+    const rewardSet = new Set(this.rewards.map((r) => r.b));
+    for (const b of this.bubbles) if (!rewardSet.has(b)) this.drawBubble(g, b);
+    // --- foreground layer (z-index 9999): everything celebratory ---
+    if (this.flash > 0) { f.fillStyle = `rgba(255,255,255,${this.flash * 0.35})`; f.fillRect(0, 0, this.w, this.h); }
+    for (const b of this.bubbles) if (rewardSet.has(b)) this.drawBubble(f, b, 1.6);
+    for (const b of this.balloons) this.drawBalloon(f, b);
+    f.globalCompositeOperation = 'lighter';
+    for (const e of this.embers) { f.globalAlpha = e.life; f.fillStyle = e.color; f.beginPath(); f.arc(e.x, e.y, e.r, 0, TAU); f.fill(); }
+    for (const t of this.trails) { f.globalAlpha = t.life; f.fillStyle = t.color; f.beginPath(); f.arc(t.x, t.y, t.r, 0, TAU); f.fill(); }
+    f.globalAlpha = 1;
+    for (const r of this.rings) { if (r.delay > 0) continue; f.strokeStyle = this.rgba(r.color, r.life * 0.9); f.lineWidth = r.w * r.life + 0.5; f.beginPath(); f.arc(r.x, r.y, r.r, 0, TAU); f.stroke(); }
+    f.globalCompositeOperation = 'source-over';
+    for (const p of this.parts) this.drawShape(f, p);
+    f.globalAlpha = 1;
   }
   frame(now) {
     if (!this.running) return;
@@ -333,9 +343,9 @@ export class Bubbles {
   setIntensity(v) { this.intensity = v; }
 }
 
-export function initBubbles(canvasId = 'bubbles') {
+export function initBubbles(canvasId = 'bubbles', fxCanvasId = 'fx-canvas') {
   const c = document.getElementById(canvasId); if (!c) return null;
-  const eng = new Bubbles(c);
+  const eng = new Bubbles(c, document.getElementById(fxCanvasId));
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || store.meta.reduceBubbles) eng.setIntensity(0.45);
   eng.start(); window.__bubbles = eng; return eng;
 }

@@ -13,9 +13,10 @@ import { el, esc, fmt, hud, modal, confetti, toast } from '../components.js';
 import { ico } from '../icons.js';
 import { crown } from './subject.js';
 import fx from '../../engines/fx.js';
+import { ico3d } from '../icons3d.js';
 
-const CHEERS = ['ممتاز! 🌟', 'برافو! 👏', 'عبقري! 🧠', 'رهيب! 🚀', 'صح ١٠٠٪ 💯', 'أنت بطل! 🦸', 'استمر هكذا! 🔥'];
-const OOPS = ['مش مشكلة، نتعلم من الخطأ 💪', 'قريب جداً! 🤏', 'حاول تركّز في المرة الجاية 🎯', 'كل بطل يغلط ويكمّل 🌱'];
+const CHEERS = ['ممتاز! ' + ico3d('star'), 'برافو! ' + ico3d('clap'), 'عبقري! ' + ico3d('brain'), 'رهيب! ' + ico3d('rocket'), 'صح ١٠٠٪ ' + ico3d('hundred'), 'أنت بطل! ' + ico3d('hero'), 'استمر هكذا! ' + ico3d('flame')];
+const OOPS = ['مش مشكلة، نتعلم من الخطأ ' + ico3d('muscle'), 'قريب جداً! ' + ico3d('pinch'), 'حاول تركّز في المرة الجاية ' + ico3d('target'), 'كل بطل يغلط ويكمّل ' + ico3d('seedling')];
 
 export async function render(root, { id }) {
   const it = registry.item(id);
@@ -40,13 +41,13 @@ export async function render(root, { id }) {
     const st = store.profile.activities[id];
     stage.innerHTML = '';
     stage.appendChild(el(`<div class="card q-card">
-      <div style="font-size:72px" class="float">${it.icon}</div>
+      <div class="float" style="display:grid;place-items:center">${ico3d(it.icon, 84)}</div>
       <h1 class="mt-3">${esc(it.title)}</h1>
       <p class="muted">${esc(it.desc || '')}</p>
       ${activity.intro ? `<p class="mt-3" style="line-height:1.8">${esc(activity.intro)}</p>` : ''}
       <div class="row mt-4" style="justify-content:center;gap:14px;flex-wrap:wrap">
         <span class="tag tag-gold">+${fmt(it.xp || 20)} XP</span>
-        ${activity.practice ? '<span class="tag tag-green">تدريب بدون قلوب</span>' : '<span class="tag tag-rose">❤️ الخطأ يكلّف قلباً</span>'}
+        ${activity.practice ? '<span class="tag tag-green">تدريب بدون قلوب</span>' : '<span class="tag tag-rose">' + ico3d('heart') + ' الخطأ يكلّف قلباً</span>'}
         ${st ? `<span class="row" style="gap:6px">${crown(st.mastery)}<span class="small muted">أفضل ${fmt(st.best)}٪</span></span>` : ''}
       </div>
       <button class="btn btn-primary btn-lg btn-block mt-6" data-act="start">${ico('play')} ابدأ!</button>
@@ -103,7 +104,7 @@ export async function render(root, { id }) {
         <div class="grow">
           <div class="f-title">${ok ? CHEERS[Math.floor(Math.random() * CHEERS.length)] : OOPS[Math.floor(Math.random() * OOPS.length)]}</div>
           ${q.explain ? `<div class="f-exp">${esc(q.explain)}</div>` : ''}
-          ${outHearts ? '<div class="f-exp" style="color:var(--neon-rose)">💔 خلصت القلوب!</div>' : ''}
+          ${outHearts ? '<div class="f-exp" style="color:var(--neon-rose)">' + ico3d('heartBroken') + ' خلصت القلوب!</div>' : ''}
         </div>
         <button class="btn ${ok ? 'btn-primary' : 'btn-rose'} btn-lg" data-act="next">${s.i + 1 < s.total && !outHearts ? 'التالي' : 'النتيجة'} ${ico('fwd')}</button>
       </div></div>`);
@@ -119,8 +120,8 @@ export async function render(root, { id }) {
   function finish(s, aborted = false) {
     document.querySelector('.feedback')?.remove(); document.body.classList.remove('has-feedback');
     const r = s.finish(aborted);
-    const emoji = r.perfect ? '🏆' : r.score >= 80 ? '🌟' : r.score >= 50 ? '👍' : '💪';
-    if (r.perfect) { confetti({ count: 220 }); sound.play('fanfare'); fx.celebrate({ big: true, xp: r.xp, combo: 1 }); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.25, innerHeight * 0.35, 2), 350); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.75, innerHeight * 0.35, 2), 700); } else if (r.score >= 80) { confetti({ count: 100 }); sound.play('cheer'); fx.celebrate({ xp: r.xp, combo: 2 }); } else if (r.score >= 50) { sound.play('streak'); fx.floater('شغل حلو! 👍'); } else { sound.play('encourage'); }
+    const emoji = r.perfect ? ico3d('trophy') : r.score >= 80 ? ico3d('star') : r.score >= 50 ? ico3d('thumb') : ico3d('muscle');
+    if (r.perfect) { confetti({ count: 220 }); sound.play('fanfare'); fx.celebrate({ big: true, xp: r.xp, combo: 1 }); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.25, innerHeight * 0.35, 2), 350); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.75, innerHeight * 0.35, 2), 700); } else if (r.score >= 80) { confetti({ count: 100 }); sound.play('cheer'); fx.celebrate({ xp: r.xp, combo: 2 }); } else if (r.score >= 50) { sound.play('streak'); fx.floater('شغل حلو! ' + ico3d('thumb')); } else { sound.play('encourage'); }
     stage.innerHTML = '';
     stage.appendChild(el(`<div class="card q-card">
       <div class="result-big">${emoji}</div>
@@ -132,10 +133,10 @@ export async function render(root, { id }) {
         <div class="stat"><b>${fmt(r.score)}٪</b><span>النتيجة</span></div>
         <div class="stat"><b style="color:var(--neon-gold)">+${fmt(r.xp)}</b><span>XP</span></div>
         <div class="stat"><b>${fmt(Math.floor(r.secs / 60))}:${String(r.secs % 60).padStart(2, '0')}</b><span>الوقت</span></div>
-        <div class="stat"><b>${crown(r.mastery)}</b><span>الإتقان ${r.mastery > r.masteryBefore ? '⬆️' : r.mastery < r.masteryBefore ? '⬇️' : ''}</span></div>
+        <div class="stat"><b>${crown(r.mastery)}</b><span>الإتقان ${r.mastery > r.masteryBefore ? ico3d('arrowUp') : r.mastery < r.masteryBefore ? ico3d('arrowDown') : ''}</span></div>
       </div>
-      ${r.streakUp ? '<p class="tag tag-gold" style="display:inline-block">🔥 شعلة اليوم اشتعلت!</p>' : ''}
-      ${r.certificate ? `<a href="#/certificate/${r.certificate.id}" class="card clickable tile glow-gold mt-3" style="text-align:start"><div class="icon-box">🎓</div><div class="grow"><h3>شهادة إتقان جديدة!</h3><p>اضغط لعرضها وطباعتها</p></div><span class="chev">${ico('chevronL')}</span></a>` : ''}
+      ${r.streakUp ? '<p class="tag tag-gold" style="display:inline-block">' + ico3d('flame') + ' شعلة اليوم اشتعلت!</p>' : ''}
+      ${r.certificate ? `<a href="#/certificate/${r.certificate.id}" class="card clickable tile glow-gold mt-3" style="text-align:start"><div class="icon-box">${ico3d('gradCap')}</div><div class="grow"><h3>شهادة إتقان جديدة!</h3><p>اضغط لعرضها وطباعتها</p></div><span class="chev">${ico('chevronL')}</span></a>` : ''}
       ${r.newBadges.length ? `<div class="row wrap mt-3" style="justify-content:center">${r.newBadges.map((b) => `<span class="tag tag-gold" style="font-size:13px;padding:6px 12px;gap:6px">${badgeSVG(b.id, b.tier, { size: 26 })} ${esc(b.name)}</span>`).join('')}</div>` : ''}
       <div class="row mt-6" style="gap:10px">
         <button class="btn btn-primary btn-lg grow" data-act="again">${ico('refresh')} مرة أخرى</button>
@@ -148,10 +149,10 @@ export async function render(root, { id }) {
   async function noHearts() {
     const p = store.profile; const ms = hearts.nextIn(); const mins = Math.ceil(ms / 60000);
     await modal({
-      title: '💔 خلصت القلوب!',
-      body: `<p class="muted">القلب الجاي يرجع بعد <b>${fmt(mins)}</b> دقيقة.<br>عندك <b>${fmt(p.gems)} 💎</b> — تقدر تملأ القلوب بـ 20 جوهرة، أو تفرقع فقاعات وتستنى 😄</p>`,
+      title: ico3d('heartBroken') + ' خلصت القلوب!',
+      body: `<p class="muted">القلب الجاي يرجع بعد <b>${fmt(mins)}</b> دقيقة.<br>عندك <b>${fmt(p.gems)} ${ico3d('gem')}</b> — تقدر تملأ القلوب بـ 20 جوهرة، أو تفرقع فقاعات وتستنى ${ico3d('smile')}</p>`,
       actions: [
-        { label: 'املأ القلوب (20 💎)', cls: 'btn-primary', icon: 'heart', onClick: () => { if (!hearts.refill(20)) { toast('جواهر غير كافية 💎', { type: 'error' }); return false; } toast('❤️ رجعت القلوب!', { type: 'success' }); } },
+        { label: 'املأ القلوب (20 ' + ico3d('gem') + ')', cls: 'btn-primary', icon: 'heart', onClick: () => { if (!hearts.refill(20)) { toast('جواهر غير كافية ' + ico3d('gem'), { type: 'error' }); return false; } toast(ico3d('heart') + ' رجعت القلوب!', { type: 'success' }); } },
         { label: 'رجوع', cls: 'btn-ghost' },
       ],
     });
