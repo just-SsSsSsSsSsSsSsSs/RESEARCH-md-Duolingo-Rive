@@ -53,7 +53,7 @@ export const router = {
       const cleanup = await m.view.render(el, { ...m.params, ...info.query });
       if (typeof cleanup === 'function') current.cleanup = cleanup;
     } catch (e) {
-      console.error(e);
+      if (!e?.friendly) console.error(e);
       el.innerHTML = `<div class="card center"><div style="font-size:48px">😵</div><h2>حصلت مشكلة</h2><p class="muted">${e.message || e}</p><button class="btn btn-primary mt-4" onclick="location.hash='#/home'">الرئيسية</button></div>`;
     }
     bus.emit('route:change', info);

@@ -40,7 +40,7 @@ export function recommend() {
 
 export async function render(root, { id }) {
   const s = registry.subject(id);
-  if (!s) throw new Error('مادة غير موجودة');
+  if (!s) throw Object.assign(new Error('مادة غير موجودة'), { friendly: true });
   const h = hud({ back: true, title: `${s.icon} ${s.title}` });
   root.appendChild(h);
   const items = registry.items({ subject: id, hero: store.profile.id });

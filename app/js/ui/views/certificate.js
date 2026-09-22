@@ -40,7 +40,7 @@ const CORNER = `<svg class="corner" viewBox="0 0 64 64" fill="none" stroke="curr
 export async function render(root, { id, parent }) {
   const p = store.profile;
   const c = p.certificates.find((x) => x.id === id);
-  if (!c) throw new Error('الشهادة غير موجودة');
+  if (!c) throw Object.assign(new Error('الشهادة غير موجودة'), { friendly: true });
   const it = registry.item(c.activityId) || {};
   const subj = registry.subject(c.subject) || {};
   const li = levelInfo(c.xp);

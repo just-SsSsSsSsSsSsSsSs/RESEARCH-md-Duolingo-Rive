@@ -17,7 +17,7 @@ const OOPS = ['مش مشكلة، نتعلم من الخطأ 💪', 'قريب ج�
 
 export async function render(root, { id }) {
   const it = registry.item(id);
-  if (!it) throw new Error('نشاط غير موجود');
+  if (!it) throw Object.assign(new Error('نشاط غير موجود'), { friendly: true });
   const activity = await registry.loadActivity(id);
   const h = hud({ back: true, title: it.title });
   root.appendChild(h);
