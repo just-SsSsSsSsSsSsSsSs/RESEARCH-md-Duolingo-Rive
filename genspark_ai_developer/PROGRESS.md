@@ -112,7 +112,7 @@ app/
 - [x] L6: e2e.py + viewports.py أخضر على 4 أجهزة (0 أخطاء، أهداف ≥44px، لا overflow، FX يعمل) + لقطات مراجَعة
 - [x] L7: PR #2 → https://github.com/html-mobile-audio/html-mobile-audio/pull/2
 
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
 
 ---
 
@@ -136,9 +136,9 @@ app/
 - [x] K5: Party FX متنوعة: 6 أنواع (poppers شرائط، بلالين تطير وتفرقع، ألعاب نارية، نجوم متلألئة، مطر قلوب، حلقات ضوء) تُختار عشوائياً بدون تكرار متتالٍ + أصوات مطابقة (popper/balloon-pop/firework)
 - [x] K6: اختبار: e2e + viewports + اختبار جديد لتراكب البار (آخر عنصر مرئي كامل بعد scroll) + لقطات
 - [x] K7: PR #3 → https://github.com/html-mobile-audio/html-mobile-audio/pull/3 (commit مضغوط 3102f49+)
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
 
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
 **نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #3، أو بعد الدمج: Backlog RESEARCH.md §5 (اقتراح: K8 شارات SVG لصفحة الـHome/Profile، K9 وضع Focus أيضاً في quests، K10 تحسين أداء الحفلات على أجهزة ≤2GB).
 
 ---
@@ -163,9 +163,9 @@ app/
 - [x] P5: `emoji_audit.py` = 0 + اختبار طبقات (fx canvas فوق الكارت) + e2e + viewports + navoverlap
 - [x] P6: → https://github.com/html-mobile-audio/html-mobile-audio/pull/4 (squash 683cec6) RESEARCH.md (Append-Only) مراجع المنصات + PROGRESS + PR #4
 
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
 
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
 **نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #4، أو بعد الدمج: شخصية مرشدة ثابتة (Duo/Kodi-style) + تقارير أهل أسبوعية + Focus mode في quests (Backlog RESEARCH.md §5 + ملحق Pure-Web).
 
 ---
@@ -178,9 +178,9 @@ app/
 - [x] H2 svg_leak.py ✅ emoji_audit ✅ layering ✅ e2e ✅ viewports ✅ navoverlap ✅ (+ answer-box inline layout)
 - [x] H3 PR #5 → https://github.com/html-mobile-audio/html-mobile-audio/pull/5 (squash 263822a)
 
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
 
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
 **نقطة الاستئناف التالية:** معالجة ملاحظات المراجعة على PR #5، أو بعد الدمج: شخصية مرشدة ثابتة (Duo/Kodi-style) + تقارير أهل أسبوعية + Focus mode في quests (Backlog RESEARCH.md §5 + ملحق Pure-Web).
 
 ---
@@ -207,7 +207,7 @@ app/
 - [x] G8: اختبارات: `plant_story.py` جديد (صوت يشتغل، تبديل، 4 مراحل، XP) + كل الـsuites (emoji_audit 0، svg_leak، layering، e2e، viewports، navoverlap) + sha256 لـplant.html
 - [x] G9: PROGRESS + PR #6 بجدول مقارنة هندسي/تربوي
 
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
 
 ### نتائج المرحلة 7 (مُجمَّعة)
 - **صوت:** 22 مقطع MP3 مستخرج من plant.html (12 فصحى + 10 بلدي) إلى `app/content/audio/plant/{fusha,baladi}/` — plant.html sha256 `fb197ed2…722c` سليم 100%.
@@ -230,4 +230,20 @@ app/
 - [x] H3: أيقونات backlog صغيرة: `soil`, `rainDrop`, `speechBubble`, `bookmark` (+ استخدامها في الدفتر/القصة)
 - [x] H4: اختبارات (plant_story.py يتحقق من timings + journal view) + كل الـsuites + squash + تحديث وصف PR #6
 
-**آخر تحديث:** المرحلة 8 مكتملة ✅ — 8 suites خضراء على خادم Range (tools/serve.py)، seek دقيق للجُمل، دفتري، 106 أيقونة، v6.1 · PR #6 محدَّث https://github.com/html-mobile-audio/html-mobile-audio/pull/6 · نقطة الاستئناف التالية: انتظار دمج PR #6 → المرحلة 9 (قصة ثانية بنفس محرك story)
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).
+
+---
+
+## المرحلة 9 — Dynamic Replayability · المصحف التفاعلي · Math Lab (→ PR #7) — خطة مجمّدة
+
+> الأساس: `origin/main @ 095e8d1` (PR #6 مدموج). ملفات محمية (sha256 مسجّلة): `albayyinah.html` aac6bafb…، `math.html` 694859aa…، `quran-alqadr/index.html` 52758e3f…، `plant.html` fb197ed2…
+
+- [x] I1: أصوات المصحف: تنزيل آيات البينة (98:1–8) والقدر (97:1–5) + بسملة بصوت **الحصري المعلم** و**المنشاوي** (everyayah.com) → `app/content/audio/quran/{husary,minshawi}/{098,097}_NNN.mp3` + توقيتات (كل آية ملف مستقل = تظليل دقيق 100%)
+- [x] I2: بيانات `quran_bayyinah.json` و`quran_qadr.json` (نص عثماني، تفسير ميسر بالبلدي لكل آية، مراحل: ترتيب آيات + أكمل الكلمة + اختيار معنى) — النمط `type:"quran"`
+- [x] I3: `views/quranReader.js` + `css/quran.css`: مصحف تفاعلي (Dual Engine حصري↔منشاوي، تظليل الآية الجارية، القفز باللمس، تشغيل متسلسل، تكرار آية، شريحة تفسير بالبلدي، تبديل كلاسيك↔حديث → albayyinah.html / quran-alqadr/index.html)
+- [x] I4: مراحل قرآنية (ترتيب/أكمل/معنى) بنفس renderers القصة + احتفال foreground + XP/شارات `quran_reader_1`
+- [x] I5: Math: مولّدات إضافية (`grid` شبكة مصفوفة، `pick` اختيار النواتج) + renderer `grid` + كل نشاط رياضيات يصبح generator-only (zero static)؛ اختبار عشوائية: جلستان متتاليتان ≠ ترتيب/أرقام
+- [x] I6: زر كلاسيك↔حديث في شريط مادة الرياضيات (`math.html`) والقرآن
+- [x] I7: اختبارات `quran_reader.py` + `math_random.py` + كل الـsuites + sha256 للمحميات + PROGRESS + squash + PR #7
+
+**آخر تحديث:** Phase 9 ✅ مكتملة — I1..I7 كلها: مصحف تفاعلي (البينة+القدر، حصري+منشاوي، تظليل دقيق، تفسير بلدي، مراحل ترتيب/إكمال/معنى)، توليد عشوائي لكل أنشطة الرياضيات (numpad/quiz/grid/pick/truefalse)، شريط كلاسيك <-> حديث في كل مادة. الاختبارات (10 suites) كلها PASS على :8090 + sha256 للمحميات سليم. → PR #7 مفتوح؛ التالي: Phase 10 (بعد الدمج).

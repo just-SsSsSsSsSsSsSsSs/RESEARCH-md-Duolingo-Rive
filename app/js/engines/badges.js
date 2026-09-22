@@ -36,6 +36,8 @@ export const BADGES = [
   { id: 'early_bird', name: 'عصفور الصباح', desc: 'تعلّم قبل 9 صباحاً', icon: 'sunrise', tier: 1, check: (p) => ({ prog: p.counters.earlyBird || 0, target: 1 }) },
   { id: 'night_owl', name: 'بومة الليل', desc: 'تعلّم بعد 8 مساءً', icon: 'owl', tier: 1, check: (p) => ({ prog: p.counters.nightOwl || 0, target: 1 }) },
   { id: 'quests_10', name: 'صائد المهام', desc: 'أكمل 10 مهام يومية', icon: 'scroll', tier: 2, check: (p) => ({ prog: p.counters.questsDone || 0, target: 10 }) },
+  { id: 'quran_reader_1', name: 'قارئ المصحف', desc: 'أكمل مصحفاً تفاعلياً بنتيجة 80٪ أو أكثر', icon: 'quran', tier: 1, check: (p) => ({ prog: ['quran_bayyinah', 'quran_qadr'].some((k) => (p.activities[k]?.best || 0) >= 80) ? 1 : 0, target: 1 }) },
+  { id: 'quran_reader_2', name: 'حافظ السورتين', desc: 'أتقن مصحف البينة والقدر معاً (100٪)', icon: 'crown', tier: 2, check: (p) => ({ prog: ['quran_bayyinah', 'quran_qadr'].filter((k) => (p.activities[k]?.best || 0) >= 100).length, target: 2 }) },
   { id: 'plant_story_1', name: 'بستاني القصص', desc: 'أكمل قصة «ازرع نبتة» الحديثة بنتيجة 80٪ أو أكثر', icon: 'sprout', tier: 1, check: (p) => ({ prog: (p.activities.plant_story?.best || 0) >= 80 ? 1 : 0, target: 1 }) },
   { id: 'plant_story_master', name: 'وردة مريم', desc: 'أتقن قصة «ازرع نبتة» بإجابات كاملة', icon: 'flower', tier: 2, check: (p) => ({ prog: (p.activities.plant_story?.best || 0) >= 100 ? 1 : 0, target: 1 }) },
   { id: 'certificate_1', name: 'أول شهادة', desc: 'احصل على شهادة تقدير', icon: 'gradCap', tier: 2, check: (p) => ({ prog: p.certificates.length, target: 1 }) },

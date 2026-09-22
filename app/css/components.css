@@ -293,3 +293,10 @@
 /* Phase 8 — journal (دفتري) */
 .journal-entry { padding: 12px 14px; }
 .journal-a { font-size: 16px; line-height: 1.9; font-weight: 700; white-space: pre-wrap; }
+
+/* Phase 9 — math grid + pick */
+.dot-grid { display: grid; grid-template-columns: repeat(var(--cols, 5), 1fr); gap: 6px; justify-items: center; max-width: min(100%, calc(var(--cols, 5) * 40px)); margin: 8px auto 0; direction: ltr; }
+.dot-grid .dot { width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #9be7ff, #1e90ff 70%); box-shadow: 0 3px 8px rgba(0,0,0,.35), inset 0 -3px 6px rgba(0,0,0,.25); animation: popIn .35s var(--ease-spring, ease) both; }
+@media (max-width: 420px) { .dot-grid .dot { width: 22px; height: 22px; } .dot-grid { gap: 5px; max-width: min(100%, calc(var(--cols, 5) * 30px)); } }
+.pick-grid { grid-template-columns: repeat(3, 1fr); }
+.pick-grid .choice { font-size: 26px; font-weight: 900; min-height: 64px; }

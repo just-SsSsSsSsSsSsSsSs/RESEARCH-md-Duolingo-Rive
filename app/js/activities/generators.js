@@ -53,6 +53,25 @@ const KINDS = {
       return { ...asQuiz(`(${AR(a)} × ${AR(s1)}) + (${AR(a)} × ${AR(s2)}) = ؟`, a * b), key: `e${a}${b}${s1}`, explain: `= ${AR(a)} × (${AR(s1)} + ${AR(s2)}) = ${AR(a)} × ${AR(b)} = ${AR(a * b)}` };
     });
   },
+  /** grid: a visual array (rows × cols of dots) — child counts / multiplies; answered via numpad or quiz */
+  grid(g) {
+    const [lo, hi] = g.range || [2, 9]; const types = g.types || ['numpad', 'quiz'];
+    return uniqSet(g.count || 6, () => {
+      const rows = pick(g.tables || [2, 3, 4, 5]), cols = rnd(lo, hi), ans = rows * cols, t = pick(types);
+      const q = `كم نقطة في الشبكة؟  ${AR(rows)} صفوف × ${AR(cols)} أعمدة`;
+      const base = { type: 'grid', q, rows, cols, answer: ans, mode: t, key: `g${rows}x${cols}`, explain: `${AR(rows)} × ${AR(cols)} = ${AR(ans)}` };
+      return t === 'quiz' ? { ...base, ...asQuiz(q, ans), type: 'grid' } : base;
+    });
+  },
+  /** pick: choose ALL products of table a among a set of numbers (multi-select) */
+  pickProducts(g) {
+    return uniqSet(g.count || 4, () => {
+      const a = pick(g.tables || [3, 4]); const good = new Set(); while (good.size < 3) good.add(a * rnd(1, 10));
+      const bad = new Set(); let guard = 0; while (bad.size < 3 && guard++ < 200) { const n = rnd(2, a * 10); if (n % a) bad.add(n); }
+      const items = [...good, ...bad]; for (let i = items.length - 1; i > 0; i--) { const j = rnd(0, i); [items[i], items[j]] = [items[j], items[i]]; }
+      return { type: 'pick', q: `اختر كل الأعداد التي هي من مضاعفات ${AR(a)} (${AR(good.size)} أعداد)`, items: items.map(AR), correct: items.map((n, i) => n % a === 0 ? i : -1).filter((i) => i >= 0), key: `p${a}${[...good].join(',')}`, explain: `مضاعفات ${AR(a)}: ${[...good].sort((x, y) => x - y).map(AR).join('، ')}` };
+    });
+  },
   add(g) { const max = g.max || 50; return uniqSet(g.count || 10, () => { const a = rnd(1, max), b = rnd(1, max); return { type: 'numpad', q: `${AR(a)} + ${AR(b)} = ؟`, answer: a + b, big: true, key: `a${a}+${b}` }; }); },
   sub(g) { const max = g.max || 50; return uniqSet(g.count || 10, () => { const a = rnd(1, max), b = rnd(1, a); return { type: 'numpad', q: `${AR(a)} − ${AR(b)} = ؟`, answer: a - b, big: true, key: `s${a}-${b}` }; }); },
 };
