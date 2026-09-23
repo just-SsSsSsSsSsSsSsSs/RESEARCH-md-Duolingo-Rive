@@ -342,4 +342,23 @@ app/
 - [x] M4a: README 12.1 + v7.10 (b294729) + 19 suite PASS في sandbox جديد + sha256 سليم + PR13_BODY.md
 - [x] M4b: معاينة حية مُتحقَّقة من الخارج (200، v7.10، renderer/CSS المُصلَحان يُخدَمان): https://8090-i97dii80goc0mrecx4o1g-2e1b9533.sandbox.novita.ai/app/index.html#/play/distributive + squash فوق main (98d3d9c، commit واحد) + **PR #13 مفتوح: https://github.com/html-mobile-audio/html-mobile-audio/pull/13**
 
-**آخر تحديث:** Phase 12.1 ✅ مكتملة M1-M4b — **PR #13 مفتوح: https://github.com/html-mobile-audio/html-mobile-audio/pull/13** (PR #12 كان قد دُمج قبل طلب «التحديث في مكانه»، فالإصلاح يحتاج PR جديدًا؛ الرقم يخصّصه GitHub). ملاحظة: رابط المعاينة الحية مرتبط بالـsandbox الحالي؛ عند reset يجب إعادة تشغيل tools/serve.py 8090 وتوليد رابط جديد والتحقق منه من الخارج قبل الدمج. التالي: انتظار مراجعة المالك للمعاينة ثم الدمج.
+**آخر تحديث:** Phase 12.1 ✅ مكتملة M1-M4b — **PR #13 دُمج (2eb2f9f): https://github.com/html-mobile-audio/html-mobile-audio/pull/13** (PR #12 كان قد دُمج قبل طلب «التحديث في مكانه»، فالإصلاح يحتاج PR جديدًا؛ الرقم يخصّصه GitHub). ملاحظة: رابط المعاينة الحية مرتبط بالـsandbox الحالي؛ عند reset يجب إعادة تشغيل tools/serve.py 8090 وتوليد رابط جديد والتحقق منه من الخارج قبل الدمج. التالي: انتظار مراجعة المالك للمعاينة ثم الدمج.
+
+---
+
+## Phase 12.2 — Mobile TTS + Paced Karaoke (gist 250138e4) — خطة مجمّدة
+
+**تحقق من ادعاءات الـgist في الكود قبل التنفيذ (RULES.md: صفر قبول أعمى):**
+- ✅ صحيح: `explainSheet.js:80` — `say()` يستدعي `speak()` داخل `setTimeout(...,120)` بينما «اسمع تاني» (سطر 71) متزامن -> على iOS/Android أول `speechSynthesis.speak()` خارج الـgesture يُكتم.
+- ✅ صحيح: `speech.js:136` — `u.onend = () => { if (fallbackStarted) return; next(); }` بلا فحص زمني -> عند onend فوري (صوت مكتوم/غائب) تتسلسل الجمل في ms، `finish()` (سطر 107) يمسح مؤقت الحارس 1200ms (سطر 140)، و`onEnd` في explainSheet يلوّن كل الكلمات `.said` دفعة = الوميض المرصود.
+- ❌ مرفوض: «الكود يفترض ar-EG دائمًا» — `rank()` (78/83) يقبل أي `ar-*` مع تفضيل ar-EG؛ `onvoiceschanged` مربوط (153)؛ `onerror` + حارس 1200ms يشغّلان الكاريوكي البصري. لا إعادة بناء لسلسلة اللغات.
+- ❌ مرفوض: pacing ثابت 300-350ms — `schedule()` (112) يحسب حسب طول الكلمة (min 260ms)؛ يُعاد استخدامه كما هو.
+- ملاحظة: «PR #14» رقم يخصّصه GitHub.
+
+**Chunks (push-per-chunk):**
+- [x] N1 (a0cdd37): `speech.js` — (a) `warm()` يُربط بأول pointerdown/touchstart/keydown (كما sound.js:37): utterance فارغ + `cancel()` لفتح المحرك على iOS؛ (b) Pacing Guard في `onend`: لو الجملة انتهت في زمن < `minMs = max(250, spokenWords*120)` أو بلا `onstart` -> لا `next()`؛ `fallbackStarted=true` و`schedule()` من الكلمة الحالية؛ (c) `onEnd` لا يُنادى قبل انتهاء الجدول البصري.
+- [x] N2 (a0cdd37): `explainSheet.js:80` — إزالة `setTimeout(120)`: `say()` متزامن داخل مسار النقر (open->show->say). التحقق: لا تغيير في ترتيب DOM (الـkaraoke يُبنى قبل `say`).
+- [x] N3: `app/tests/phase12_mobile_tts.py` PASS 17/17 (A: محرك صامت onend بعد 5ms -> 8 كلمات في 4.8s، dwell>=313ms، utterance واحد فقط، speak متزامن داخل click؛ B: بلا onstart -> حارس 1200ms؛ C: headless انحدار). درس: add_init_script يحتاج IIFE لا arrow بلا استدعاء — Playwright بجهاز Pixel/iPhone: mock `speechSynthesis` يطلق onstart+onend بعد 5ms (كتم)؛ التحقق أن التظليل يستغرق >= 2.5s لجملة 6+ كلمات ولا يقفز؛ + أن `speak()` نُودي متزامنًا مع النقر (stack flag داخل الحدث).
+- [x] N4: 20 suite PASS (quran_reader فشل مرة واحدة على woff2 من fonts.gstatic في دفعة ثقيلة = شبكة، PASS منفردًا) + sha256 المحميات سليم + README 12.2 + v7.11 + PR14_BODY.md + معاينة مُتحقَّقة: https://8090-irbfdwdys21fw69guwt6g-b32ec7bb.sandbox.novita.ai/app/index.html#/play/mult_3 ؛ ثم squash (e2c737e، commit واحد) + **PR #14: https://github.com/html-mobile-audio/html-mobile-audio/pull/14**. أصل الخطة: + sha256 المحميات + README append (12.2) + bump v7.11 + squash فوق main + PR جديد + معاينة حية.
+
+**آخر تحديث:** Phase 12.2 ✅ مكتملة N1-N4 — **PR #14 مفتوح: https://github.com/html-mobile-audio/html-mobile-audio/pull/14**. التالي: اختبار المالك الميداني على الهاتف الحقيقي (الصوت نفسه لا يُختبر في Playwright، الـpacing نعم) ثم الدمج.

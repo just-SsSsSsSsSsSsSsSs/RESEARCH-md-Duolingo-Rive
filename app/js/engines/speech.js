@@ -12,6 +12,9 @@
  *   speech.speak(text, { rate, onWord(i, word), onEnd, onStart })
  *   speech.stop(); speech.available; speech.speaking; speech.voices() (ranked); phonetic(text); numWords(n)
  * Phase 11 K4: quality-ranked voice choice, Egyptian phonetic layer for the spoken text, one utterance per sentence.
+ * Phase 12.2: warm() unlocks the engine inside the first gesture (mobile autoplay policy); pacing guard - a sentence
+ *   whose utterance ends faster than it could be spoken (muted/silent device) hands over to the paced visual karaoke
+ *   instead of chaining the next sentence, so the highlight never flashes through the text in milliseconds.
  */
 import store from '../core/store.js';
 
@@ -106,9 +109,10 @@ export const speech = {
     current = state;
     const finish = () => { if (state.cancelled) return; state.cancelled = true; clearTimeout(state.timer); if (current === state) current = null; onEnd?.(); };
 
-    // timed fallback: per-word duration estimated from its length, min 260ms
-    const schedule = () => {
-      let i = 0;
+    // timed fallback: per-word duration estimated from its length, min 260ms.
+    // Phase 12.2: `from` lets the pacing guard resume from the word the (muted) voice stopped at.
+    const schedule = (from = 0) => {
+      let i = from;
       const step = () => { if (state.cancelled) return; if (i >= words.length) { finish(); return; } onWord?.(i, words[i].w); const ms = Math.max(260, (words[i].w.length * 95 + 180) / r); i++; state.timer = setTimeout(step, ms); };
       step();
     };
@@ -123,22 +127,32 @@ export const speech = {
     const rr = rate ?? (store.profile?.settings?.explain?.rate ?? (this.isNatural(v) ? 0.95 : 0.9));
     const sents = sentences(text); let wordBase = 0; const parts = sents.map((st) => { const n = tokenize(st).length; const part = { st, wordBase, n, spoken: phonetic(st) }; part.spokenWords = tokenize(part.spoken); wordBase += n; return part; });
     let usedBoundary = false, fallbackStarted = false, started = false, k = 0;
+    // Phase 12.2 pacing guard: a sentence can not be *spoken* faster than ~120ms per word. When the browser fires
+    // onend sooner (muted device / missing voice / silent engine - observed on Android+iOS), the words were never
+    // heard, so instead of chaining next() we hand over to the paced visual karaoke from that very sentence.
+    const minMs = (part) => Math.max(250, part.spokenWords.length * 120);
+    const pace = (from) => { if (fallbackStarted || state.cancelled) return; fallbackStarted = true; clearTimeout(state.timer); if (!started) { started = true; onStart?.(); } schedule(from); };
     return new Promise((resolve) => {
       const next = () => {
         if (state.cancelled) { resolve(); return; }
         if (k >= parts.length) { finish(); resolve(); return; }
-        const part = parts[k++];
+        const part = parts[k++]; let t0 = 0, partStarted = false;
         try {
           const u = new SpeechSynthesisUtterance(part.spoken); state.utter = u;
           u.lang = 'ar-EG'; u.rate = rr; u.pitch = pitch; if (v) u.voice = v;
-          u.onstart = () => { if (!started) { started = true; onStart?.(); onWord?.(part.wordBase, words[part.wordBase]?.w); state.timer = setTimeout(() => { if (!usedBoundary && !state.cancelled) { fallbackStarted = true; schedule(); } }, 900); } else if (!fallbackStarted) onWord?.(part.wordBase, words[part.wordBase]?.w); };
+          u.onstart = () => { t0 = performance.now(); partStarted = true; if (!started) { started = true; onStart?.(); onWord?.(part.wordBase, words[part.wordBase]?.w); state.timer = setTimeout(() => { if (!usedBoundary && !state.cancelled) { fallbackStarted = true; schedule(part.wordBase); } }, 900); } else if (!fallbackStarted) onWord?.(part.wordBase, words[part.wordBase]?.w); };
           u.onboundary = (e) => { if (fallbackStarted) return; usedBoundary = true; clearTimeout(state.timer); const si = part.spokenWords.findIndex((w) => e.charIndex >= w.start && e.charIndex < w.end); if (si < 0) return; const idx = part.wordBase + Math.min(part.n - 1, Math.round(si * (part.n / Math.max(1, part.spokenWords.length)))); onWord?.(idx, words[idx]?.w); };
-          u.onend = () => { if (fallbackStarted) return; next(); };
-          u.onerror = () => { if (!fallbackStarted && !state.cancelled) { fallbackStarted = true; if (!started) onStart?.(); schedule(); } resolve(); };
+          u.onend = () => {
+            if (fallbackStarted || state.cancelled) return;
+            const spent = partStarted ? performance.now() - t0 : 0;
+            if (!partStarted || spent < minMs(part)) { pace(part.wordBase); resolve(); return; } // silent -> paced karaoke, never skip
+            next();
+          };
+          u.onerror = () => { pace(part.wordBase); resolve(); };
           if (k === 1) speechSynthesis.cancel();
           speechSynthesis.speak(u);
-          if (k === 1) state.timer = setTimeout(() => { if (!state.cancelled && !usedBoundary && !fallbackStarted && !speechSynthesis.speaking) { fallbackStarted = true; onStart?.(); schedule(); } }, 1200); // Chrome may never fire onstart when no voice exists
-        } catch { if (!fallbackStarted) { fallbackStarted = true; onStart?.(); schedule(); } resolve(); }
+          if (k === 1) state.timer = setTimeout(() => { if (!state.cancelled && !usedBoundary && !fallbackStarted && !speechSynthesis.speaking) pace(0); }, 1200); // Chrome may never fire onstart when no voice exists
+        } catch { pace(part.wordBase); resolve(); }
       };
       next();
     });
@@ -148,8 +162,22 @@ export const speech = {
     if (current) { current.cancelled = true; clearTimeout(current.timer); current = null; }
     if (hasTTS()) { try { speechSynthesis.cancel(); } catch { /* noop */ } }
   },
+
+  /**
+   * Phase 12.2: unlock the speech engine inside the FIRST user gesture (same pattern as sound.js AudioContext
+   * unlock). iOS Safari / Android Chrome only trust speechSynthesis after a speak() that ran inside a gesture;
+   * an empty utterance + cancel() does that without producing sound. Idempotent.
+   */
+  warm() {
+    if (this.warmed || !hasTTS()) return; this.warmed = true;
+    try { const u = new SpeechSynthesisUtterance(''); u.volume = 0; speechSynthesis.speak(u); speechSynthesis.cancel(); speechSynthesis.getVoices(); } catch { /* noop */ }
+  },
+  warmed: false,
 };
 
-if (hasTTS()) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch { /* noop */ } }
+if (hasTTS()) {
+  try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch { /* noop */ }
+  ['pointerdown', 'touchstart', 'keydown'].forEach((ev) => window.addEventListener(ev, () => speech.warm(), { once: true, passive: true }));
+}
 if (typeof window !== 'undefined') window.__speech = speech; // E2E hook (read-only)
 export default speech;
