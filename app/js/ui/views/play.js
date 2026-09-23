@@ -18,6 +18,9 @@ import fx from '../../engines/fx.js';
 import { ico3d } from '../icons3d.js';
 
 const CHEERS = ['ممتاز! ' + ico3d('star'), 'برافو! ' + ico3d('clap'), 'عبقري! ' + ico3d('brain'), 'رهيب! ' + ico3d('rocket'), 'صح ١٠٠٪ ' + ico3d('hundred'), 'أنت بطل! ' + ico3d('hero'), 'استمر هكذا! ' + ico3d('flame')];
+// Phase 11 K3 - mistake learning loop copy (warm Egyptian; the answer is never revealed on the first miss)
+const RETRY = ['قريب يا بطل! فكّر تاني ' + ico3d('muscle'), 'لسه فيه فرصة! بصّ كويس وجرّب تاني ' + ico3d('eye'), 'مش مشكلة، الأبطال بيجرّبوا تاني ' + ico3d('hero')];
+const RECOVERED = ['اتعلمت من الغلط وحليتها صح بنفسك! ' + ico3d('trophy'), 'شاطر! المرة التانية طلعت صح ' + ico3d('star'), 'ده اللي الأبطال بيعملوه: غلطت، فهمت، وحليت ' + ico3d('hero')];
 const OOPS = ['مش مشكلة، نتعلم من الخطأ ' + ico3d('muscle'), 'قريب جداً! ' + ico3d('pinch'), 'حاول تركّز في المرة الجاية ' + ico3d('target'), 'كل بطل يغلط ويكمّل ' + ico3d('seedling')];
 
 export async function render(root, { id }) {
@@ -70,11 +73,20 @@ export async function render(root, { id }) {
     ask(s);
   }
 
+  /** Phase 11 K3: review round "تحدي أبطال الماث" - the questions missed on the first try, once more, in a light session */
+  function startReview(prev) {
+    const qs = prev.missedQuestions.map((q) => ({ ...q }));
+    if (!qs.length) return start();
+    const s = new Session({ ...activity, questions: qs, generator: null, count: qs.length, shuffle: false, practice: true, review: true });
+    sound.resetCombo();
+    ask(s);
+  }
+
   function ask(s) {
     const q = s.current; s.shown();
-    window.__play = { id, i: s.i, total: s.total, q, keys: s.questions?.map((x) => x.key || x.q) }; // E2E hook (read-only)
+    window.__play = { id, i: s.i, total: s.total, q, keys: s.questions?.map((x) => x.key || x.q), review: s.review, retry: s.isRetry }; // E2E hook (read-only)
     stage.innerHTML = '';
-    const head = el(`<div class="play-head"><span class="small muted">${fmt(s.i + 1)}/${fmt(s.total)}</span><div class="level-bar green"><span style="width:${s.progress}%"></span></div><button class="btn btn-icon btn-ghost" data-act="quit" aria-label="خروج">${ico('x')}</button></div>`);
+    const head = el(`<div class="play-head">${s.review ? `<span class="tag tag-gold" data-review-tag>${ico3d('trophy', 16)} تحدي أبطال الماث</span>` : ''}<span class="small muted">${fmt(s.i + 1)}/${fmt(s.total)}</span><div class="level-bar green"><span style="width:${s.progress}%"></span></div><button class="btn btn-icon btn-ghost" data-act="quit" aria-label="خروج">${ico('x')}</button></div>`);
     head.querySelector('[data-act="quit"]').onclick = async () => { if (await modal({ title: 'تخرج الآن؟', body: '<p class="muted">هتاخد نص النقاط بس على اللي جاوبته.</p>', actions: [{ label: 'أكمل اللعب', cls: 'btn-primary', value: false }, { label: 'خروج', cls: 'btn-ghost', value: true }] })) { finish(s, true); } };
     stage.appendChild(head);
     const card = el('<div class="card q-card"></div>');
@@ -85,39 +97,74 @@ export async function render(root, { id }) {
     const ctx = {
       font: activity.font,
       onCleanup: (f) => cleanups.push(f),
+      // Phase 11 K3: renderers may reveal the right answer only when no retry is left (second try / review round / out of hearts)
+      reveal: () => s.isRetry || s.review || (!activity.practice && hearts.count <= 1),
       done(ok, meta) {
         if (answered) return;
         // adaptive: impulsive child -> ignore taps that land before a short settle delay (choices only), ask to look again
         if (adapt.delayMs && (q.type === 'quiz' || q.type === 'truefalse' || q.type === 'grid') && Date.now() - askedAt < adapt.delayMs) { sound.play('tap'); fx.floater?.('بصّ كويس الأول ' + ico3d('eye')); return; }
         answered = true;
         explainSheet.close();
-        s.answer(ok, meta);
         const pt = meta.point || { x: innerWidth / 2, y: innerHeight * 0.45 };
+        // Phase 11 K3: first miss -> no answer reveal, warm nudge + one more try (the heart is taken once, in retry())
+        if (!ok && !s.isRetry && !s.review) {
+          const stop = s.retry(meta);
+          sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: meta.card });
+          if (stop) { s.answer(false, { ...meta, forced: true }); feedback(s, false, q); return; }
+          retryPrompt(s, q, card);
+          return;
+        }
+        const wasRetry = s.isRetry;
+        s.answer(ok, meta);
         if (ok) {
           sound.play('correct');
           const perQ = Math.max(1, Math.round((it.xp || 20) / s.total));
           fx.celebrate({ x: pt.x, y: pt.y, xp: perQ, combo: sound.combo, el: meta.card });
+          if (wasRetry) confetti({ count: 90 }); // learned from the mistake -> bigger cheer
         } else {
           sound.play('wrong');
           fx.encourage({ x: pt.x, y: pt.y, el: meta.card });
         }
-        feedback(s, ok, q);
+        feedback(s, ok, q, wasRetry);
       },
     };
     if (q.speak && sound.enabled) setTimeout(() => sound.speak(q.speak), 200);
     r(card, q, ctx);
-    cleanups.push(explainSheet.mount(card, { q, session: s })); // Phase 10: "يعني إيه يا بابا؟"
+    // Phase 10: "يعني إيه يا بابا؟" / Phase 11: after a miss, "هجرّب أحلّ" re-asks the same question empty
+    cleanups.push(explainSheet.mount(card, { q, session: s, onTry: () => { if (s.isRetry && answered && !s.ended && s.current === q && !document.querySelector('.feedback.good, .feedback.bad')) ask(s); } }));
     card.addEventListener('pointerdown', () => s.touch(), { once: true, passive: true });
+    if (s.isRetry) card.classList.add('retry');
   }
 
-  function feedback(s, ok, q) {
+  /**
+   * Phase 11 K3: after the first miss - soft shake, warm nudge (no answer), pulsing explain button.
+   * "جرّب تاني" re-renders the same question empty; opening the explain sheet hides this bar (its "هجرّب أحلّ" re-asks too).
+   */
+  function retryPrompt(s, q, card) {
+    document.querySelector('.feedback')?.remove();
+    card.classList.add('shake-soft');
+    card.querySelector('.explain-btn')?.classList.add('pulse');
+    const f = el(`<div class="feedback retry" data-retry>
+      <div class="container row">
+        <div class="grow"><div class="f-title">${RETRY[Math.floor(Math.random() * RETRY.length)]}</div>
+          <div class="f-exp">مش هقولك الجواب دلوقتي… لو محتاج مساعدة اضغط «يعني إيه يا بابا؟»</div></div>
+        <button class="btn btn-gold btn-lg" data-act="retry">${ico3d('muscle', 20)} جرّب تاني</button>
+      </div></div>`);
+    document.body.appendChild(f); document.body.classList.add('has-feedback');
+    const hide = () => { f.remove(); document.body.classList.remove('has-feedback'); };
+    f.querySelector('[data-act="retry"]').onclick = () => { sound.play('whoosh'); hide(); ask(s); };
+    card.querySelector('.explain-btn')?.addEventListener('click', hide, { once: true });
+  }
+
+  function feedback(s, ok, q, wasRetry = false) {
     document.querySelector('.feedback')?.remove();
     const outHearts = s.outOfHearts;
-    const f = el(`<div class="feedback ${ok ? 'good' : 'bad'}">
+    const title = ok ? (wasRetry ? RECOVERED[Math.floor(Math.random() * RECOVERED.length)] : CHEERS[Math.floor(Math.random() * CHEERS.length)]) : OOPS[Math.floor(Math.random() * OOPS.length)];
+    const f = el(`<div class="feedback ${ok ? 'good' : 'bad'}${ok && wasRetry ? ' recovered' : ''}">
       <div class="container row">
         <div class="grow">
-          <div class="f-title">${ok ? CHEERS[Math.floor(Math.random() * CHEERS.length)] : OOPS[Math.floor(Math.random() * OOPS.length)]}</div>
-          ${q.explain ? `<div class="f-exp">${esc(q.explain)}</div>` : ''}
+          <div class="f-title">${title}</div>
+          ${q.explain && !ok ? `<div class="f-exp">${esc(q.explain)}</div>` : ''}
           ${outHearts ? '<div class="f-exp" style="color:var(--neon-rose)">' + ico3d('heartBroken') + ' خلصت القلوب!</div>' : ''}
         </div>
         <button class="btn ${ok ? 'btn-primary' : 'btn-rose'} btn-lg" data-act="next">${s.i + 1 < s.total && !outHearts ? 'التالي' : 'النتيجة'} ${ico('fwd')}</button>
@@ -144,6 +191,8 @@ export async function render(root, { id }) {
   function finish(s, aborted = false) {
     document.querySelector('.feedback')?.remove(); document.body.classList.remove('has-feedback');
     const r = s.finish(aborted);
+    window.__lastResult = r; // E2E hook (read-only)
+    if (r.review) return finishReview(s, r);
     const emoji = r.perfect ? ico3d('trophy') : r.score >= 80 ? ico3d('star') : r.score >= 50 ? ico3d('thumb') : ico3d('muscle');
     if (r.perfect) { confetti({ count: 220 }); sound.play('fanfare'); fx.celebrate({ big: true, xp: r.xp, combo: 1 }); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.25, innerHeight * 0.35, 2), 350); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.75, innerHeight * 0.35, 2), 700); } else if (r.score >= 80) { confetti({ count: 100 }); sound.play('cheer'); fx.celebrate({ xp: r.xp, combo: 2 }); } else if (r.score >= 50) { sound.play('streak'); fx.floater('شغل حلو! ' + ico3d('thumb')); } else { sound.play('encourage'); }
     stage.innerHTML = '';
@@ -163,7 +212,30 @@ export async function render(root, { id }) {
       ${r.certificate ? `<a href="#/certificate/${r.certificate.id}" class="card clickable tile glow-gold mt-3" style="text-align:start"><div class="icon-box">${ico3d('gradCap')}</div><div class="grow"><h3>شهادة إتقان جديدة!</h3><p>اضغط لعرضها وطباعتها</p></div><span class="chev">${ico('chevronL')}</span></a>` : ''}
       ${r.newBadges.length ? `<div class="row wrap mt-3" style="justify-content:center">${r.newBadges.map((b) => `<span class="tag tag-gold" style="font-size:13px;padding:6px 12px;gap:6px">${badgeSVG(b.id, b.tier, { size: 26 })} ${esc(b.name)}</span>`).join('')}</div>` : ''}
       <div class="row mt-6" style="gap:10px">
+        ${!aborted && s.missedQuestions.length ? `<button class="btn btn-gold btn-lg grow" data-act="review">${ico3d('trophy', 22)} تحدي أبطال الماث (${fmt(s.missedQuestions.length)})</button>` : ''}
         <button class="btn btn-primary btn-lg grow" data-act="again">${ico('refresh')} مرة أخرى</button>
+        <a href="#/subject/${it.subject}" class="btn btn-lg grow">${ico('home')} المادة</a>
+      </div>
+    </div>`));
+    stage.querySelector('[data-act="review"]')?.addEventListener('click', () => { sound.play('whoosh'); startReview(s); });
+    stage.querySelector('[data-act="again"]').onclick = () => { sound.play('whoosh'); hearts.regen(); if (!activity.practice && hearts.count <= 0) noHearts().then(() => hearts.count > 0 && start()); else start(); };
+  }
+
+  /** Phase 11 K3: result card of the review round - celebrates every mistake turned into a correct answer */
+  function finishReview(s, r) {
+    if (r.perfect) { confetti({ count: 200 }); sound.play('fanfare'); fx.celebrate({ big: true, xp: r.xp, combo: 1 }); } else if (r.correct) sound.play('correct');
+    stage.innerHTML = '';
+    stage.appendChild(el(`<div class="card q-card" data-review-result>
+      <div class="result-big">${r.perfect ? ico3d('trophy') : r.correct ? ico3d('star') : ico3d('muscle')}</div>
+      <h1>${r.perfect ? 'بطل الماث الحقيقي!' : r.correct ? 'اتعلمت من غلطك!' : 'نكمّل التدريب مع بعض'}</h1>
+      <p class="muted" style="font-size:17px;line-height:1.8">${r.perfect ? `صلّحت ${fmt(r.total)} من ${fmt(r.total)} غلطات بنفسك. ده أحسن نوع تعلّم!` : `صلّحت ${fmt(r.correct)} من ${fmt(r.total)}. كل غلطة بتعلّمك حاجة جديدة.`}</p>
+      <div class="stats">
+        <div class="stat"><b style="color:var(--neon-green)">${fmt(r.correct)}</b><span>صلّحتها</span></div>
+        <div class="stat"><b style="color:var(--neon-rose)">${fmt(r.wrong)}</b><span>لسه محتاجة تدريب</span></div>
+        <div class="stat"><b style="color:var(--neon-gold)">+${fmt(r.xp)}</b><span>XP</span></div>
+      </div>
+      <div class="row mt-6" style="gap:10px">
+        <button class="btn btn-primary btn-lg grow" data-act="again">${ico('refresh')} ألعب المرحلة تاني</button>
         <a href="#/subject/${it.subject}" class="btn btn-lg grow">${ico('home')} المادة</a>
       </div>
     </div>`));

@@ -8,7 +8,9 @@ import { ico } from '../ui/icons.js';
 import { ico3d } from '../ui/icons3d.js';
 
 const fontCls = (q, ctx) => (q.font || ctx.font) === 'quran' ? 'quran' : '';
-const lock = (c) => c.querySelectorAll('button').forEach((b) => (b.disabled = true));
+const lock = (c) => c.querySelectorAll('button:not(.explain-btn)').forEach((b) => (b.disabled = true)); // the explain button stays usable after a miss (Phase 11)
+/** Phase 11 K3: may the correct answer be revealed after a wrong pick? play.js says no while a retry is still available */
+const reveal = (ctx) => !ctx.reveal || ctx.reveal() !== false;
 /** shuffle choices at render-time so the correct answer position is unpredictable */
 const shuffled = (q) => { if (q.noShuffle) return { choices: q.choices, answer: q.answer }; const idx = shuffle(q.choices.map((_, i) => i)); return { choices: idx.map((i) => q.choices[i]), answer: idx.indexOf(q.answer) }; };
 
@@ -19,7 +21,7 @@ export const renderers = {
     const grid = el('<div class="choices"></div>');
     q.choices.forEach((ch, i) => {
       const b = el(`<button class="choice ${fontCls(q, ctx)}">${esc(ch)}</button>`);
-      b.onclick = () => { lock(c); const ok = i === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) grid.children[q.answer]?.classList.add('correct'); [...grid.children].forEach((x, k) => k !== i && k !== q.answer && x.classList.add('dim')); ctx.done(ok, { picked: i }); };
+      b.onclick = () => { lock(c); const ok = i === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok && reveal(ctx)) grid.children[q.answer]?.classList.add('correct'); if (ok || reveal(ctx)) [...grid.children].forEach((x, k) => k !== i && k !== q.answer && x.classList.add('dim')); ctx.done(ok, { picked: i }); };
       grid.appendChild(b);
     });
     c.appendChild(grid);
@@ -30,7 +32,7 @@ export const renderers = {
     const grid = el('<div class="choices"></div>');
     [[true, ico3d('check') + ' صواب', 'btn-primary'], [false, ico3d('cross') + ' خطأ', 'btn-rose']].forEach(([v, label]) => {
       const b = el(`<button class="choice">${label}</button>`);
-      b.onclick = () => { lock(c); const ok = v === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) [...grid.children].find((x) => x !== b)?.classList.add('correct'); ctx.done(ok, { picked: v }); };
+      b.onclick = () => { lock(c); const ok = v === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok && reveal(ctx)) [...grid.children].find((x) => x !== b)?.classList.add('correct'); ctx.done(ok, { picked: v }); };
       grid.appendChild(b);
     });
     c.appendChild(grid);
@@ -44,7 +46,7 @@ export const renderers = {
     const grid = el('<div class="choices"></div>');
     q.choices.forEach((ch, i) => {
       const b = el(`<button class="choice ${fontCls(q, ctx)}">${esc(ch)}</button>`);
-      b.onclick = () => { lock(c); const ok = i === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) grid.children[q.answer]?.classList.add('correct'); txt.querySelector('.blank').textContent = q.choices[q.answer]; txt.querySelector('.blank').style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; ctx.done(ok, { picked: i }); };
+      b.onclick = () => { lock(c); const ok = i === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok && reveal(ctx)) grid.children[q.answer]?.classList.add('correct'); if (ok || reveal(ctx)) { txt.querySelector('.blank').textContent = q.choices[q.answer]; txt.querySelector('.blank').style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; } ctx.done(ok, { picked: i }); };
       grid.appendChild(b);
     });
     c.appendChild(grid);
@@ -63,7 +65,7 @@ export const renderers = {
       b.onclick = () => {
         sound.play('tick');
         if (k === 'del') val = val.slice(0, -1);
-        else if (k === 'ok') { if (!val) return; lock(c); const ok = Number(val) === Number(q.answer); box.style.borderColor = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; box.style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; if (!ok) box.innerHTML = `${fmt(Number(val))} ${ico3d('cross', 18)} الصحيح ${fmt(q.answer)}`; ctx.done(ok, { picked: Number(val) }); return; }
+        else if (k === 'ok') { if (!val) return; lock(c); const ok = Number(val) === Number(q.answer); box.style.borderColor = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; box.style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; if (!ok) box.innerHTML = reveal(ctx) ? `${fmt(Number(val))} ${ico3d('cross', 18)} الصحيح ${fmt(q.answer)}` : `${fmt(Number(val))} ${ico3d('cross', 18)}`; ctx.done(ok, { picked: Number(val) }); return; }
         else if (val.length < 5) val += k;
         upd();
       };
@@ -113,7 +115,7 @@ export const renderers = {
     const grid = el('<div class="choices pick-grid"></div>'); const sel = new Set();
     const okBtn = el(`<button class="btn btn-primary btn-block mt-4" disabled>${ico('check')} تحقّق</button>`);
     q.items.forEach((t, i) => { const b = el(`<button class="choice" aria-pressed="false">${esc(t)}</button>`); b.onclick = () => { sound.play('tick'); sel.has(i) ? sel.delete(i) : sel.add(i); b.classList.toggle('selected', sel.has(i)); b.setAttribute('aria-pressed', String(sel.has(i))); okBtn.disabled = sel.size === 0; }; grid.appendChild(b); });
-    okBtn.onclick = () => { lock(c); const want = new Set(q.correct); let ok = sel.size === want.size; [...grid.children].forEach((b, i) => { const isC = want.has(i), picked = sel.has(i); if (isC) b.classList.add('correct'); if (picked && !isC) { b.classList.add('wrong'); ok = false; } if (isC && !picked) ok = false; }); ctx.done(ok, { picked: [...sel] }); };
+    okBtn.onclick = () => { lock(c); const want = new Set(q.correct); let ok = sel.size === want.size; [...grid.children].forEach((b, i) => { const isC = want.has(i), picked = sel.has(i); if (isC && (ok || reveal(ctx))) b.classList.add('correct'); if (picked && !isC) { b.classList.add('wrong'); ok = false; } if (isC && !picked) ok = false; }); ctx.done(ok, { picked: [...sel] }); };
     c.appendChild(grid); c.appendChild(okBtn);
   },
 

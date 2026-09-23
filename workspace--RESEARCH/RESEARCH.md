@@ -586,3 +586,27 @@ Docker + CI/CD
 - **الحل المُطبَّق:** `<script type="importmap">` يعيد توجيه كل `./js/**.js` → `./js/**.js?v=6.0` تلقائيًا (30+ وحدة) دون تغيير أي سطر import. أداة `tools/bump_version.py <v>` تولّد الخريطة + `version.js` + `version.json` وتحدّث CSS.
 - ملفات JSON والصوت تُطلب عبر `vurl()`/`StoryAudio.url()` مع `?v=` أيضًا. اختبار `tests/cachebust.py` يتحقّق runtime أن 100% من الطلبات المحلية مُرقَّمة.
 - مراجع: importmap spec https://html.spec.whatwg.org/multipage/webappapis.html#import-maps · دعم المتصفحات https://caniuse.com/import-maps (Chrome 89+, Safari 16.4+, Firefox 108+).
+
+---
+
+# Phase 11 / K4 — بحث الصوت: صوت مصري دافئ بصفر ملفات (2026-09-23)
+
+المبدأ (RULES.md): كل خيار أدناه فُحص بروابطه ودليله، لا بالانطباع. القيد الصلب: **ممنوع أي MP3/OGG لكل مسألة أو أسلوب**.
+
+## 1. ما الذي يحدث فعلًا اليوم (الكود)
+- `app/js/engines/speech.js` يستخدم Web Speech API: `voice()` يختار أول صوت `ar-EG` ثم أي `ar-*`؛ `rate` افتراضي 0.9، `pitch` 1.05؛ الجملة كلها في utterance واحد.
+- على ويندوز بدون Edge: الصوت العربي الوحيد المثبت عادةً "Microsoft Hoda ar-EG" (أوفلاين، جودة عادية، أداء فصحى إخبارية) -> هذا مصدر شكوى «نشرة أخبار». ادعاء الـgist بأن الصوت «شاكر أو هدى» صحيح جزئيًا: شاكر Natural يظهر فقط داخل Edge، وهدى هي الافتراضي في Chrome/ويندوز.
+
+## 2. الخيارات المفحوصة
+| الخيار | الدليل | الحكم |
+|---|---|---|
+| **edge-tts** (اسم ملف الـgist) | `rany2/edge-tts` `constants.py`: WSS إلى `speech.platform.bing.com/.../edge/v1?TrustedClientToken=…` مع رأس `Origin: chrome-extension://…` + توكن `Sec-MS-GEC` يُولَّد بـSHA-256 من وقت ويندوز (`drm.py`). المتصفح لا يسمح بتزوير `Origin` ولا بإرسال رؤوس مخصصة على WebSocket -> **يستحيل من صفحة GitHub Pages ثابتة**؛ يحتاج خادم وسيط (backend) = خارج بنية المشروع وخرق لشروط استخدام غير موثقة. القائمة الرسمية تؤكد وجود `ar-EG-SalmaNeural` (أنثى) و`ar-EG-ShakirNeural` (ذكر) بين 32 صوتًا عربيًا. | مرفوض (يتطلب backend) |
+| **Piper TTS داخل المتصفح (WASM)** | `rhasspy/piper-voices` يحوي صوتًا عربيًا واحدًا فقط: `ar/ar_JO/kareem/medium` — الحجم الحقيقي **63,201,294 بايت (60 MB)** (HEAD على HuggingFace) + onnxruntime-web (~10-20 MB) + لهجة أردنية/فصحى (espeak `ar`). | مرفوض (ثقيل جدًا، ليس مصريًا) |
+| **ملفات صوت مسبقة التوليد** | محظور صراحةً في الـgist. | مرفوض |
+| **Web Speech API مع اختيار أذكى للصوت** | `readium/speech` `json/ar.json`: Edge يعرض "Microsoft Salma Online (Natural) ar-EG" و"Shakir Online (Natural) ar-EG" (جودة veryHigh)؛ Android يعرض أصوات "Android Speech Recognition and Synthesis" (high)؛ Apple ar-001 Majed/Mariam (high/normal)؛ Windows offline Hoda (normal). الكود الحالي يأخذ **أول** ar-EG بلا ترتيب جودة -> على Edge قد يختار Hoda بدل Salma Natural. | **مقبول: ترتيب حسب الجودة (Natural/Online/Google/Android > Hoda) — 0 KB** |
+| **ضبط rate/pitch** | Web Speech يدعم `rate` 0.1–10 و`pitch` 0–2؛ الأصوات الـNatural تتدهور فوق 1.2. | مقبول: rate 0.95 للأصوات Natural، 0.9 لغيرها؛ pitch 1.05 |
+| **utterance لكل جملة** | إنهاء الجملة يعطي المحرّك وقفة طبيعية وتنغيمًا ختاميًا؛ يقلّل رتابة «النشرة». الـkaraoke لدينا يعتمد على `onboundary.charIndex` -> نحتاج إزاحة الفهرس لكل جملة. | مقبول (تنفيذ بحذر مع اختبار) |
+| **إعادة صياغة النص صوتيًا (phonetic Egyptian)** | محركات TTS العربية تقرأ الأرقام الهندية «٣» كفصحى «ثلاثة». كتابة الرقم بالحروف المصرية («تلاتة») في **نسخة الصوت فقط** (النص المعروض يبقى بالأرقام) يعطي نبرة مصرية فورًا؛ كذلك «ده/دي، كده، إزاي، عايز» بدل الفصحى. | **مقبول: طبقة `phonetic()` في speech.js تعمل على النص قبل النطق فقط** |
+
+## 3. القرار الهندسي
+`speech.js`: (1) `rankVoice()` يفضّل Natural/Online/Google/Android ثم ar-EG ثم أي عربي؛ (2) `phonetic(text)` يحوّل الأرقام 0–100 إلى كلمات مصرية + إبدال حروف فصيحة شائعة (ث->ت في الأعداد فقط، «الظبط» يُترك)؛ (3) utterance لكل جملة مع إزاحة charIndex للكاريوكي؛ (4) rate حسب نوع الصوت. لا ملفات جديدة، لا backend. يُختبر بـ`phase11_voice.py` (ترتيب الأصوات بأصوات وهمية، صحة `phonetic`، بقاء الكاريوكي يعمل).
