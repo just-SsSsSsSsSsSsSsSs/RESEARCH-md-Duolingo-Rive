@@ -99,6 +99,16 @@ export async function render(root, { id }) {
       onCleanup: (f) => cleanups.push(f),
       // Phase 11 K3: renderers may reveal the right answer only when no retry is left (second try / review round / out of hearts)
       reveal: () => s.isRetry || s.review || (!activity.practice && hearts.count <= 1),
+      // Phase 12: branch renderer - a wrong slot is a mistake inside the question (no reveal). First slot miss costs the
+      // heart via s.retry() (so the question counts as "missed" for the review round); later misses only nudge.
+      slotMiss(slot) {
+        if (answered) return;
+        const pt = { x: innerWidth / 2, y: innerHeight * 0.4 };
+        if (!s.isRetry && !s.review) { const stop = s.retry({ picked: slot }); if (stop) { answered = true; explainSheet.close(); s.answer(false, { picked: slot, forced: true }); feedback(s, false, q); return; } }
+        sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: card });
+        fx.floater?.(RETRY[Math.floor(Math.random() * RETRY.length)]);
+        card.querySelector('.explain-btn')?.classList.add('pulse');
+      },
       done(ok, meta) {
         if (answered) return;
         // adaptive: impulsive child -> ignore taps that land before a short settle delay (choices only), ask to look again
