@@ -44,7 +44,11 @@ def solve_current(page, seen):
     if t == 'branch':
         # Phase 12 tree: fill part2 -> prod1 -> prod2 -> sum through the shared numpad (auto-advances)
         a, b_, s1, s2 = q['a'], q['b'], q['s1'], q['s2']
-        for v in (s2, a * s1, a * s2, a * b_): type_numpad(page, v)
+        # Phase 12.1: typing the expected digits auto-verifies the slot (no green check needed); the numpad locks
+        # when the tree completes, so never wait on the check key - tap digits only and let auto-advance work.
+        for v in (s2, a * s1, a * s2, a * b_):
+            for ch in str(v): page.locator('.numpad .btn').nth(NUMPAD.index(ch)).click()
+            page.wait_for_timeout(220)
     elif t == 'truefalse':
         page.locator('.choices .choice').nth(0 if q['answer'] else 1).click()
     elif t == 'pick':
