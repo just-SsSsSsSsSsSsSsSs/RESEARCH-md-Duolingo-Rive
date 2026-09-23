@@ -7,6 +7,7 @@ import quests from '../../engines/quests.js';
 import sound from '../../engines/sound.js';
 import { el, fmt, esc, hud, nav } from '../components.js';
 import { recommend, itemCard } from './subject.js';
+import { targetedPractice } from '../../engines/insights.js';
 import { ico3d } from '../icons3d.js';
 
 export async function render(root) {
@@ -30,6 +31,11 @@ export async function render(root) {
       </div>
     </div>`));
 
+  const tp = targetedPractice(store.profile); // Phase 10: adaptive practice on the child's weakest skills (labels stay positive)
+  if (tp) {
+    root.appendChild(el(`<div class="section"><h2>${ico3d('target')} تدريب مخصوص ليك</h2><span class="tag tag-gold">${ico3d('bolt', 14)} بلا قلوب</span></div>`));
+    root.appendChild(itemCard({ ...tp, level: undefined }, { big: true }));
+  }
   if (rec) {
     root.appendChild(el(`<div class="section"><h2>${ico3d('sparkle')} مقترح لك الآن</h2><span class="tag tag-purple">ذكي</span></div>`));
     root.appendChild(itemCard(rec, { big: true }));
