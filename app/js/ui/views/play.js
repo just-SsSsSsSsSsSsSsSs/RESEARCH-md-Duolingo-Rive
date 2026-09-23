@@ -106,7 +106,7 @@ export async function render(root, { id }) {
         const pt = { x: innerWidth / 2, y: innerHeight * 0.4 };
         if (!s.isRetry && !s.review) { const stop = s.retry({ picked: slot }); if (stop) { answered = true; explainSheet.close(); s.answer(false, { picked: slot, forced: true }); feedback(s, false, q); return; } }
         sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: card });
-        fx.floater?.(RETRY[Math.floor(Math.random() * RETRY.length)]);
+        nudgePill(card, RETRY[Math.floor(Math.random() * RETRY.length)]); // top pill, 3.5s, never over the numbers
         card.querySelector('.explain-btn')?.classList.add('pulse');
       },
       done(ok, meta) {
@@ -146,6 +146,14 @@ export async function render(root, { id }) {
     if (s.isRetry) card.classList.add('retry');
   }
 
+  /** UX polish (gist 1187b2e8): encouragement as a calm pill pinned above the card (not a floater over the tree), 3.5s */
+  function nudgePill(card, text) {
+    stage.querySelector('.nudge-pill')?.remove();
+    const pill = el(`<div class="nudge-pill" role="status" aria-live="polite">${text}</div>`);
+    stage.insertBefore(pill, card);
+    clearTimeout(nudgePill._t); nudgePill._t = setTimeout(() => { pill.classList.add('out'); setTimeout(() => pill.remove(), 350); }, 3500);
+  }
+
   /**
    * Phase 11 K3: after the first miss - soft shake, warm nudge (no answer), pulsing explain button.
    * "جرّب تاني" re-renders the same question empty; opening the explain sheet hides this bar (its "هجرّب أحلّ" re-asks too).
@@ -182,8 +190,11 @@ export async function render(root, { id }) {
     document.body.appendChild(f); document.body.classList.add('has-feedback');
     const go = () => { f.remove(); document.body.classList.remove('has-feedback'); if (outHearts) return finish(s, true); if (!s.next()) return finish(s); if (adapt.breakAfterMin && !s._breakShown && Date.now() - s.startedAt > adapt.breakAfterMin * 60000) { s._breakShown = true; return breakCard(s); } ask(s); };
     f.querySelector('[data-act="next"]').onclick = go;
-    const onKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { window.removeEventListener('keydown', onKey); go(); } };
-    setTimeout(() => window.addEventListener('keydown', onKey), 300);
+    // Enter/Space -> next, but only for a fresh key press that starts well after the bar appeared (a held or repeated
+    // Enter from the answer step must never skip the question - field bug, gist 1187b2e8).
+    const shownAt = Date.now();
+    const onKey = (e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat && Date.now() - shownAt > 900 && document.body.contains(f)) { window.removeEventListener('keydown', onKey); go(); } };
+    setTimeout(() => window.addEventListener('keydown', onKey), 900);
     cleanups.push(() => window.removeEventListener('keydown', onKey));
   }
 

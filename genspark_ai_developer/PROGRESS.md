@@ -330,3 +330,16 @@ app/
 - [x] L5: README append ✅ + v7.9 ✅ + 18 suite PASS في sandbox جديد ✅ + sha256 سليم ✅ + معاينة حية مُتحقَّق منها من الخارج: https://8090-i3gsj0npx7otyfkt7gdp5-d0b9e1e2.sandbox.novita.ai/app/index.html#/play/distributive + squash 0105e91 -> PR #12
 
 **آخر تحديث:** Phase 12 ✅ مكتملة L0-L5 — **PR مفتوح: https://github.com/html-mobile-audio/html-mobile-audio/pull/12** (المطلوب كان «PR #10» لكن GitHub خصّص الرقم 12 لأن #10 هو الـissue و#11 مستهلك؛ الرقم لا يُختار يدويًا). التالي: انتظار مراجعة المالك للمعاينة الحية ثم الدمج.
+
+## Phase 12.1 — UX polish من الاختبار الميداني (gist 1187b2e8) — بعد دمج PR #12 (46838b8)
+ثلاثة عيوب رصدها المالك بالماوس/الكيبورد، تحققت منها في الكود قبل الإصلاح:
+1. Enter يتخطى السؤال: `play.js` مستمع keydown في feedback() ينفّذ go() (مُثبت: السطر 185)؛ وrenderer branch كان يستمع لـEnter دون منع الانتشار.
+2. رسالة التشجيع floater في منتصف الشاشة تغطي «المجموع» وتختفي بعد ~1s (`play.js:109` fx.floater).
+3. إجبار الضغط على ✓ بعد كل رقم.
+- [x] M1: الإصلاح (d702c3d، مدفوع قبل reset): Enter يُلتقط في renderer (capture + stopImmediatePropagation) ويُتحقق من المربع فقط؛ feedback يسلّح مستمع Enter بعد 900ms ويتجاهل repeat؛ `nudgePill` كبسولة أعلى الكارت 3.5s بدل floater؛ auto-advance بعدد الأرقام المتوقع + النقر على مربع آخر يتحقق من الحالي أولًا + دعم أرقام هندية من الكيبورد.
+- [x] M2: `finished` guard (c383908) + `phase12_ux.py` 16/16 PASS (b6aa6a7) + **تراجع حقيقي اكتشفه phase12_branch**: auto-check + ✓ كانا يتحققان من نفس القيمة مرتين -> miss وهمي؛ الإصلاح: مؤقّت auto-check واحد يُلغى بأي تحقق صريح/حذف (1351171) -> phase12_branch 43/43
+- [x] M3: بعد 1351171: phase12_ux 16/16، phase12_loop_all 31/31، phase11_mistake، e2e PASS؛ math_random كان يفشل لأن solver ينقر ✓ بعد اكتمال الشجرة (اللوحة مقفلة) -> solver يعتمد auto-advance (dff9dba) -> PASS
+- [x] M4a: README 12.1 + v7.10 (b294729) + 19 suite PASS في sandbox جديد + sha256 سليم + PR13_BODY.md
+- [x] M4b: معاينة حية مُتحقَّقة من الخارج (200، v7.10، renderer/CSS المُصلَحان يُخدَمان): https://8090-i97dii80goc0mrecx4o1g-2e1b9533.sandbox.novita.ai/app/index.html#/play/distributive + squash فوق main (98d3d9c، commit واحد) + **PR #13 مفتوح: https://github.com/html-mobile-audio/html-mobile-audio/pull/13**
+
+**آخر تحديث:** Phase 12.1 ✅ مكتملة M1-M4b — **PR #13 مفتوح: https://github.com/html-mobile-audio/html-mobile-audio/pull/13** (PR #12 كان قد دُمج قبل طلب «التحديث في مكانه»، فالإصلاح يحتاج PR جديدًا؛ الرقم يخصّصه GitHub). ملاحظة: رابط المعاينة الحية مرتبط بالـsandbox الحالي؛ عند reset يجب إعادة تشغيل tools/serve.py 8090 وتوليد رابط جديد والتحقق منه من الخارج قبل الدمج. التالي: انتظار مراجعة المالك للمعاينة ثم الدمج.

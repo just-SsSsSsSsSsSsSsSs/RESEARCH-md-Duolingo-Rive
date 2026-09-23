@@ -129,8 +129,17 @@ export const renderers = {
     const show = () => { if (active) active.textContent = val ? fmt(Number(val)) : '؟'; };
     const setActive = (btn) => { if (!btn || btn.classList.contains('ok')) return; if (active && active !== btn && !active.classList.contains('ok')) { active.textContent = '؟'; } active = btn; val = ''; slots.forEach((x) => x.classList.toggle('active', x === btn)); };
     const nextEmpty = () => order.map(byName).find((x) => !x.classList.contains('ok'));
-    const finish = () => { lock(c); sound.play('correct'); ctx.done(true, { slots: order.map((n) => ({ slot: n, misses: state.misses.filter((m) => m === n).length })), misses: state.misses.length, picked: SUM }); };
+    let finished = false; // after completion Enter belongs to the feedback bar again
+    const finish = () => { finished = true; lock(c); sound.play('correct'); ctx.done(true, { slots: order.map((n) => ({ slot: n, misses: state.misses.filter((m) => m === n).length })), misses: state.misses.length, picked: SUM }); };
+    // UX polish (gist 1187b2e8): expected digit count per slot -> auto-check when the child typed enough digits,
+    // so the green check is optional (kept for children who like to confirm). A wrong value still needs no extra tap.
+    const expectLen = () => String(Number(active?.dataset.ans ?? '')).length || 1;
+    // one pending auto-check at a time; any explicit check (green key / Enter / slot tap) cancels it so a value is
+    // never verified twice (regression caught by phase12_branch: 2nd check ran on an already-cleared slot -> phantom miss)
+    let autoT = 0;
+    const scheduleAuto = () => { clearTimeout(autoT); if (active && val.length >= expectLen()) autoT = setTimeout(check, 140); };
     const check = () => {
+      clearTimeout(autoT); autoT = 0;
       if (!active || !val) return;
       const ok = Number(val) === Number(active.dataset.ans);
       if (ok) {
@@ -145,14 +154,19 @@ export const renderers = {
     };
     keys.forEach((k) => {
       const b = el(`<button type="button" class="btn ${k === 'ok' ? 'btn-primary' : k === 'del' ? 'btn-rose' : ''}">${k === 'del' ? ico('eraser') : k === 'ok' ? ico('check') : fmt(Number(k))}</button>`);
-      b.onclick = () => { sound.play('tick'); if (k === 'del') val = val.slice(0, -1); else if (k === 'ok') { check(); return; } else if (val.length < 3) val += k; show(); };
+      b.onclick = () => { sound.play('tick'); if (k === 'del') { clearTimeout(autoT); val = val.slice(0, -1); } else if (k === 'ok') { check(); return; } else if (val.length < 3) val += k; show(); scheduleAuto(); };
       pad.appendChild(b);
     });
-    slots.forEach((btn) => { btn.onclick = () => { if (btn.classList.contains('ok')) return; sound.play('tap'); setActive(btn); }; });
+    // tapping another slot: first settle what was typed in the current one (auto-verify), then move the focus
+    slots.forEach((btn) => { btn.onclick = () => { if (btn.classList.contains('ok')) return; if (active && active !== btn && val) { check(); if (active && active !== btn && !active.classList.contains('ok')) return; } sound.play('tap'); setActive(btn); }; });
     c.appendChild(pad);
     setActive(byName('part2'));
-    const onKey = (e) => { if (/^[0-9]$/.test(e.key)) { if (val.length < 3) { val += e.key; show(); } } else if (e.key === 'Backspace') { val = val.slice(0, -1); show(); } else if (e.key === 'Enter') check(); };
-    window.addEventListener('keydown', onKey); ctx.onCleanup(() => window.removeEventListener('keydown', onKey));
+    // Enter is consumed here (stopImmediatePropagation) so it can never reach a "next question" listener while the tree is open.
+    const onKey = (e) => { if (e.repeat || finished) return; if (/^[0-9]$/.test(e.key)) { if (val.length < 3) { val += e.key; show(); scheduleAuto(); } } else if (e.key === 'Backspace') { clearTimeout(autoT); val = val.slice(0, -1); show(); } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopImmediatePropagation(); check(); } };
+    window.addEventListener('keydown', onKey, true); ctx.onCleanup(() => window.removeEventListener('keydown', onKey, true)); ctx.onCleanup(() => { window.__branch = null; });
+    // Arabic-Indic digits from a mobile keyboard
+    const onKeyAr = (e) => { if (finished) return; const d = '\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669'.indexOf(e.key); if (d >= 0 && val.length < 3) { val += String(d); show(); scheduleAuto(); } };
+    window.addEventListener('keydown', onKeyAr); ctx.onCleanup(() => window.removeEventListener('keydown', onKeyAr));
     window.__branch = { redraw: draw, slots: () => Object.fromEntries(slots.map((x) => [x.dataset.slot, { ok: x.classList.contains('ok'), active: x.classList.contains('active') }])), misses: () => [...state.misses] }; // E2E hook (read-only)
   },
 

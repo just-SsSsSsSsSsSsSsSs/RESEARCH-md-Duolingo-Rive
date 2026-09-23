@@ -367,3 +367,8 @@ body.has-sheet .feedback { z-index: 35; }
 .branch-total .br-slot { min-width: 84px; }
 .branch-tip { display: flex; align-items: center; gap: 8px; font-size: var(--fs-md, 15px); color: var(--text-2); background: rgba(255,255,255,.04); border: 1px dashed var(--border); border-radius: 14px; padding: 8px 12px; margin-top: 4px; }
 .branch.shake-soft { animation: shakeSoft .5s var(--ease); }
+
+/* UX polish (gist 1187b2e8): encouragement pill above the question card */
+.nudge-pill { margin: 0 auto 10px; max-width: 560px; padding: 12px 16px; border-radius: 999px; background: linear-gradient(135deg, rgba(255,209,102,.22), rgba(255,159,28,.18)); border: 1.5px solid rgba(255,209,102,.7); color: var(--text); font-weight: 900; font-size: clamp(16px, 4.4vw, 20px); text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 8px 24px rgba(255,159,28,.18); animation: slideDown var(--dur-slow) var(--ease-spring) both; }
+.nudge-pill.out { opacity: 0; transform: translateY(-8px); transition: opacity .3s, transform .3s; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
