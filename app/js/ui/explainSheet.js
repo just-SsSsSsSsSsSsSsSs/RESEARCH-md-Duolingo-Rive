@@ -2,7 +2,7 @@
  * ExplainSheet - the "يعني إيه يا بابا؟" bottom sheet (audio-first, big buttons, karaoke text).
  *
  * mount(card, { q, session }) -> adds the big button under the question card; returns cleanup
- * open({ q, session })        -> opens the sheet directly (button + tests)
+ * open({ q, session, onTry })  -> opens the sheet directly (button + tests); onTry runs on "هجرّب أحلّ" 
  *
  * Rules (spec):
  *  - audio plays automatically with the first explanation; replay button always visible
@@ -32,20 +32,22 @@ export function bestStrategy() {
   return ranked[0]?.[0] || null;
 }
 
-export function mount(card, { q, session }) {
+export function mount(card, { q, session, onTry }) {
   if (!settings().enabled) return () => {};
   const btn = el(`<button type="button" class="btn explain-btn" data-act="explain" aria-label="يعني إيه يا بابا؟">${ico3d('speechBubble', 30)}<span>يعني إيه يا بابا؟</span>${ico3d('question', 24)}</button>`);
-  btn.onclick = () => { sound.play('tap'); open({ q, session }); };
+  btn.onclick = () => { sound.play('tap'); btn.classList.remove('pulse'); open({ q, session, onTry }); };
   card.appendChild(btn);
   return () => close();
 }
 
 export function close() { if (openSheet) { speech.stop(); openSheet.remove(); openSheet = null; document.body.classList.remove('has-sheet'); } }
 
-export function open({ q, session }) {
+export function open({ q, session, onTry }) {
   close();
   const P = plan(q); const order = P.order(bestStrategy()); let idx = 0, stepIdx = 0, lastText = '';
-  const sheet = el(`<div class="sheet explain-sheet" role="dialog" aria-label="يعني إيه يا بابا؟">
+  // dir="rtl" is set explicitly: the sheet is appended to <body> and must not inherit an LTR context
+  // (Phase 11 K2 - empirically the karaoke words scramble only when an ancestor is LTR).
+  const sheet = el(`<div class="sheet explain-sheet" role="dialog" dir="rtl" aria-label="يعني إيه يا بابا؟">
     <div class="sheet-grab"></div>
     <div class="row between">
       <b class="row" style="gap:8px">${ico3d('speechBubble', 26)} يعني إيه يا بابا؟</b>
@@ -64,7 +66,8 @@ export function open({ q, session }) {
   window.__explain = { strategy: () => order[idx], step: () => stepIdx, order, text: () => lastText }; // E2E hook (read-only)
   const body = sheet.querySelector('[data-body]'), label = sheet.querySelector('[data-strategy-label]'), dots = sheet.querySelector('[data-dots]');
   sheet.querySelector('[data-act="close"]').onclick = () => { sound.play('whoosh'); close(); };
-  sheet.querySelector('[data-act="try"]').onclick = () => { sound.play('whoosh'); close(); };
+  // Phase 11 K3: "هجرّب أحلّ" - after a miss the caller re-asks the same question empty via onTry
+  sheet.querySelector('[data-act="try"]').onclick = () => { sound.play('whoosh'); close(); onTry?.(); };
   sheet.querySelector('[data-act="replay"]').onclick = () => { sound.play('tap'); if (lastText) speak(lastText, body.querySelector('[data-karaoke]')); };
   sheet.querySelector('[data-act="another"]').onclick = () => { sound.play('tap'); idx = (idx + 1) % order.length; stepIdx = 0; show(); };
 
@@ -72,7 +75,8 @@ export function open({ q, session }) {
     lastText = text; const words = target ? [...target.querySelectorAll('.kw')] : [];
     speech.speak(text, { rate: settings().rate, onWord: (i) => { words.forEach((w, k) => { w.classList.toggle('now', k === i); w.classList.toggle('said', k < i); }); words[i]?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); }, onEnd: () => words.forEach((w) => { w.classList.remove('now'); w.classList.add('said'); }) });
   }
-  const karaoke = (text) => `<p class="k-text" data-karaoke>${text.split(/\s+/).filter(Boolean).map((w) => `<span class="kw">${esc(w)}</span>`).join(' ')}</p>`;
+  // Each sentence on its own line (easier for a 3rd grader to follow), each word an isolated bidi run.
+  const karaoke = (text) => `<p class="k-text" data-karaoke dir="rtl">${text.split(/(?<=[.!?؟…])\s+/).filter(Boolean).map((sent) => `<span class="k-sent">${sent.split(/\s+/).filter(Boolean).map((w) => `<span class="kw">${esc(w)}</span>`).join(' ')}</span>`).join('')}</p>`;
   const say = (text) => { if (settings().autoplay) setTimeout(() => speak(text, body.querySelector('[data-karaoke]')), 120); else lastText = text; };
 
   function show() {

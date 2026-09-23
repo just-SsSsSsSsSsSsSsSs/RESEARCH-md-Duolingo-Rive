@@ -309,8 +309,11 @@
 .sheet-grab { width: 56px; height: 5px; border-radius: 99px; background: var(--border); margin: 0 auto 2px; }
 body.has-sheet .feedback { z-index: 35; }
 .explain-head { display: flex; align-items: center; gap: 10px; font-size: 18px; }
-.k-text { font-size: clamp(22px, 5.4vw, 30px); line-height: 1.9; font-weight: 800; text-align: start; margin: 0; }
-.k-text .kw { display: inline-block; padding: 0 4px; border-radius: 8px; transition: background var(--dur), color var(--dur), transform var(--dur); }
+/* Phase 11 K2: RTL hardening - verified in Chromium: word order scrambles only under an LTR ancestor,
+   so direction is pinned here (not inherited) and every word is an isolated bidi run. */
+.k-text { font-size: clamp(22px, 5.4vw, 30px); line-height: 1.9; font-weight: 800; text-align: start; margin: 0; direction: rtl; unicode-bidi: isolate; }
+.k-text .k-sent { display: block; direction: rtl; unicode-bidi: isolate; }
+.k-text .kw { display: inline-block; unicode-bidi: isolate; padding: 0 4px; border-radius: 8px; transition: background var(--dur), color var(--dur), transform var(--dur); }
 .k-text .kw.now { background: linear-gradient(135deg, #ffd166, #ff9f1c); color: #1a1200; transform: scale(1.08); box-shadow: 0 4px 16px rgba(255,159,28,.45); }
 .k-text .kw.said { color: var(--neon-green); }
 .explain-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -333,3 +336,12 @@ body.has-sheet .feedback { z-index: 35; }
 .recent-dots i.ok { background: var(--neon-green); }
 .rec + .rec { border-top: 1px solid var(--border); padding-top: 8px; }
 .tag-rose { background: rgba(255,92,138,.18); color: #ff9db8; }
+
+/* Phase 11 K3 - mistake learning loop */
+.q-card.shake-soft { animation: shakeSoft .5s var(--ease); }
+@keyframes shakeSoft { 0%,100% { transform: translateX(0);} 25% { transform: translateX(-6px);} 50% { transform: translateX(6px);} 75% { transform: translateX(-3px);} }
+.q-card.retry { border-color: rgba(255,209,102,.6); box-shadow: 0 0 0 3px rgba(255,209,102,.18); }
+.feedback.retry { border-top-color: var(--neon-gold, #ffd166); }
+.feedback.retry .f-title { color: var(--neon-gold, #ffd166); }
+.feedback.recovered { border-top-color: var(--neon-gold, #ffd166); }
+.explain-btn.pulse { animation: pulseGlow 1.1s ease-in-out infinite; border-color: rgba(255,209,102,.9); }

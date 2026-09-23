@@ -41,6 +41,11 @@ export class Session {
     this.ended = false;
     this.explained = 0;      // explanations requested during this session
     this._sw = null;         // stopwatch of the current question
+    // Phase 11 K3 - mistake learning loop
+    this.review = !!activity.review;   // review round ("تحدي أبطال الماث"): no plays/mastery/streak, light XP
+    this.missed = new Set();           // indices answered wrong on the first try (feeds the review round)
+    this.retried = 0;                  // second attempts taken
+    this.recovered = 0;                // second attempts that were correct ("learned from the mistake")
   }
   get current() { return this.questions[this.i]; }
   /** mark the current question as shown (starts its stopwatch + logs question_shown) - idempotent per question */
@@ -58,19 +63,37 @@ export class Session {
   get total() { return this.questions.length; }
   get progress() { return Math.round((this.i / this.total) * 100); }
 
+  /**
+   * Phase 11 K3: first wrong answer on the current question - nothing is scored yet, the child gets one more try.
+   * The heart is taken here (once), `question_retry` is logged and the question is marked as missed.
+   * Returns true when the session must stop (out of hearts); the caller then records the answer for real.
+   */
+  retry(meta = {}) {
+    const q = this.current, sw = this.shown(); sw.attempt();
+    this.missed.add(this.i); this.retried++; sw.retried = true;
+    if (!this.practice) hearts.lose();
+    telemetry.log('question_retry', { act: this.a.id, subject: this.a.subject, key: q?.key || q?.q, skill: this.skillOf(q), qtype: q?.type,
+      wrong_value: meta.picked != null ? String(meta.picked).slice(0, 24) : undefined, pos: this.i, explained_before: sw.explained });
+    return this.outOfHearts;
+  }
+  /** is the current question on its second try? */
+  get isRetry() { return !!(this._sw && this._sw.i === this.i && this._sw.retried); }
+
   /** record an answer for the current question */
   answer(ok, meta = {}) {
     const p = store.profile;
     const q = this.current, sw = this.shown(); sw.attempt();
-    const snap = sw.snapshot();
-    this.answers.push({ i: this.i, ok, ...meta, ...snap, skill: this.skillOf(q) });
-    telemetry.log('question_attempted', { act: this.a.id, subject: this.a.subject, key: q?.key || q?.q, skill: this.skillOf(q), qtype: q?.type, correct: !!ok, ...snap,
+    const snap = sw.snapshot(); const retried = !!sw.retried;
+    if (retried && ok) this.recovered++;
+    if (!ok) this.missed.add(this.i);
+    this.answers.push({ i: this.i, ok, retried, ...meta, ...snap, skill: this.skillOf(q) });
+    telemetry.log('question_attempted', { act: this.a.id, subject: this.a.subject, key: q?.key || q?.q, skill: this.skillOf(q), qtype: q?.type, correct: !!ok, ...snap, retried, review: this.review || undefined,
       wrong_value: ok ? undefined : (meta.picked != null ? String(meta.picked).slice(0, 24) : undefined), expected: q?.answer != null && typeof q.answer !== 'object' ? String(q.answer).slice(0, 24) : undefined,
       pos: this.i, total: this.total, session_ms: Date.now() - this.startedAt, hour: new Date().getHours(), after_explain: sw.explained ? sw.strategies[sw.strategies.length - 1] : undefined });
     if (sw.explained) sw.strategies.forEach((st) => telemetry.log('explanation_result', { act: this.a.id, subject: this.a.subject, key: q?.key || q?.q, skill: this.skillOf(q), strategy: st, solved: !!ok }));
     p.counters.answers++;
     if (ok) { this.correct++; p.counters.correct++; }
-    else { this.wrong++; if (!this.practice) hearts.lose(); }
+    else { this.wrong++; if (!this.practice && !retried) hearts.lose(); } // a retried question already cost its heart in retry()
     const d = store.today(); d.answers++; if (ok) d.correct++;
     store.save();
     bus.emit('activity:answer', { id: this.a.id, correct: ok, subject: this.a.subject });
@@ -85,7 +108,18 @@ export class Session {
     const p = store.profile;
     const answered = this.answers.length || 1;
     const score = Math.round((this.correct / this.total) * 100);
-    const perfect = this.correct === this.total && !aborted;
+    // a question solved on the second try counts in the score, but "perfect" means first-try everywhere
+    const perfect = this.correct === this.total && !aborted && this.recovered === 0;
+    if (this.review) {
+      // review round: light-weight - no plays/mastery/streak/badges, +2 XP per fixed question
+      const secs = Math.round((Date.now() - this.startedAt) / 1000);
+      const gain = aborted ? 0 : this.correct * 2;
+      const xpRes = gain > 0 ? xp.add(gain, 'تحدي الأبطال: ' + this.a.title) : { gained: 0 };
+      store.save();
+      telemetry.log('review_completed', { act: this.a.id, subject: this.a.subject, score, aborted, total: this.total, correct: this.correct, duration_ms: Date.now() - this.startedAt });
+      this.result = { review: true, score, perfect: this.correct === this.total && !aborted, correct: this.correct, wrong: this.wrong, total: this.total, secs, xp: xpRes.gained, levelUp: xpRes.levelUp, aborted, recovered: this.recovered, newBadges: [] };
+      return this.result;
+    }
     const secs = Math.round((Date.now() - this.startedAt) / 1000);
     const st = p.activities[this.a.id] || { plays: 0, best: 0, mastery: 0, lastPlayed: 0, correct: 0, total: 0 };
     st.plays++; st.lastPlayed = Date.now(); st.correct += this.correct; st.total += this.total;
@@ -122,8 +156,11 @@ export class Session {
     telemetry.log(aborted ? 'session_quit' : 'stage_completed', { act: this.a.id, subject: this.a.subject, score, perfect, aborted, duration_ms: Date.now() - this.startedAt, total: this.total, correct: this.correct, pos: this.i, explained: this.explained });
     bus.emit('activity:complete', { id: this.a.id, subject: this.a.subject, score, perfect, aborted, secs, total: this.total, correct: this.correct });
     const newBadges = badges.evaluate(registry.items());
-    this.result = { score, perfect, correct: this.correct, wrong: this.wrong, total: this.total, secs, xp: xpRes.gained, levelUp: xpRes.levelUp, mastery: st.mastery, masteryBefore: before, streakUp, certificate, newBadges, aborted };
+    this.result = { score, perfect, correct: this.correct, wrong: this.wrong, total: this.total, secs, xp: xpRes.gained, levelUp: xpRes.levelUp, mastery: st.mastery, masteryBefore: before, streakUp, certificate, newBadges, aborted,
+      recovered: this.recovered, missed: [...this.missed] };
     return this.result;
   }
+  /** questions missed on the first try, in order - material for the review round */
+  get missedQuestions() { return [...this.missed].sort((a, b) => a - b).map((i) => this.questions[i]).filter(Boolean); }
 }
 export default Session;

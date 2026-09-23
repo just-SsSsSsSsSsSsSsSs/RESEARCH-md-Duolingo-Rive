@@ -9,6 +9,7 @@
  */
 import celebration, { SOUNDS, LIMITS } from '../../engines/celebration.js';
 import sound from '../../engines/sound.js';
+import { speech } from '../../engines/speech.js';
 import { el, fmt, esc, toast, confirm } from '../components.js';
 import { ico } from '../icons.js';
 import { ico3d } from '../icons3d.js';
@@ -58,10 +59,23 @@ export function renderSettings(body, { hero, p, save }) {
     <div class="row between"><span>القراءة بالصوت (TTS)</span>${sw(ex.tts)}</div>
     <div class="row between"><span>تشغيل الصوت تلقائيًا مع الشرح</span>${sw(ex.autoplay)}</div>
     <div class="row between"><span>سرعة الكلام <b data-out="rate">${ex.rate}</b></span><input type="range" min="0.6" max="1.2" step="0.05" value="${ex.rate}" data-k="rate" style="width:46%"></div>
+    <div class="row between" style="gap:8px"><span>الصوت</span><select data-k="voice" class="btn btn-sm" style="max-width:58%"><option value="">تلقائي (أفضل صوت متاح)</option></select></div>
+    <div class="row between" style="gap:8px"><span class="small muted" data-voice-hint></span><button type="button" class="btn btn-sm btn-cyan" data-act="test-voice">${ico3d('speaker', 18)} اسمع تجربة</button></div>
   </div>`);
   const exSw = ex_card.querySelectorAll('.switch'); const keys = ['enabled', 'tts', 'autoplay'];
   exSw.forEach((b, i) => { b.onclick = () => { const on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); saveE({ [keys[i]]: on }); sound.play('tap'); }; });
   const rate = ex_card.querySelector('[data-k="rate"]'); rate.oninput = () => { ex_card.querySelector('[data-out="rate"]').textContent = rate.value; }; rate.onchange = () => { saveE({ rate: Number(rate.value) }); toast('تم الحفظ ' + ico3d('check'), { type: 'success' }); };
+  // Phase 11 K4: voice picker (ranked list; auto = best available). Edge -> Salma/Shakir Natural; Android -> Google voices.
+  const sel = ex_card.querySelector('[data-k="voice"]'), hint = ex_card.querySelector('[data-voice-hint]');
+  const fillVoices = () => {
+    const vs = speech.voices(); sel.querySelectorAll('option:not([value=""])').forEach((o) => o.remove());
+    vs.forEach((v) => { const o = document.createElement('option'); o.value = v.name; o.textContent = `${v.name}${speech.isNatural(v) ? ' (طبيعي)' : ''}`; if (ex.voice === v.name) o.selected = true; sel.appendChild(o); });
+    const best = vs[0];
+    hint.textContent = !speech.available ? 'المتصفح ده مفيهوش قراءة صوتية' : !vs.length ? 'مفيش صوت عربي مثبّت — على أندرويد: إعدادات > تحويل النص لكلام > تحميل صوت عربي؛ على ويندوز: استعمل Edge لصوت سلمى/شاكر الطبيعي' : `المتاح: ${fmt(vs.length)} صوت عربي — الأفضل تلقائيًا: ${best.name}${speech.isNatural(best) ? ' (طبيعي)' : ' (عادي)'}`;
+  };
+  fillVoices(); if (speech.available) speechSynthesis.addEventListener?.('voiceschanged', fillVoices);
+  sel.onchange = () => { saveE({ voice: sel.value || undefined }); toast('تم الحفظ ' + ico3d('check'), { type: 'success' }); };
+  ex_card.querySelector('[data-act="test-voice"]').onclick = () => { sound.play('tap'); speech.speak('أهلًا يا بطل! عندك ٣ كراتين، كل كرتونة فيها ٤ بيضات. يعني ٣ في ٤ يساوي ١٢ بيضة.'); };
   body.appendChild(ex_card);
 
   /* ---------- privacy ---------- */
