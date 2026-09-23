@@ -8,7 +8,9 @@ import sound from '../../engines/sound.js';
 import { ico } from '../icons.js';
 import { ico3d } from '../icons3d.js';
 
-const lock = (c) => c.querySelectorAll('button:not(.pbtn)').forEach((b) => (b.disabled = true));
+const lock = (c) => c.querySelectorAll('button:not(.pbtn):not(.explain-btn)').forEach((b) => (b.disabled = true)); // explain button stays usable after a miss
+/** Phase 12 L4: may the correct answer be revealed after a miss? The view says no while a retry is available (only the mistake position is highlighted). */
+const reveal = (ctx) => !ctx.reveal || ctx.reveal() !== false;
 const reorder = (q) => { const idx = shuffle(q.choices.map((_, i) => i)); return { choices: idx.map((i) => q.choices[i]), answer: idx.indexOf(q.answer) }; };
 
 export const Q = {
@@ -17,7 +19,7 @@ export const Q = {
     const grid = el('<div class="choices"></div>');
     [[true, ico3d('check') + ' صحيح'], [false, ico3d('cross') + ' خطأ']].forEach(([v, label]) => {
       const b = el(`<button class="choice" data-v="${v}">${label}</button>`);
-      b.onclick = () => { lock(c); const ok = v === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) [...grid.children].find((x) => x !== b)?.classList.add('correct'); ctx.done(ok, { picked: v }); };
+      b.onclick = () => { lock(c); const ok = v === q.answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok && reveal(ctx)) [...grid.children].find((x) => x !== b)?.classList.add('correct'); ctx.done(ok, { picked: v }); };
       grid.appendChild(b);
     });
     c.appendChild(grid);
@@ -29,7 +31,7 @@ export const Q = {
     const grid = el('<div class="choices"></div>');
     choices.forEach((ch, i) => {
       const b = el(`<button class="choice">${esc(ch)}</button>`);
-      b.onclick = () => { lock(c); const ok = i === answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) grid.children[answer]?.classList.add('correct'); [...grid.children].forEach((x, k) => k !== i && k !== answer && x.classList.add('dim')); ctx.done(ok, { picked: i }); };
+      b.onclick = () => { lock(c); const ok = i === answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok && reveal(ctx)) grid.children[answer]?.classList.add('correct'); if (ok || reveal(ctx)) [...grid.children].forEach((x, k) => k !== i && k !== answer && x.classList.add('dim')); ctx.done(ok, { picked: i }); };
       grid.appendChild(b);
     });
     c.appendChild(grid);
@@ -43,7 +45,7 @@ export const Q = {
     const grid = el('<div class="choices"></div>');
     choices.forEach((ch, i) => {
       const b = el(`<button class="choice">${esc(ch)}</button>`);
-      b.onclick = () => { lock(c); const ok = i === answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) grid.children[answer]?.classList.add('correct'); const bl = txt.querySelector('.blank'); bl.textContent = choices[answer]; bl.style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; ctx.done(ok, { picked: i }); };
+      b.onclick = () => { lock(c); const ok = i === answer; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok && reveal(ctx)) grid.children[answer]?.classList.add('correct'); const bl = txt.querySelector('.blank'); if (ok || reveal(ctx)) { bl.textContent = choices[answer]; bl.style.color = ok ? 'var(--neon-green)' : 'var(--neon-rose)'; } else { bl.style.color = '#ff9f1c'; } ctx.done(ok, { picked: i }); };
       grid.appendChild(b);
     });
     c.appendChild(grid);
@@ -62,7 +64,7 @@ export const Q = {
       bank.innerHTML = ''; pool.filter((o) => !chosen.includes(o)).forEach((o) => { const ch = chip(o, ''); ch.onclick = () => { sound.play('tick'); chosen.push(o); redraw(); }; bank.appendChild(ch); });
       okBtn.disabled = chosen.length !== items.length;
     };
-    okBtn.onclick = () => { lock(c); const ok = chosen.every((o, k) => o.i === k); [...slots.children].forEach((ch, k) => ch.classList.add(chosen[k].i === k ? 'correct' : 'wrong')); ctx.done(ok, { order: chosen.map((o) => o.i) }); };
+    okBtn.onclick = () => { lock(c); const ok = chosen.every((o, k) => o.i === k); const show = ok || reveal(ctx); [...slots.children].forEach((ch, k) => { const right = chosen[k].i === k; if (!right) ch.classList.add('wrong'); else if (show) ch.classList.add('correct'); }); ctx.done(ok, { order: chosen.map((o) => o.i) }); };
     c.appendChild(slots); c.appendChild(bank); c.appendChild(okBtn); redraw();
   },
 
@@ -91,7 +93,7 @@ export const Q = {
     bubbles.forEach((b, i) => (b.onclick = () => { sound.play('tap'); show(i); }));
     okBtn.onclick = () => {
       lock(c); let wrong = 0;
-      bubbles.forEach((b, i) => { const ok = picked[i] === q.bubbles[i].correct; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) { wrong++; b.querySelector('.v').innerHTML = `<s style="opacity:.6">${esc(q.bubbles[i].opts[picked[i]])}</s> ${esc(q.bubbles[i].opts[q.bubbles[i].correct])}`; } });
+      bubbles.forEach((b, i) => { const ok = picked[i] === q.bubbles[i].correct; b.classList.add(ok ? 'correct' : 'wrong'); if (!ok) { wrong++; if (reveal(ctx)) b.querySelector('.v').innerHTML = `<s style="opacity:.6">${esc(q.bubbles[i].opts[picked[i]])}</s> ${esc(q.bubbles[i].opts[q.bubbles[i].correct])}`; } });
       ctx.done(wrong === 0, { wrong });
     };
     c.appendChild(map); c.appendChild(opts); c.appendChild(okBtn); show(0);

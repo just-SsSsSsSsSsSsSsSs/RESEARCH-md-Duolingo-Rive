@@ -41,7 +41,11 @@ def solve_current(page, seen):
     else:
         style = t
     seen.add(style)
-    if t == 'truefalse':
+    if t == 'branch':
+        # Phase 12 tree: fill part2 -> prod1 -> prod2 -> sum through the shared numpad (auto-advances)
+        a, b_, s1, s2 = q['a'], q['b'], q['s1'], q['s2']
+        for v in (s2, a * s1, a * s2, a * b_): type_numpad(page, v)
+    elif t == 'truefalse':
         page.locator('.choices .choice').nth(0 if q['answer'] else 1).click()
     elif t == 'pick':
         for i in q['correct']:
@@ -69,7 +73,7 @@ def play_through(page, act_id, seen):
     keys = page.evaluate('window.__play.keys')
     for _ in range(60):
         if page.locator('[data-act="again"]').count(): break
-        page.wait_for_selector('.q-card .q-text, .q-card .dot-grid', timeout=8000)
+        page.wait_for_selector('.q-card .q-text, .q-card .dot-grid, .q-card .branch', timeout=8000)
         solve_current(page, seen)
         page.wait_for_selector('.feedback [data-act="next"]', timeout=8000)
         page.click('.feedback [data-act="next"]')

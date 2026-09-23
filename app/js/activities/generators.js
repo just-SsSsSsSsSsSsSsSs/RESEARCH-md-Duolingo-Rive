@@ -3,7 +3,7 @@ import { ico3d } from '../ui/icons3d.js';
  * Procedural question generators — infinite, adaptive content.
  *  kind: 'mult'        { tables:[3,4], range:[1,10], count, types:['numpad','quiz'] }
  *  kind: 'add' | 'sub' { max: 100, count }
- *  kind: 'distributive'{ tables:[4], count }    4×7 = (4×5)+(4×?)
+ *  kind: 'distributive'{ tables:[4], count }    4×7 = (4×5)+(4×?)  | quiz sum | Phase 12 'branch' tree
  *  kind: 'commutative' { tables:[2..6], count }  3×4 = ?×3
  *  kind: 'missing'     { tables, count }         3×? = 12
  *  Every generated Q carries meta {kind, a, b, ans...} (feeds the explainer) and a fine-grained `skill` label (feeds insights).
@@ -50,7 +50,9 @@ const KINDS = {
   distributive(g) {
     return uniqSet(g.count || 8, () => {
       const a = pick(g.tables || [4]), b = rnd(4, 10), s1 = rnd(1, b - 1), s2 = b - s1;
-      const mode = rnd(0, 1);
+      const mode = rnd(0, 2);
+      // Phase 12: schoolbook branching tree (design A) - root a x b, branches (a x s1) and (a x s2), sum line, total
+      if (mode === 2) return { type: 'branch', a, b, s1, s2, q: `${AR(a)} × ${AR(b)}`, answer: a * b, key: `b${a}${b}${s1}`, meta: { kind: 'distributive', a, b, s1, s2, ans: s2 }, skill: 'خاصية التوزيع', explain: `فكّكنا ${AR(b)} إلى ${AR(s1)} + ${AR(s2)}: (${AR(a)} × ${AR(s1)}) + (${AR(a)} × ${AR(s2)}) = ${AR(a * s1)} + ${AR(a * s2)} = ${AR(a * b)}` };
       if (mode === 0) return { type: 'numpad', q: `${AR(a)} × ${AR(b)} = (${AR(a)} × ${AR(s1)}) + (${AR(a)} × ؟)`, answer: s2, big: true, key: `d${a}${b}${s1}`, meta: { kind: 'distributive', a, b, s1, s2, ans: s2 }, skill: 'خاصية التوزيع', explain: `نفكّك ${AR(b)} إلى ${AR(s1)} + ${AR(s2)}  (${AR(a)}×${AR(s1)}) + (${AR(a)}×${AR(s2)}) = ${AR(a * s1)} + ${AR(a * s2)} = ${AR(a * b)}` };
       return { ...asQuiz(`(${AR(a)} × ${AR(s1)}) + (${AR(a)} × ${AR(s2)}) = ؟`, a * b), key: `e${a}${b}${s1}`, explain: `= ${AR(a)} × (${AR(s1)} + ${AR(s2)}) = ${AR(a)} × ${AR(b)} = ${AR(a * b)}`, meta: { kind: 'distributive_sum', a, b, s1, s2, ans: a * b }, skill: 'خاصية التوزيع' };
     });

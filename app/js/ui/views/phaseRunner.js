@@ -13,6 +13,7 @@ import xp from '../../engines/xp.js';
 import fx from '../../engines/fx.js';
 import Session from '../../activities/session.js';
 import explainSheet from '../explainSheet.js';
+import { mistakeLoop } from '../mistakeLoop.js'; // Phase 12 L4: shared learn-from-mistake flow
 import { Q } from './storyQuestions.js';
 import { badgeSVG } from '../badgeArt.js';
 import { el, esc, fmt, modal, confetti, toast } from '../components.js';
@@ -49,19 +50,26 @@ export function runPhases(o) {
     }
     let answered = false, last = null;
     card.addEventListener('pointerdown', (e) => { last = { x: e.clientX, y: e.clientY }; }, { passive: true, capture: true });
+    const point = () => { const r = card.getBoundingClientRect(); return last || { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+    // Phase 12 L4 (owner decision): first miss -> highlight the mistake position only, no reveal, one more try
+    const loop = mistakeLoop({ session: s, card, q, ask: () => ask(s), point, hint: o.retryHint });
     const ctx = {
       font: q.font || activity.font, onCleanup: (f) => cleanups.push(f),
+      reveal: loop.reveal,
       done(ok, meta = {}) {
         if (answered) return; answered = true;
-        audio?.stop(); explainSheet.close(); s.answer(ok, meta);
-        const r = card.getBoundingClientRect(), pt = last || { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-        if (ok) { sound.play('correct'); fx.celebrate({ x: pt.x, y: pt.y, xp: Math.max(1, Math.round((it.xp || 100) / s.total)), combo: sound.combo, el: card }); o.onCorrect?.(); }
+        audio?.stop(); explainSheet.close();
+        if (!ok && loop.onWrong(meta)) { o.onWrong?.(); return; }
+        s.answer(ok, meta);
+        const pt = point();
+        if (ok) { sound.play('correct'); fx.celebrate({ x: pt.x, y: pt.y, xp: Math.max(1, Math.round((it.xp || 100) / s.total)), combo: sound.combo, el: card }); if (loop.wasRetry) confetti({ count: 90 }); o.onCorrect?.(); }
         else { sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: card }); o.onWrong?.(); }
-        feedback(s, ok, q);
+        feedback(s, ok, q, loop);
       },
     };
+    if (s.isRetry) card.classList.add('retry');
     (Q[q.type] || Q.quiz)(card, q, ctx);
-    cleanups.push(explainSheet.mount(card, { q, session: s })); // Phase 10: "يعني إيه يا بابا؟"
+    cleanups.push(explainSheet.mount(card, { q, session: s, onTry: loop.onTry })); // Phase 10: "يعني إيه يا بابا؟" / Phase 12: "هجرّب أحلّ" re-asks
     if ((q.font || activity.font) === 'quran') {
       const paint = () => card.querySelectorAll('.q-text, .choice, .chip').forEach((x) => x.classList.add('quran'));
       paint(); const mo = new MutationObserver(paint); mo.observe(card, { childList: true, subtree: true }); cleanups.push(() => mo.disconnect());
@@ -69,13 +77,13 @@ export function runPhases(o) {
     o.afterRender?.(card, q);
   }
 
-  function feedback(s, ok, q) {
+  function feedback(s, ok, q, loop) {
     document.querySelector('.feedback')?.remove();
     const outHearts = s.outOfHearts;
     const last = s.i + 1 >= s.total || outHearts;
-    const f = el(`<div class="feedback ${ok ? 'good' : 'bad'}"><div class="container row"><div class="grow">
-      <div class="f-title">${ok ? cheers[Math.floor(Math.random() * cheers.length)] : oops[Math.floor(Math.random() * oops.length)]}</div>
-      ${q.explain ? `<div class="f-exp ${(q.font || activity.font) === 'quran' && q.type !== 'quiz' ? 'quran' : ''}">${esc(q.explain)}</div>` : ''}
+    const f = el(`<div class="feedback ${ok ? 'good' : 'bad'}${ok && loop?.wasRetry ? ' recovered' : ''}"><div class="container row"><div class="grow">
+      <div class="f-title">${loop ? loop.title(ok, cheers, oops) : ok ? cheers[Math.floor(Math.random() * cheers.length)] : oops[Math.floor(Math.random() * oops.length)]}</div>
+      ${q.explain && !ok ? `<div class="f-exp ${(q.font || activity.font) === 'quran' && q.type !== 'quiz' ? 'quran' : ''}">${esc(q.explain)}</div>` : ''}
       ${outHearts ? '<div class="f-exp" style="color:var(--neon-rose)">' + ico3d('heartBroken') + ' خلصت القلوب!</div>' : ''}
     </div><button class="btn ${ok ? 'btn-primary' : 'btn-rose'} btn-lg" data-act="next">${!last ? 'التالي' : (o.onPersonal && !outHearts ? 'التعبير' : 'النتيجة')} ${ico('fwd')}</button></div></div>`);
     document.body.appendChild(f); document.body.classList.add('has-feedback');

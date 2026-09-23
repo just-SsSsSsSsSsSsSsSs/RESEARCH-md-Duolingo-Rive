@@ -78,6 +78,84 @@ export const renderers = {
     ctx.onCleanup(() => window.removeEventListener('keydown', onKey));
   },
 
+  /**
+   * Phase 12 (design A, Egyptian schoolbook p.8-9): distributive-property branching tree.
+   *   q = { type:'branch', a, b, s1, s2 }  ->  a x b splits into (a x s1) + (a x s2)
+   * Root capsule (right, RTL) -> two branches joined by SVG connectors -> sum line -> total.
+   * Slots (filled with the shared numpad, in order, any slot tappable): part2, prod1, prod2, sum.
+   * Per-slot check: right -> green + locked; wrong -> soft shake + ctx.slotMiss(slot) (no reveal, mistake loop).
+   * ctx.done(true, { slots, misses }) fires once when the whole tree is complete.
+   */
+  branch(c, q, ctx) {
+    const { a, b, s1, s2 } = q; const P1 = a * s1, P2 = a * s2, SUM = a * b;
+    const wrap = el(`<div class="branch" dir="rtl">
+      <svg class="branch-svg" aria-hidden="true"></svg>
+      <div class="branch-root" data-root><span class="br-eq">${fmt(a)} × ${fmt(b)}</span></div>
+      <div class="branch-rows">
+        <div class="branch-row" data-row="1"><span class="br-eq"><span data-anchor="1">${fmt(a)} × ${fmt(s1)}</span> =</span><button type="button" class="br-slot" data-slot="prod1" data-ans="${P1}" aria-label="ناتج الفرع الأول">؟</button></div>
+        <div class="branch-row" data-row="2"><span class="br-eq"><span data-anchor="2">${fmt(a)} × <button type="button" class="br-slot br-inline" data-slot="part2" data-ans="${s2}" aria-label="الجزء الثاني">؟</button></span> =</span><button type="button" class="br-slot" data-slot="prod2" data-ans="${P2}" aria-label="ناتج الفرع الثاني">؟</button></div>
+      </div>
+      <div class="branch-sumline" data-sumline></div>
+      <div class="branch-total"><span class="br-eq">المجموع =</span><button type="button" class="br-slot" data-slot="sum" data-ans="${SUM}" aria-label="المجموع">؟</button></div>
+      <div class="branch-tip">${ico3d('bulb', 22)}<span>فكّكنا ${fmt(b)} إلى ${fmt(s1)} + ${fmt(s2)}. اضرب كل جزء، وبعدين اجمع.</span></div>
+    </div>`);
+    c.appendChild(wrap);
+    const slots = [...wrap.querySelectorAll('.br-slot')]; const order = ['part2', 'prod1', 'prod2', 'sum'];
+    const byName = (n) => slots.find((x) => x.dataset.slot === n);
+    const state = { misses: [], done: {} }; let active = null, val = '';
+    const svg = wrap.querySelector('.branch-svg');
+    // --- SVG connectors computed from the real boxes (root -> each branch row, plus the sum line)
+    const draw = () => {
+      const W = wrap.clientWidth, H = wrap.clientHeight; if (!W) return;
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('width', W); svg.setAttribute('height', H);
+      const R = wrap.getBoundingClientRect(); const rel = (r) => ({ x: r.left - R.left, y: r.top - R.top, w: r.width, h: r.height });
+      const root = rel(wrap.querySelector('[data-root] .br-eq').getBoundingClientRect());
+      const rows = [1, 2].map((i) => rel(wrap.querySelector(`[data-anchor="${i}"]`).getBoundingClientRect()));
+      // Mobile layout: branches sit BELOW the root, so the schoolbook "<" bracket becomes a trunk dropping from the
+      // root's bottom edge (just right of the anchors, RTL) with a rounded elbow into each anchor's right edge.
+      // (Screenshot review of v1 showed the side-curve doubling back over the anchors - fixed here.)
+      const tx = Math.min(Math.max(rows[0].x + rows[0].w + 18, root.x + 18), root.x + root.w - 18);
+      const sy = root.y + root.h;
+      const paths = rows.map((r) => { const ex = r.x + r.w + 4, ey = r.y + r.h / 2; const k = Math.min(14, Math.max(4, tx - ex)); return `M ${tx} ${sy} L ${tx} ${ey - k} Q ${tx} ${ey} ${tx - k} ${ey} L ${ex} ${ey}`; });
+      const sl = rel(wrap.querySelector('[data-sumline]').getBoundingClientRect());
+      svg.innerHTML = paths.map((d, i) => `<path class="br-path" data-path="${i + 1}" d="${d}"/>`).join('') + `<line class="br-sum" x1="${sl.x}" y1="${sl.y + 1}" x2="${sl.x + sl.w}" y2="${sl.y + 1}"/>`;
+    };
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(draw) : null; ro?.observe(wrap);
+    requestAnimationFrame(() => { draw(); setTimeout(draw, 320); });
+    ctx.onCleanup(() => ro?.disconnect());
+    // --- numpad (same keys/layout as the numpad renderer)
+    const pad = el('<div class="numpad"></div>');
+    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'del', '0', 'ok'];
+    const show = () => { if (active) active.textContent = val ? fmt(Number(val)) : '؟'; };
+    const setActive = (btn) => { if (!btn || btn.classList.contains('ok')) return; if (active && active !== btn && !active.classList.contains('ok')) { active.textContent = '؟'; } active = btn; val = ''; slots.forEach((x) => x.classList.toggle('active', x === btn)); };
+    const nextEmpty = () => order.map(byName).find((x) => !x.classList.contains('ok'));
+    const finish = () => { lock(c); sound.play('correct'); ctx.done(true, { slots: order.map((n) => ({ slot: n, misses: state.misses.filter((m) => m === n).length })), misses: state.misses.length, picked: SUM }); };
+    const check = () => {
+      if (!active || !val) return;
+      const ok = Number(val) === Number(active.dataset.ans);
+      if (ok) {
+        active.classList.remove('active', 'bad'); active.classList.add('ok'); active.disabled = true; state.done[active.dataset.slot] = true; sound.play('tick');
+        const n = nextEmpty(); if (n) setActive(n); else { active = null; finish(); }
+      } else {
+        state.misses.push(active.dataset.slot); active.classList.add('bad'); active.textContent = '؟'; val = '';
+        wrap.classList.remove('shake-soft'); void wrap.offsetWidth; wrap.classList.add('shake-soft');
+        setTimeout(() => active?.classList.remove('bad'), 700);
+        ctx.slotMiss?.(active.dataset.slot); // play.js: heart + warm nudge + pulse explain button, never reveals
+      }
+    };
+    keys.forEach((k) => {
+      const b = el(`<button type="button" class="btn ${k === 'ok' ? 'btn-primary' : k === 'del' ? 'btn-rose' : ''}">${k === 'del' ? ico('eraser') : k === 'ok' ? ico('check') : fmt(Number(k))}</button>`);
+      b.onclick = () => { sound.play('tick'); if (k === 'del') val = val.slice(0, -1); else if (k === 'ok') { check(); return; } else if (val.length < 3) val += k; show(); };
+      pad.appendChild(b);
+    });
+    slots.forEach((btn) => { btn.onclick = () => { if (btn.classList.contains('ok')) return; sound.play('tap'); setActive(btn); }; });
+    c.appendChild(pad);
+    setActive(byName('part2'));
+    const onKey = (e) => { if (/^[0-9]$/.test(e.key)) { if (val.length < 3) { val += e.key; show(); } } else if (e.key === 'Backspace') { val = val.slice(0, -1); show(); } else if (e.key === 'Enter') check(); };
+    window.addEventListener('keydown', onKey); ctx.onCleanup(() => window.removeEventListener('keydown', onKey));
+    window.__branch = { redraw: draw, slots: () => Object.fromEntries(slots.map((x) => [x.dataset.slot, { ok: x.classList.contains('ok'), active: x.classList.contains('active') }])), misses: () => [...state.misses] }; // E2E hook (read-only)
+  },
+
   match(c, q, ctx) {
     c.appendChild(el(`<div class="q-text">${esc(q.q || 'وصّل كل عنصر بما يناسبه')}</div>`));
     const left = shuffle(q.pairs.map((p, i) => ({ t: p[0], i }))), right = shuffle(q.pairs.map((p, i) => ({ t: p[1], i })));
@@ -135,7 +213,7 @@ export const renderers = {
       okBtn.disabled = chosen.length !== q.items.length;
     };
     const okBtn = el(`<button class="btn btn-primary btn-block mt-4">${ico('check')} تحقّق</button>`);
-    okBtn.onclick = () => { lock(c); const ok = chosen.every((o, k) => o.i === k); [...slots.children].forEach((ch, k) => ch.classList.add(chosen[k].i === k ? 'correct' : 'wrong')); ctx.done(ok, { order: chosen.map((o) => o.i) }); };
+    okBtn.onclick = () => { lock(c); const ok = chosen.every((o, k) => o.i === k); const show = ok || reveal(ctx); [...slots.children].forEach((ch, k) => { const right = chosen[k].i === k; if (!right) ch.classList.add('wrong'); else if (show) ch.classList.add('correct'); }); ctx.done(ok, { order: chosen.map((o) => o.i) }); };
     c.appendChild(slots); c.appendChild(bank); c.appendChild(okBtn);
     redraw();
   },
