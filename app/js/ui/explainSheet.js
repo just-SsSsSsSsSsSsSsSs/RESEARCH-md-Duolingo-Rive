@@ -77,7 +77,9 @@ export function open({ q, session, onTry }) {
   }
   // Each sentence on its own line (easier for a 3rd grader to follow), each word an isolated bidi run.
   const karaoke = (text) => `<p class="k-text" data-karaoke dir="rtl">${text.split(/(?<=[.!?؟…])\s+/).filter(Boolean).map((sent) => `<span class="k-sent">${sent.split(/\s+/).filter(Boolean).map((w) => `<span class="kw">${esc(w)}</span>`).join(' ')}</span>`).join('')}</p>`;
-  const say = (text) => { if (settings().autoplay) setTimeout(() => speak(text, body.querySelector('[data-karaoke]')), 120); else lastText = text; };
+  // Phase 12.2: synchronous - speak() must run inside the tap's gesture (mobile autoplay policy); a setTimeout here
+  // used to make iOS/Android mute the first utterance (then onend fired instantly and the karaoke flashed through).
+  const say = (text) => { if (settings().autoplay) speak(text, body.querySelector('[data-karaoke]')); else lastText = text; };
 
   function show() {
     speech.stop();
