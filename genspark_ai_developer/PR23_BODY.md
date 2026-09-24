@@ -25,7 +25,7 @@ Drop `app/assets/companions/<id>/{idle,think,happy,encourage,celebrate}.webp` an
 - Zero-Emoji sweep on all new/changed files: clean. Protected files (plant.html, math.html, albayyinah.html, quran-alqadr/index.html, PROJECT_VISION.md): 0 diff vs main.
 
 ### Screenshots
-Think pose (monkey) / level-1 burst on a correct answer / owl on a quran fill / profile picker: https://www.genspark.ai/api/files/s/ek2ZlaiY
+Think pose (monkey) / level-1 burst on a correct answer / owl on a quran fill / profile picker: https://www.genspark.ai/api/files/s/QHsW9SY0 ; parrot sprites (5 poses): https://www.genspark.ai/api/files/s/SOZmE9Fy
 
 ### Fallback
 If a companion sprite fails to load (offline/blocked), the engine removes the companion and mounts the Phase 16 code-drawn monkey, so the card corner is never empty (covered by `phase16_render.py` section 3).
