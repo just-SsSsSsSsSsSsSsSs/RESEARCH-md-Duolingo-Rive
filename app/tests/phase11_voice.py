@@ -58,6 +58,9 @@ with sync_playwright() as p:
     # 3) karaoke fallback with no voices + 4) utterance spy
     pg.goto(BASE + '#/profile'); pg.wait_for_selector('.heroes .hero-card'); pg.locator('.hero-card').first.click(); pg.wait_for_timeout(300)
     pg.goto(BASE + '#/play/mult_3'); pg.wait_for_selector('[data-act="start"]'); pg.click('[data-act="start"]'); pg.wait_for_selector('.q-card')
+    # Phase 13: the explain sheet now prefers recorded clips; this suite verifies the speech.js FALLBACK path
+    # (texts without clips / <audio> refused), so route explicitly through it.
+    pg.wait_for_function('window.__voice'); pg.evaluate("window.__voice.pref = 'speech'")
     pg.evaluate('''() => { window.__utt = []; const O = window.SpeechSynthesisUtterance; window.SpeechSynthesisUtterance = function (t) { const u = new O(t); window.__utt.push(t); return u; }; }''')
     pg.click('.explain-btn'); pg.wait_for_selector('.explain-sheet .k-text'); pg.wait_for_timeout(1800)
     shown = pg.evaluate('window.__explain.text()'); utts = pg.evaluate('window.__utt')

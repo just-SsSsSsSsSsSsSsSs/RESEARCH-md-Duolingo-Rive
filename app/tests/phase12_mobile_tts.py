@@ -63,6 +63,9 @@ OBSERVE = '''() => {
 def open_explain(pg):
     pg.goto(BASE + '#/profile'); pg.wait_for_selector('.heroes .hero-card'); pg.locator('.hero-card').first.click(); pg.wait_for_timeout(300)
     pg.goto(BASE + '#/play/mult_3'); pg.wait_for_selector('[data-act="start"]'); pg.click('[data-act="start"]'); pg.wait_for_selector('.q-card')
+    # Phase 13: clips are the first provider; this suite covers the speech.js fallback (silent OS engine), so force it.
+    # The clips path has its own suite (phase13_voice.py).
+    pg.wait_for_function('window.__voice'); pg.evaluate("window.__voice.pref = 'speech'")
 
 with sync_playwright() as p:
     b = p.chromium.launch()

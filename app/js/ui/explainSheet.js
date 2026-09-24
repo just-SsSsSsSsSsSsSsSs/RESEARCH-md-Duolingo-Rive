@@ -13,7 +13,8 @@
  */
 import store from '../core/store.js';
 import sound from '../engines/sound.js';
-import speech from '../engines/speech.js';
+// Phase 13: recorded Egyptian clips first (works with no OS Arabic voice / iOS silent), then speech.js, then visual
+import voice from '../engines/voice/provider.js';
 import { plan } from '../engines/explain.js';
 import { el, esc } from './components.js';
 import { ico } from './icons.js';
@@ -35,16 +36,17 @@ export function bestStrategy() {
 export function mount(card, { q, session, onTry }) {
   if (!settings().enabled) return () => {};
   const btn = el(`<button type="button" class="btn explain-btn" data-act="explain" aria-label="يعني إيه يا بابا؟">${ico3d('speechBubble', 30)}<span>يعني إيه يا بابا؟</span>${ico3d('question', 24)}</button>`);
-  btn.onclick = () => { sound.play('tap'); btn.classList.remove('pulse'); open({ q, session, onTry }); };
+  btn.onclick = () => { voice.unlock(); sound.play('tap'); btn.classList.remove('pulse'); open({ q, session, onTry }); };
   card.appendChild(btn);
   return () => close();
 }
 
-export function close() { if (openSheet) { speech.stop(); openSheet.remove(); openSheet = null; document.body.classList.remove('has-sheet'); } }
+export function close() { if (openSheet) { voice.stop(); openSheet.remove(); openSheet = null; document.body.classList.remove('has-sheet'); } }
 
 export function open({ q, session, onTry }) {
   close();
   const P = plan(q); const order = P.order(bestStrategy()); let idx = 0, stepIdx = 0, lastText = '';
+  voice.preload(order.flatMap((id) => { const S = P.get(id); return [(S.lines || []).join(' '), ...(S.steps || []).map((x) => x.say)]; }));
   // dir="rtl" is set explicitly: the sheet is appended to <body> and must not inherit an LTR context
   // (Phase 11 K2 - empirically the karaoke words scramble only when an ancestor is LTR).
   const sheet = el(`<div class="sheet explain-sheet" role="dialog" dir="rtl" aria-label="يعني إيه يا بابا؟">
@@ -73,7 +75,7 @@ export function open({ q, session, onTry }) {
 
   function speak(text, target) {
     lastText = text; const words = target ? [...target.querySelectorAll('.kw')] : [];
-    speech.speak(text, { rate: settings().rate, onWord: (i) => { words.forEach((w, k) => { w.classList.toggle('now', k === i); w.classList.toggle('said', k < i); }); words[i]?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); }, onEnd: () => words.forEach((w) => { w.classList.remove('now'); w.classList.add('said'); }) });
+    voice.speak(text, { rate: settings().rate, onWord: (i) => { words.forEach((w, k) => { w.classList.toggle('now', k === i); w.classList.toggle('said', k < i); }); words[i]?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); }, onEnd: () => words.forEach((w) => { w.classList.remove('now'); w.classList.add('said'); }) });
   }
   // Each sentence on its own line (easier for a 3rd grader to follow), each word an isolated bidi run.
   const karaoke = (text) => `<p class="k-text" data-karaoke dir="rtl">${text.split(/(?<=[.!?؟…])\s+/).filter(Boolean).map((sent) => `<span class="k-sent">${sent.split(/\s+/).filter(Boolean).map((w) => `<span class="kw">${esc(w)}</span>`).join(' ')}</span>`).join('')}</p>`;
@@ -82,7 +84,7 @@ export function open({ q, session, onTry }) {
   const say = (text) => { if (settings().autoplay) speak(text, body.querySelector('[data-karaoke]')); else lastText = text; };
 
   function show() {
-    speech.stop();
+    voice.stop();
     const sid = order[idx]; const S = P.get(sid); session?.explained_with?.(sid);
     label.textContent = S.title;
     dots.innerHTML = order.map((id, k) => `<i class="${k === idx ? 'on' : ''}" title="${esc(P.get(id).title)}"></i>`).join('');
