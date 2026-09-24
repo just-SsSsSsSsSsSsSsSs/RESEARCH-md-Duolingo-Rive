@@ -11,6 +11,8 @@ import celebration, { SOUNDS, LIMITS } from '../../engines/celebration.js';
 import sound from '../../engines/sound.js';
 import { speech } from '../../engines/speech.js';
 import voice from '../../engines/voice/provider.js';
+import cheers from '../../engines/voice/cheers.js';
+import vlog from '../../engines/voice/log.js';
 import { el, fmt, esc, toast, confirm } from '../components.js';
 import { ico } from '../icons.js';
 import { ico3d } from '../icons3d.js';
@@ -64,6 +66,12 @@ export function renderSettings(body, { hero, p, save }) {
     <div class="row between" style="gap:8px"><span class="small muted" data-voice-hint></span><button type="button" class="btn btn-sm btn-cyan" data-act="test-voice">${ico3d('speaker', 18)} اسمع تجربة</button></div>
     <div class="row between" style="gap:8px;margin-top:6px"><span class="small muted">فحص الصوت على الجهاز ده</span><button type="button" class="btn btn-sm btn-ghost" data-act="diag-voice">${ico3d('question', 18)} افحص الصوت</button></div>
     <div class="small voice-diag" data-voice-diag hidden></div>
+    <div class="row between" style="gap:8px;margin-top:10px"><span>تشجيع صوتي (بر الوالدين، الإخوة، الأذكار)</span><button type="button" class="switch${ex.cheers !== false ? ' on' : ''}" role="switch" aria-checked="${ex.cheers !== false}" data-cheers-switch aria-label="تشجيع صوتي"></button></div>
+    <div class="row between" style="gap:8px;margin-top:6px"><span>صوت الحكّاي</span><select data-k="voicePack">${Object.entries(cheers.PACKS).map(([k, n]) => `<option value="${k}"${(ex.voicePack || cheers.DEFAULT_PACK) === k ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
+    <details class="voice-log-box" style="margin-top:10px" data-voice-log-box><summary>سجل الكلمات المنطوقة (للمراجعة والنسخ)</summary>
+      <div class="row" style="gap:8px;margin:8px 0"><button type="button" class="btn btn-sm btn-cyan" data-act="vlog-copy">نسخ النص</button><button type="button" class="btn btn-sm btn-ghost" data-act="vlog-clear">مسح السجل</button><span class="small muted" data-vlog-count></span></div>
+      <ol class="voice-log small" data-voice-log></ol>
+    </details>
   </div>`);
   const exSw = ex_card.querySelectorAll('.switch'); const keys = ['enabled', 'tts', 'autoplay'];
   exSw.forEach((b, i) => { b.onclick = () => { const on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); saveE({ [keys[i]]: on }); sound.play('tap'); }; });
@@ -107,6 +115,22 @@ export function renderSettings(body, { hero, p, save }) {
     box.innerHTML = lines.map((l) => `<div>${esc(l)}</div>`).join('');
     window.__voiceDiag = { ...d, probe, ttsOk }; // E2E hook (read-only)
   };
+  // Phase 14: encouragement switch, voice pack, spoken-words log (parent reviews / copies / asks for edits)
+  const csw = ex_card.querySelector('[data-cheers-switch]');
+  csw.onclick = () => { const on = !csw.classList.contains('on'); csw.classList.toggle('on', on); csw.setAttribute('aria-checked', String(on)); saveE({ cheers: on }); sound.play('tap'); };
+  ex_card.querySelector('[data-k="voicePack"]').onchange = (e) => { saveE({ voicePack: e.target.value }); toast('تم الحفظ ' + ico3d('check'), { type: 'success' }); };
+  const HN = { selim: 'سليم', karma: 'كارما', kenda: 'كندة' };
+  const renderLog = () => {
+    const items = vlog.list(); ex_card.querySelector('[data-vlog-count]').textContent = `${items.length} جملة`;
+    ex_card.querySelector('[data-voice-log]').innerHTML = items.length ? items.map((e) => `<li><div>${esc(e.text)}${e.n > 1 ? ` <span class="vl-meta">(×${e.n})</span>` : ''}</div><div class="vl-meta">${e.kind === 'cheer' ? 'تشجيع' : 'شرح'}${e.hero ? ' — ' + (HN[e.hero] || e.hero) : ''} — ${new Date(e.t).toLocaleString('ar-EG')}${e.src ? ` — <span class="vl-review">المصدر: ${esc(e.src)} (يحتاج مراجعتك)</span>` : ''}</div></li>`).join('') : '<li class="muted">لسه مفيش كلام اتقال.</li>';
+  };
+  ex_card.querySelector('[data-voice-log-box]').addEventListener('toggle', renderLog); renderLog();
+  ex_card.querySelector('[data-act="vlog-copy"]').onclick = async () => {
+    const txt = vlog.asText(); window.__vlogCopied = txt;
+    try { await navigator.clipboard.writeText(txt); toast('اتنسخ ' + ico3d('check'), { type: 'success' }); }
+    catch { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch { /* noop */ } ta.remove(); toast('اتنسخ ' + ico3d('check'), { type: 'success' }); }
+  };
+  ex_card.querySelector('[data-act="vlog-clear"]').onclick = () => { vlog.clear(); renderLog(); sound.play('tap'); };
   body.appendChild(ex_card);
 
   /* ---------- privacy ---------- */

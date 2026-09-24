@@ -1,0 +1,271 @@
+{
+"version": 1,
+"voiceKey": "shab_masri",
+"voice": {
+"name": "شاب مصري حماسي",
+"reference_id": "73b2c0703c6c4443949ae97092976ce9",
+"model": "s2.1-pro-free"
+},
+"lines": {
+"c01": {
+"file": "c01.mp3",
+"ms": 2784,
+"hash": "4409dfb3cd0b"
+},
+"c02": {
+"file": "c02.mp3",
+"ms": 2160,
+"hash": "f2a137c49383"
+},
+"c03": {
+"file": "c03.mp3",
+"ms": 5328,
+"hash": "39423c8564db"
+},
+"c04": {
+"file": "c04.mp3",
+"ms": 3960,
+"hash": "40e8d76a747c"
+},
+"c05": {
+"file": "c05.mp3",
+"ms": 2616,
+"hash": "66985379ee1d"
+},
+"c06": {
+"file": "c06.mp3",
+"ms": 3432,
+"hash": "cb28de1f5786"
+},
+"c07": {
+"file": "c07.mp3",
+"ms": 1392,
+"hash": "0838fb0c8891"
+},
+"c08": {
+"file": "c08.mp3",
+"ms": 5136,
+"hash": "37c03e824f5e"
+},
+"c09": {
+"file": "c09.mp3",
+"ms": 2832,
+"hash": "ef23cc56984c"
+},
+"c10": {
+"file": "c10.mp3",
+"ms": 2880,
+"hash": "8a58db5ae39e"
+},
+"c11": {
+"file": "c11.mp3",
+"ms": 3288,
+"hash": "fff0a96e5418"
+},
+"c12": {
+"file": "c12.mp3",
+"ms": 2472,
+"hash": "f1fa773d17ec"
+},
+"c13": {
+"file": "c13.mp3",
+"ms": 3552,
+"hash": "abb19b5133d9"
+},
+"c14": {
+"file": "c14.mp3",
+"ms": 1512,
+"hash": "a9247118ccd3"
+},
+"c15": {
+"file": "c15.mp3",
+"ms": 1968,
+"hash": "2dbdd8deb988"
+},
+"c16": {
+"file": "c16.mp3",
+"ms": 3000,
+"hash": "416ecfda3293"
+},
+"c17": {
+"file": "c17.mp3",
+"ms": 1704,
+"hash": "20d32d673d53"
+},
+"c17g": {
+"file": "c17g.mp3",
+"ms": 1872,
+"hash": "2fa9fc6d96a3"
+},
+"c18": {
+"file": "c18.mp3",
+"ms": 3456,
+"hash": "b40a42f3b174"
+},
+"c19": {
+"file": "c19.mp3",
+"ms": 2976,
+"hash": "5f99110022b8"
+},
+"c20": {
+"file": "c20.mp3",
+"ms": 4392,
+"hash": "272239a2f079"
+},
+"c20g": {
+"file": "c20g.mp3",
+"ms": 5088,
+"hash": "64ae5ce15bc6"
+},
+"r01": {
+"file": "r01.mp3",
+"ms": 5112,
+"hash": "f694c6627d61"
+},
+"r02": {
+"file": "r02.mp3",
+"ms": 3672,
+"hash": "83a76f42d79b"
+},
+"r03": {
+"file": "r03.mp3",
+"ms": 2616,
+"hash": "c6f786b8b4ca"
+},
+"r04": {
+"file": "r04.mp3",
+"ms": 2784,
+"hash": "c1a88adc5b75"
+},
+"r05": {
+"file": "r05.mp3",
+"ms": 4512,
+"hash": "656d528a5b0f"
+},
+"r06": {
+"file": "r06.mp3",
+"ms": 3144,
+"hash": "88d96f854e53"
+},
+"r07": {
+"file": "r07.mp3",
+"ms": 2928,
+"hash": "30f4a09e1ecd"
+},
+"w01": {
+"file": "w01.mp3",
+"ms": 3024,
+"hash": "f1d0473c521a"
+},
+"w02": {
+"file": "w02.mp3",
+"ms": 3744,
+"hash": "e80ad3da0556"
+},
+"w03": {
+"file": "w03.mp3",
+"ms": 2424,
+"hash": "ca52b173d2ab"
+},
+"w04": {
+"file": "w04.mp3",
+"ms": 3816,
+"hash": "392994b16350"
+},
+"w05": {
+"file": "w05.mp3",
+"ms": 4536,
+"hash": "4dabaa547f8d"
+},
+"w06": {
+"file": "w06.mp3",
+"ms": 3096,
+"hash": "0adb3efd8a26"
+},
+"w07": {
+"file": "w07.mp3",
+"ms": 3120,
+"hash": "1409a95511aa"
+},
+"w08": {
+"file": "w08.mp3",
+"ms": 2256,
+"hash": "36ff0f2d2c78"
+},
+"w08g": {
+"file": "w08g.mp3",
+"ms": 2616,
+"hash": "27ce12175e35"
+},
+"w09": {
+"file": "w09.mp3",
+"ms": 2952,
+"hash": "e310f783e09c"
+},
+"f01": {
+"file": "f01.mp3",
+"ms": 5328,
+"hash": "914a67ba8337"
+},
+"f02": {
+"file": "f02.mp3",
+"ms": 3840,
+"hash": "f425724d1ef4"
+},
+"f03": {
+"file": "f03.mp3",
+"ms": 2904,
+"hash": "46e5b33e2c3d"
+},
+"f04": {
+"file": "f04.mp3",
+"ms": 4848,
+"hash": "e4ca057b0f3f"
+},
+"f05": {
+"file": "f05.mp3",
+"ms": 7560,
+"hash": "d9633645f835"
+},
+"f06": {
+"file": "f06.mp3",
+"ms": 7512,
+"hash": "2201e99ec7de"
+},
+"f06g": {
+"file": "f06g.mp3",
+"ms": 7728,
+"hash": "fece8852ac36"
+},
+"f07": {
+"file": "f07.mp3",
+"ms": 5568,
+"hash": "156d892c2af2"
+},
+"f07g": {
+"file": "f07g.mp3",
+"ms": 5208,
+"hash": "41136630aeca"
+},
+"f08": {
+"file": "f08.mp3",
+"ms": 3192,
+"hash": "222105816700"
+},
+"f08g": {
+"file": "f08g.mp3",
+"ms": 2664,
+"hash": "9c5d1532fb4a"
+},
+"f09": {
+"file": "f09.mp3",
+"ms": 6360,
+"hash": "15292d4871dc"
+},
+"f09g": {
+"file": "f09g.mp3",
+"ms": 6384,
+"hash": "65765b0f1642"
+}
+}
+}

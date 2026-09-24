@@ -12,6 +12,7 @@
  */
 import speech from '../speech.js';
 import clips from './clipsProvider.js';
+import log from './log.js';
 
 const state = { last: null, pref: 'auto' };
 clips.ready(); // fetch the small manifest early (HTTP cache afterwards)
@@ -27,6 +28,7 @@ function viaSpeech(text, opts, offset = 0) {
 
 export function speak(text, opts = {}) {
   stop();
+  if (!opts.noLog) log.add({ kind: 'explain', text }); // Phase 14: parent can read/copy every spoken line
   const useClips = state.pref !== 'speech' && clips.canSpeak(text);
   if (useClips) {
     state.last = 'clips';

@@ -70,6 +70,8 @@ const out = {
   activities: specs.map((s) => s.id),
   fragments: Object.fromEntries([...frags.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))),
   numbers: [...nums].sort((a, b) => a - b),
+  // Phase 14: reserved range - every integer 1..100 has a clip even if no explanation uses it yet
+  extraNumbers: Array.from({ length: 100 }, (_, i) => i + 1).filter((n) => !nums.has(n)),
   stats: { questionMetas: metas.size, distinctTexts: texts.size, sentences, fragments: frags.size, numbers: nums.size, fragmentWords: [...frags.keys()].reduce((n, f) => n + f.split(' ').length, 0) },
 };
 const file = path.join(ROOT, 'tools/explain_clips.json');

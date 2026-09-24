@@ -22,5 +22,8 @@ export const fileFor = (key) => (key.startsWith('n:') ? `n/${key.slice(2)}.mp3` 
 const clips = JSON.parse(fs.readFileSync(path.join(ROOT, 'tools/explain_clips.json'), 'utf8'));
 const out = [];
 for (const f of Object.keys(clips.fragments)) out.push({ key: 'f:' + f, file: fileFor('f:' + f), text: f, spoken: phonetic(f).replace(/\s+/g, ' ').trim() });
-for (const n of clips.numbers) out.push({ key: 'n:' + n, file: fileFor('n:' + n), text: String(n), spoken: numWords(n) });
+// Phase 14: numbers used by today's explanations (clips.numbers) + a reserved range up to 100 (extraNumbers) so
+// future tables/addition up to 100 are already voiced. Deduplicated.
+const allNums = [...new Set([...clips.numbers, ...(clips.extraNumbers || [])])].sort((x, y) => x - y);
+for (const n of allNums) out.push({ key: 'n:' + n, file: fileFor('n:' + n), text: String(n), spoken: numWords(n) });
 process.stdout.write(JSON.stringify(out));
