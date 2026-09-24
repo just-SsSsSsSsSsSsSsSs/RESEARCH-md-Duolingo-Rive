@@ -48,10 +48,11 @@ const KIND = {
     return base;
   },
   missing(m, seed) {
-    const { a, b, product } = m; const th = pick(THINGS, seed);
+    const { a, b, product } = m; const th = pick(THINGS, seed), who = pick(NAMES, seed + 1);
     return {
       readaloud: [`السؤال بيقول: ${AR(a)} في كام يساوي ${AR(product)}؟`, 'العدد الناقص هو عدد المرات.', `يعني: كام مرة نكرّر ${AR(a)} لحد ما نوصل ${AR(product)}؟`],
-      story: [`عندك ${th.units} كل واحد فيه ${AR(a)} ${th.many}.`, `كل الـ${th.many} مع بعض ${AR(product)}.`, `السؤال: عندك كام ${th.unit}؟`, `عدّ بالنطّ ${AR(a)}، ${AR(a * 2)}، ${AR(a * 3)}… واحسب كام نطّة لحد ${AR(product)}.`],
+      // Phase 16: a x ? = product -> a groups, same unknown count in each (a groups of b). Sharing one by one: every round adds a.
+      story: [`عند ${who} ${AR(a)} ${th.units}، وكل ${th.unit} فيه نفس العدد من الـ${th.many}.`, `كل الـ${th.many} مع بعض ${AR(product)}.`, `السؤال: في كل ${th.unit} فيه كام ${th.one}؟`, `وزّع ${th.one} ${th.one} على الـ${th.units}: كل لفّة بتحطّ ${AR(a)}.`, `عدّ بالنطّ ${AR(a)}، ${AR(a * 2)}، ${AR(a * 3)}… كام لفّة لحد ${AR(product)}؟`],
       reallife: [`لو كل يوم بتاخد ${AR(a)} جنيه مصروف، وجمعت ${AR(product)} جنيه.`, 'كام يوم اللي جمعت فيهم؟', `عدّ بالنطّ ${AR(a)} كل يوم لحد ${AR(product)}.`],
       steps: [
         { say: `هنعدّ بالنطّ ${AR(a)}. أول نطّة ${AR(a)}، تاني نطّة كام؟`, ask: `${AR(a)} + ${AR(a)} = ؟`, choices: [a * 2, a * 2 + 1, a * 2 - 1], answer: a * 2 },
@@ -87,7 +88,8 @@ const KIND = {
     const { a, b, s1, s2 } = m; const th = pick(THINGS, seed);
     return {
       readaloud: [`السؤال بيقول: ${AR(a)} في ${AR(b)}، هنفكّها لجزئين: ${AR(a)} في ${AR(s1)}، زائد ${AR(a)} في كام؟`, 'دي خاصية التوزيع: نقسم الرقم الكبير جزئين أسهل.', `${AR(b)} = ${AR(s1)} + كام؟`],
-      story: [`عندك ${AR(b)} ${th.units}، كل واحد فيه ${AR(a)} ${th.many}.`, `حطّيت ${AR(s1)} ${th.units} على الترابيزة، والباقي على الرف.`, `على الرف كام ${th.unit}؟ ${AR(b)} ناقص ${AR(s1)}.`],
+      // Phase 16: a x b = a groups of b; the split b = s1 + s2 happens INSIDE every group (same as the bar)
+      story: [`عندك ${AR(a)} ${th.units}، وفي كل ${th.unit} ${AR(b)} ${th.many}.`, `من كل ${th.unit} خدنا ${AR(s1)} ${th.many}، وسابنا الباقي.`, `الباقي في كل ${th.unit} كام؟ ${AR(b)} ناقص ${AR(s1)}.`],
       reallife: [`لو عندك ${AR(b)} جنيه، وصرفت ${AR(s1)}، الباقي كام؟`, `نفس الفكرة: بنقسم ${AR(b)} لجزئين ${AR(s1)} والباقي.`],
       steps: [
         { say: `${AR(b)} هنفكّها لجزئين. الجزء الأول ${AR(s1)}. الجزء التاني = ${AR(b)} ناقص ${AR(s1)} = كام؟`, ask: `${AR(b)} − ${AR(s1)} = ؟`, choices: [s2, s2 + 1, Math.max(0, s2 - 1)], answer: s2 },

@@ -29,8 +29,9 @@ const H = HMAX;
 let bad = [], min = 99, twoRows = 0, thin = 0;
 for (let a = 1; a <= 6; a++) for (let b = 1; b <= 12; b++) {
   const L = layout(a, b, { w: 300 });
-  // Phase 15.4 geometry: tray = cubes + gaps + 2*(pad 5 + border 3 + well 2) wide; + pad-top 5 + 2*border + 2*well + lip 14 high
-  const tw = L.cols * L.cube + (L.cols - 1) * 3 + 20, th = L.rows * L.cube + (L.rows - 1) * 3 + 4 + 5 + 6 + 14;
+  // Phase 16 geometry: the rendered box reserves a rim above (top), walls beside (side) and a front wall below
+  // (lip), all proportional to the cube (groupsBar.SPRITE) and reported in the layout; re-derive the tray from them.
+  const tw = L.cols * L.cube + (L.cols - 1) * 3 + 2 * L.side, th = L.rows * L.cube + (L.rows - 1) * 3 + L.top + L.lip;
   const hh = L.trayRows * th + (L.trayRows - 1) * 8, ww = L.trayCols * tw + (L.trayCols - 1) * 8;
   if (hh > H || ww > 300 || hh !== L.h || L.trayRows * L.trayCols < a || L.cols * L.rows < b || L.cube < 12) bad.push([a, b, L, hh, ww]);
   min = Math.min(min, L.cube); if (L.trayRows > 1) twoRows++;

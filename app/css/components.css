@@ -399,8 +399,8 @@ body.has-feedback .voice-sub { bottom: calc(150px + env(safe-area-inset-bottom, 
 /* Phase 15.2: equal-groups bar (a trays x b identical cubes). Fixed height: space reserved before paint (no shift). */
 /* Phase 15.3 palette: gold, emerald, coral, sky, purple, orange - far apart on the hue wheel */
 /* ---- Phase 15.3: monkey companion (top corner opposite the replay button; decorative, never takes taps) ---- */
-.q-card:has(> .mascot) { padding-top: 70px; }
-.q-card > .mascot { position: absolute; top: 2px; inset-inline-end: 6px; width: 60px; height: 66px; z-index: 2; pointer-events: none; }
+.q-card:has(> .mascot) { padding-top: 78px; }
+.q-card > .mascot { position: absolute; top: 4px; inset-inline-end: 8px; width: 64px; height: 72px; z-index: 2; pointer-events: none; }
 .mascot svg { width: 100%; height: 100%; overflow: visible; }
 .mascot .m-body, .mascot .m-hand { transform-box: fill-box; transform-origin: 50% 100%; }
 .mascot .m-grin { opacity: 0; }
@@ -453,3 +453,43 @@ body.has-feedback .voice-sub { bottom: calc(150px + env(safe-area-inset-bottom, 
 @keyframes gbCube { 0% { transform: translateY(-14px) scale(.6); opacity: 0; } 70% { transform: translateY(1px) scale(1.06); opacity: 1; } 100% { transform: none; } }
 @keyframes gbHop { 40% { transform: translateY(-6px) scale(1.1); } }
 @media (prefers-reduced-motion: reduce) { .gb-tray, .gb-cube, .gb-cube.gb-counted { animation: none; } }
+
+/* ---- Phase 16: rendered 3D cubes (app/assets/3d/cube*.webp) inside a clay tray built from layered gradients ----
+   Finding: a rendered tray has perspective and can not be 9-sliced (it warps into a boat at other sizes), so the
+   tray is a "rendered look" built from three shaded faces (rim, recessed floor, front wall) that stretch to any
+   grid. Cubes ARE real renders (one per colour) with the number as HTML text (K3 numbering is code-driven).
+   html.no-3d (sprite failed to load) keeps the older CSS cubes. */
+html:not(.no-3d) .gb-tray { border: 0; overflow: visible; padding: var(--sp-top) var(--sp-side) var(--sp-lip); border-radius: calc(var(--gb-cube) * .3) calc(var(--gb-cube) * .3) calc(var(--gb-cube) * .26) calc(var(--gb-cube) * .26);
+  /* open box seen from the front-top: bright rim strip (top), lit walls, saturated front wall, dark underside */
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--t) 40%, #fff) 0, color-mix(in srgb, var(--t) 70%, #fff) calc(var(--sp-top) * .55), var(--t) calc(var(--sp-top) * .75), var(--t2) calc(100% - var(--sp-lip)), var(--t2) calc(100% - var(--sp-lip) * .85), color-mix(in srgb, var(--t2) 70%, var(--tb)) 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.8), inset calc(var(--gb-cube) * .06) 0 0 rgba(255,255,255,.28), inset calc(var(--gb-cube) * -.06) 0 0 rgba(0,0,0,.12), inset 0 calc(var(--gb-cube) * -.12) 0 rgba(0,0,0,.16), 0 calc(var(--gb-cube) * .18) 0 color-mix(in srgb, var(--tb) 80%, #000), 0 calc(var(--gb-cube) * .32) calc(var(--gb-cube) * .3) rgba(0,0,0,.24);
+  animation: gbIn .45s var(--ease-spring, ease) both; }
+/* the rim's inner edge: a thin dark line where the opening starts, giving the wall thickness */
+html:not(.no-3d) .gb-tray::after { content: ''; position: absolute; left: calc(var(--sp-side) - var(--gb-cube) * .08); right: calc(var(--sp-side) - var(--gb-cube) * .08); top: calc(var(--sp-top) - var(--gb-cube) * .08); bottom: calc(var(--sp-lip) - var(--gb-cube) * .08); border-radius: calc(var(--gb-cube) * .24); pointer-events: none; z-index: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tb) 80%, #000) 0, color-mix(in srgb, var(--tb) 92%, #000) 40%, var(--tb) 100%); box-shadow: inset 0 calc(var(--gb-cube) * .1) calc(var(--gb-cube) * .14) rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.45); }
+/* recessed floor behind the cubes */
+html:not(.no-3d) .gb-tray > .gb-well { position: relative; z-index: 1; margin: 0; padding: 0; background: none; box-shadow: none; }
+/* front wall = the padding-bottom area: the face lives there */
+html:not(.no-3d) .gb-tray > .gb-face { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: var(--sp-lip); margin: 0; }
+html:not(.no-3d) .gb-face i { top: 34%; width: calc(var(--gb-cube) * .18); height: calc(var(--gb-cube) * .18); background: #3a2412; box-shadow: inset 0 calc(var(--gb-cube) * -.04) 0 rgba(255,255,255,.35), 0 1px 0 rgba(255,255,255,.35); }
+html:not(.no-3d) .gb-face i:nth-child(1) { left: calc(50% - var(--gb-cube) * .42); } html:not(.no-3d) .gb-face i:nth-child(2) { right: calc(50% - var(--gb-cube) * .42); }
+html:not(.no-3d) .gb-face u { top: 42%; left: calc(50% - var(--gb-cube) * .18); width: calc(var(--gb-cube) * .36); height: calc(var(--gb-cube) * .16); background: #7a1f24; box-shadow: inset 0 calc(var(--gb-cube) * -.05) 0 #ff9aa2; }
+html:not(.no-3d) .gb-face::before, html:not(.no-3d) .gb-face::after { top: 52%; width: calc(var(--gb-cube) * .26); height: calc(var(--gb-cube) * .14); background: rgba(255,110,140,.55); filter: blur(.4px); }
+html:not(.no-3d) .gb-face::before { left: calc(50% - var(--gb-cube) * .78); } html:not(.no-3d) .gb-face::after { right: calc(50% - var(--gb-cube) * .78); }
+/* rendered cubes */
+html:not(.no-3d) .gb-cube { background: var(--cube-img) center / 100% 100% no-repeat; box-shadow: none; border-radius: 0; filter: drop-shadow(0 calc(var(--gb-cube) * .08) calc(var(--gb-cube) * .06) rgba(0,0,0,.35)); }
+html:not(.no-3d) .gb-cube::before { display: none; }
+html:not(.no-3d) .gb-cube b { margin-top: -4%; font-size: calc(var(--gb-cube) * .5); text-shadow: 0 1px 0 rgba(0,0,0,.4), 0 2px 3px rgba(0,0,0,.3); }
+.gb-c0 { --cube-img: url(../assets/3d/cube0.webp); } .gb-c1 { --cube-img: url(../assets/3d/cube1.webp); } .gb-c2 { --cube-img: url(../assets/3d/cube2.webp); }
+.gb-c3 { --cube-img: url(../assets/3d/cube3.webp); } .gb-c4 { --cube-img: url(../assets/3d/cube4.webp); } .gb-c5 { --cube-img: url(../assets/3d/cube5.webp); }
+
+/* Phase 16: rendered monkey poses. The three images are stacked; data-mood picks one (opacity only), the SVG hides. */
+.mascot .m-3d { position: absolute; inset: 0; display: none; }
+.mascot.is-3d svg { display: none; }
+.mascot.is-3d .m-3d { display: block; }
+.mascot .m-3d img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: bottom; opacity: 0; transition: opacity .15s; filter: drop-shadow(0 4px 3px rgba(60,30,0,.25)); transform-origin: 50% 100%; }
+.mascot[data-mood="idle"] .m-3d img:nth-child(1) { opacity: 1; animation: mBreath 3.2s ease-in-out infinite; }
+.mascot[data-mood="happy"] .m-3d img:nth-child(2) { opacity: 1; animation: mJump .9s var(--ease-spring, ease) 2; }
+.mascot[data-mood="encourage"] .m-3d img:nth-child(3) { opacity: 1; animation: mNod .6s ease-in-out 3; }
+@media (prefers-reduced-motion: reduce) { .mascot .m-3d img { animation: none !important; } }
