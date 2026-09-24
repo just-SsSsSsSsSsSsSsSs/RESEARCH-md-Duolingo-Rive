@@ -67,7 +67,10 @@ export function open({ q, session, onTry }) {
   document.body.appendChild(sheet); document.body.classList.add('has-sheet'); openSheet = sheet;
   window.__explain = { strategy: () => order[idx], step: () => stepIdx, order, text: () => lastText }; // E2E hook (read-only)
   const body = sheet.querySelector('[data-body]'), label = sheet.querySelector('[data-strategy-label]'), dots = sheet.querySelector('[data-dots]');
-  sheet.querySelector('[data-act="close"]').onclick = () => { sound.play('whoosh'); close(); };
+  // Phase 14.1 HOTFIX: [X] must resume the retry exactly like "هجرّب أحلّ". After a first miss the answer buttons
+  // are locked and opening the sheet hid the retry bar, so a bare close() left a dead screen. onTry is guarded by
+  // every caller (no-op unless a retry is pending), so closing before answering changes nothing.
+  sheet.querySelector('[data-act="close"]').onclick = () => { sound.play('whoosh'); close(); onTry?.(); };
   // Phase 11 K3: "هجرّب أحلّ" - after a miss the caller re-asks the same question empty via onTry
   sheet.querySelector('[data-act="try"]').onclick = () => { sound.play('whoosh'); close(); onTry?.(); };
   sheet.querySelector('[data-act="replay"]').onclick = () => { sound.play('tap'); if (lastText) speak(lastText, body.querySelector('[data-karaoke]')); };

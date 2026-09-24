@@ -510,3 +510,11 @@ P3b ✅ smoke Chromium (mult_3 سؤال pick): clips=311 محمّلة، canSpeak
 **آخر تحديث:** Phase 14 ✅ مكتملة C1-C6 — **PR #16 مفتوح: https://github.com/html-mobile-audio/html-mobile-audio/pull/16** + معاينة حية مُتحقَّقة. التالي: مراجعة المالك للعبارات الشرعية العشر وصياغة التشجيع (السجل في لوحة الأب + نسخ النص) ثم الدمج؛ أي تعديل نصي = إعادة تسجيل العبارة وحدها (hash). الرابط يتوقف عند reset -> serve.py 8090 + GetServiceUrl + تحقق خارجي.
 
 نقطة استئناف بعد reset: PR #16 ما زال مفتوحًا (clean، بلا تعليقات من المالك بعد)؛ لا تغيير جديد على main. أُعيد تشغيل الخادم ورابط المعاينة الجديد مُتحقَّق من الخارج (200، v7.13، bank 52/say 10، c20g.mp3 و n/100.mp3). التالي: انتظار مراجعة المالك (لا كود جديد بلا توجيه).
+
+## Phase 14.1 HOTFIX (gist b2075ed8) - ExplainSheet [X] deadlock
+- PR #16 merged (6814ff0). Branch reset onto origin/main.
+- Verified: explainSheet.js:70 [X] -> close() only; play.js:178 explain click hides retry bar; renderers.js:11 lock() keeps only .explain-btn enabled -> after [X]: no bar + locked buttons = frozen.
+- No Escape/backdrop dismiss path exists. onTry guarded in play.js:148 and mistakeLoop.js:61 (no-op unless pending retry).
+- Plan: [X] handler -> close(); onTry?.()  (architecture K3 unchanged). Test app/tests/phase14_1_deadlock.py. v7.14. PR #17.
+- Resume: if not done, implement fix in explainSheet.js line 70.
+- 14.1 DONE: fix + test (fails before/passes after) + phase14_cheers whole-word false-positive fix + 23/23 PASS v7.14 + README + preview verified: https://8090-i7n1dehr8e0ydwyhqlbuj-3844e1b6.sandbox.novita.ai/app/index.html#/play/mult_3 -> squash + PR #17.
