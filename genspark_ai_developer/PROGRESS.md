@@ -518,3 +518,9 @@ P3b ✅ smoke Chromium (mult_3 سؤال pick): clips=311 محمّلة، canSpeak
 - Plan: [X] handler -> close(); onTry?.()  (architecture K3 unchanged). Test app/tests/phase14_1_deadlock.py. v7.14. PR #17.
 - Resume: if not done, implement fix in explainSheet.js line 70.
 - 14.1 DONE: fix + test (fails before/passes after) + phase14_cheers whole-word false-positive fix + 23/23 PASS v7.14 + README + preview verified: https://8090-i7n1dehr8e0ydwyhqlbuj-3844e1b6.sandbox.novita.ai/app/index.html#/play/mult_3 -> squash + PR #17.
+
+## Phase 15 RFC (gist a0b32e1a) - research only, NO code
+- PR #17 merged (d8ff063). Gist forbids any code change -> deliverable = genspark_ai_developer/RESEARCH_VISUAL_3D.md only.
+- Verified: grid type already exists (5 activities); numpad/quiz mult have no visual; no auto-read (q.speak never set); "3 in 4 equals how much?" fully covered by existing clips; platform is online (no SW) not offline; audio sizes 2.7MB+880KB not 1.7MB; cheers are Fish TTS; .agents absent; group convention inconsistent (story = b groups of a, grid rows = a).
+- Key evidence: Kaminski & Sloutsky 2013 (extraneous detail hurts 6-8 y/o) -> simple identical units, not gems.
+- Next: wait for owner decisions (section 7 of the RFC). No app/ change, no version bump.
