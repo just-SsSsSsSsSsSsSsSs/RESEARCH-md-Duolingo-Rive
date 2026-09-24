@@ -11,7 +11,7 @@ Checks:
   5. parent log records explanations + cheers; hadith line flagged with its source; "نسخ النص" exports text+source;
   6. parent switch off -> no cheer audio requested, the line is still written in the log.
 """
-import os, sys
+import os, re, sys
 from playwright.sync_api import sync_playwright
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from math_random import solve_current  # the proven UI solver (numpad / quiz / grid / pick / branch / truefalse)
@@ -70,7 +70,8 @@ with sync_playwright() as p:
     pg.wait_for_function('window.__lastCheer && window.__lastCheer.hero === "karma"', timeout=8000)
     lc = pg.evaluate('window.__lastCheer'); print('style', style, 'karma cheer:', lc)
     check(lc['event'] in ('correct', 'recovered'), f"a spoken cheer followed the correct answer ({lc['event']})")
-    fem_bad = [w for w in ('قولها ', 'اسمع ', ' ساعد ', 'يا بطل.', 'عليك!') if w in lc['text']]
+    # whole-word match: 'قولها' must not fire inside the correct plural 'نقولها' (c20g) - Phase 14.1 false positive
+    fem_bad = [w for w in ('قولها', 'اسمع', 'ساعد', 'يا بطل.', 'عليك!') if re.search(r'(?<![\u0600-\u06FF])' + re.escape(w) + r'(?![\u0600-\u06FF])', lc['text'])]
     check(not fem_bad, f'Karma hears feminine wording, never masculine imperatives ({fem_bad})')
     check('يا سليم' not in lc['text'], 'Karma never hears a line addressed to Selim')
     check(lc['voiced'], 'the cheer clip was played (voiced)')
