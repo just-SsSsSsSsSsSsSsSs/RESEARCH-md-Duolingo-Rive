@@ -195,7 +195,7 @@ export const renderers = {
   grid(c, q, ctx) {
     c.appendChild(el(`<div class="q-text">${esc(q.q)}</div>`));
     const g = el(`<div class="dot-grid" style="--cols:${q.cols}" aria-label="${q.rows} صفوف × ${q.cols} أعمدة"></div>`);
-    for (let r = 0; r < q.rows; r++) for (let k = 0; k < q.cols; k++) g.appendChild(el(`<span class="dot" style="animation-delay:${(r * q.cols + k) * 18}ms"></span>`));
+    for (let r = 0; r < q.rows; r++) for (let k = 0; k < q.cols; k++) g.appendChild(el(`<span class="dot gb-c${r % 6}" style="animation-delay:${(r * q.cols + k) * 18}ms"></span>`));
     c.appendChild(g);
     c.appendChild(el(`<p class="small muted center" style="margin:6px 0 10px">${fmt(q.rows)} × ${fmt(q.cols)}</p>`));
     if (q.mode === 'quiz' && q.choices) return renderers.quiz(c, { ...q, q: '', noShuffle: true }, ctx);

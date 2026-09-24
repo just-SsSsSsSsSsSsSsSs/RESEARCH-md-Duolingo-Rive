@@ -296,7 +296,7 @@
 
 /* Phase 9 — math grid + pick */
 .dot-grid { display: grid; grid-template-columns: repeat(var(--cols, 5), 1fr); gap: 6px; justify-items: center; max-width: min(100%, calc(var(--cols, 5) * 40px)); margin: 8px auto 0; direction: ltr; }
-.dot-grid .dot { width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #9be7ff, #1e90ff 70%); box-shadow: 0 3px 8px rgba(0,0,0,.35), inset 0 -3px 6px rgba(0,0,0,.25); animation: popIn .35s var(--ease-spring, ease) both; }
+.dot-grid .dot { width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 34% 28%, rgba(255,255,255,.95) 0 14%, transparent 34%), radial-gradient(circle at 40% 35%, var(--t, #9be7ff), var(--t2, #1e90ff) 62%, var(--tb, #0b5fb0) 100%); box-shadow: 0 3px 8px rgba(0,0,0,.35), inset 0 -3px 6px rgba(0,0,0,.25); animation: popIn .35s var(--ease-spring, ease) both; }
 @media (max-width: 420px) { .dot-grid .dot { width: 22px; height: 22px; } .dot-grid { gap: 5px; max-width: min(100%, calc(var(--cols, 5) * 30px)); } }
 .pick-grid { grid-template-columns: repeat(3, 1fr); }
 .pick-grid .choice { font-size: 26px; font-weight: 900; min-height: 64px; }
@@ -397,8 +397,59 @@ body.has-feedback .voice-sub { bottom: calc(150px + env(safe-area-inset-bottom, 
 .q-hear .i3d { pointer-events: none; }
 
 /* Phase 15.2: equal-groups bar (a trays x b identical cubes). Fixed height: space reserved before paint (no shift). */
-.groups-bar { height: var(--gb-h); display: grid; grid-template-columns: repeat(var(--gb-tcols), max-content); justify-content: center; align-content: center; align-items: center; gap: var(--gb-gap); margin: 0 auto var(--s-3); max-width: 100%; direction: ltr; contain: layout paint; }
-.gb-tray { display: grid; grid-template-columns: repeat(var(--gb-cols), var(--gb-cube)); gap: var(--gb-cgap); justify-content: center; align-content: center; padding: var(--gb-pad); border-radius: 12px; background: linear-gradient(180deg, rgba(255,209,102,.22), rgba(255,157,26,.12)); border: var(--gb-border, 2px) solid rgba(255,209,102,.45); box-sizing: border-box; box-shadow: inset 0 -3px 0 rgba(0,0,0,.18), 0 3px 8px rgba(0,0,0,.25); animation: gbIn .32s var(--ease-spring, ease) both; }
-.gb-cube { width: var(--gb-cube); height: var(--gb-cube); border-radius: 22%; background: linear-gradient(145deg, #8fd3ff 0%, #3b82f6 55%, #1d4ed8 100%); box-shadow: inset 0 -2px 0 rgba(0,0,0,.25), inset 0 2px 0 rgba(255,255,255,.35); }
-@keyframes gbIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .gb-tray { animation: none; } }
+/* Phase 15.3 palette: gold, emerald, coral, sky, purple, orange - far apart on the hue wheel */
+/* ---- Phase 15.3: monkey companion (top corner opposite the replay button; decorative, never takes taps) ---- */
+.q-card:has(> .mascot) { padding-top: 70px; }
+.q-card > .mascot { position: absolute; top: 2px; inset-inline-end: 6px; width: 60px; height: 66px; z-index: 2; pointer-events: none; }
+.mascot svg { width: 100%; height: 100%; overflow: visible; }
+.mascot .m-body, .mascot .m-hand { transform-box: fill-box; transform-origin: 50% 100%; }
+.mascot .m-grin { opacity: 0; }
+.mascot[data-mood="idle"] .m-body { animation: mBreath 3.2s ease-in-out infinite; }
+@keyframes mBreath { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04, .97); } }
+.mascot[data-mood="happy"] .m-grin { opacity: 1; } .mascot[data-mood="happy"] .m-smile { opacity: 0; }
+.mascot[data-mood="happy"] .m-body { animation: mJump .9s var(--ease-spring, ease) 2; }
+.mascot[data-mood="happy"] .m-hl { animation: mClapL .3s ease-in-out 6; }
+.mascot[data-mood="happy"] .m-hr { animation: mClapR .3s ease-in-out 6; }
+@keyframes mJump { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-10px) scale(1.05); } }
+@keyframes mClapL { 0%,100% { transform: translate(0,0); } 50% { transform: translate(26px,-26px); } }
+@keyframes mClapR { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-26px,-26px); } }
+.mascot[data-mood="encourage"] .m-body { animation: mNod .6s ease-in-out 3; transform-origin: 50% 80%; }
+.mascot[data-mood="encourage"] .m-hr { animation: mWave .4s ease-in-out 5; transform-origin: 50% 100%; }
+@keyframes mNod { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-8deg) translateY(2px); } }
+@keyframes mWave { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translate(-4px,-40px) rotate(18deg); } }
+@media (prefers-reduced-motion: reduce) { .mascot .m-body, .mascot .m-hand { animation: none !important; } }
+
+/* ---- Phase 15.4: real 3D toy trays + cubes (Karma's reference, issue #10) ---- */
+.groups-bar { height: calc(var(--gb-h) + 12px); padding-bottom: 12px !important; box-sizing: border-box; display: grid; grid-template-columns: repeat(var(--gb-tcols), max-content); justify-content: center; align-content: center; gap: var(--gb-gap); margin: 4px auto var(--s-4); max-width: 100%; direction: ltr; contain: layout; }
+/* tray = chunky clay box: rim (border), recessed well (inner shadow), front lip with a face, thick 3D bottom edge */
+.gb-tray { --t: #ffd166; --t2: #ffb703; --tb: #d98e00; position: relative; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;
+  padding: var(--gb-pad) var(--gb-pad) 0; border: var(--gb-border) solid var(--tb); border-radius: 14px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--t) 55%, #fff) 0%, var(--t) 55%, var(--t2) 100%);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,.65), inset 0 -4px 0 rgba(0,0,0,.14), 0 5px 0 var(--tb), 0 9px 14px rgba(0,0,0,.22);
+  animation: gbIn .45s var(--ease-spring, ease) both; }
+.gb-well { display: grid; grid-template-columns: repeat(var(--gb-cols), var(--gb-cube)); gap: var(--gb-cgap); padding: var(--gb-well, 2px); border-radius: 9px;
+  background: color-mix(in srgb, var(--tb) 55%, #000 0%); box-shadow: inset 0 3px 5px rgba(0,0,0,.35); }
+.gb-face { height: var(--gb-lip); width: 100%; position: relative; display: block; }
+.gb-face i { position: absolute; top: 3px; width: 5px; height: 5px; border-radius: 50%; background: #3a2412; }
+.gb-face i:nth-child(1) { left: calc(50% - 12px); } .gb-face i:nth-child(2) { right: calc(50% - 12px); }
+.gb-face u { position: absolute; top: 5px; left: calc(50% - 5px); width: 10px; height: 5px; border-radius: 0 0 10px 10px; background: #8a2b2b; }
+.gb-face::before, .gb-face::after { content: ''; position: absolute; top: 6px; width: 7px; height: 4px; border-radius: 50%; background: rgba(255,120,150,.6); }
+.gb-face::before { left: calc(50% - 22px); } .gb-face::after { right: calc(50% - 22px); }
+/* cube = square toy block: lit top face, darker front band, bevelled edges, drop shadow, white cartoon number */
+.gb-cube { position: relative; width: var(--gb-cube); height: var(--gb-cube); border-radius: 22%; display: grid; place-items: center;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--t) 45%, #fff) 0%, var(--t) 38%, var(--t2) 72%, var(--tb) 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.75), inset 2px 0 0 rgba(255,255,255,.25), inset -2px 0 0 rgba(0,0,0,.12), inset 0 calc(var(--gb-cube) * -.18) 0 rgba(0,0,0,.18), 0 3px 0 color-mix(in srgb, var(--tb) 80%, #000), 0 5px 6px rgba(0,0,0,.3);
+  animation: gbCube .5s var(--ease-spring, ease) both; animation-delay: inherit; }
+.gb-cube::before { content: ''; position: absolute; top: 12%; left: 14%; width: 30%; height: 18%; border-radius: 50%; background: rgba(255,255,255,.7); filter: blur(.3px); }
+.gb-cube b { position: relative; margin-top: -12%; font: 900 calc(var(--gb-cube) * .46)/1 var(--font-display); color: #fff; -webkit-text-stroke: 0; text-shadow: 0 1px 0 color-mix(in srgb, var(--tb) 85%, #000), 0 2px 2px rgba(0,0,0,.35); }
+.gb-cube.gb-counted { animation: gbHop .35s var(--ease-spring, ease); }
+.gb-c0 { --t: #ffd166; --t2: #ffb703; --tb: #e09a00; }
+.gb-c1 { --t: #3ee6a8; --t2: #06c38a; --tb: #049a6c; }
+.gb-c2 { --t: #ff7aa2; --t2: #ff4f7e; --tb: #d6245a; }
+.gb-c3 { --t: #5cc8ff; --t2: #1ea7f0; --tb: #0b82c4; }
+.gb-c4 { --t: #b98bff; --t2: #8b5cf6; --tb: #6d3fd6; }
+.gb-c5 { --t: #ffa15c; --t2: #ff7a1a; --tb: #d95d00; }
+@keyframes gbIn { from { opacity: 0; transform: translateY(10px) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes gbCube { 0% { transform: translateY(-14px) scale(.6); opacity: 0; } 70% { transform: translateY(1px) scale(1.06); opacity: 1; } 100% { transform: none; } }
+@keyframes gbHop { 40% { transform: translateY(-6px) scale(1.1); } }
+@media (prefers-reduced-motion: reduce) { .gb-tray, .gb-cube, .gb-cube.gb-counted { animation: none; } }

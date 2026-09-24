@@ -546,3 +546,23 @@ P3b ✅ smoke Chromium (mult_3 سؤال pick): clips=311 محمّلة، canSpeak
 - 15.2 C3: test PASS (real bug fixed: tray border not in fit -> 6x6 trays spilled 4px; now 2px border counted + real inner width). Next: full suite.
 - 15.2 C4: 25/25 suites PASS v7.16; protected sha256 unchanged. Next: README + PR.
 - 15.2 DONE: 25/25 PASS v7.16, README appended, preview verified externally (200, v7.16, groupsBar served): https://8090-i5svpommqbite2zklvdrd-b32ec7bb.sandbox.novita.ai/app/index.html#/play/mult_3 -> squash + PR.
+
+## Phase 15.3 (gist e8e6b1f3) - Sunny joyful theme + colourful 3D trays/cubes + mascot - v7.17
+- PR #20 merged (b71a824). Branch reset onto origin/main.
+- BLOCKER: token ghp_0VW3... now returns 401 (it was published in a public gist -> GitHub auto-revokes leaked tokens). Push impossible; work committed locally only. Owner must issue a new token (and never paste it in a gist).
+- Gist verified against code: (1) bar trays = one amber tint, cubes = one blue gradient, default theme = dark navy -> TRUE. (2) "brown frame" = amber rgba(255,209,102,.45) on dark -> looks brown, TRUE. (3) CHANGELOG_DECISIONS.md "updated" -> file does not exist in repo, FALSE. (4) light theme exists already ([data-theme=light], profile switch) but is plain grey-blue, not sunny.
+- Plan (research-checked, RFC Kaminski 2013): colour PER TRAY (one colour per group -> strengthens grouping, no extra detail inside the math unit); cubes identical within a tray, glossy 3D (highlight + bevel + drop shadow); NO faces on trays (extraneous detail on the counted unit) - mascot lives outside the bar.
+  C1 sunny theme = default for everyone once (meta.themeV=2 migration; dark still selectable in profile), warm sky gradient + code-drawn sun/clouds layer (pointer-events none, aria-hidden, static; reduced-motion safe).
+  C2 groups bar palette gold/green/coral/sky/purple/orange cycling per tray, glossy cubes, pop-in; height unchanged 104.
+  C3 embossed question numbers + warmer cards/numpad in sunny theme.
+  C4 mascot (inline SVG monkey drawn in code, corner of q-card, still while thinking; cheers on correct, encourages on first miss; no ids -> svg_leak safe).
+  C5 test phase15_3_sunny.py + 26 suites + README + v7.17.
+- 15.3 C1 sunny theme (sunny.css, themeV=2 one-time migration), C2 per-tray palette + glossy cubes + grid rows, C4 mascot.js, C5 test phase15_3_sunny.py 21/21.
+- 15.3 DONE locally: 26/26 suites PASS v7.17 (quran_reader failed once on a Google Fonts network timeout, re-run PASS), protected sha256 unchanged, README appended. PUSH BLOCKED: token 401 (leaked in public gist -> revoked). Waiting for a new token.
+
+## Phase 15.4 (gist 5c01d3fb) - match Karma's reference (issue #10 r7) - real 3D toy trays/cubes - v7.18
+- New token works; 15.3 restored from patch and pushed (ed22176).
+- Gist verified: the images it "compared" are MY OWN screenshots (8tjZBcgR etc.), the real reference is issue #10 image 7 (sunny, 3 chunky clay trays with faces, 2x2 square 3D cubes numbered 1..12, 3D sun, full-body monkey). Owner criticism is TRUE: layout picked cols=1 -> thin vertical pill trays, cubes ~20px, flat sun, tiny monkey head.
+- Numbers in cubes: continuous 1..a*b (as in reference) would reveal the product (last cube = answer) -> during the question number 1..b per tray; after the answer (correct / final reveal) cubes renumber 1..a*b in a counting wave (skip-count lesson). K3 intact.
+- Plan: C1 layout: tray rows 1..3, cube up to 40px, square-ish trays (reference 2x2), bar height adaptive <= 200 (spec change 104 -> adaptive, owner asked for reference look). C2 CSS real 3D: cube top face + front + bevel + drop shadow + white number; chunky clay tray with rim, recessed well, front face (eyes + smile) when tray wide enough. C3 generated 3D art (sun, monkey) as small local webp (transparent), mascot bigger. C4 count-up after answer. C5 tests (15.2/15.3 height rule updated), suites, README, PR.
+- 15.4 DONE: layout rewrite (<=3 tray rows, aspect <=1.6 preferred, cubes 14-40px, adaptive h reserved), CSS clay trays + faces + square numbered cubes + countUp after answer, shaded sun, full-body monkey; image generation failed (no credits) -> all code-drawn. 26/26 PASS v7.18 -> squash + PR #21.

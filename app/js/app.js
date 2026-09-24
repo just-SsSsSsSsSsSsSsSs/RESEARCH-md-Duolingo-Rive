@@ -22,8 +22,8 @@ import * as Parent from './ui/views/parent.js';
 import * as Subject from './ui/views/subject.js';
 import * as Certificate from './ui/views/certificate.js';
 
-document.documentElement.setAttribute('data-theme', store.meta.theme || 'dark');
-bus.on('meta:change', (m) => document.documentElement.setAttribute('data-theme', m.theme || 'dark'));
+document.documentElement.setAttribute('data-theme', store.meta.theme || 'light');
+bus.on('meta:change', (m) => document.documentElement.setAttribute('data-theme', m.theme || 'light'));
 
 initBubbles('bubbles');
 
