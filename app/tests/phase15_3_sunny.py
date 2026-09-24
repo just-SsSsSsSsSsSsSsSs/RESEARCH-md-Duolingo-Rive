@@ -9,7 +9,8 @@
      nor any answer button; claps (happy) on a correct answer and encourages on the first miss (K3 unchanged: no reveal).
   5  readability: question text vs card background contrast >= 4.5 (WCAG AA) in the sunny theme.
   6  prefers-reduced-motion: mascot and sky decoration do not animate.
-  7  no new image downloads: every decoration is inline (data-URI / inline SVG).
+  7  image downloads: only the Phase 16 rendered sprites from app/assets/3d/ (owner asked for the reference render);
+     every other decoration stays inline (data-URI / inline SVG).
 """
 import sys, re
 from playwright.sync_api import sync_playwright
@@ -59,11 +60,13 @@ def answer(pg, q, right):
 TRAYS = """(() => { const g = document.querySelector('.q-card .groups-bar'); if (!g) return null;
   const ts = [...g.querySelectorAll('.gb-tray')];
   return { h: g.getBoundingClientRect().height,
-    border: ts.map((t) => getComputedStyle(t).borderTopColor),
+    // Phase 16: the tray colour lives in --t (gradient box, border 0); pre-16 CSS trays used borderTopColor
+    border: ts.map((t) => getComputedStyle(t).getPropertyValue('--t').trim() || getComputedStyle(t).borderTopColor),
     cubes: ts.map((t) => [...new Set([...t.querySelectorAll('.gb-cube')].map((c) => getComputedStyle(c).backgroundImage))].length),
     nums: [...g.querySelectorAll('.gb-cube b')].map((e) => e.textContent), faces: g.querySelectorAll('.gb-face').length, trays: ts.length,
     sq: ts.map((t) => { const r = t.getBoundingClientRect(); return Math.max(r.width, r.height) / Math.min(r.width, r.height); }),
     shadow: ts.length ? getComputedStyle(ts[0].querySelector('.gb-cube')).boxShadow : '',
+    sprite: ts.length ? (getComputedStyle(ts[0].querySelector('.gb-cube')).backgroundImage.includes('/assets/3d/cube') && getComputedStyle(ts[0].querySelector('.gb-cube')).filter.includes('drop-shadow')) : false,
     over: ts.some((t) => { const a = t.getBoundingClientRect(), b = g.getBoundingClientRect(); return a.left < b.left - .5 || a.right > b.right + .5; }) }; })()"""
 
 MASCOT = """(() => { const m = document.querySelector('.q-card > .mascot'); if (!m) return null; const r = m.getBoundingClientRect();
@@ -99,7 +102,8 @@ with sync_playwright() as p:
     check(t and all(t['border'][i] != t['border'][i + 1] for i in range(len(t['border']) - 1)), f'neighbouring trays have different colours {t and t["border"][:4]}')
     check(t and len(set(t['border'][:6])) == min(6, len(t['border'])), 'first 6 trays all different colours')
     check(t and all(n == 1 for n in t['cubes']), 'cubes inside one tray are identical')
-    check(t and 'inset' in t['shadow'] and t['shadow'].count('rgba') >= 3, 'cubes have glossy depth (inset highlight + bevel + drop shadow)')
+    # Phase 16: depth comes from the rendered sprite (+ drop-shadow); the CSS inset/bevel shadow is the no-3d fallback
+    check(t and (t['sprite'] or ('inset' in t['shadow'] and t['shadow'].count('rgba') >= 3)), 'cubes have 3D depth (rendered sprite + drop shadow, or the CSS inset/bevel fallback)')
     a_, b_ = q['meta']['a'], q['meta']['b']
     check(t and all(x <= 2.6 for x in t['sq']), f'Phase 15.4: chunky trays, no thin pill strips (aspect {t and [round(x, 2) for x in t["sq"]]})')
     if t and t['nums']:
@@ -134,7 +138,8 @@ with sync_playwright() as p:
           return { same: rs.every((n) => n === 1), diff: first.every((v, i) => i === 0 || v !== first[i - 1]) }; })()""")
         check(rows['same'] and rows['diff'], f'grid: each row one colour, neighbouring rows differ {rows}')
     else: check(True, 'grid question not sampled (skipped)')
-    check(not imgs, f'no image downloads for the decorations {imgs[:3]}')
+    stray = [u for u in imgs if '/app/assets/3d/' not in u]
+    check(not stray, f'image downloads only from app/assets/3d/ (Phase 16 renders) {stray[:3]}')
     check(not errs, f'no page errors {errs[:2]}')
     ctx.close()
 

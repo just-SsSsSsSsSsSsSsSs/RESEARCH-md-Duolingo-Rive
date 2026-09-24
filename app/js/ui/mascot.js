@@ -8,6 +8,12 @@
  */
 import { el } from './components.js';
 
+const POSES = {
+  idle: new URL('../../assets/3d/monkey.webp', import.meta.url).href,
+  happy: new URL('../../assets/3d/monkey_happy.webp', import.meta.url).href,
+  encourage: new URL('../../assets/3d/monkey_encourage.webp', import.meta.url).href,
+};
+
 const SVG = `<svg viewBox="0 0 120 130" aria-hidden="true" focusable="false">
   <ellipse cx="60" cy="124" rx="30" ry="5" fill="rgba(60,30,0,.18)"/>
   <path class="m-tail" d="M84 104c22 2 26-20 12-26" fill="none" stroke="#8a4f1f" stroke-width="7" stroke-linecap="round"/>
@@ -44,7 +50,12 @@ const SVG = `<svg viewBox="0 0 120 130" aria-hidden="true" focusable="false">
 export function mount(card) {
   if (!card) return null;
   card.querySelector(':scope > .mascot')?.remove();
-  const m = el(`<div class="mascot" data-mood="idle" aria-hidden="true">${SVG}</div>`);
+  // Phase 16: rendered 3D poses (app/assets/3d/monkey*.webp); the inline SVG stays as the fallback until the
+  // idle render has loaded (and forever if it fails), so the card never shows an empty corner.
+  const m = el(`<div class="mascot" data-mood="idle" aria-hidden="true">${SVG}<span class="m-3d"><img alt="" decoding="async" src="${POSES.idle}"><img alt="" decoding="async" src="${POSES.happy}"><img alt="" decoding="async" src="${POSES.encourage}"></span></div>`);
+  const first = m.querySelector('.m-3d img');
+  const ready = () => m.classList.add('is-3d');
+  if (first.complete && first.naturalWidth) ready(); else first.addEventListener('load', ready, { once: true });
   card.appendChild(m);
   return m;
 }
