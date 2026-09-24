@@ -61,7 +61,8 @@ function subtitle(text, ms) {
   clearTimeout(s._t); s._t = setTimeout(() => { s.classList.add('out'); setTimeout(() => { s.hidden = true; }, 400); }, Math.max(2600, ms + 900));
 }
 
-export function stop() { if (el) { try { el.pause(); } catch { /* noop */ } } }
+let busyUntil = 0, reqId = 0;
+export function stop() { busyUntil = 0; if (el) { try { el.pause(); } catch { /* noop */ } } }
 
 export async function say(event) {
   await ready(); if (!bank) return null;
@@ -72,12 +73,19 @@ export async function say(event) {
   if (on && c) {
     clips.stop(); // one human voice at a time
     const a = audio(); a.src = u(`audio/cheers/${packKey}/${c.file}`);
-    a.play().catch(() => { /* refused/offline: the subtitle already shows the words */ });
+    // Phase 15.1: busy from the request (play() is async), not only while !paused. Only THIS request's rejection may
+    // clear it: an older play() interrupted by this new src rejects later and must not free the newer line.
+    const req = ++reqId; busyUntil = Date.now() + (c.ms || 2000) + 400;
+    a.play().catch(() => { if (req === reqId) busyUntil = 0; /* refused/offline: the subtitle already shows the words */ });
   }
   window.__lastCheer = { id: line.id, event, hero, text: line.text, voiced: !!(on && c) }; // E2E hook (read-only)
   return line;
 }
 
-const cheers = { ready, say, stop, pool, PACKS, DEFAULT_PACK };
+/** Phase 15.1: the question voice waits while a cheer is still speaking (a verse/hadith is never cut) */
+// true from the moment a line is requested until it ends (clip length + margin as a guard if 'ended' never fires)
+export const playing = () => !!el && !el.ended && (Date.now() < busyUntil || (!el.paused && el.currentTime > 0));
+
+const cheers = { ready, say, stop, pool, playing, PACKS, DEFAULT_PACK };
 if (typeof window !== 'undefined') window.__cheers = cheers;
 export default cheers;

@@ -389,3 +389,9 @@ body.has-feedback .voice-sub { bottom: calc(150px + env(safe-area-inset-bottom, 
 .voice-log li { padding: 6px 0; border-bottom: 1px dashed rgba(255, 255, 255, .12); }
 .voice-log .vl-meta { font-size: .78rem; opacity: .7; }
 .voice-log .vl-review { color: var(--neon-gold, #ffd166); }
+
+/* Phase 15.1: replay-the-question speaker beside the question text (non-readers) */
+/* reserved corner (never over the text); `.q-card .btn.q-hear` beats fx.css `.btn { position: relative }` (loaded later) */
+.q-card:has(> .q-hear) { padding-top: 58px; }
+.q-card .btn.q-hear { position: absolute; top: 10px; inset-inline-start: 10px; z-index: 2; }
+.q-hear .i3d { pointer-events: none; }

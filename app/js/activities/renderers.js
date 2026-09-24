@@ -8,7 +8,7 @@ import { ico } from '../ui/icons.js';
 import { ico3d } from '../ui/icons3d.js';
 
 const fontCls = (q, ctx) => (q.font || ctx.font) === 'quran' ? 'quran' : '';
-const lock = (c) => c.querySelectorAll('button:not(.explain-btn)').forEach((b) => (b.disabled = true)); // the explain button stays usable after a miss (Phase 11)
+const lock = (c) => c.querySelectorAll('button:not(.explain-btn):not(.q-hear)').forEach((b) => (b.disabled = true)); // the explain button (Phase 11) and the replay-question button (Phase 15.1) stay usable after a miss
 /** Phase 11 K3: may the correct answer be revealed after a wrong pick? play.js says no while a retry is still available */
 const reveal = (ctx) => !ctx.reveal || ctx.reveal() !== false;
 /** shuffle choices at render-time so the correct answer position is unpredictable */
