@@ -10,6 +10,7 @@
 import celebration, { SOUNDS, LIMITS } from '../../engines/celebration.js';
 import sound from '../../engines/sound.js';
 import { speech } from '../../engines/speech.js';
+import voice from '../../engines/voice/provider.js';
 import { el, fmt, esc, toast, confirm } from '../components.js';
 import { ico } from '../icons.js';
 import { ico3d } from '../icons3d.js';
@@ -61,6 +62,8 @@ export function renderSettings(body, { hero, p, save }) {
     <div class="row between"><span>سرعة الكلام <b data-out="rate">${ex.rate}</b></span><input type="range" min="0.6" max="1.2" step="0.05" value="${ex.rate}" data-k="rate" style="width:46%"></div>
     <div class="row between" style="gap:8px"><span>الصوت</span><select data-k="voice" class="btn btn-sm" style="max-width:58%"><option value="">تلقائي (أفضل صوت متاح)</option></select></div>
     <div class="row between" style="gap:8px"><span class="small muted" data-voice-hint></span><button type="button" class="btn btn-sm btn-cyan" data-act="test-voice">${ico3d('speaker', 18)} اسمع تجربة</button></div>
+    <div class="row between" style="gap:8px;margin-top:6px"><span class="small muted">فحص الصوت على الجهاز ده</span><button type="button" class="btn btn-sm btn-ghost" data-act="diag-voice">${ico3d('question', 18)} افحص الصوت</button></div>
+    <div class="small voice-diag" data-voice-diag hidden></div>
   </div>`);
   const exSw = ex_card.querySelectorAll('.switch'); const keys = ['enabled', 'tts', 'autoplay'];
   exSw.forEach((b, i) => { b.onclick = () => { const on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); saveE({ [keys[i]]: on }); sound.play('tap'); }; });
@@ -76,6 +79,34 @@ export function renderSettings(body, { hero, p, save }) {
   fillVoices(); if (speech.available) speechSynthesis.addEventListener?.('voiceschanged', fillVoices);
   sel.onchange = () => { saveE({ voice: sel.value || undefined }); toast('تم الحفظ ' + ico3d('check'), { type: 'success' }); };
   ex_card.querySelector('[data-act="test-voice"]').onclick = () => { sound.play('tap'); speech.speak('أهلًا يا بطل! عندك ٣ كراتين، كل كرتونة فيها ٤ بيضات. يعني ٣ في ٤ يساوي ١٢ بيضة.'); };
+  // Phase 13 P3c: device voice diagnostics - measured, not assumed (owner request, gist 5e7813f5 #5).
+  // A real 1-sentence TTS utterance is timed: onstart + a plausible duration = the OS really spoke; an instant
+  // onend / no onstart = silent engine (the Android case). The recorded-clips path is what the child hears.
+  ex_card.querySelector('[data-act="diag-voice"]').onclick = async () => {
+    sound.play('tap'); voice.unlock();
+    const box = ex_card.querySelector('[data-voice-diag]'); box.hidden = false; box.textContent = 'بفحص...';
+    const d = await voice.diagnose();
+    const probe = await new Promise((res) => {
+      if (!speech.available) return res({ started: false, ms: 0, err: 'no-api' });
+      try {
+        const u = new SpeechSynthesisUtterance('تلاتة في أربعة'); u.lang = 'ar-EG'; const v = speech.voice(); if (v) u.voice = v;
+        let t0 = 0; const t = setTimeout(() => res({ started: !!t0, ms: t0 ? Math.round(performance.now() - t0) : 0, err: 'timeout' }), 4000);
+        u.onstart = () => { t0 = performance.now(); };
+        u.onend = () => { clearTimeout(t); res({ started: !!t0, ms: t0 ? Math.round(performance.now() - t0) : 0 }); };
+        u.onerror = (e) => { clearTimeout(t); res({ started: !!t0, ms: 0, err: e?.error || 'error' }); };
+        speechSynthesis.cancel(); speechSynthesis.speak(u);
+      } catch (e) { res({ started: false, ms: 0, err: String(e) }); }
+    });
+    const ttsOk = probe.started && probe.ms >= 400;
+    const lines = [
+      `الصوت المسجّل (صوت الشرح): ${d.clips ? `شغال — ${d.clipCount} مقطع` : 'مش متاح (مشكلة تحميل)'}`,
+      `صوت الجهاز (قراءة المتصفح): ${!d.tts ? 'المتصفح مفيهوش قراءة صوتية' : ttsOk ? `شغال (${probe.ms}ms)` : `صامت — ${probe.started ? `خلص في ${probe.ms}ms` : 'ما بدأش'}${probe.err ? ` (${probe.err})` : ''}`}`,
+      `أصوات عربي على الجهاز: ${d.arabicVoices.length ? d.arabicVoices.slice(0, 3).join('، ') : 'مفيش'}`,
+      `اللي سليم هيسمعه: ${d.clips ? 'الصوت المصري المسجّل' : ttsOk ? 'صوت الجهاز' : 'تظليل الكلمات بس (بدون صوت)'}`,
+    ];
+    box.innerHTML = lines.map((l) => `<div>${esc(l)}</div>`).join('');
+    window.__voiceDiag = { ...d, probe, ttsOk }; // E2E hook (read-only)
+  };
   body.appendChild(ex_card);
 
   /* ---------- privacy ---------- */
