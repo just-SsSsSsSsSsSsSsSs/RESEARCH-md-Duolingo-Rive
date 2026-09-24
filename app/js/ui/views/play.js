@@ -9,6 +9,7 @@ import explainSheet from '../explainSheet.js';
 import cheers from '../../engines/voice/cheers.js'; // Phase 14: spoken sibling / birr / dhikr encouragement
 import questionVoice from '../../engines/voice/questionVoice.js'; // Phase 15.1: the math question is read aloud
 import voice from '../../engines/voice/provider.js';
+import groupsBar from '../groupsBar.js'; // Phase 15.2: a x b as a trays of b identical cubes
 import { targetedPractice, adaptive } from '../../engines/insights.js';
 import hearts from '../../engines/hearts.js';
 import Session from '../../activities/session.js';
@@ -146,6 +147,11 @@ export async function render(root, { id }) {
     };
     if (q.speak && sound.enabled) setTimeout(() => sound.speak(q.speak), 200);
     r(card, q, ctx);
+    // Phase 15.2: equal-groups bar above the question text (only plain a x b questions: it shows the operands, never the
+    // answer; missing-factor questions would reveal the unknown, grid questions already have their own picture)
+    const cs = getComputedStyle(card); const inner = card.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); // the bar's real width
+    const bar = groupsBar.render(q, { width: Math.max(200, Math.floor(inner)) });
+    if (bar) { const qt = card.querySelector('.q-text'); qt ? qt.before(bar) : card.prepend(bar); }
     // Phase 15.1: read the math question aloud (recorded Egyptian clips only) + a replay button for non-readers.
     // The button is outside the answer controls' lock (class explain-btn is NOT used): K3 locks only answer buttons.
     const spoken = questionVoice.sentence(q);

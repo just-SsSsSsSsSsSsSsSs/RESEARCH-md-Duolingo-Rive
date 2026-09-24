@@ -395,3 +395,10 @@ body.has-feedback .voice-sub { bottom: calc(150px + env(safe-area-inset-bottom, 
 .q-card:has(> .q-hear) { padding-top: 58px; }
 .q-card .btn.q-hear { position: absolute; top: 10px; inset-inline-start: 10px; z-index: 2; }
 .q-hear .i3d { pointer-events: none; }
+
+/* Phase 15.2: equal-groups bar (a trays x b identical cubes). Fixed height: space reserved before paint (no shift). */
+.groups-bar { height: var(--gb-h); display: grid; grid-template-columns: repeat(var(--gb-tcols), max-content); justify-content: center; align-content: center; align-items: center; gap: var(--gb-gap); margin: 0 auto var(--s-3); max-width: 100%; direction: ltr; contain: layout paint; }
+.gb-tray { display: grid; grid-template-columns: repeat(var(--gb-cols), var(--gb-cube)); gap: var(--gb-cgap); justify-content: center; align-content: center; padding: var(--gb-pad); border-radius: 12px; background: linear-gradient(180deg, rgba(255,209,102,.22), rgba(255,157,26,.12)); border: var(--gb-border, 2px) solid rgba(255,209,102,.45); box-sizing: border-box; box-shadow: inset 0 -3px 0 rgba(0,0,0,.18), 0 3px 8px rgba(0,0,0,.25); animation: gbIn .32s var(--ease-spring, ease) both; }
+.gb-cube { width: var(--gb-cube); height: var(--gb-cube); border-radius: 22%; background: linear-gradient(145deg, #8fd3ff 0%, #3b82f6 55%, #1d4ed8 100%); box-shadow: inset 0 -2px 0 rgba(0,0,0,.25), inset 0 2px 0 rgba(255,255,255,.35); }
+@keyframes gbIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .gb-tray { animation: none; } }
