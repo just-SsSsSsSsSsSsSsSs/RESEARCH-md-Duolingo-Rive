@@ -164,3 +164,16 @@ body.fx-shake #app { animation: fxShake .38s var(--ease); }
 .view > :last-child:not(.nav) { margin-bottom: var(--s-4); }
 .view { padding-bottom: var(--s-2); }
 body.has-feedback #app { padding-bottom: calc(150px + var(--safe-b)); }
+
+/* ---- Phase 17: fx v3 particles (DOM + Web Animations, transforms/opacity only; all inside #fx-layer z-index 9999) ---- */
+#fx-layer .fx-ring { position: absolute; border-radius: 50%; border: 4px solid var(--c, #ffd166); box-shadow: 0 0 18px var(--c, #ffd166), inset 0 0 12px rgba(255,255,255,.7); will-change: transform, opacity; }
+#fx-layer .fx-p { position: absolute; width: 16px; height: 16px; background: var(--c, #ffd166); will-change: transform, opacity; filter: drop-shadow(0 2px 2px rgba(0,0,0,.18)); }
+#fx-layer .fx-star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); width: 20px; height: 20px; }
+#fx-layer .fx-heart { width: 16px; height: 16px; background: none; }
+#fx-layer .fx-heart::before, #fx-layer .fx-heart::after { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: var(--c); border-radius: 50% 50% 0 0; transform: rotate(-45deg) translate(-25%, 12%); }
+#fx-layer .fx-heart::after { transform: rotate(45deg) translate(25%, 12%); }
+#fx-layer .fx-spark { width: 6px; height: 26px; border-radius: 3px; background: linear-gradient(180deg, #fff, var(--c)); }
+#fx-layer .fx-dot { border-radius: 50%; width: 12px; height: 12px; background: radial-gradient(circle at 35% 35%, #fff, var(--c) 60%); }
+#fx-layer .fx-ribbon { position: absolute; width: 8px; height: 22px; border-radius: 3px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 60%, #000)); will-change: transform, opacity; }
+#fx-layer .fx-rays { position: absolute; width: 260px; height: 260px; border-radius: 50%; will-change: transform, opacity;
+  background: repeating-conic-gradient(from 0deg, rgba(255,214,102,.55) 0 9deg, transparent 9deg 22.5deg); mask: radial-gradient(circle, #000 20%, transparent 70%); -webkit-mask: radial-gradient(circle, #000 20%, transparent 70%); }

@@ -583,3 +583,103 @@ P3b ✅ smoke Chromium (mult_3 سؤال pick): clips=311 محمّلة، canSpeak
 - 16 C5 DONE: **27/27 suites PASS on v7.19** in one uninterrupted batch (26 standard + phase16_render; each result pushed live above). Protected files sha256 unchanged (plant fb197ed2, math 694859aa, albayyinah aac6bafb, alqadr 52758e3f) + PROJECT_VISION.md untouched. Preview verified externally (200, v7.19, cube0.webp/monkey_happy.webp image/webp, manifest 373 clips): https://8090-i1nf9ydvdi6rs98w9wkxg-5185f4aa.sandbox.novita.ai/app/index.html#/play/mult_3 -> squash onto origin/main + PR #22.
 
 **آخر تحديث:** Phase 16 ✅ مكتملة C1-C5 — squash 2d0b306 (commit واحد فوق main) -> **PR #22 مفتوح: https://github.com/html-mobile-audio/html-mobile-audio/pull/22** + معاينة حية مُتحقَّقة من الخارج. التالي: مراجعة المالك (قرار الشمس/زرار [X]، ومطابقة الشكل للمرجع على هاتفه) ثم الدمج. الرابط يتوقف عند reset -> serve.py 8090 + GetServiceUrl + تحقق خارجي. `.env` غير مرفوع عمدًا (مطلوب فقط لتسجيل مقاطع جديدة).
+
+## Phase 17 — «رفقاء التشجيع» Companion Cast: شخصيات متعددة متحركة تفاعلية لكل المواد (gist eafceafc + رسالة صوتية) — v7.20 — خطة مجمّدة
+
+**توجيه المالك (نصًا):** حاجة «تقنمك، مش ثابتة، مش في طرفي… تشوف الصورة نفسها»، محترمة/متطورة/عصرية، حركات جميلة تشجيعية مؤثرة تلفت الانتباه، مناسبة لكل المواد الحالية وأي مادة جديدة، أشكال كتير غير القرد ومتغيرة («مفيش قرد بس وحركتين تلاتة»)، «ابحث وافضل حاجة أعملها».
+
+**تحقق من الـgist قبل التنفيذ (RULES.md):**
+- ✅ PR #22 مدموج (ec91866) — صحيح. الفرع أُعيد فوق main.
+- ❌ «README فيه جدول issues #9/#10» و«CHANGELOG_DECISIONS.md في .agents/memory» — غير موجودين في المستودع (سكربت المالك المحلي كتب في نسخته). لن أنشئهما.
+- ✅ «[X] راكب فوق الشمس» — صحيح: `sunny.css:33` الشمس `left -22px top 54px` و`play-head [data-act=quit]` في نفس الركن (15.4 أعطاه خلفية بيضاء بدل نقله). يُحل في هذه المرحلة.
+- ⚠ «المكعبات 18px في 3×8» — قياس صحيح بحكم عرض الشاشة (layout ديناميكي)؛ ليس عيبًا في هذه المرحلة.
+
+**بحث (موثّق في RESEARCH.md ملحق Phase 17):**
+- Duolingo: 10 شخصيات عالمية بـRive State Machine (idle/blink/eye-darts/react correct-wrong/speaking) — blog.duolingo.com/world-character-visemes + rive.app/blog (Duolingo). المبدأ: **شخصية = آلة حالات مطبَّقة برمجيًا، لا فيديو ولا صور ثابتة**.
+- Rive runtime web ≈ 40-50KB مضغوط + WASM canvas؛ Lottie (lottie-web) ≈ 60KB+ JSON لكل حركة؛ كلاهما تبعية خارجية + أدوات تأليف غير متاحة هنا (لا Rive editor، لا After Effects). قيد المشروع: «بدون تبعيات ثقيلة» + pure-web + أصول موجودة/قابلة للتوليد هنا.
+- **القرار: محرك آلة حالات خاص بنا على Web Animations API + rigged sprites** — كل شخصية = صورة WebP مرندرة (كما القرد الحالي، ثبت نجاحه) مقسّمة لطبقات (جسم/رأس/يد/عين) تُحرَّك بـtransform/opacity فقط (60fps، بلا layout thrash)، مع حالات: idle (تنفس + رمش عشوائي + نظرات) / think (يميل ويبص للسؤال) / happy (قفز + تصفيق) / encourage (إيماءة + تلويح) / celebrate (دورة + confetti) / wave (دخول). **الانتقالات مُجدولة عشوائيًا بلا تكرار متتالٍ** (نفس آلية «الكيس» في cheers.js) = «مش ثابتة».
+- **Cast متعدد data-driven:** `app/content/companions.json` — كل شخصية `{id, name, subjects:[...]|'*', poses:{...}, palette}`؛ اختيار الشخصية حسب المادة الحالية + دوران بين الجلسات (لا نفس الشخصية مرتين متتاليتين) + الطفل يقدر يثبّت المفضّل من الملف الشخصي. أي مادة جديدة بلا شخصية مخصّصة تأخذ من مجموعة `'*'` تلقائيًا.
+- الشخصيات المقترحة (Kaminski 2013: البهجة خارج وحدة العدّ؛ ميثاق PROJECT_VISION: محتشم، بلا رموز مخالفة): قرد (رياضيات، موجود)، **بومة** (قرآن/دين — رمز الحكمة)، **قطة** (عربي)، **ببغاء** (بودكاست/استماع)، **نحلة** (`*` — نشاط/اجتهاد)، **سلحفاة** (`*` — صبر/مثابرة، تظهر عند «اتعلمت من الغلط»)، **روبوت صغير** (`*` — عصري). 7 شخصيات × 5 وضعيات = 35 رندر WebP شفاف ≤ 12KB (≈ 400KB إجمالي، تحميل كسول لكل شخصية).
+- **طبقة FX متطورة موحّدة** (fx.js v3): «انفجار نجوم» + شرائط + قلوب + نص عائم متغير + **حلقة نبض على الإجابة** + «دخول الشخصية» من الجانب — كلها على `#fx-canvas` الحالي (z-index 9999) — تعمل لكل المواد لأنها مربوطة بـ`fx.celebrate/encourage` المستخدمة أصلًا في play/phaseRunner/story/mistakeLoop.
+- **تشجيع بصري لكل حدث** (لا صوت جديد — المقاطع المسجّلة كما هي): correct / recovered (أكبر) / wrong (لطيف) / finish / streak / levelup.
+
+**قيود ثابتة:** K3 بلا تغيير؛ الشخصية زخرفة (aria-hidden، pointer-events none، لا تغطي نص/أزرار — نفس اختبار 15.3)؛ prefers-reduced-motion يوقف كل شيء؛ Zero-Emoji؛ لا SVG بـid؛ الملفات المحمية لا تُمس؛ إعداد شدّة الاحتفال الحالي (`meta.celebration` 0..3) يحكم الكثافة.
+
+**Chunks (push-per-chunk):**
+- [ ] R0: تجميد هذه الخطة + push (هذا).
+- [ ] R1: إصلاح الشمس/[X] (نقل الشمس لليمين أعلى بعيدًا عن play-head، والتحقق بـDOM أن مستطيلي [X] والشمس لا يتقاطعان) + test.
+- [ ] R2: توليد رندرات الشخصيات (بومة/قطة/ببغاء/نحلة/سلحفاة/روبوت × idle/happy/encourage/think/celebrate) بنفس أسلوب القرد (Pixar-clay، خلفية بيضاء -> alpha) -> `app/assets/companions/<id>/<pose>.webp` — على دفعات مدفوعة.
+- [ ] R3: `app/content/companions.json` + `engines/companion.js` (آلة حالات WAAPI: idle loop عشوائي، انتقالات، pool بلا تكرار، اختيار حسب المادة، تفضيل الطفل) — يستبدل mascot.js بواجهة متوافقة (`mount/mood`) فلا يتغير play.js إلا سطر الاستيراد.
+- [ ] R4: fx.js v3 (starburst/ribbons/pulse-ring/entrance) + ربط الأحداث في play/phaseRunner/story (مواد كلها) + واجهة اختيار الرفيق في الملف الشخصي.
+- [ ] R5: `phase17_companions.py` (كل مادة تحصل على رفيق، لا تكرار متتالٍ، الوضعيات تتبدّل، لا تغطية، reduced-motion، الشمس/[X]) + كل الـsuites + README + RESEARCH + v7.20 + squash + PR #23 + معاينة.
+- 17 resume (reset): remote = R0 plan (be54918) + R1 sun CSS (a294e7e, NOT yet DOM-verified). LOST unpushed: tools/cut_sprite_sheet.py (column split on white gaps + flood-fill alpha + resize + webp) and the owl sheet (generated once: 5 poses idle/think/happy/encourage/celebrate, graduation-cap owl, sheet https://www.genspark.ai/api/files/s/B7wJcSEm) - the 3rd/4th figures touched (wing tips) -> splitter needs a "split widest run at thinnest column" fallback. Lesson: push the cut sprites IMMEDIATELY after each sheet. Redo: tool -> owl -> push; then cat/parrot/bee/turtle/robot one sheet each, push per sheet.
+- 17 R2 partial: owl (88a5c72) + cat (3181bcc) cut and pushed (5 poses each, ~10KB per sprite, verified visually: clean alpha, consistent character). **BLOCKED: image-generation credits exhausted** at the parrot sheet -> parrot/bee/turtle/robot deferred; the cast is data-driven so they are added later by dropping a folder + a JSON entry, no code change. Proceeding with R3 (engine) on 3 companions: monkey (existing 3 poses, think/celebrate fall back to idle/happy), owl, cat.
+- 17 resume (reset): remote @ 5bffd14 = R0 plan, R1 sun CSS (unverified), R2 owl+cat, R3a engine + JSON. LOST: R3b wiring (play.js import swap + subject + think pose + celebrate on recovered; app.js import). Redo R3b now -> push -> R3c CSS (bigger companion, no overlap) -> smoke -> R4 (fx v3 + profile picker) -> R5 tests/README/v7.20/PR #23.
+- 17 R3 DONE + smoke PASS (390x844): monkey on mult_3, owl on bayyinah_fill/iman_quiz/tajweed_quiz (quran/deen), cat on plant_quiz (via '*' pool) - 5 poses loaded each, think pose after 900ms, idle bag varies (glance/breath/lean/blink/wiggle - no static idle), celebrate pose on demand, companion 92x100 never overlaps q-text/q-hear/answers/groups-bar, pointer-events none, 0 pageerrors, 0 4xx. R1 verified by DOM: quit [X] rect 12..56px left, sun background-position `calc(100% + 18px) 104px` (right edge) -> no intersection. Screenshot: https://www.genspark.ai/api/files/s/loxbQl3i. Next R4: fx.js v3 (starburst/ribbons/pulse ring) + profile companion picker.
+- 17 resume (reset): sandbox was on main; branch restored from origin @ c70c5ad (R4a fx v3 pushed). LOST: R4b (recovered flag in play.js celebrate call, profile companion picker + CSS) - none present on remote. Redo R4b now -> push -> smoke fx v3 + picker -> R5.
+- 17 R4b DONE (028dffb) + R5a: app/tests/phase17_companions.py PASS (44 checks: cast per subject, rotation no repeat, think/encourage/celebrate/happy, K3 retry bar, fx v3 ring/starburst/ribbons/rays + shape rotation, idle variety, no overlap, [X] vs sun, reduced-motion, picker favourite/surprise, 0 errors, 0 4xx). Next: screenshots -> full batch (both servers) -> RESEARCH/README -> v7.20 -> squash -> PR #23.
+- 17 R5b full batch START 22:17 (excluded legacy: behaviour.py, emoji_sweep.py, shots_calmjoy.py):
+  - cachebust: FAIL(rc=1)
+  - e2e: PASS
+  - emoji_audit: PASS
+  - layering: PASS
+  - math_random: PASS
+  - navoverlap: PASS
+  - phase10: PASS
+  - phase10_celebration: PASS
+  - phase10_insights: PASS
+  - phase11_mistake: PASS
+  - phase11_rtl: PASS
+  - phase11_voice: PASS
+  - phase12_branch: PASS
+  - phase12_loop_all: PASS
+  - phase12_mobile_tts: PASS
+  - phase12_ux: PASS
+  - phase13_voice: PASS
+  - phase14_1_deadlock: PASS
+  - phase14_cheers: PASS
+  - phase15_1_question_voice: PASS
+  - phase15_2_groups_bar: PASS
+  - phase15_3_sunny: FAIL(rc=1)
+  - phase16_render: FAIL(rc=1)
+  - phase17_companions: FAIL(rc=1)
+  - plant_story: PASS
+  - quran_reader: PASS
+  - svg_leak: PASS
+  - viewports: PASS
+- 17 R5b full batch END 22:31
+- 17 R5c batch triage: cachebust -> fixed (v7.20 importmap + ?v= on companions.json/sprites, PASS). phase16_render -> real gap: the companion had no sprite-failure fallback -> companion.js now falls back to the code-drawn monkey (mascot.js) when the idle sprite errors; test mirror updated to 5 stacked poses (PASS 28/28). phase15_3_sunny -> mirror updated (reduced-motion probe = no running WAAPI animations) PASS. phase17 -> retry step hardened (wait for the retry bar to detach; 60s for the fresh numpad).
+- 17 resume (reset): remote @ 235a2e4, nothing lost. Open item: phase17_companions.py retry step - debug showed after clicking [data-act=retry] the retry bar is gone and 1 .q-card exists but 0 .numpad .btn for >1.5s (re-asked question renders differently/slower) -> inspect ask() re-render path, fix test (or code if a real bug), then rerun phase17 + full batch, squash, PR #23.
+- 17 R5c: retry-step root cause = test assumption (mult_3 re-asks some questions as quiz .choice, not numpad) -> selector accepts both; phase17_companions.py PASS 45/45.
+- 17 R5d full batch #2 START 23:07 (excluded legacy: behaviour.py, emoji_sweep.py, shots_calmjoy.py):
+  - cachebust: PASS
+  - e2e: FAIL(rc=1)
+  - emoji_audit: PASS
+  - layering: PASS
+- 17 R2 (cont.): parrot cut + pushed (e0a021d, podcast+arabic). Credits exhausted again at the bee sheet -> bee/turtle/robot still deferred.
+  - math_random: PASS
+  - navoverlap: PASS
+  - phase10: PASS
+  - phase10_celebration: PASS
+  - phase10_insights: PASS
+  - phase11_mistake: PASS
+  - phase11_rtl: PASS
+  - phase11_voice: PASS
+  - phase12_branch: PASS
+  - phase12_loop_all: PASS
+  - phase12_mobile_tts: PASS
+  - phase12_ux: PASS
+  - phase13_voice: PASS
+  - phase14_1_deadlock: PASS
+  - phase14_cheers: PASS
+  - phase15_1_question_voice: PASS
+  - phase15_2_groups_bar: PASS
+  - phase15_3_sunny: PASS
+  - phase16_render: PASS
+  - phase17_companions: FAIL(rc=1)
+  - plant_story: PASS
+  - quran_reader: PASS
+  - svg_leak: PASS
+  - viewports: PASS
+- 17 R5d full batch #2 END 23:20
+- 17 R5d result: 26 PASS in batch; e2e (bubbles 7 < 8 count flake under load, untouched code) and phase17 (arabic pool widened by the parrot -> test expects a pool) rerun standalone -> both PASS => 28/28. README/PR body updated for the parrot. Next: squash onto origin/main -> PR #23 -> external preview.

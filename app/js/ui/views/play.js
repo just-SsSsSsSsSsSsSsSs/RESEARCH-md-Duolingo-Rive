@@ -10,7 +10,7 @@ import cheers from '../../engines/voice/cheers.js'; // Phase 14: spoken sibling 
 import questionVoice from '../../engines/voice/questionVoice.js'; // Phase 15.1: the math question is read aloud
 import voice from '../../engines/voice/provider.js';
 import groupsBar from '../groupsBar.js'; // Phase 15.2: a x b as a trays of b identical cubes
-import mascot from '../mascot.js'; // Phase 15.3: cheerful monkey companion (claps on correct, encourages on a miss)
+import mascot from '../../engines/companion.js'; // Phase 17: companion cast (monkey/owl/cat...) - same mount/mood API as mascot.js
 import { targetedPractice, adaptive } from '../../engines/insights.js';
 import hearts from '../../engines/hearts.js';
 import Session from '../../activities/session.js';
@@ -136,10 +136,10 @@ export async function render(root, { id }) {
         if (ok) {
           sound.play('correct');
           const perQ = Math.max(1, Math.round((it.xp || 20) / s.total));
-          fx.celebrate({ x: pt.x, y: pt.y, xp: perQ, combo: sound.combo, el: meta.card });
+          fx.celebrate({ x: pt.x, y: pt.y, xp: perQ, combo: sound.combo, el: meta.card, recovered: wasRetry }); // Phase 17: learned from the mistake -> level-3 burst
           if (wasRetry) confetti({ count: 90 }); // learned from the mistake -> bigger cheer
           cheers.say(wasRetry ? 'recovered' : 'correct');
-          mascot.mood(card, 'happy');
+          mascot.mood(card, wasRetry ? 'celebrate' : 'happy');
         } else {
           sound.play('wrong');
           fx.encourage({ x: pt.x, y: pt.y, el: meta.card });
@@ -157,7 +157,8 @@ export async function render(root, { id }) {
     const cs = getComputedStyle(card); const inner = card.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); // the bar's real width
     const bar = groupsBar.render(q, { width: Math.max(200, Math.floor(inner)) });
     if (bar) { const qt = card.querySelector('.q-text'); qt ? qt.before(bar) : card.prepend(bar); }
-    mascot.mount(card); // Phase 15.3: decorative, aria-hidden, pointer-events none, opposite corner of the replay button
+    mascot.mount(card, { subject: it.subject }); // Phase 17: companion per subject (cast rotation); decorative, never covers controls
+    setTimeout(() => { if (card.isConnected && !answered) mascot.mood(card, 'think'); }, 900); // looks at the question
     // Phase 15.1: read the math question aloud (recorded Egyptian clips only) + a replay button for non-readers.
     // The button is outside the answer controls' lock (class explain-btn is NOT used): K3 locks only answer buttons.
     const spoken = questionVoice.sentence(q);

@@ -11,6 +11,7 @@ import hearts from './engines/hearts.js';
 import quests from './engines/quests.js';
 import badges from './engines/badges.js';
 import celebration from './engines/celebration.js';
+import companion from './engines/companion.js'; // Phase 17: companion cast data (preloaded below)
 import { attachGlobalFeedback, toast } from './ui/components.js';
 
 import * as Home from './ui/views/home.js';
@@ -49,6 +50,7 @@ async function boot() {
   attachGlobalFeedback();
   quests.init();
   celebration.init(); // Phase 10: stage-completion siren (parent-controlled)
+  companion.ready(); // Phase 17: fetch the companion cast once (play mounts synchronously from the cached data)
   bus.on('profile:change', (p) => { if (p) { streak.check(); hearts.regen(); badges.evaluate(registry.items()); } });
   if (store.profile) { streak.check(); hearts.regen(); }
   setInterval(() => hearts.regen(), 30000);

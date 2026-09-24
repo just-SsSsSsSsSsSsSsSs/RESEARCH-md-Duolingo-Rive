@@ -610,3 +610,24 @@ Docker + CI/CD
 
 ## 3. القرار الهندسي
 `speech.js`: (1) `rankVoice()` يفضّل Natural/Online/Google/Android ثم ar-EG ثم أي عربي؛ (2) `phonetic(text)` يحوّل الأرقام 0–100 إلى كلمات مصرية + إبدال حروف فصيحة شائعة (ث->ت في الأعداد فقط، «الظبط» يُترك)؛ (3) utterance لكل جملة مع إزاحة charIndex للكاريوكي؛ (4) rate حسب نوع الصوت. لا ملفات جديدة، لا backend. يُختبر بـ`phase11_voice.py` (ترتيب الأصوات بأصوات وهمية، صحة `phonetic`، بقاء الكاريوكي يعمل).
+
+# Phase 17 — بحث «رفقاء التشجيع»: شخصيات متحركة تشجيعية لكل المواد (2026-09-24)
+
+المبدأ (RULES.md): كل خيار أدناه فُحص بدليله. توجيه المالك: حاجة «تقنمك، مش ثابتة، مش في طرفي»، محترمة/عصرية، مؤثرة تلفت الانتباه، لكل المواد الحالية والمستقبلية، أشكال كتير غير القرد ومتغيرة.
+
+## 1. ما الذي يحدث فعلًا اليوم (الكود قبل المرحلة)
+- `app/js/ui/mascot.js`: قرد واحد بثلاث صور WebP (idle/happy/encourage) بتبديل opacity + حركة CSS بسيطة، مربوط بالرياضيات فقط. لا حالة «تفكير»، لا تنويع، نفس الحركة كل مرة.
+- `fx.js` v2: فقاعات (bubbles.js) + نص عائم + هزّة الجسم. لا «انفجار» على نقطة الإجابة، لا تنويع أشكال.
+
+## 2. الخيارات المفحوصة
+| الخيار | الدليل | الحكم |
+|---|---|---|
+| **Rive State Machine (طريقة Duolingo)** | Duolingo World Characters: كل شخصية = آلة حالات (idle/blink/eye-darts/correct/wrong/speaking) تُقاد برمجيًا من التطبيق (blog.duolingo.com، rive.app/blog). المبدأ صحيح. لكن runtime web للـRive ≈ 40-50KB مضغوط + WASM canvas، وملفات `.riv` تحتاج Rive Editor (غير متاح هنا). | المبدأ مقبول، الأداة مرفوضة (تبعية + أداة تأليف غير متاحة) |
+| **Lottie (lottie-web)** | ≈ 60KB+ JS، JSON لكل حركة يحتاج After Effects/Bodymovin أو LottieFiles. | مرفوض (تبعية + لا تأليف) |
+| **GIF/APNG/فيديو** | حجم كبير، لا يمكن التحكم في الحالة/التزامن مع الإجابة، لا reduced-motion. | مرفوض |
+| **آلة حالات خاصة على Web Animations API + sprites مرندرة** | WAAPI مدعوم في كل المتصفحات الحديثة (caniuse: element.animate 97%+)؛ transform/opacity فقط = compositor-only 60fps بلا layout؛ الأصول WebP ≈ 10KB/وضعية (ثبت في Phase 16). التنويع بآلية «الكيس» (shuffled bag) الموجودة في cheers.js. | **مقبول — القرار** |
+| **Cast متعدد data-driven** | JSON واحد `companions.json`: `{id, name, subjects, dir, files}`؛ المادة الجديدة بلا شخصية مخصّصة تأخذ من pool `'*'` تلقائيًا؛ إضافة شخصية = مجلد + سطر JSON بلا كود. | مقبول |
+| **fx v3: جسيمات DOM في #fx-layer** | `<i>` عناصر تُحرَّك بـWAAPI وتُحذف بعد الانتهاء؛ حلقة نبض + انفجار نجوم (star/heart/spark/dot بلا تكرار متتالٍ) + شرائط + أشعة للمستوى 3؛ `meta.celebration` يحكم الكثافة؛ reduced-motion يوقف كل شيء. | مقبول |
+
+## 3. القرار الهندسي
+`engines/companion.js` (آلة حالات: idle bag {breath, blink, glance, hop, lean, wiggle} بلا تكرار متتالٍ، ردود {think, happy, encourage, celebrate} ثم عودة للـidle؛ اختيار الشخصية حسب المادة + دوران بلا تكرار متتالٍ عبر `meta.lastCompanion` + مفضّل الطفل `profile.settings.companion`) + `companions.json` (قرد/رياضيات، بومة/قرآن ودين، قطة/عربي و`'*'`) + `fx.js` v3 (`burstAt(x,y,level)`) + واجهة اختيار الرفيق في الملف الشخصي. الشخصية زخرفة: aria-hidden، pointer-events none، لا تغطي نصًا أو زرًا (اختبار DOM). ببغاء/نحلة/سلحفاة/روبوت مؤجّلة (رصيد توليد الصور) وتُضاف لاحقًا بلا كود.

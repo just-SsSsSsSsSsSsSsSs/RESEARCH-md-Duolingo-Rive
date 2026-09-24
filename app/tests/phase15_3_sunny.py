@@ -147,8 +147,10 @@ with sync_playwright() as p:
     ctx = b.new_context(viewport={'width': 360, 'height': 740}, reduced_motion='reduce'); pg = ctx.new_page()
     pg.add_init_script("(()=>{window.__voice={pref:'speech'};})()")
     hero(pg, 0); start(pg, 'mult_3')
-    an = pg.evaluate("""({ m: getComputedStyle(document.querySelector('.q-card > .mascot .m-body')).animationName,
-      sky: getComputedStyle(document.body, '::before').animationName })""")
+    # Phase 17: the mascot is the companion (WAAPI on .cp-stage) -> no CSS animation and no running animation at all
+    an = pg.evaluate("""(() => { const m = document.querySelector('.q-card > .mascot'); const st = m.querySelector('.cp-stage, .m-body');
+      const running = m.getAnimations({ subtree: true }).filter((a) => a.playState === 'running').length;
+      return { m: running ? 'running:' + running : getComputedStyle(st).animationName, sky: getComputedStyle(document.body, '::before').animationName }; })()""")
     check(an['m'] == 'none' and an['sky'] == 'none', f'reduced motion: mascot + sky still {an}')
     ctx.close(); b.close()
 

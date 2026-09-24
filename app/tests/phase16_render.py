@@ -45,11 +45,13 @@ CUBES = """(() => { const g = document.querySelector('.q-card .groups-bar'); if 
     perTray: ts.map((t) => [...new Set([...t.querySelectorAll('.gb-cube')].map(img))]),
     nums: [...g.querySelectorAll('.gb-cube b')].map((e) => e.textContent), cubes: g.querySelectorAll('.gb-cube').length }; })()"""
 
+# Phase 17: the mascot is the companion engine (5 stacked poses: idle/think/happy/encourage/celebrate; the monkey's
+# missing think/celebrate renders fall back to idle/happy). The inline SVG exists only in the fallback monkey.
 MASCOT = """(() => { const m = document.querySelector('.q-card > .mascot'); if (!m) return null;
-  const imgs = [...m.querySelectorAll('.m-3d img')];
-  return { is3d: m.classList.contains('is-3d'), mood: m.dataset.mood, svg: getComputedStyle(m.querySelector('svg')).display,
+  const imgs = [...m.querySelectorAll('.m-3d img')]; const svg = m.querySelector('svg');
+  return { is3d: m.classList.contains('is-3d'), mood: m.dataset.mood, svg: svg ? getComputedStyle(svg).display : 'none',
     loaded: imgs.map((i) => i.complete && i.naturalWidth > 0), op: imgs.map((i) => getComputedStyle(i).opacity),
-    srcs: imgs.map((i) => i.src.split('/').pop()) }; })()"""
+    srcs: imgs.map((i) => i.src.split('/').pop().split('?')[0]) }; })()"""
 
 with sync_playwright() as p:
     b = p.chromium.launch()
@@ -82,10 +84,11 @@ with sync_playwright() as p:
     check(c and len(c['nums']) == c['cubes'] and all(re.fullmatch(r'[٠-٩]+', n) for n in c['nums']), 'numbers stay HTML text over the sprite')
     m = pg.evaluate(MASCOT)
     check(m and m['is3d'] and m['svg'] == 'none', f'mascot uses the renders, inline SVG hidden {m}')
-    check(m and all(m['loaded']) and m['srcs'] == ['monkey.webp', 'monkey_happy.webp', 'monkey_encourage.webp'], f'3 poses loaded {m and m["srcs"]}')
-    check(m and m['op'] == ['1', '0', '0'], f'idle pose visible only {m and m["op"]}')
+    check(m and all(m['loaded']) and m['srcs'] == ['monkey.webp', 'monkey.webp', 'monkey_happy.webp', 'monkey_encourage.webp', 'monkey_happy.webp'], f'5 poses loaded (think/celebrate fall back to idle/happy) {m and m["srcs"]}')
+    # Phase 17: a fresh question shows idle, then the think pose after 0.9s (also the idle render for the monkey)
+    check(m and m['op'] in (['1', '0', '0', '0', '0'], ['0', '1', '0', '0', '0']), f'one pose visible only (idle or think) {m and m["op"]}')
     def pose(name, want):
-        pg.evaluate("async(n)=>{const m=await import('./js/ui/mascot.js');m.mood(document.querySelector('.q-card'),n);}", name)
+        pg.evaluate("async(n)=>{const m=await import('./js/engines/companion.js');m.mood(document.querySelector('.q-card'),n);}", name)
         # opacity has a .15s transition; under a loaded CPU (full-suite batch) 250ms was not always enough -> poll up to 2s
         got = None
         for _ in range(20):
@@ -93,8 +96,8 @@ with sync_playwright() as p:
             if got == want: break
             pg.wait_for_timeout(100)
         check(got == want, f'{name} pose swaps by opacity {got}')
-    pose('happy', ['0', '1', '0'])
-    pose('encourage', ['0', '0', '1'])
+    pose('happy', ['0', '0', '1', '0', '0'])
+    pose('encourage', ['0', '0', '0', '1', '0'])
     pg.wait_for_timeout(2700)
     check(pg.evaluate(MASCOT)['mood'] == 'idle', 'encourage returns to idle')
     sun = pg.evaluate("getComputedStyle(document.body,'::before').backgroundImage")

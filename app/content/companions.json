@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "_doc": "Phase 17: encouragement companions (data-driven). Adding a companion = a folder app/assets/companions/<id>/<pose>.webp + one entry here. subjects: list of subject ids or \"*\" (any subject, incl. future ones). poses lists the sprites that exist; missing poses fall back (think->idle, celebrate->happy). Selection: the subject's own companions first, then the '*' pool; never the same companion two sessions in a row (per child); the child can pin a favourite in the profile.",
+  "poses": [
+    "idle",
+    "think",
+    "happy",
+    "encourage",
+    "celebrate"
+  ],
+  "companions": [
+    {
+      "id": "monkey",
+      "name": "القرد سمسم",
+      "subjects": [
+        "math"
+      ],
+      "dir": "../assets/3d",
+      "files": {
+        "idle": "monkey.webp",
+        "happy": "monkey_happy.webp",
+        "encourage": "monkey_encourage.webp"
+      },
+      "tint": "#ffb703"
+    },
+    {
+      "id": "owl",
+      "name": "البومة حكيمة",
+      "subjects": [
+        "quran",
+        "deen"
+      ],
+      "dir": "../assets/companions/owl",
+      "tint": "#8ecae6"
+    },
+    {
+      "id": "cat",
+      "name": "القطة مشمشة",
+      "subjects": [
+        "arabic",
+        "*"
+      ],
+      "dir": "../assets/companions/cat",
+      "tint": "#ff8fa3"
+    },
+    {
+      "id": "parrot",
+      "name": "الببغاء زكي",
+      "subjects": [
+        "podcast",
+        "arabic"
+      ],
+      "dir": "../assets/companions/parrot",
+      "tint": "#57cc99"
+    }
+  ]
+}

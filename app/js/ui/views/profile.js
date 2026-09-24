@@ -10,6 +10,7 @@ import streak from '../../engines/streak.js';
 import { el, fmt, esc, hud, nav, toast } from '../components.js';
 import { ico } from '../icons.js';
 import { ico3d } from '../icons3d.js';
+import companion from '../../engines/companion.js'; // Phase 17: companion picker
 
 export async function render(root) {
   if (!store.profile) return renderPicker(root);
@@ -80,6 +81,13 @@ function renderCard(root) {
       <div class="row between"><span> الأصوات</span><button class="switch ${sound.enabled ? 'on' : ''}" data-act="sound" aria-label="الصوت"></button></div>
       <div class="row between"><span> شدة الاحتفال</span><select class="input" style="width:auto;min-height:40px" data-act="celebration"><option value="0">هادي</option><option value="1">عادي</option><option value="2">حفلة </option><option value="3">أقصى </option></select></div>
       <div class="row between"><span> تقليل الفقاعات (أجهزة ضعيفة)</span><button class="switch ${store.meta.reduceBubbles ? 'on' : ''}" data-act="bubbles" aria-label="الفقاعات"></button></div>
+      <div class="companion-pick" data-companions>
+        <span class="small muted">رفيق التشجيع</span>
+        <div class="row wrap" role="radiogroup" aria-label="رفيق التشجيع">
+          <button class="companion-opt ${companion.favourite() ? '' : 'on'}" role="radio" aria-checked="${companion.favourite() ? 'false' : 'true'}" data-cp=""><span class="cp-surprise">؟</span><span>مفاجأة</span></button>
+          ${companion.list().map((c) => `<button class="companion-opt ${companion.favourite() === c.id ? 'on' : ''}" role="radio" aria-checked="${companion.favourite() === c.id ? 'true' : 'false'}" data-cp="${esc(c.id)}"><img src="${companion.spriteUrl(c, 'idle')}" alt="" loading="lazy" decoding="async"><span>${esc(c.name)}</span></button>`).join('')}
+        </div>
+      </div>
       <button class="btn btn-block" data-act="switch">${ico('refresh')} تبديل البطل</button>
     </div>`));
   root.appendChild(nav('profile'));
@@ -89,6 +97,11 @@ function renderCard(root) {
   root.querySelector('[data-act="bubbles"]').onclick = (e) => { const on = e.currentTarget.classList.toggle('on'); store.setMeta({ reduceBubbles: on }); window.__bubbles?.setIntensity(on ? 0.4 : 1); sound.play('tap'); };
   const celSel = root.querySelector('[data-act="celebration"]'); celSel.value = String(store.meta.celebration ?? 2);
   celSel.onchange = (e) => { store.setMeta({ celebration: Number(e.target.value) }); sound.play('correct'); import('../../engines/fx.js').then((m) => m.celebrate({ x: innerWidth / 2, y: innerHeight * 0.4, xp: 0, combo: Number(e.target.value) >= 2 ? 3 : 1 })); };
+  root.querySelectorAll('.companion-opt').forEach((b) => { b.onclick = () => {
+    companion.setFavourite(b.dataset.cp);
+    root.querySelectorAll('.companion-opt').forEach((o) => { const on = o === b; o.classList.toggle('on', on); o.setAttribute('aria-checked', on ? 'true' : 'false'); });
+    sound.play('tap');
+  }; });
   root.querySelector('[data-act="switch"]').onclick = () => { sound.play('swipe'); store.logout(); router.go('/profile', true); };
   root.querySelector('[data-act="freeze"]').onclick = (e) => { if (streak.buyFreeze(30)) { toast(ico3d('snow') + ' حصلت على تجميد شعلة!', { type: 'info' }); e.currentTarget.disabled = true; } };
   return () => h.__cleanup?.();
