@@ -6,6 +6,7 @@ import registry from '../../core/registry.js';
 import router from '../../core/router.js';
 import sound from '../../engines/sound.js';
 import explainSheet from '../explainSheet.js';
+import cheers from '../../engines/voice/cheers.js'; // Phase 14: spoken sibling / birr / dhikr encouragement
 import { targetedPractice, adaptive } from '../../engines/insights.js';
 import hearts from '../../engines/hearts.js';
 import Session from '../../activities/session.js';
@@ -120,6 +121,7 @@ export async function render(root, { id }) {
         if (!ok && !s.isRetry && !s.review) {
           const stop = s.retry(meta);
           sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: meta.card });
+          cheers.say('wrong');
           if (stop) { s.answer(false, { ...meta, forced: true }); feedback(s, false, q); return; }
           retryPrompt(s, q, card);
           return;
@@ -131,9 +133,11 @@ export async function render(root, { id }) {
           const perQ = Math.max(1, Math.round((it.xp || 20) / s.total));
           fx.celebrate({ x: pt.x, y: pt.y, xp: perQ, combo: sound.combo, el: meta.card });
           if (wasRetry) confetti({ count: 90 }); // learned from the mistake -> bigger cheer
+          cheers.say(wasRetry ? 'recovered' : 'correct');
         } else {
           sound.play('wrong');
           fx.encourage({ x: pt.x, y: pt.y, el: meta.card });
+          cheers.say('wrong');
         }
         feedback(s, ok, q, wasRetry);
       },
@@ -214,6 +218,7 @@ export async function render(root, { id }) {
     const r = s.finish(aborted);
     window.__lastResult = r; // E2E hook (read-only)
     if (r.review) return finishReview(s, r);
+    if (!aborted) setTimeout(() => cheers.say('finish'), r.perfect ? 1600 : 700); // after the fanfare, not over it
     const emoji = r.perfect ? ico3d('trophy') : r.score >= 80 ? ico3d('star') : r.score >= 50 ? ico3d('thumb') : ico3d('muscle');
     if (r.perfect) { confetti({ count: 220 }); sound.play('fanfare'); fx.celebrate({ big: true, xp: r.xp, combo: 1 }); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.25, innerHeight * 0.35, 2), 350); setTimeout(() => window.__bubbles?.celebrate(innerWidth * 0.75, innerHeight * 0.35, 2), 700); } else if (r.score >= 80) { confetti({ count: 100 }); sound.play('cheer'); fx.celebrate({ xp: r.xp, combo: 2 }); } else if (r.score >= 50) { sound.play('streak'); fx.floater('شغل حلو! ' + ico3d('thumb')); } else { sound.play('encourage'); }
     stage.innerHTML = '';
