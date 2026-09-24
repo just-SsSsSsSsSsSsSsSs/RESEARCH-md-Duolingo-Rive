@@ -10,6 +10,7 @@ import cheers from '../../engines/voice/cheers.js'; // Phase 14: spoken sibling 
 import questionVoice from '../../engines/voice/questionVoice.js'; // Phase 15.1: the math question is read aloud
 import voice from '../../engines/voice/provider.js';
 import groupsBar from '../groupsBar.js'; // Phase 15.2: a x b as a trays of b identical cubes
+import mascot from '../mascot.js'; // Phase 15.3: cheerful monkey companion (claps on correct, encourages on a miss)
 import { targetedPractice, adaptive } from '../../engines/insights.js';
 import hearts from '../../engines/hearts.js';
 import Session from '../../activities/session.js';
@@ -109,7 +110,7 @@ export async function render(root, { id }) {
         if (answered) return;
         const pt = { x: innerWidth / 2, y: innerHeight * 0.4 };
         if (!s.isRetry && !s.review) { const stop = s.retry({ picked: slot }); if (stop) { answered = true; explainSheet.close(); s.answer(false, { picked: slot, forced: true }); feedback(s, false, q); return; } }
-        sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: card });
+        sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: card }); mascot.mood(card, 'encourage');
         nudgePill(card, RETRY[Math.floor(Math.random() * RETRY.length)]); // top pill, 3.5s, never over the numbers
         card.querySelector('.explain-btn')?.classList.add('pulse');
       },
@@ -125,6 +126,7 @@ export async function render(root, { id }) {
           const stop = s.retry(meta);
           sound.play('wrong'); fx.encourage({ x: pt.x, y: pt.y, el: meta.card });
           cheers.say('wrong');
+          mascot.mood(card, 'encourage');
           if (stop) { s.answer(false, { ...meta, forced: true }); feedback(s, false, q); return; }
           retryPrompt(s, q, card);
           return;
@@ -137,11 +139,14 @@ export async function render(root, { id }) {
           fx.celebrate({ x: pt.x, y: pt.y, xp: perQ, combo: sound.combo, el: meta.card });
           if (wasRetry) confetti({ count: 90 }); // learned from the mistake -> bigger cheer
           cheers.say(wasRetry ? 'recovered' : 'correct');
+          mascot.mood(card, 'happy');
         } else {
           sound.play('wrong');
           fx.encourage({ x: pt.x, y: pt.y, el: meta.card });
           cheers.say('wrong');
+          mascot.mood(card, 'encourage');
         }
+        groupsBar.countUp(card.querySelector('.groups-bar')); // Phase 15.4: answer is out -> cubes count 1..a*b
         feedback(s, ok, q, wasRetry);
       },
     };
@@ -152,6 +157,7 @@ export async function render(root, { id }) {
     const cs = getComputedStyle(card); const inner = card.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); // the bar's real width
     const bar = groupsBar.render(q, { width: Math.max(200, Math.floor(inner)) });
     if (bar) { const qt = card.querySelector('.q-text'); qt ? qt.before(bar) : card.prepend(bar); }
+    mascot.mount(card); // Phase 15.3: decorative, aria-hidden, pointer-events none, opposite corner of the replay button
     // Phase 15.1: read the math question aloud (recorded Egyptian clips only) + a replay button for non-readers.
     // The button is outside the answer controls' lock (class explain-btn is NOT used): K3 locks only answer buttons.
     const spoken = questionVoice.sentence(q);

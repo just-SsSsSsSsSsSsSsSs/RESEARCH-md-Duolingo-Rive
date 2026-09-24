@@ -68,8 +68,11 @@ function deepMerge(base, over) {
 class Store {
   constructor() {
     this.meta = safeParse(localStorage.getItem(KEY_META), null) || {
-      activeId: null, theme: 'dark', sound: true, music: false, parentPin: null, createdAt: Date.now(), reduceBubbles: false,
+      activeId: null, theme: 'light', themeV: 2, sound: true, music: false, parentPin: null, createdAt: Date.now(), reduceBubbles: false,
     };
+    // Phase 15.3: the sunny kids theme becomes the default once for existing installs (owner + kids choice).
+    // Dark stays selectable from the profile switch; themeV makes this a one-time migration.
+    if (this.meta.themeV !== 2) { this.meta.theme = 'light'; this.meta.themeV = 2; this.saveMeta(); }
     this.profile = null;
     this._timer = null;
     if (this.meta.activeId) this.load(this.meta.activeId);
