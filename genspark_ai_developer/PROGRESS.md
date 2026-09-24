@@ -534,3 +534,15 @@ P3b ✅ smoke Chromium (mult_3 سؤال pick): clips=311 محمّلة، canSpeak
 - 15.1 chunk: test PASS 23/23 checks (cheer-wait fixed: stale play() rejection cleared busy -> reqId guard; test used evaluate() which awaited say()).
 - 15.1: 2 regressions analysed: deadlock selector counted .q-hear (test fix); phase13 fallback test guessed by substring, grid sentence owns full clip 'f:السؤال بيقول: كام نقطة في الشبكة؟' -> expectation = real canSpeak (test fix). No app change.
 - 15.1 DONE: 24/24 suites PASS v7.15, protected sha256 unchanged, README appended, preview verified externally (200, v7.15, n/12.mp3 audio/mpeg): https://8090-ivpoj0ctmre1e6heqhq52-ecea8f22.sandbox.novita.ai/app/index.html#/play/mult_3 -> squash + PR.
+
+## Phase 15.2 (owner PROCEED msg) - groups bar + story unification a x b = a groups of b - v7.16
+- PR #19 merged (7c7fe7b). Branch reset onto origin/main.
+- Verified in explain.js: mult readaloud/story/reallife/steps, commutative_tf steps, distributive_sum steps all use "b groups of a" (skipCount(a,b)); grid & commutative already a groups of b. missing/distributive stories: old convention too -> check coverage after rewrite.
+- Constraint: no Fish key in sandbox (.env lost) -> every new sentence must be covered by existing clips (phase13_voice coverage gate + tools/explain_segments.mjs --check). Measured: swapped story/reallife 100% covered; "مرات،"/"كل مرة." missing -> rephrase with existing fragments.
+- Bar: only meta.kind==='mult' (missing would reveal b; grid already visual). New ui/groupsBar.js (pure layout + HTML/CSS cubes, no SVG ids/filters), fixed height <=110px, a trays x b identical cubes (rows of 5), aria-label without the product. Inserted above .q-text in play.js. Test phase15_2_groups_bar.py. Measure page height before/after on 360x740 (numpad already scrolled before: 870 > 740).
+- 15.2 C1 done: mult readaloud/story/reallife/steps + commutative_tf + distributive_sum skip-counts -> a groups of b; explain_segments --check: 3,523 texts, 0 missing fragments/numbers. NOT changed (needs new recordings, no Fish key here): missing story ('في كل X فيه كام؟' has no clip) and distributive story ('عندك b units كل واحد فيه a'). Reported to owner. Next C2: ui/groupsBar.js.
+- 15.2 C2: groupsBar layout = all trays one row (min cube 14px over a<=6,b<=12), rows of 5 (ten-frame) when fit; fixed 104px; measured 314x104 at 360w, 0 overflow; only meta.kind mult.
+- 15.2 resume after reset: test fixes re-applied (bar-above-text by position; product check by whole numbers, skip when product == operand e.g. 4x1).
+- 15.2 C3: test PASS (real bug fixed: tray border not in fit -> 6x6 trays spilled 4px; now 2px border counted + real inner width). Next: full suite.
+- 15.2 C4: 25/25 suites PASS v7.16; protected sha256 unchanged. Next: README + PR.
+- 15.2 DONE: 25/25 PASS v7.16, README appended, preview verified externally (200, v7.16, groupsBar served): https://8090-i5svpommqbite2zklvdrd-b32ec7bb.sandbox.novita.ai/app/index.html#/play/mult_3 -> squash + PR.

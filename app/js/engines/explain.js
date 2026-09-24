@@ -29,13 +29,14 @@ const KIND = {
   mult(m, seed) {
     const { a, b, ans } = m; const th = pick(THINGS, seed), who = pick(NAMES, seed + 1);
     return {
-      readaloud: [`السؤال بيقول: ${AR(a)} في ${AR(b)} يساوي كام؟`, `يعني ${AR(a)} مرة، ${AR(b)} مرات.`, `علامة الضرب دي معناها "مرات". ${AR(a)} مكرّرة ${AR(b)} مرات.`, `فكّر: لو عدّينا ${AR(a)} كل مرة، ${AR(b)} مرات، هنوصل لكام؟`],
-      story: [`كان عند ${who} ${AR(b)} ${th.units}.`, `في كل ${th.unit} فيه ${AR(a)} ${th.many} بالظبط.`, `${who} قال لك: "عدّ لي كل الـ${th.many} اللي عندي!"`, `يعني هتعدّ ${AR(a)} في كل ${th.unit}، وعندك ${AR(b)} ${th.units}.`, `تقدر تعدّ بالنطّ: ${skipCount(a, Math.min(b, 4)).join('، ')}… كمّل لحد ${AR(b)} نطّات!`],
-      reallife: [`تخيّل إيدك: كل إيد فيها ${AR(5)} صوابع. لو عندك إيدين، دول ${AR(5)} في ${AR(2)} = ${AR(10)} صوابع.`, `نفس الفكرة: عندنا مجموعات، كل مجموعة فيها ${AR(a)}، وعدد المجموعات ${AR(b)}.`, `افرض مصروفك ${AR(a)} جنيه في اليوم. بعد ${AR(b)} أيام، جمعت كام؟`, `ده بالظبط ${AR(a)} في ${AR(b)}.`],
+      // Phase 15.2: a x b = a groups, b in each group (the school-book convention, owner decision) - same as the bar
+      readaloud: [`السؤال بيقول: ${AR(a)} في ${AR(b)} يساوي كام؟`, `علامة الضرب دي معناها "مرات". ${AR(b)} مكرّرة ${AR(a)} مرات.`, `فكّر: لو عدّينا ${AR(b)} كل مرة، ${AR(a)} مرات، هنوصل لكام؟`],
+      story: [`كان عند ${who} ${AR(a)} ${th.units}.`, `في كل ${th.unit} فيه ${AR(b)} ${th.many} بالظبط.`, `${who} قال لك: "عدّ لي كل الـ${th.many} اللي عندي!"`, `يعني هتعدّ ${AR(b)} في كل ${th.unit}، وعندك ${AR(a)} ${th.units}.`, `تقدر تعدّ بالنطّ: ${skipCount(b, Math.min(a, 4)).join('، ')}… كمّل لحد ${AR(a)} نطّات!`],
+      reallife: [`تخيّل إيدك: كل إيد فيها ${AR(5)} صوابع. لو عندك إيدين، دول ${AR(5)} في ${AR(2)} = ${AR(10)} صوابع.`, `نفس الفكرة: عندنا مجموعات، كل مجموعة فيها ${AR(b)}، وعدد المجموعات ${AR(a)}.`, `افرض مصروفك ${AR(b)} جنيه في اليوم. بعد ${AR(a)} أيام، جمعت كام؟`, `ده بالظبط ${AR(a)} في ${AR(b)}.`],
       steps: [
-        { say: `هنمشي خطوة خطوة. أول حاجة: العدد ${AR(a)} هنكرّره كام مرة؟`, ask: 'كام مرة؟', choices: [b, b + 1, Math.max(1, b - 1)], answer: b },
-        { say: `تمام! يبقى هنعدّ ${AR(a)} بالنطّ. أول نطّة: ${AR(a)}. تاني نطّة: ${AR(a)} و${AR(a)} كمان يبقوا كام؟`, ask: `${AR(a)} + ${AR(a)} = ؟`, choices: [a * 2, a * 2 + 1, a + 1], answer: a * 2 },
-        ...(b > 2 ? [{ say: `برافو! كمّل النطّ: ${skipCount(a, b - 1).join('، ')}… النطّة اللي بعدها كام؟`, ask: `${AR(a * (b - 1))} + ${AR(a)} = ؟`, choices: [ans, ans + a, ans - 1], answer: ans }] : []),
+        { say: `هنمشي خطوة خطوة. أول حاجة: العدد ${AR(b)} هنكرّره كام مرة؟`, ask: 'كام مرة؟', choices: [a, a + 1, Math.max(1, a - 1)], answer: a },
+        { say: `تمام! يبقى هنعدّ ${AR(b)} بالنطّ. أول نطّة: ${AR(b)}. تاني نطّة: ${AR(b)} و${AR(b)} كمان يبقوا كام؟`, ask: `${AR(b)} + ${AR(b)} = ؟`, choices: [b * 2, b * 2 + 1, b + 1], answer: b * 2 },
+        ...(a > 2 ? [{ say: `برافو! كمّل النطّ: ${skipCount(b, a - 1).join('، ')}… النطّة اللي بعدها كام؟`, ask: `${AR(b * (a - 1))} + ${AR(b)} = ؟`, choices: [ans, ans + b, ans - 1], answer: ans }] : []),
         { say: `شطور! يبقى ${AR(a)} في ${AR(b)} = ${AR(ans)}. جرّب تكتبها في السؤال دلوقتي!`, final: ans },
       ],
     };
@@ -76,7 +77,7 @@ const KIND = {
     const { a, b, ans } = m; const base = KIND.commutative({ a, b }, seed);
     base.readaloud = m.wrong != null ? [`السؤال بيقول: هل ${AR(b)} في ${AR(a)} يساوي ${AR(m.wrong)}؟`, 'احسبها بالنطّ الأول، وقارن.'] : [`السؤال بيقول: هل ${AR(a)} في ${AR(b)} يساوي ${AR(b)} في ${AR(a)}؟ صح ولا غلط؟`, 'افتكر: التبديل مبيغيّرش الناتج. بس لازم نتأكد الأرقام على الجنبين هي هي.'];
     base.steps = [
-      { say: `احسب ${AR(a)} في ${AR(b)} بالنطّ: ${skipCount(a, b).join('، ')}. يبقى كام؟`, ask: `${AR(a)} × ${AR(b)} = ؟`, choices: [a * b, a * b + a, a * b - 1], answer: a * b },
+      { say: `احسب ${AR(a)} في ${AR(b)} بالنطّ: ${skipCount(b, a).join('، ')}. يبقى كام؟`, ask: `${AR(a)} × ${AR(b)} = ؟`, choices: [a * b, a * b + a, a * b - 1], answer: a * b },
       { say: m.wrong != null ? `طيب السؤال بيقول ${AR(m.wrong)}. هو نفس الرقم؟` : `والجنب التاني ${AR(b)} في ${AR(a)}، نفس الرقم برضه ${AR(a * b)}. يبقى الجملة صح؟`, ask: 'صح ولا غلط؟', choices: ['صح', 'غلط'], answer: ans ? 'صح' : 'غلط' },
       { say: `شطور! الإجابة: ${ans ? 'صح' : 'غلط'}.`, final: ans ? 'صح' : 'غلط' },
     ];
@@ -99,7 +100,7 @@ const KIND = {
     base.readaloud = [`السؤال بيقول: ${AR(a)} في ${AR(s1)}، زائد ${AR(a)} في ${AR(s2)}، يساوي كام؟`, `الاتنين فيهم ${AR(a)}! نجمع ${AR(s1)} و${AR(s2)} الأول، وبعدين نضرب في ${AR(a)}.`];
     base.steps = [
       { say: `${AR(s1)} زائد ${AR(s2)} = كام؟`, ask: `${AR(s1)} + ${AR(s2)} = ؟`, choices: [b, b + 1, b - 1], answer: b },
-      { say: `تمام! يبقى ${AR(a)} في ${AR(b)}. عدّ بالنطّ: ${skipCount(a, b).join('، ')}. الناتج؟`, ask: `${AR(a)} × ${AR(b)} = ؟`, choices: [ans, ans + a, ans - a], answer: ans },
+      { say: `تمام! يبقى ${AR(a)} في ${AR(b)}. عدّ بالنطّ: ${skipCount(b, a).join('، ')}. الناتج؟`, ask: `${AR(a)} × ${AR(b)} = ؟`, choices: [ans, ans + a, ans - a], answer: ans },
       { say: `شطور! الإجابة ${AR(ans)}.`, final: ans },
     ];
     return base;
