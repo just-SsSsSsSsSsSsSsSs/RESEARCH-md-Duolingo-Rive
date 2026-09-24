@@ -7,6 +7,8 @@ import router from '../../core/router.js';
 import sound from '../../engines/sound.js';
 import explainSheet from '../explainSheet.js';
 import cheers from '../../engines/voice/cheers.js'; // Phase 14: spoken sibling / birr / dhikr encouragement
+import questionVoice from '../../engines/voice/questionVoice.js'; // Phase 15.1: the math question is read aloud
+import voice from '../../engines/voice/provider.js';
 import { targetedPractice, adaptive } from '../../engines/insights.js';
 import hearts from '../../engines/hearts.js';
 import Session from '../../activities/session.js';
@@ -63,7 +65,7 @@ export async function render(root, { id }) {
       </div>
       <button class="btn btn-primary btn-lg btn-block mt-6" data-act="start">${ico('play')} ابدأ!</button>
     </div>`));
-    stage.querySelector('[data-act="start"]').onclick = () => { sound.play('whoosh'); start(); };
+    stage.querySelector('[data-act="start"]').onclick = () => { voice.unlock(); sound.play('whoosh'); start(); }; // Phase 15.1: unlock <audio> in the gesture
   }
 
   /* ---------- run ---------- */
@@ -144,6 +146,17 @@ export async function render(root, { id }) {
     };
     if (q.speak && sound.enabled) setTimeout(() => sound.speak(q.speak), 200);
     r(card, q, ctx);
+    // Phase 15.1: read the math question aloud (recorded Egyptian clips only) + a replay button for non-readers.
+    // The button is outside the answer controls' lock (class explain-btn is NOT used): K3 locks only answer buttons.
+    const spoken = questionVoice.sentence(q);
+    if (spoken) {
+      const qt = card.querySelector('.q-text, .branch-root');
+      const hear = el(`<button type="button" class="btn btn-icon btn-ghost q-hear" data-act="hear" aria-label="اسمع السؤال">${ico3d('speaker', 26)}</button>`);
+      hear.onclick = (e) => { e.stopPropagation(); voice.unlock(); cheers.stop(); questionVoice.say(q, { force: true }); };
+      (qt || card).insertAdjacentElement(qt ? 'beforebegin' : 'afterbegin', hear);
+      if (!s.isRetry) questionVoice.say(q); // a retry re-renders the same question: do not repeat it unasked
+      cleanups.push(() => questionVoice.stop());
+    }
     // Phase 10: "يعني إيه يا بابا؟" / Phase 11: after a miss, "هجرّب أحلّ" re-asks the same question empty
     cleanups.push(explainSheet.mount(card, { q, session: s, onTry: () => { if (s.isRetry && answered && !s.ended && s.current === q && !document.querySelector('.feedback.good, .feedback.bad')) ask(s); } }));
     card.addEventListener('pointerdown', () => s.touch(), { once: true, passive: true });

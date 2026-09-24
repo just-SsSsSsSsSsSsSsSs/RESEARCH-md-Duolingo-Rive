@@ -99,8 +99,15 @@ with sync_playwright() as p:
     start(pg)
     pg.click('.explain-btn'); pg.wait_for_selector('.explain-sheet .k-text'); pg.wait_for_timeout(1500)
     txt = pg.evaluate('window.__explain.text()'); last = pg.evaluate('window.__voice.last')
-    expect = 'speech' if 'السؤال بيقول:' in txt else 'clips'
+    # expectation = the provider's real rule (every segment has a clip in the route-modified manifest), not a substring
+    # guess: some texts own a full-sentence clip that STARTS with 'السؤال بيقول:' (e.g. the grid question) -> still clips
+    expect = 'clips' if pg.evaluate('(t) => window.__clips.canSpeak(t)', txt) else 'speech'
     check(last == expect, f'text missing a clip -> {expect} (got {last}); text starts: {txt[:30]}')
+    covered = pg.evaluate("() => window.__clips.canSpeak('السؤال بيقول: خد نفس')")
+    check(not covered, 'the removed clip really makes an uncovered text fall back (canSpeak false)')
+    # the fallback path is always exercised, whatever question came up: speak an uncovered text through the provider
+    fb = pg.evaluate("() => { window.__voice.speak('السؤال بيقول: خد نفس.', { noLog: true }); const l = window.__voice.last; window.__voice.stop(); return l; }")
+    check(fb == 'speech', f'provider falls back to speech.js for an uncovered text (got {fb})')
     k = pg.evaluate(KW)
     check(k and k['said'] < k['n'], 'fallback still paces the karaoke (no flash)')
     check(not errs, f'no page errors (5) {errs}')

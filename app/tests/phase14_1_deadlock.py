@@ -52,8 +52,9 @@ def check(cond, msg):
     if not cond: fails.append(msg)
 
 def answer_enabled(pg):
-    """Count enabled answer controls on the card (excluding the explain button)."""
-    return pg.evaluate("document.querySelectorAll('.q-card button:not(.explain-btn):not([disabled])').length")
+    """Count enabled ANSWER controls on the card (the explain button and the Phase 15.1 replay-question button are
+    not answers and stay enabled on purpose)."""
+    return pg.evaluate("document.querySelectorAll('.q-card button:not(.explain-btn):not(.q-hear):not([disabled])').length")
 
 def close_x(pg):
     pg.click('.explain-btn'); pg.wait_for_selector('.explain-sheet .k-text')

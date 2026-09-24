@@ -66,6 +66,7 @@ export function renderSettings(body, { hero, p, save }) {
     <div class="row between" style="gap:8px"><span class="small muted" data-voice-hint></span><button type="button" class="btn btn-sm btn-cyan" data-act="test-voice">${ico3d('speaker', 18)} اسمع تجربة</button></div>
     <div class="row between" style="gap:8px;margin-top:6px"><span class="small muted">فحص الصوت على الجهاز ده</span><button type="button" class="btn btn-sm btn-ghost" data-act="diag-voice">${ico3d('question', 18)} افحص الصوت</button></div>
     <div class="small voice-diag" data-voice-diag hidden></div>
+    <div class="row between" style="gap:8px;margin-top:10px"><span>قراءة سؤال الماث بالصوت أول ما يظهر</span><button type="button" class="switch${ex.readQuestion !== false ? ' on' : ''}" role="switch" aria-checked="${ex.readQuestion !== false}" data-readq-switch aria-label="قراءة السؤال بالصوت"></button></div>
     <div class="row between" style="gap:8px;margin-top:10px"><span>تشجيع صوتي (بر الوالدين، الإخوة، الأذكار)</span><button type="button" class="switch${ex.cheers !== false ? ' on' : ''}" role="switch" aria-checked="${ex.cheers !== false}" data-cheers-switch aria-label="تشجيع صوتي"></button></div>
     <div class="row between" style="gap:8px;margin-top:6px"><span>صوت الحكّاي</span><select data-k="voicePack">${Object.entries(cheers.PACKS).map(([k, n]) => `<option value="${k}"${(ex.voicePack || cheers.DEFAULT_PACK) === k ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
     <details class="voice-log-box" style="margin-top:10px" data-voice-log-box><summary>سجل الكلمات المنطوقة (للمراجعة والنسخ)</summary>
@@ -74,7 +75,7 @@ export function renderSettings(body, { hero, p, save }) {
     </details>
   </div>`);
   const exSw = ex_card.querySelectorAll('.switch'); const keys = ['enabled', 'tts', 'autoplay'];
-  exSw.forEach((b, i) => { b.onclick = () => { const on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); saveE({ [keys[i]]: on }); sound.play('tap'); }; });
+  exSw.forEach((b, i) => { if (!keys[i]) return; b.onclick = () => { const on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); saveE({ [keys[i]]: on }); sound.play('tap'); }; });
   const rate = ex_card.querySelector('[data-k="rate"]'); rate.oninput = () => { ex_card.querySelector('[data-out="rate"]').textContent = rate.value; }; rate.onchange = () => { saveE({ rate: Number(rate.value) }); toast('تم الحفظ ' + ico3d('check'), { type: 'success' }); };
   // Phase 11 K4: voice picker (ranked list; auto = best available). Edge -> Salma/Shakir Natural; Android -> Google voices.
   const sel = ex_card.querySelector('[data-k="voice"]'), hint = ex_card.querySelector('[data-voice-hint]');
@@ -116,13 +117,16 @@ export function renderSettings(body, { hero, p, save }) {
     window.__voiceDiag = { ...d, probe, ttsOk }; // E2E hook (read-only)
   };
   // Phase 14: encouragement switch, voice pack, spoken-words log (parent reviews / copies / asks for edits)
+  // Phase 15.1: read the math question aloud (recorded clips; the speaker button beside the question always works)
+  const qsw = ex_card.querySelector('[data-readq-switch]');
+  qsw.onclick = () => { const on = !qsw.classList.contains('on'); qsw.classList.toggle('on', on); qsw.setAttribute('aria-checked', String(on)); saveE({ readQuestion: on }); sound.play('tap'); };
   const csw = ex_card.querySelector('[data-cheers-switch]');
   csw.onclick = () => { const on = !csw.classList.contains('on'); csw.classList.toggle('on', on); csw.setAttribute('aria-checked', String(on)); saveE({ cheers: on }); sound.play('tap'); };
   ex_card.querySelector('[data-k="voicePack"]').onchange = (e) => { saveE({ voicePack: e.target.value }); toast('تم الحفظ ' + ico3d('check'), { type: 'success' }); };
   const HN = { selim: 'سليم', karma: 'كارما', kenda: 'كندة' };
   const renderLog = () => {
     const items = vlog.list(); ex_card.querySelector('[data-vlog-count]').textContent = `${items.length} جملة`;
-    ex_card.querySelector('[data-voice-log]').innerHTML = items.length ? items.map((e) => `<li><div>${esc(e.text)}${e.n > 1 ? ` <span class="vl-meta">(×${e.n})</span>` : ''}</div><div class="vl-meta">${e.kind === 'cheer' ? 'تشجيع' : 'شرح'}${e.hero ? ' — ' + (HN[e.hero] || e.hero) : ''} — ${new Date(e.t).toLocaleString('ar-EG')}${e.src ? ` — <span class="vl-review">المصدر: ${esc(e.src)} (يحتاج مراجعتك)</span>` : ''}</div></li>`).join('') : '<li class="muted">لسه مفيش كلام اتقال.</li>';
+    ex_card.querySelector('[data-voice-log]').innerHTML = items.length ? items.map((e) => `<li><div>${esc(e.text)}${e.n > 1 ? ` <span class="vl-meta">(×${e.n})</span>` : ''}</div><div class="vl-meta">${e.kind === 'cheer' ? 'تشجيع' : e.kind === 'question' ? 'سؤال' : 'شرح'}${e.hero ? ' — ' + (HN[e.hero] || e.hero) : ''} — ${new Date(e.t).toLocaleString('ar-EG')}${e.src ? ` — <span class="vl-review">المصدر: ${esc(e.src)} (يحتاج مراجعتك)</span>` : ''}</div></li>`).join('') : '<li class="muted">لسه مفيش كلام اتقال.</li>';
   };
   ex_card.querySelector('[data-voice-log-box]').addEventListener('toggle', renderLog); renderLog();
   ex_card.querySelector('[data-act="vlog-copy"]').onclick = async () => {
