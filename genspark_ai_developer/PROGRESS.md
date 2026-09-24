@@ -683,3 +683,4 @@ P3b ✅ smoke Chromium (mult_3 سؤال pick): clips=311 محمّلة، canSpeak
   - viewports: PASS
 - 17 R5d full batch #2 END 23:20
 - 17 R5d result: 26 PASS in batch; e2e (bubbles 7 < 8 count flake under load, untouched code) and phase17 (arabic pool widened by the parrot -> test expects a pool) rerun standalone -> both PASS => 28/28. README/PR body updated for the parrot. Next: squash onto origin/main -> PR #23 -> external preview.
+- 17 DONE: squashed 0c92d84 over origin/main (ec91866); PR #23 https://github.com/html-mobile-audio/html-mobile-audio/pull/23; external preview OK (0 console errors, assets 200) https://8090-iat5ikt5r07bajapto4wf-cc2fbc16.sandbox.novita.ai/app/index.html#/play/mult_3
