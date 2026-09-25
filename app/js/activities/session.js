@@ -94,7 +94,7 @@ export class Session {
     p.counters.answers++;
     if (ok) { this.correct++; p.counters.correct++; }
     else { this.wrong++; if (!this.practice && !retried) hearts.lose(); } // a retried question already cost its heart in retry()
-    const d = store.today(); d.answers++; if (ok) d.correct++;
+    const d = store.today(); d.answers++; if (ok) d.correct++; if (ok && retried) d.recovered = (d.recovered || 0) + 1; // Phase 19: self-corrected mistakes feed the family board
     store.save();
     bus.emit('activity:answer', { id: this.a.id, correct: ok, subject: this.a.subject });
     return ok;
