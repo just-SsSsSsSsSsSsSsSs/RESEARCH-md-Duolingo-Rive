@@ -764,3 +764,17 @@ Research: RESEARCH.md appendix Phase 18. Push rule: after a completed step and >
 - C GATE DONE (batch on 052ae4f, both servers, 34 suites): 33 rc=0; behaviour.py rc=1 = legacy timeout identical to main (16 C5a). -> single PR.
 - resume-check (reset #8): remote @ c8096dd (18.5 complete, merged main, PR #2 open, v7.23). Nothing lost but the preview step.
 - 18.5 DONE: single PR #2 https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive/pull/2; external preview verified https://8090-ia3e3iku19fwmewxxokh0-cc2fbc16.sandbox.novita.ai/app/index.html (version.json 7.23; bee layers [body, limb, limb, head, mouth], 4 infinite loops running, mouth hidden while silent; tickle -> mood tickle + speaking=laugh with analyser=true + __play.i unchanged; 0 page errors). Screenshot https://www.genspark.ai/api/files/s/mvGzImlp. NEXT: Phase 19 R0 - research appendix (family challenge board: Selim/Karma/Kenda/relatives, local-first, no backend, privacy for children) -> frozen chunked plan -> M1. Do not start until PR #2 is merged or the owner says so.
+
+
+## Phase 19 - «التحدي العائلي» Family Challenge Board - v7.24 (frozen plan; R0 appendix in RESEARCH.md)
+
+Principles frozen: local-first, no backend, no PII in any payload, no numeric rank / nobody «last», ipsative growth metric, cooperative shared quest, guests behind parent PIN, K3 + protected files untouched, Zero-Emoji, no deps.
+
+- [ ] M1 engine `app/js/engines/family.js`: weekly window (Sat-Fri, Egypt), per-hero metrics from daily buckets (answers, correct, xp, minutes, recovered, active days), personal-best growth % vs previous 4-week average (baseline min 5; first week flagged), streak days, category winners (growth/streak/recovered/minutes; headline category rotates by ISO week), shared family quest target + progress, guests in meta (parent-managed). Pure functions + node checks.
+- [ ] M2 view `#/family` (`app/js/ui/views/family.js` + css): hero tiles with companion sprite, growth ring, crown for category winner, one personal-best line each, no numeric rank; family quest bar; entry from home + profile; RTL, mobile-first; aria; reduced-motion.
+- [ ] M3 family card: export (Web Share API with file fallback) / import with monotonic merge; hero ids + day-level buckets only; parent PIN gate for guests + import + clear.
+- [ ] M4 celebration: shared quest reached -> all companions cheer (fx + companion voices, respects sound toggle), once per week (meta flag).
+- [ ] M5 tests `app/tests/phase19_family.py`: metrics math, youngest-with-most-growth leads, nobody labelled last, quest bar, card export/import monotonic, guests behind PIN, no PII in payload, a11y + overlap, 0 errors; mirrors (`family.json` links unchanged).
+- [ ] M6 gate: all suites both servers, family links, emoji, sha256 protected, bump 7.24, README append, roadmap (19 done, 20 current placeholder), single PR, external preview.
+
+- resume-check (reset #9): remote @ 7a8f803 (18.5 closed, PR #2 merged into main 696ab7e, live 7.23). The interrupted R0 commit never landed (0 hits for the appendix/plan) -> redone now; merged origin/main (fast-forward to 696ab7e). Nothing else lost.
