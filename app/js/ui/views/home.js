@@ -46,6 +46,8 @@ export async function render(root) {
     ${q.map((x) => `<div class="row"><span class="i3d-lg">${ico3d(x.icon, 26)}</span><div class="grow"><div class="small" style="font-weight:800">${esc(x.name)}</div><div class="level-bar green" style="height:6px;margin-top:4px"><span style="width:${Math.round((x.prog / x.target) * 100)}%"></span></div></div><span class="tag ${x.done ? 'tag-green' : 'tag-gold'}">${x.done ? ico3d('check') : `+${fmt(x.reward)}`}</span></div>`).join('')}
   </a>`));
 
+  root.appendChild(el(`<a href="#/family" class="card clickable row fam-entry" data-act="family" style="gap:12px"><span class="i3d-lg">${ico3d('family', 34)}</span><div class="grow"><b>تحدي العيلة</b><div class="small muted">سليم وكارما وكندة: كل واحد بيكسر رقمه هو</div></div><span class="tag tag-gold">${ico3d('crown', 16)}</span></a>`));
+
   root.appendChild(el(`<div class="section"><h2>${ico3d('book')} المواد</h2></div>`));
   const grid = el('<div class="grid-3"></div>');
   for (const s of registry.subjects()) {
