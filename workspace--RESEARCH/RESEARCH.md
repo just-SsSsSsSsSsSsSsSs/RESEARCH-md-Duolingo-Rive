@@ -691,3 +691,36 @@ Docker + CI/CD
 - Voice identity: 2 short clips per companion (laugh, cheer) via Fish Audio, distinct pitch per character; one attempt per companion per session; missing clip -> silent, never an error.
 - Companion stability: pick once per Session object (WeakMap), re-pick on complete/quit/new session with no-repeat; favourite still wins.
 - Links: README append-only -> new «updated links» section mapping every dead link to the live Pages URL (each verified 200); root index.html (not protected) edited in place.
+
+
+## Appendix - Phase 19 «التحدي العائلي» Family Challenge Board (R0, 2026-09-25)
+
+### Verified facts (evidence first)
+- origin/main 696ab7e = PR #2 merged; live Pages version.json 7.23 (200). family.json roadmap: 19 current (7.24).
+- Store inventory (app/js/core/store.js): 3 heroes (selim/karma/kenda) with hex colours; per profile `daily['YYYY-MM-DD'] = {xp, minutes, answers, correct, activities[]}`, `streak{count,best,lastDay}`, `badges{}`; `listProfiles()`; `exportAll()/importAll()`; `store.meta` + `bus`. Everything needed for a board already exists locally; no new data collection.
+- Routes (app/js/app.js): `.add('/quests', requireProfile(Quests))` pattern; a new `#/family` view plugs in the same way. Parent area is PIN-gated (views/parent.js) and already has a JSON export/import pattern (Blob download + `store.importAll`).
+
+### What the market actually does (checked 2026-09-25)
+| Product | Mechanism | Lesson for us |
+|---|---|---|
+| Duolingo Leagues | 30-user leaderboard, weekly promotion/demotion by XP; leaderboards are OFF for under-13 accounts (duolingo.com/help/leaderboards-and-league); Friends Quest = 2-player cooperative weekly goal; Family Plan shares billing only, no shared board | Pure XP ranking punishes the youngest sibling; the cooperative quest is the healthy part -> we copy the quest, not the league |
+| Khan Academy Kids | Zero ranking, zero comparison between children; individual progress + parent report | Comparison must never label a child «last» |
+| Prodigy Math (Family) | Parent dashboard with side-by-side stats behind the parent account | Numbers for parents, story for children |
+| ClassDojo | Points per behaviour, class-level shared goals, parent messaging (cloud) | Shared family goal works; cloud is out (children's privacy, local-first) |
+| Ipsative assessment (F1000Research 13:1541; Davies & Pachler 2018; Hughes 2011) | Progress measured against the learner's own previous best, not peers; higher persistence for low performers | Board metric = growth vs own trailing average, never absolute XP |
+
+### Gap / novelty (what nobody has done)
+- A sibling board where **every child can lead in a different category the same week** (growth, streak, recovered mistakes, minutes) with a rotating «crown of the week», ranked by **personal-best growth %** so the 2nd grader beats the 5th grader by improving more, not by knowing more.
+- **Local-first family card**: a compact JSON (day-level buckets only, hero ids, no names/no free text) exported via Web Share API / file, imported on another device with a **monotonic merge** (max per bucket) - a relative's device joins the board without any server.
+- **Guests** (cousins/relatives) as lightweight local profiles created only behind the parent PIN; their data lives in the same store; the parent can clear them.
+- **Shared family quest**: one weekly cooperative target (e.g. 300 correct answers together); when reached, all companions cheer once (voices from Phase 18.5).
+
+### Safety / privacy decisions (constitution)
+- No backend, no network calls, no analytics. Share payload = `{v, week, heroes:[{id, days:{date:{a,c,x,m}}}]}`; no names, no device ids, no free text.
+- Nobody is ranked numerically; the UI never shows «last». Language is «افضل رقمك القديم» (beat your own record), never «افضل من اخوك».
+- Guests and card import/clear are behind the existing parent PIN. K3 untouched. Zero-Emoji. No new deps.
+
+### Engineering decision
+- `app/js/engines/family.js`: pure functions over `listProfiles()` daily buckets. Week = Saturday..Friday (Egypt school week). Metrics per hero: answers, correct, accuracy, xp, minutes, recovered (correct after a wrong on the same day, from `activities`), active days, streak. Growth % = this week's correct vs mean of the previous 4 weeks (min baseline 5 to avoid infinite growth; first week = «اول اسبوع» badge instead of a percentage). Category winners rotate the crown by ISO week number so the headline category differs each week. Quest target scales with number of active heroes (100 correct per hero, min 150).
+- `app/js/ui/views/family.js` + CSS: hero tiles (companion sprite, growth ring, crown, one personal-best line), quest bar, family card actions, guests (PIN). Entry from home + profile.
+- Tests `app/tests/phase19_family.py` (Playwright, 8090) + node unit checks of the engine math.
