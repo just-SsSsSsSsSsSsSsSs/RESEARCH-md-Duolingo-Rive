@@ -207,5 +207,5 @@ new_files = ['app/js/engines/family_core.js', 'app/js/engines/family.js', 'app/j
 EMO = re.compile('[\U0001F300-\U0001FAFF\u2600-\u27BF\U0001F000-\U0001F2FF]')
 check(all(not EMO.search(open(os.path.join(ROOT, f), encoding='utf-8').read()) for f in new_files), 'hygiene zero emoji in Phase 19 files')
 
-print(f"\n{\"PASS\" if not fails else \"FAIL\"} phase19_family: {len(fails)} failure(s)")
+print('\n' + ('PASS' if not fails else 'FAIL') + f' phase19_family: {len(fails)} failure(s)')
 sys.exit(1 if fails else 0)

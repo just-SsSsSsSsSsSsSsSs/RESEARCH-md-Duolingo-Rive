@@ -10,3 +10,7 @@ __pycache__/
 *.log
 .system_generated/
 scratch/
+
+# core dumps (browser renderer crashes during test batches)
+core
+core.*
