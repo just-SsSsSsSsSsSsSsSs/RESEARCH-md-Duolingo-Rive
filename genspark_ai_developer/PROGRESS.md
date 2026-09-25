@@ -1,3 +1,5 @@
+> **دستور العمل:** اقرأ `AGENTS.md` أولاً في كل جلسة. قواعد الرفع: ممنوع AI Drive؛ ممنوع push بعد كل اختبار؛ فاصل 10-15 دقيقة بالتوازي؛ push فوري عند اكتمال ميزة باختباراتها؛ لا force-push؛ PR واحد عند اكتمال المرحلة؛ `tools/check_family_links.py` قبل كل push؛ لا توكنات في الملفات.
+
 # 🚀 Genspark AI Developer — Live Progress & Context Anchor
 
 > **الغرض من هذا الملف:** نقطة الاستئناف المركزية الحية للوكيل `Genspark AI Developer`.
@@ -719,3 +721,8 @@ Chunks: F1 family.json + charter md + changelog + history + resume + README (pus
 - 17.5 F4 batch END 02:58
 - 17.5 F4 result: 24/24 batch + 5 standalone = 29/29 PASS. Squash -> PR on Kimi-K3-code/RESEARCH-md-Duolingo-Rive.
 - 17.5 DONE: squashed 9247c57 over main e50b5c9; PR #1 https://github.com/Kimi-K3-code/RESEARCH-md-Duolingo-Rive/pull/1; preview https://8090-invbpnkmmymqs5a0qfu9j-dfc00ec5.sandbox.novita.ai/app/index.html#/charter (v7.21).
+
+## Phase 18-prep - AGENTS.md constitution + move to just-SsSsSsSsSsSsSsSs (owner: gist abb6d424)
+- resume (reset): branch @ 5cd6b41 verified: v7.21, family.json + check_family_links.py present -> Phase 17.5 intact (not redone). AGENTS.md missing -> written.
+- DONE (this step): AGENTS.md (full constitution: session order, verify-before-execute, quiet push rules 10-15 min parallel / no per-test push / no force-push / one PR, no AI Drive, one account, security, quality gate, product rules, generic resume prompt); PROGRESS header + RESUME point to it; family.json repo/live links follow the account move (+AGENTS.md as 7th mirror); mirrors updated; CHANGELOG_DECISIONS entry. check_family_links 7x4 PASS; phase17_5_charter PASS; Zero-Emoji; no secrets. Single push (completed step).
+- NEXT: Phase 18 R0 - research appendix (fluid micro-physics on WAAPI: spring easing, layered rig body/head/eyes from the existing sprites via CSS masks?, touch reaction) -> frozen plan in PROGRESS -> chunks.

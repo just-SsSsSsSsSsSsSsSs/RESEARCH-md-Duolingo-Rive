@@ -5,8 +5,8 @@
 ## روابط العيلة الدائمة
 - رابط العيلة - الرؤية التربوية وخارطة الطريق (تفريغ حرفي + نسخة منظمة): <https://gist.github.com/pijsal1-tech/67494737afb25c7b338ad5cb6112c58f>
 - تقرير Phase 17 والانتقال للمستودع الجديد: <https://gist.github.com/pijsal1-tech/c03b8983a400ab706345dd19958087d4>
-- المستودع الرئيسي (GitHub): <https://github.com/Kimi-K3-code/RESEARCH-md-Duolingo-Rive>
-- المنصة المباشرة (GitHub Pages): <https://kimi-k3-code.github.io/RESEARCH-md-Duolingo-Rive/app/index.html>
+- المستودع الرئيسي (GitHub): <https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive>
+- المنصة المباشرة (GitHub Pages): <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/app/index.html>
 
 ---
 
