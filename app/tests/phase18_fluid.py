@@ -189,7 +189,7 @@ with sync_playwright() as p:
     # 11 - hygiene
     ver = json.load(open(os.path.join(ROOT, 'app', 'version.json')))
     idx = open(os.path.join(ROOT, 'app', 'index.html'), encoding='utf-8').read()
-    check(ver['v'] == '7.22', f'11 version.json = 7.22 (got {ver["v"]})')
+    check(ver['v'] >= '7.22', f'11 version.json >= 7.22 (got {ver["v"]})')
     check(f'?v={ver["v"]}' in idx, '11 index.html importmap/assets cache-busted with the current version')
     check(not errs, f'0 page errors {errs}')
     check(not bad, f'0 failed requests {bad}')
