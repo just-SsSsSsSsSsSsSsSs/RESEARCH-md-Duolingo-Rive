@@ -157,7 +157,7 @@ export async function render(root, { id }) {
     const cs = getComputedStyle(card); const inner = card.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); // the bar's real width
     const bar = groupsBar.render(q, { width: Math.max(200, Math.floor(inner)) });
     if (bar) { const qt = card.querySelector('.q-text'); qt ? qt.before(bar) : card.prepend(bar); }
-    mascot.mount(card, { subject: it.subject }); // Phase 17: companion per subject (cast rotation); decorative, never covers controls
+    mascot.mount(card, { subject: it.subject, session: s }); // Phase 17 cast rotation; Phase 18.5: fixed for the whole lesson (re-picked per new session)
     setTimeout(() => { if (card.isConnected && !answered) mascot.mood(card, 'think'); }, 900); // looks at the question
     // Phase 15.1: read the math question aloud (recorded Egyptian clips only) + a replay button for non-readers.
     // The button is outside the answer controls' lock (class explain-btn is NOT used): K3 locks only answer buttons.

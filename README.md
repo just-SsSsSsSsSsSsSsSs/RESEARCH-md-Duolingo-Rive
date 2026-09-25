@@ -209,3 +209,19 @@ python tools/send_voice.py
 - **الطاقم:** النحلة نونة (`app/assets/companions/bee/*.webp`، 5 وضعيات، ~10KB لكل صورة، مولَّدة بمحاولة واحدة وقُصّت بـ`tools/cut_sprite_sheet.py`) انضمت إلى pool `'*'` (مع القطة) وإلى مادة العلوم مستقبلاً. السلحفاة والروبوت مؤجّلان لجلسة برصيد.
 - **الاختبارات:** جديد `app/tests/phase18_fluid.py` (35 فحصًا: طبقتان بأقنعة مختلفة، حلقتا تنفّس لا نهائيتان بإزاحة 120ms، 30/30 تحويلة مختلفة خلال 3 ثوانٍ، استقلال الجسم عن الرأس، `spring()` يتجاوز 1 ثم يستقر عليه، composite add أثناء التنفّس، squash/stretch، الدغدغة تستجيب وتُبتلع مع قلوب، النظرة والترقّب والاسترخاء، إيقاف/استئناف عند الإخفاء، reduced-motion بلا أي حركة، تخطيط 5 مواد بلا تغطية، 0 أخطاء/0 طلبات فاشلة). المرايا: `phase17_companions` (يجيب pick/truefalse، يفحص الطبقة الجسم فقط، ويثبت أن اللمسة لا تجيب ولا تنقل) و`phase15_3_sunny` و`phase16_render`.
 - الملفات المحمية بلا مساس (sha256 مطابق)؛ K3 بلا تغيير؛ Zero-Emoji؛ لا تبعيات.
+
+### روابط محدّثة (2026-09-25) - المنصة الحية انتقلت إلى GitHub Pages الجديد
+الروابط القديمة على `html-mobile-audio.github.io` توقفت مع تعليق الحساب القديم (HTTP 000). README يبقى append-only، فهذا القسم هو المرجع الساري لكل الروابط أعلاه؛ كل رابط أدناه فُحص فعلياً وأعاد 200 عند الكتابة.
+
+| الملف / التطبيق | الرابط الحي |
+|---|---|
+| تطبيق أبطال (SPA) - نقطة الدخول الرئيسية | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/app/index.html> |
+| سورة البيّنة - القراءة التفاعلية | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/albayyinah.html> |
+| مصحف البيّنة التفاعلي | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/quran-albayyinah/%D8%B3%D9%88%D8%B1%D8%A9_%D8%A7%D9%84%D8%A8%D9%8A%D9%86%D8%A9_%D9%85%D8%B5%D8%AD%D9%81_%D8%AA%D9%81%D8%A7%D8%B9%D9%84%D9%8A.html> |
+| سورة القدر | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/quran-alqadr/index.html> |
+| قصة النبتة | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/plant.html> |
+| الرياضيات (النسخة الأولى) | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/math.html> |
+| سر التقسيم السحري (بالصوت) | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/selim-math-arabic/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82_%D8%B3%D8%B1_%D8%A7%D9%84%D8%AA%D9%82%D8%B3%D9%8A%D9%85_%D8%A7%D9%84%D8%B3%D8%AD%D8%B1%D9%8A_%D8%B3%D9%84%D9%8A%D9%85_%D8%A8%D8%A7%D9%84%D8%B5%D9%88%D8%AA.html> |
+| حلقة سليم - جدول ٣ (mp3) | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/episodes-selim/%D8%AD%D9%84%D9%82%D8%A9_%D8%B3%D9%84%D9%8A%D9%85_%D8%AC%D8%AF%D9%88%D9%84_%D9%A3.mp3> |
+| المستودع (GitHub) | <https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive> |
+| مجلد الحلقات الكامل | <https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive/tree/main/episodes-selim> |

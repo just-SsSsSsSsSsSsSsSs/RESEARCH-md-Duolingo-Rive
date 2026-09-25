@@ -132,7 +132,12 @@ with sync_playwright() as p:
     before = pg.evaluate('({ i: window.__play.i, h: location.hash })')
     fx0 = pg.evaluate("document.querySelectorAll('#fx-layer .fx-p').length")
     pg.locator('.q-card > .mascot.companion').click(); pg.wait_for_timeout(120)
-    t = pg.evaluate(RIG); tk = pg.evaluate('window.__companionTickle || null')
+    # the pose <img> opacity has a .18s CSS transition; under a loaded CPU poll up to 1s for the swap to become visible
+    for _ in range(10):
+        t = pg.evaluate(RIG)
+        if t['visible'] == ['happy']: break
+        pg.wait_for_timeout(100)
+    tk = pg.evaluate('window.__companionTickle || null')
     fx1 = pg.evaluate("document.querySelectorAll('#fx-layer .fx-p').length")
     after = pg.evaluate('({ i: window.__play.i, h: location.hash, fb: document.querySelectorAll(".feedback, [data-retry]").length })')
     check(t['mood'] == 'tickle' and t['visible'] == ['happy'] and tk and tk['id'] == t['id'], f'6 tickle: mood tickle, happy pose visible, __companionTickle set ({t["mood"]}, {t["visible"]})')

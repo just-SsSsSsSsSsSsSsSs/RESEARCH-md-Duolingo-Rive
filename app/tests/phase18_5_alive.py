@@ -1,0 +1,87 @@
+"""Phase 18.5 - one companion per lesson + live links (+ B-sections appended as they land). Server: tools/serve.py 8090
+
+  A2  stability: the same companion id on every question of one lesson (surprise mode, no favourite); after quit ->
+      «again» a new session picks again and never repeats the previous companion twice in a row (5 restarts);
+      the child's favourite still wins across sessions.
+  A2b a running reaction (tickle) is never cut by the play view's 900ms 'think' nudge.
+  A1  links: README has the «روابط محدّثة» section and every live link in it answers 200 on GitHub Pages (network);
+      the root index.html points to the new repository; no html-mobile-audio link remains outside the append-only history.
+  hygiene: 0 page errors, 0 failed requests.
+"""
+from playwright.sync_api import sync_playwright
+import os, re, sys, subprocess
+
+BASE = 'http://localhost:8090/app/index.html'
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+fails = []
+def check(cond, msg):
+    print(('PASS ' if cond else 'FAIL ') + msg)
+    if not cond: fails.append(msg)
+
+def hero(pg, idx=0):
+    pg.goto(BASE + '#/profile'); pg.wait_for_selector('.heroes .hero-card, [data-act="switch"]')
+    if pg.locator('.heroes .hero-card').count() == 0: pg.click('[data-act="switch"]'); pg.wait_for_selector('.heroes .hero-card')
+    pg.locator('.hero-card').nth(idx).click(); pg.wait_for_timeout(300)
+
+def start(pg, act):
+    pg.goto(BASE + '#/home'); pg.wait_for_timeout(80); pg.goto(BASE + '#/play/' + act)
+    pg.wait_for_selector('[data-act="start"]'); pg.click('[data-act="start"]'); pg.wait_for_selector('.q-card'); pg.wait_for_timeout(300)
+
+def answer_right(pg):
+    q = pg.evaluate('window.__play.q'); want = str(q['choices'][q['answer']])
+    for c in pg.locator('.q-card .choice').all():
+        if c.inner_text().strip() == want: c.click(); break
+    pg.wait_for_selector('.feedback [data-act="next"]', timeout=5000); pg.click('.feedback [data-act="next"]')
+    pg.wait_for_selector('.q-card, [data-act="again"]'); pg.wait_for_timeout(250)
+
+def quit_lesson(pg):
+    pg.click('.play-head [data-act="quit"]'); pg.wait_for_selector('.modal'); pg.locator('.modal .btn-ghost').click(); pg.wait_for_selector('[data-act="again"]')
+
+CID = "document.querySelector('.q-card > .mascot.companion')?.dataset.companion"
+
+with sync_playwright() as p:
+    b = p.chromium.launch()
+    ctx = b.new_context(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+    pg = ctx.new_page(); errs, bad = [], []
+    pg.on('pageerror', lambda e: errs.append(str(e)))
+    pg.on('response', lambda r: bad.append(f'{r.status} {r.url}') if r.status >= 400 else None)
+    pg.goto(BASE); pg.wait_for_timeout(300); pg.evaluate('localStorage.clear()'); pg.goto(BASE); pg.wait_for_timeout(300); hero(pg, 0)
+
+    # A2 - same companion for the whole lesson (plant_quiz: '*'/arabic pool = cat, parrot, bee -> rotation is observable)
+    start(pg, 'plant_quiz'); ids = [pg.evaluate(CID)]
+    for _ in range(4): answer_right(pg); ids.append(pg.evaluate(CID))
+    check(ids[0] and len(set(ids)) == 1, f'A2 one companion across 5 questions of one lesson {ids}')
+    quit_lesson(pg); seq = [ids[0]]
+    for _ in range(5):
+        pg.click('[data-act="again"]'); pg.wait_for_selector('.q-card'); pg.wait_for_timeout(250); seq.append(pg.evaluate(CID)); quit_lesson(pg)
+    check(len(set(seq)) >= 2 and all(seq[i] != seq[i + 1] for i in range(len(seq) - 1)), f'A2 new session -> new pick, never the same twice in a row {seq}')
+    pg.evaluate("async () => { const m = await import('./js/engines/companion.js'); await m.ready(); m.setFavourite('bee'); }")
+    fav = []
+    for _ in range(2):
+        pg.click('[data-act="again"]'); pg.wait_for_selector('.q-card'); pg.wait_for_timeout(250); fav.append(pg.evaluate(CID)); quit_lesson(pg)
+    check(fav == ['bee', 'bee'], f'A2 favourite wins on every new session {fav}')
+    pg.evaluate("async () => { const m = await import('./js/engines/companion.js'); m.setFavourite(''); }")
+
+    # A2b - tickle survives the 900ms think nudge
+    start(pg, 'mult_3'); pg.wait_for_timeout(700)
+    pg.locator('.q-card > .mascot.companion').click(); pg.wait_for_timeout(500)  # crosses the 900ms mark
+    mood = pg.evaluate("document.querySelector('.q-card > .mascot.companion').dataset.mood")
+    check(mood == 'tickle', f'A2b a running tickle is not cut by the think nudge (mood {mood})')
+
+    # A1 - links
+    readme = open(os.path.join(ROOT, 'README.md'), encoding='utf-8').read()
+    sec = readme.split('### روابط محدّثة')[-1] if '### روابط محدّثة' in readme else ''
+    links = re.findall(r'<(https://just-ssssssssssssssss\.github\.io/[^>]+)>', sec)
+    check(len(links) >= 8, f'A1 README «روابط محدّثة» section lists {len(links)} live Pages links')
+    codes = {u: subprocess.run(['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}', u], capture_output=True, text=True).stdout for u in links}
+    badl = [u for u, c in codes.items() if c != '200']
+    check(links and not badl, f'A1 every listed live link answers 200 {badl}')
+    idx = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
+    check('github.com/html-mobile-audio' not in idx and 'just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive' in idx, 'A1 root index.html points to the new repository')
+
+    check(not errs, f'0 page errors {errs}')
+    check(not bad, f'0 failed requests {bad}')
+    b.close()
+
+print('\nRESULT:', 'PASS' if not fails else f'FAIL ({len(fails)})')
+sys.exit(1 if fails else 0)

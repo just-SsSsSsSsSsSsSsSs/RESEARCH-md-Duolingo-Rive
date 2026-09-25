@@ -2,7 +2,7 @@
  * Phase 17 - Companion Cast: many characters, one small state machine (the Duolingo/Rive idea, implemented on the
  * Web Animations API with rendered sprites - no runtime dependency).
  *
- *   mount(card, { subject })  -> element (compatible with mascot.mount)
+ *   mount(card, { subject, session })  -> element (compatible with mascot.mount; Phase 18.5: one pick per session)
  *   mood(card, name)          -> 'idle' | 'think' | 'happy' | 'encourage' | 'celebrate' (compatible with mascot.mood)
  *   pick(subject)             -> companion entry chosen for this session (cast rotation, child's favourite wins)
  *   list() / setFavourite(id) -> for the profile picker
@@ -158,6 +158,8 @@ class Rig {
   setMood(name) { this.react(name); }
   react(name) {
     if (!REACT[name]) name = 'idle';
+    // the soft 'think' nudge (play view, 900ms after a question) must never cut a reaction that is still playing
+    if (name === 'think' && this.mood !== 'idle' && this.mood !== 'think') return;
     clearTimeout(this.hold);
     if (name === 'idle') { this.show('idle'); return; }
     this.show(REACT_POSE[name] || name);
@@ -199,10 +201,21 @@ class Rig {
 const rigs = new WeakMap();
 const LOOK_SEL = '.choice, .numpad .btn, .slot, .grid-dot';
 
-export function mount(card, { subject = '' } = {}) {
+/* Phase 18.5: one companion per lesson. The pick is bound to the Session object, so every question of the same
+ * lesson shows the same friend (no distraction); a new session (start again, quit -> start, re-enter) picks again
+ * with the no-immediate-repeat rule. Favourite still wins inside pick(). */
+const bySession = new WeakMap();
+export function forSession(session, subject) {
+  if (!session || typeof session !== 'object') return pick(subject);
+  let c = bySession.get(session);
+  if (!c) { c = pick(subject); if (c) bySession.set(session, c); }
+  return c;
+}
+
+export function mount(card, { subject = '', session = null } = {}) {
   if (!card) return null;
   card.querySelector(':scope > .mascot')?.remove();
-  const c = pick(subject) || { id: 'none', name: '', dir: '.', files: {}, subjects: [] };
+  const c = forSession(session, subject) || { id: 'none', name: '', dir: '.', files: {}, subjects: [] };
   const poses = (data?.poses?.length ? data.poses : ['idle', 'happy', 'encourage']);
   const imgs = poses.map((p) => `<img class="cp-pose" data-pose="${p}" alt="" decoding="async" src="${spriteUrl(c, p)}" style="opacity:${p === 'idle' ? 1 : 0}">`).join('');
   const inner = MASK_OK ? `<span class="cp-layer body">${imgs}</span><span class="cp-layer head">${imgs}</span>` : imgs;
@@ -243,4 +256,4 @@ export function mood(card, name = 'idle') {
   window.__lastMascot = { mood: name, at: Date.now(), companion: rig.c.id };
 }
 
-export default { ready, list, pick, mount, mood, favourite, setFavourite, spriteUrl, spring, easing };
+export default { ready, list, pick, forSession, mount, mood, favourite, setFavourite, spriteUrl, spring, easing };
