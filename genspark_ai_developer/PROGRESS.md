@@ -718,3 +718,4 @@ Chunks: F1 family.json + charter md + changelog + history + resume + README (pus
   - viewports: PASS
 - 17.5 F4 batch END 02:58
 - 17.5 F4 result: 24/24 batch + 5 standalone = 29/29 PASS. Squash -> PR on Kimi-K3-code/RESEARCH-md-Duolingo-Rive.
+- 17.5 DONE: squashed 9247c57 over main e50b5c9; PR #1 https://github.com/Kimi-K3-code/RESEARCH-md-Duolingo-Rive/pull/1; preview https://8090-invbpnkmmymqs5a0qfu9j-dfc00ec5.sandbox.novita.ai/app/index.html#/charter (v7.21).
