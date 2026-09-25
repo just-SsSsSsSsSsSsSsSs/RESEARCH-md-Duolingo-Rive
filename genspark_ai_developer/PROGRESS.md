@@ -684,3 +684,37 @@ P3b ✅ smoke Chromium (mult_3 سؤال pick): clips=311 محمّلة، canSpeak
 - 17 R5d full batch #2 END 23:20
 - 17 R5d result: 26 PASS in batch; e2e (bubbles 7 < 8 count flake under load, untouched code) and phase17 (arabic pool widened by the parrot -> test expects a pool) rerun standalone -> both PASS => 28/28. README/PR body updated for the parrot. Next: squash onto origin/main -> PR #23 -> external preview.
 - 17 DONE: squashed 0c92d84 over origin/main (ec91866); PR #23 https://github.com/html-mobile-audio/html-mobile-audio/pull/23; external preview OK (0 console errors, assets 200) https://8090-iat5ikt5r07bajapto4wf-cc2fbc16.sandbox.novita.ai/app/index.html#/play/mult_3
+
+## Phase 17.5 - «ميثاق العيلة» Family Charter (repo moved to Kimi-K3-code/RESEARCH-md-Duolingo-Rive) - v7.21
+Verified: new token = Kimi-K3-code; new repo = full history + owner commit e50b5c9 (README rewritten: phase log 9-17 removed, PROJECT_VISION +22 lines); Pages live v7.20; old repo 404. Token was posted in a public gist -> never written to files; owner advised to rotate.
+Owner ask: keep the family gist links permanently, in MORE THAN ONE GitHub file, clearly, and on the site; professional, never done before.
+Design ("self-verifying redundancy"): one machine-readable source app/content/family.json -> (a) FAMILY_CHARTER.md (raw transcript + organized vision + links), (b) .agents/memory/CHANGELOG_DECISIONS.md (decision log, the file the owner expected), (c) docs/PHASES_HISTORY.md (the README phase log the rewrite dropped, verbatim from df2ae23), (d) README append (links block), (e) genspark_ai_developer/RESUME.md, (f) in-app view #/charter rendering family.json (links, principles, roadmap) reachable from profile settings, (g) tools/check_family_links.py: every copy must contain every canonical link or exit 1 (also a pytest-style suite app/tests/phase17_5_charter.py). v7.21, PR on the new repo.
+Chunks: F1 family.json + charter md + changelog + history + resume + README (push) -> F2 checker tool (push) -> F3 in-app view + CSS + route + profile link (push) -> F4 test + cachebust + bump 7.21 + full batch subset + PR.
+- 17.5 resume (reset): remote @ 26a9239 (F1-F3 pushed). LOST: bump 7.21 + app/tests/phase17_5_charter.py (unpushed). Old repo still 404 -> continuing on Kimi-K3-code/RESEARCH-md-Duolingo-Rive. Redo F4: test -> bump -> cachebust/emoji_audit/phase17_5 + subset -> PR.
+- 17.5 F4 batch START 02:44 (already PASS standalone: cachebust emoji_audit svg_leak phase17_5_charter phase17_companions; excluded legacy: behaviour emoji_sweep shots_calmjoy):
+  - e2e: PASS
+  - layering: PASS
+  - math_random: PASS
+  - navoverlap: PASS
+  - phase10: PASS
+  - phase10_celebration: PASS
+  - phase10_insights: PASS
+  - phase11_mistake: PASS
+  - phase11_rtl: PASS
+  - phase11_voice: PASS
+  - phase12_branch: PASS
+  - phase12_loop_all: PASS
+  - phase12_mobile_tts: PASS
+  - phase12_ux: PASS
+  - phase13_voice: PASS
+  - phase14_1_deadlock: PASS
+  - phase14_cheers: PASS
+  - phase15_1_question_voice: PASS
+  - phase15_2_groups_bar: PASS
+  - phase15_3_sunny: PASS
+  - phase16_render: PASS
+  - plant_story: PASS
+  - quran_reader: PASS
+  - viewports: PASS
+- 17.5 F4 batch END 02:58
+- 17.5 F4 result: 24/24 batch + 5 standalone = 29/29 PASS. Squash -> PR on Kimi-K3-code/RESEARCH-md-Duolingo-Rive.

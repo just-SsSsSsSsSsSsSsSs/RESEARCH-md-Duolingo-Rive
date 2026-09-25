@@ -512,3 +512,10 @@ html:not(.no-3d) .gb-cube b { margin-top: -4%; font-size: calc(var(--gb-cube) * 
 .companion-opt img,.companion-opt .cp-surprise{width:48px;height:52px;object-fit:contain;display:grid;place-items:center;font-weight:800;font-size:1.6rem;color:var(--primary, #4f8cff)}
 .companion-opt.on{border-color:var(--primary, #4f8cff);box-shadow:0 0 0 3px color-mix(in srgb, var(--primary, #4f8cff) 25%, transparent);transform:translateY(-2px)}
 .companion-opt:active{transform:scale(.96)}
+
+/* Phase 17.5 - family charter page (#/charter) */
+.charter-link .charter-url{display:block;font-size:.78rem;color:var(--primary,#4f8cff);word-break:break-all;text-decoration:underline;text-underline-offset:2px}
+.charter-mirror code{font-size:.78rem;opacity:.9;word-break:break-all;direction:ltr;unicode-bidi:isolate;text-align:left}
+.charter-mirror .tag[data-state="pending"]{opacity:.6}
+.charter-num{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--primary,#4f8cff);color:#fff;font-weight:800;flex:none}
+.charter-phase .icon-box b{font-size:1rem}

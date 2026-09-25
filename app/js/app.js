@@ -22,6 +22,7 @@ import * as Quests from './ui/views/quests.js';
 import * as Parent from './ui/views/parent.js';
 import * as Subject from './ui/views/subject.js';
 import * as Certificate from './ui/views/certificate.js';
+import * as Charter from './ui/views/charter.js'; // Phase 17.5: family charter (#/charter)
 
 document.documentElement.setAttribute('data-theme', store.meta.theme || 'light');
 bus.on('meta:change', (m) => document.documentElement.setAttribute('data-theme', m.theme || 'light'));
@@ -42,6 +43,7 @@ router
   .add('/badges', requireProfile(Badges))
   .add('/quests', requireProfile(Quests))
   .add('/certificate/:id', requireProfile(Certificate))
+  .add('/charter', requireProfile(Charter))
   .add('/parent', Parent)
   .add('/profile', Profile);
 

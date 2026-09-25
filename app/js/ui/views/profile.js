@@ -88,6 +88,7 @@ function renderCard(root) {
           ${companion.list().map((c) => `<button class="companion-opt ${companion.favourite() === c.id ? 'on' : ''}" role="radio" aria-checked="${companion.favourite() === c.id ? 'true' : 'false'}" data-cp="${esc(c.id)}"><img src="${companion.spriteUrl(c, 'idle')}" alt="" loading="lazy" decoding="async"><span>${esc(c.name)}</span></button>`).join('')}
         </div>
       </div>
+      <a class="btn btn-block btn-ghost" href="#/charter" data-act="charter">${ico('scroll')} ميثاق العيلة وروابطها الدائمة</a>
       <button class="btn btn-block" data-act="switch">${ico('refresh')} تبديل البطل</button>
     </div>`));
   root.appendChild(nav('profile'));
