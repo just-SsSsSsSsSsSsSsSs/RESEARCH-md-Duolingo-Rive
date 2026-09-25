@@ -664,3 +664,30 @@ Docker + CI/CD
 
 ## 4. القرار الهندسي (Phase 18)
 `companion.js` v2 بنفس الـAPI العامة: طبقتان من نفس الصور (`.cp-layer.body/.head` + رجوع لطبقة واحدة)، `spring()` -> `linear()` مع رجوع bezier، حلقة تنفس لا نهائية على الطبقتين تعمل دائماً في idle، أفعال عشوائية مركّبة فوقها، squash/stretch في `show()`، `react('tickle')`، `lookAt(x,y)`، `anticipate()`. كله يحترم `prefers-reduced-motion` و`meta.celebration === 0`. اختبار `phase18_fluid.py`.
+
+
+## Appendix - Phase 18.5 «رفيق ثابت في الدرس + روابط حية + أجنحة وفم وصوت» (owner gist 87dd0a06, verified 2026-09-25)
+
+### Verified facts (evidence first)
+- PR #1 merged: origin/main 3f779e7, version.json 7.22. GitHub Pages live: /RESEARCH-md-Duolingo-Rive/app/index.html -> 200.
+- Dead links: 8 x `html-mobile-audio.github.io/...` in README.md -> HTTP 000 (domain gone); the same paths on the new Pages -> 200 (mp3 needs URL-encoding). `index.html:371` links the suspended GitHub repo.
+- «Surprise is static» claim measured: in ONE plant_quiz lesson the companion was ['parrot','cat','parrot','cat'] -> it changed EVERY question (`mount()` called `pick()` inside `ask()`). The real defect is the opposite of the claim; the requested UX (stable within a lesson, rotate on complete/quit/new session, no immediate repeat) is right.
+- Found while testing: the play view's soft `mood('think')` nudge at 900ms cut a running tickle reaction short -> guarded in react().
+
+### Competitors, what they actually do
+| Product | Technique | Cost of copying on our stack |
+|---|---|---|
+| Duolingo (blog.duolingo.com/world-character-visemes) | Rive State Machine; separate mouth layers with 20+ visemes driven by phoneme timings; idle = blink/nod/eyebrows; animators + creative technologists | Rive WASM runtime ~200KB + hand-rigged .riv per character -> violates «no heavy deps», needs an animator |
+| Khan Academy Kids (TheLittleLabs) | Pre-rendered 2D studio animation | video/Lottie assets per clip, no interactivity |
+| Lottie generic | JSON keyframes + lottie-web 60-75KB gzip | no physics, no touch reaction, one file per character |
+| Ours (Phase 18) | same sprite -> body/head mask layers + spring linear() + infinite breath + touch | 6KB gzip, 0 deps, any generated sprite becomes alive |
+
+### Gap vs the «video-like» reference the owner means
+1. Wings/feathers/limbs do not move continuously. 2. No character voice (laugh, spoken cheer).
+
+### Decision
+- Keep the Phase 18 philosophy (no Rive/Lottie). Third mask layer «limbs» (wings bee/parrot/owl, tail cat, arms monkey) declared per companion in companions.json `rig.limbs` with its own faster infinite flutter loop.
+- «Poor man's viseme»: small mouth mask layer (`rig.mouth` box in % of the sprite) whose scaleY follows the audio envelope of the companion's own clip (Web Audio AnalyserNode; timed fallback) - Duolingo's idea without hand-drawn mouths.
+- Voice identity: 2 short clips per companion (laugh, cheer) via Fish Audio, distinct pitch per character; one attempt per companion per session; missing clip -> silent, never an error.
+- Companion stability: pick once per Session object (WeakMap), re-pick on complete/quit/new session with no-repeat; favourite still wins.
+- Links: README append-only -> new «updated links» section mapping every dead link to the live Pages URL (each verified 200); root index.html (not protected) edited in place.

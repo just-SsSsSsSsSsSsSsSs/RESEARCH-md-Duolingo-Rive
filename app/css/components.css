@@ -510,6 +510,13 @@ html:not(.no-3d) .gb-cube b { margin-top: -4%; font-size: calc(var(--gb-cube) * 
 .mascot.companion .cp-layer.head { transform-origin: 50% 62%; -webkit-mask-image: linear-gradient(to bottom, #000 48%, transparent 60%); mask-image: linear-gradient(to bottom, #000 48%, transparent 60%); }
 .mascot.companion.is-layered .cp-layer.body .cp-pose { filter: drop-shadow(0 5px 4px rgba(60,30,0,.22)); }
 .mascot.companion.is-layered .cp-layer.head .cp-pose { filter: none; }
+/* Phase 18.5 - limb layers (wings / tail / arms): their own infinite loop; drop-shadow off (the body layer carries it) */
+.mascot.companion .cp-layer.limb { will-change: transform; }
+.mascot.companion.is-layered .cp-layer.limb .cp-pose { filter: none; }
+/* Phase 18.5 - mouth layer: hidden until the companion speaks, then its vertical scale follows the voice envelope */
+.mascot.companion .cp-layer.mouth { opacity: 0; will-change: transform; }
+.mascot.companion[data-speaking] .cp-layer.mouth { opacity: 1; }
+.mascot.companion.is-layered .cp-layer.mouth .cp-pose { filter: none; }
 /* the legacy CSS keyframes (mBreath/mJump/mNod on .m-3d img) must not stack on the WAAPI rig */
 .mascot.companion[data-mood] .m-3d img, .mascot.companion[data-mood] .m-3d img:nth-child(n) { animation: none; }
 .mascot.companion::after { content: ''; position: absolute; left: 14%; right: 14%; bottom: -2px; height: 8px; border-radius: 50%; background: rgba(60,30,0,.14); filter: blur(2px); }

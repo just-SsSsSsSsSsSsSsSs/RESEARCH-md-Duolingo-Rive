@@ -2,7 +2,7 @@
  * Phase 17 - Companion Cast: many characters, one small state machine (the Duolingo/Rive idea, implemented on the
  * Web Animations API with rendered sprites - no runtime dependency).
  *
- *   mount(card, { subject })  -> element (compatible with mascot.mount)
+ *   mount(card, { subject, session })  -> element (compatible with mascot.mount; Phase 18.5: one pick per session)
  *   mood(card, name)          -> 'idle' | 'think' | 'happy' | 'encourage' | 'celebrate' (compatible with mascot.mood)
  *   pick(subject)             -> companion entry chosen for this session (cast rotation, child's favourite wins)
  *   list() / setFavourite(id) -> for the profile picker
@@ -100,6 +100,12 @@ const BREATH = {
   body: [{ transform: 'scaleY(1) scaleX(1)' }, { transform: 'scaleY(1.035) scaleX(.99) translateY(-.5px)' }],
   head: [{ transform: 'translateY(0) rotate(0)' }, { transform: 'translateY(-1.6px) rotate(-1.2deg)' }],
 };
+/* Phase 18.5 - limbs: continuous secondary motion on their own mask layers (wings never stop, like a video) */
+const LIMB = {
+  flutter: { ms: 380, frames: [{ transform: 'rotate(0) scaleX(1)' }, { transform: 'rotate(-14deg) scaleX(.72) translateY(-2px)' }] },
+  flap: { ms: 1500, frames: [{ transform: 'rotate(0)' }, { transform: 'rotate(-7deg) translateY(-1.5px)' }] },
+  sway: { ms: 1900, frames: [{ transform: 'rotate(0)' }, { transform: 'rotate(9deg)' }] },
+};
 const REACT = {
   happy: [{ transform: 'translateY(0) rotate(0)' }, { transform: 'translateY(-16px) rotate(-6deg) scale(1.08)', offset: .3 }, { transform: 'translateY(0) rotate(4deg)', offset: .55 }, { transform: 'translateY(-10px) rotate(-3deg) scale(1.05)', offset: .75 }, { transform: 'translateY(0) rotate(0)' }],
   encourage: [{ transform: 'rotate(0)' }, { transform: 'rotate(-9deg) translateY(2px)', offset: .25 }, { transform: 'rotate(7deg)', offset: .5 }, { transform: 'rotate(-6deg)', offset: .75 }, { transform: 'rotate(0)' }],
@@ -111,6 +117,35 @@ const REACT_POSE = { tickle: 'happy' };
 const REACT_MS = { happy: 1300, encourage: 1400, celebrate: 1500, think: 900, tickle: 900 };
 const HOLD_MS = { happy: 2400, encourage: 2600, celebrate: 3200, think: 4000, tickle: 1400 };
 
+/* ---------- Phase 18.5 - voice identity + "poor man's viseme" ----------
+ * Each companion owns two short clips (laugh / cheer). While a clip plays, a small mouth mask layer opens and closes
+ * with the audio envelope (Web Audio AnalyserNode; a timed open/close fallback when the graph is unavailable).
+ * The idea is Duolingo's viseme state machine, without hand-drawn mouths and without a runtime. */
+let actx = null, voiceEl = null, voiceReq = 0;
+const soundOn = () => store.meta.sound !== false;
+export const voiceUrl = (c, kind) => (c?.voice?.[kind] ? new URL(`${c.dir}/${c.voice[kind]}?v=${APP_VERSION}`, DATA_URL).href : '');
+export function speak(rig, kind) {
+  const c = rig?.c; const url = voiceUrl(c, kind);
+  if (!url || !soundOn() || !rig.alive()) return false;
+  try {
+    if (!voiceEl) { voiceEl = new Audio(); voiceEl.preload = 'auto'; }
+    const req = ++voiceReq; voiceEl.pause(); voiceEl.src = url; voiceEl.currentTime = 0;
+    let level = null;
+    try {
+      if (!actx && ('AudioContext' in window)) { actx = new AudioContext(); const src = actx.createMediaElementSource(voiceEl); const an = actx.createAnalyser(); an.fftSize = 256; src.connect(an); an.connect(actx.destination); voiceEl.__an = an; }
+      if (actx?.state === 'suspended') actx.resume().catch(() => {});
+      const an = voiceEl.__an; const buf = an ? new Uint8Array(an.frequencyBinCount) : null;
+      if (an) level = () => { an.getByteFrequencyData(buf); let sum = 0; for (let i = 2; i < 40; i++) sum += buf[i]; return Math.min(1, sum / (38 * 140)); };
+    } catch { level = null; }
+    rig.mouthStart(level, kind);
+    const done = () => { if (req === voiceReq) rig.mouthStop(); };
+    voiceEl.onended = done; voiceEl.onerror = done; voiceEl.onpause = done;
+    voiceEl.play().then(() => { window.__companionVoice = { id: c.id, kind, at: Date.now(), analyser: !!level }; }).catch(() => done());
+    return true;
+  } catch { rig.mouthStop(); return false; }
+}
+export const voicePlaying = () => !!voiceEl && !voiceEl.paused && !voiceEl.ended;
+
 function bag(keys) { let b = []; let last = null; return () => { if (!b.length) { b = keys.slice().sort(() => Math.random() - .5); if (b[b.length - 1] === last && b.length > 1) b.unshift(b.pop()); } last = b.pop(); return last; }; }
 
 class Rig {
@@ -118,6 +153,8 @@ class Rig {
     this.root = root; this.c = c; this.stage = root.querySelector('.cp-stage'); this.mood = 'idle';
     this.body = root.querySelector('.cp-layer.body') || this.stage; this.head = root.querySelector('.cp-layer.head') || this.stage;
     this.layered = this.head !== this.body;
+    this.limbs = [...root.querySelectorAll('.cp-layer.limb')];
+    this.mouth = root.querySelector('.cp-layer.mouth'); this.mouthRaf = 0; this.mouthTimer = 0;
     this.next = bag(Object.keys(IDLE)); this.timer = 0; this.anim = null; this.hold = 0; this.look = 0; this.antic = 0; this.log = []; this.loops = [];
     this.onVis = () => { if (!this.alive()) return; this.loops.forEach((a) => (document.hidden ? a.pause() : a.play())); };
     document.addEventListener('visibilitychange', this.onVis);
@@ -131,6 +168,9 @@ class Rig {
     const opts = { duration: BREATH_MS, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out', fill: 'none' };
     this.loops.push(this.body.animate(BREATH.body, opts));
     if (this.layered) this.loops.push(this.head.animate(BREATH.head, { ...opts, delay: 120 }));
+    this.limbs.forEach((L, i) => { const k = LIMB[L.dataset.motion] || LIMB.sway; const mirror = L.dataset.side === 'r';
+      const frames = mirror ? k.frames.map((f) => ({ transform: f.transform.replace(/rotate\((-?[\d.]+)deg\)/, (_, v) => `rotate(${-v}deg)`) })) : k.frames;
+      this.loops.push(L.animate(frames, { duration: k.ms, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out', fill: 'none', delay: i * (k.ms / 3) })); });
   }
   schedule(ms) { clearTimeout(this.timer); this.timer = setTimeout(() => this.tick(), ms); }
   tick() {
@@ -158,6 +198,8 @@ class Rig {
   setMood(name) { this.react(name); }
   react(name) {
     if (!REACT[name]) name = 'idle';
+    // the soft 'think' nudge (play view, 900ms after a question) must never cut a reaction that is still playing
+    if (name === 'think' && this.mood !== 'idle' && this.mood !== 'think') return;
     clearTimeout(this.hold);
     if (name === 'idle') { this.show('idle'); return; }
     this.show(REACT_POSE[name] || name);
@@ -193,19 +235,59 @@ class Rig {
     if (!reduce()) this.play([{ transform: 'rotate(5deg) translateX(3px) scale(1.03)' }, { transform: 'rotate(0) translateX(0) scale(1)' }], 600, { easing: EASE_SOFT }); else this.anim?.cancel();
     this.schedule(400);
   }
-  stop() { clearTimeout(this.timer); clearTimeout(this.hold); clearTimeout(this.look); clearTimeout(this.antic); this.anim?.cancel(); this.loops.forEach((a) => a.cancel()); this.loops = []; document.removeEventListener('visibilitychange', this.onVis); }
+  /** mouth layer follows the voice envelope (or a timed open/close when no analyser) until mouthStop() */
+  mouthStart(level, kind) {
+    if (!this.mouth) return;
+    this.mouthStop(); this.root.dataset.speaking = kind || '1';
+    if (reduce()) return;
+    if (level) {
+      const tick = () => { if (!this.alive() || !this.root.dataset.speaking) return; const v = level(); this.mouth.style.transform = `translateY(${(v * 2.2).toFixed(2)}px) scaleY(${(1 + v * .9).toFixed(3)})`; this.mouthRaf = requestAnimationFrame(tick); };
+      this.mouthRaf = requestAnimationFrame(tick);
+    } else {
+      let open = false;
+      const flip = () => { if (!this.alive() || !this.root.dataset.speaking) return; open = !open; this.mouth.style.transform = open ? 'translateY(1.6px) scaleY(1.6)' : 'translateY(0) scaleY(1)'; this.mouthTimer = setTimeout(flip, 90 + Math.random() * 70); };
+      flip();
+    }
+  }
+  mouthStop() {
+    cancelAnimationFrame(this.mouthRaf); clearTimeout(this.mouthTimer); this.mouthRaf = 0; this.mouthTimer = 0;
+    delete this.root.dataset.speaking;
+    if (this.mouth) this.mouth.style.transform = '';
+  }
+  stop() { this.mouthStop(); clearTimeout(this.timer); clearTimeout(this.hold); clearTimeout(this.look); clearTimeout(this.antic); this.anim?.cancel(); this.loops.forEach((a) => a.cancel()); this.loops = []; document.removeEventListener('visibilitychange', this.onVis); }
 }
 
 const rigs = new WeakMap();
 const LOOK_SEL = '.choice, .numpad .btn, .slot, .grid-dot';
 
-export function mount(card, { subject = '' } = {}) {
+/* Phase 18.5: one companion per lesson. The pick is bound to the Session object, so every question of the same
+ * lesson shows the same friend (no distraction); a new session (start again, quit -> start, re-enter) picks again
+ * with the no-immediate-repeat rule. Favourite still wins inside pick(). */
+const bySession = new WeakMap();
+export function forSession(session, subject) {
+  if (!session || typeof session !== 'object') return pick(subject);
+  let c = bySession.get(session);
+  if (!c) { c = pick(subject); if (c) bySession.set(session, c); }
+  return c;
+}
+
+export function mount(card, { subject = '', session = null } = {}) {
   if (!card) return null;
   card.querySelector(':scope > .mascot')?.remove();
-  const c = pick(subject) || { id: 'none', name: '', dir: '.', files: {}, subjects: [] };
+  const c = forSession(session, subject) || { id: 'none', name: '', dir: '.', files: {}, subjects: [] };
   const poses = (data?.poses?.length ? data.poses : ['idle', 'happy', 'encourage']);
   const imgs = poses.map((p) => `<img class="cp-pose" data-pose="${p}" alt="" decoding="async" src="${spriteUrl(c, p)}" style="opacity:${p === 'idle' ? 1 : 0}">`).join('');
-  const inner = MASK_OK ? `<span class="cp-layer body">${imgs}</span><span class="cp-layer head">${imgs}</span>` : imgs;
+  // Phase 18.5: each declared limb box becomes its own mask layer (radial mask, soft edge) and is cut out of the body
+  // layer with mask-composite so the wing/tail is drawn once and moves on its own.
+  const limbs = MASK_OK ? (c.rig?.limbs || []) : [];
+  const box = (L) => `radial-gradient(ellipse at ${L.x + L.w / 2}% ${L.y + L.h / 2}%, #000 ${Math.min(L.w, L.h) * .42}%, transparent ${Math.max(L.w, L.h) * .62}%)`;
+  const limbHtml = limbs.map((L) => `<span class="cp-layer limb" data-limb="${L.id}" data-motion="${L.motion || 'sway'}" data-side="${L.x + L.w / 2 > 50 ? 'r' : 'l'}" style="-webkit-mask-image:${box(L)};mask-image:${box(L)};transform-origin:${L.origin || '50% 50%'}">${imgs}</span>`).join('');
+  const cut = limbs.length ? `linear-gradient(to bottom, transparent 40%, #000 52%)${limbs.map((L) => `, ${box(L)}`).join('')}` : '';
+  const bodyStyle = limbs.length ? ` style="-webkit-mask-image:${cut};mask-image:${cut};-webkit-mask-composite:source-out,source-over;mask-composite:exclude"` : '';
+  const M = MASK_OK ? c.rig?.mouth : null;
+  const mouthMask = M ? `radial-gradient(ellipse at ${M.x + M.w / 2}% ${M.y + M.h / 2}%, #000 ${Math.min(M.w, M.h) * .5}%, transparent ${Math.max(M.w, M.h) * .7}%)` : '';
+  const mouthHtml = M ? `<span class="cp-layer mouth" style="-webkit-mask-image:${mouthMask};mask-image:${mouthMask};transform-origin:${M.x + M.w / 2}% ${M.y + M.h / 2}%">${imgs}</span>` : '';
+  const inner = MASK_OK ? `<span class="cp-layer body"${bodyStyle}>${imgs}</span>${limbHtml}<span class="cp-layer head">${imgs}</span>${mouthHtml}` : imgs;
   const m = el(`<div class="mascot companion is-3d${MASK_OK ? ' is-layered' : ''}" data-companion="${c.id}" data-mood="idle" data-pose="idle" aria-hidden="true" title="${c.name}"><span class="cp-stage m-3d" style="display:block">${inner}</span></div>`);
   card.appendChild(m);
   const rig = new Rig(m, c); rigs.set(m, rig);
@@ -216,6 +298,7 @@ export function mount(card, { subject = '' } = {}) {
   m.addEventListener('pointerdown', (e) => {
     e.stopPropagation(); e.preventDefault();
     rig.react('tickle');
+    speak(rig, 'laugh');
     if (fx.intensity() > 0 && !reduce()) fx.burstAt(e.clientX, e.clientY, 1, { color: '#ff6b8a' });
     window.__companionTickle = { at: Date.now(), id: c.id };
   });
@@ -228,10 +311,16 @@ export function mount(card, { subject = '' } = {}) {
     else if (t.matches('.btn-primary')) rig.relax();
   };
   card.addEventListener('pointerdown', onTap, true);
-  window.__companion = { id: c.id, name: c.name, el: m, rig, layered: rig.layered, linear: LINEAR_OK };
+  window.__companion = { id: c.id, name: c.name, el: m, rig, layered: rig.layered, limbs: rig.limbs.length, mouth: !!rig.mouth, voice: !!c.voice, linear: LINEAR_OK };
   // entrance: slide in from the card edge
   if (!reduce()) m.animate([{ transform: 'translateY(18px) scale(.6)', opacity: 0 }, { transform: 'translateY(0) scale(1)', opacity: 1 }], { duration: 520, easing: EASE_POP });
   return m;
+}
+
+/** Phase 18.5: the companion cheers in its own voice (play view calls it only when the sibling cheer is silent) */
+export function cheer(card) {
+  const m = card?.querySelector(':scope > .mascot'); const rig = m && rigs.get(m);
+  return rig ? speak(rig, 'cheer') : false;
 }
 
 export function mood(card, name = 'idle') {
@@ -243,4 +332,4 @@ export function mood(card, name = 'idle') {
   window.__lastMascot = { mood: name, at: Date.now(), companion: rig.c.id };
 }
 
-export default { ready, list, pick, mount, mood, favourite, setFavourite, spriteUrl, spring, easing };
+export default { ready, list, pick, forSession, mount, mood, cheer, speak, voicePlaying, voiceUrl, favourite, setFavourite, spriteUrl, spring, easing };

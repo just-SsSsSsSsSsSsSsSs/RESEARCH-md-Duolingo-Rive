@@ -209,3 +209,29 @@ python tools/send_voice.py
 - **الطاقم:** النحلة نونة (`app/assets/companions/bee/*.webp`، 5 وضعيات، ~10KB لكل صورة، مولَّدة بمحاولة واحدة وقُصّت بـ`tools/cut_sprite_sheet.py`) انضمت إلى pool `'*'` (مع القطة) وإلى مادة العلوم مستقبلاً. السلحفاة والروبوت مؤجّلان لجلسة برصيد.
 - **الاختبارات:** جديد `app/tests/phase18_fluid.py` (35 فحصًا: طبقتان بأقنعة مختلفة، حلقتا تنفّس لا نهائيتان بإزاحة 120ms، 30/30 تحويلة مختلفة خلال 3 ثوانٍ، استقلال الجسم عن الرأس، `spring()` يتجاوز 1 ثم يستقر عليه، composite add أثناء التنفّس، squash/stretch، الدغدغة تستجيب وتُبتلع مع قلوب، النظرة والترقّب والاسترخاء، إيقاف/استئناف عند الإخفاء، reduced-motion بلا أي حركة، تخطيط 5 مواد بلا تغطية، 0 أخطاء/0 طلبات فاشلة). المرايا: `phase17_companions` (يجيب pick/truefalse، يفحص الطبقة الجسم فقط، ويثبت أن اللمسة لا تجيب ولا تنقل) و`phase15_3_sunny` و`phase16_render`.
 - الملفات المحمية بلا مساس (sha256 مطابق)؛ K3 بلا تغيير؛ Zero-Emoji؛ لا تبعيات.
+
+### روابط محدّثة (2026-09-25) - المنصة الحية انتقلت إلى GitHub Pages الجديد
+الروابط القديمة على `html-mobile-audio.github.io` توقفت مع تعليق الحساب القديم (HTTP 000). README يبقى append-only، فهذا القسم هو المرجع الساري لكل الروابط أعلاه؛ كل رابط أدناه فُحص فعلياً وأعاد 200 عند الكتابة.
+
+| الملف / التطبيق | الرابط الحي |
+|---|---|
+| تطبيق أبطال (SPA) - نقطة الدخول الرئيسية | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/app/index.html> |
+| سورة البيّنة - القراءة التفاعلية | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/albayyinah.html> |
+| مصحف البيّنة التفاعلي | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/quran-albayyinah/%D8%B3%D9%88%D8%B1%D8%A9_%D8%A7%D9%84%D8%A8%D9%8A%D9%86%D8%A9_%D9%85%D8%B5%D8%AD%D9%81_%D8%AA%D9%81%D8%A7%D8%B9%D9%84%D9%8A.html> |
+| سورة القدر | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/quran-alqadr/index.html> |
+| قصة النبتة | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/plant.html> |
+| الرياضيات (النسخة الأولى) | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/math.html> |
+| سر التقسيم السحري (بالصوت) | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/selim-math-arabic/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82_%D8%B3%D8%B1_%D8%A7%D9%84%D8%AA%D9%82%D8%B3%D9%8A%D9%85_%D8%A7%D9%84%D8%B3%D8%AD%D8%B1%D9%8A_%D8%B3%D9%84%D9%8A%D9%85_%D8%A8%D8%A7%D9%84%D8%B5%D9%88%D8%AA.html> |
+| حلقة سليم - جدول ٣ (mp3) | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/episodes-selim/%D8%AD%D9%84%D9%82%D8%A9_%D8%B3%D9%84%D9%8A%D9%85_%D8%AC%D8%AF%D9%88%D9%84_%D9%A3.mp3> |
+| المستودع (GitHub) | <https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive> |
+| مجلد الحلقات الكامل | <https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive/tree/main/episodes-selim> |
+
+### Phase 18.5 - «رفيق ثابت في الدرس + روابط حية + أجنحة ترفرف وفم ناطق وصوت لكل رفيق» - v7.23
+- **توجيه المالك (gist 87dd0a06، تم التحقق من كل ادعاء بدليله):** روابط README القديمة ميتة (تم)؛ «المفاجأة» يجب أن تثبّت الرفيق داخل الدرس وتبدّله عند الإكمال/الخروج/جلسة جديدة بلا تكرار متتالٍ (القياس الفعلي أظهر أن الرفيق كان يتغيّر مع كل سؤال - أُصلح)؛ حركة كالفيديو (أجنحة تتحرك باستمرار) وصوت خاص بكل رفيق.
+- **منافسون فعليون (RESEARCH.md ملحق 18.5):** Duolingo يبني الشخصيات في Rive بـState Machine وطبقات فم (20+ viseme) من توقيتات الفونيمات؛ نسخه على الويب = runtime WASM ~200KB + رسّام Rive لكل شخصية. اختيارنا: نفس الفكرة بلا Rive/Lottie - طبقات أقنعة CSS من الصورة الواحدة (6KB gzip، صفر تبعيات).
+- **A - ثبات الرفيق:** `forSession()` يربط الاختيار بكائن الجلسة (WeakMap) فيبقى الرفيق نفسه من أول سؤال لآخره؛ جلسة جديدة -> اختيار جديد بلا تكرار متتالٍ؛ المفضّل يفوز دائماً. إصلاح جانبي: إيماءة «think» بعد 900ms لم تعد تقطع دغدغة جارية.
+- **A - الروابط:** قسم «روابط محدّثة» أعلاه (كل رابط فُحص وأعاد 200) و`index.html` الجذر يشير للمستودع الجديد؛ README ظل append-only.
+- **B1 - الأطراف:** `rig.limbs` في `companions.json` (أجنحة النحلة/الببغاء/البومة، ذيل القطة، ذراعا القرد كصناديق نسبية + نقطة مفصل + نوع حركة flutter/flap/sway) -> طبقة قناع شعاعي لكل طرف بحلقة لا نهائية خاصة (معكوسة للجانب الأيمن ومزاحة زمنياً)، وطبقة الجسم تقتطع الأطراف بـ`mask-composite: exclude` فلا يُرسم الجناح مرتين.
+- **B2 - الفم والصوت:** لكل رفيق مقطعان قصيران (ضحكة + تشجيع) من Fish Audio بنبرة وسرعة مميزتَين (النحلة عالية سريعة، البومة منخفضة هادئة...) 8-15KB؛ طبقة قناع صغيرة على الفم (`rig.mouth`) تنفتح وتنغلق مع مغلّف الصوت عبر Web Audio `AnalyserNode` (viseme بلا رسم يدوي؛ تراجع زمني عند غياب الرسم البياني). الضحكة عند الدغدغة، والتشجيع كل ثالث إجابة صحيحة فقط حين يصمت تشجيع الأشقّاء المنطوق؛ إيقاف الصوت أو reduced-motion يُسكِتان كل شيء.
+- **الاختبارات:** جديد `app/tests/phase18_5_alive.py` (28 فحصاً: ثبات 5 أسئلة، 5 إعادات بلا تكرار، المفضّل، الدغدغة لا تُقطع، طبقات الأطراف = المعلَن وحلقاتها تعمل وثقوب الجسم وتغيّر التحويلات، الفم مخفي ثم ينطق ثم يُغلق، المقاطع 200 مع cache-bust، الصوت مغلق -> صمت، الروابط 200، 0 أخطاء)؛ مرآة `phase18_fluid` (عدد الحلقات >= 2). كل الـsuites على الخادمَين.
+- الملفات المحمية بلا مساس (sha256 مطابق)؛ K3 بلا تغيير؛ Zero-Emoji؛ لا تبعيات.

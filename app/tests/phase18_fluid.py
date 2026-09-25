@@ -87,7 +87,8 @@ with sync_playwright() as p:
     if mask_ok:
         check(r['layered'] and r['hasBody'] and r['hasHead'], '1 two mask layers (body + head) when mask-image is supported')
         check('gradient' in r['maskBody'] and 'gradient' in r['maskHead'] and r['maskBody'] != r['maskHead'], f'1 body/head masks are distinct gradients')
-        check(r['inf'] == 2 and sorted(r['infDelays']) == [0, 120], f'1 two infinite breath loops, head phase-shifted 120ms (delays {r["infDelays"]})')
+        # Phase 18.5: limb layers add their own infinite loops on top of the two breath loops
+        check(r['inf'] >= 2 and 0 in r['infDelays'] and 120 in r['infDelays'], f'1 two infinite breath loops, head phase-shifted 120ms (+{r["inf"] - 2} limb loops; delays {r["infDelays"]})')
     else:
         check(not r['layered'] and r['inf'] == 1, '1 single-layer fallback (mask-image unsupported) with one breath loop')
     check(r['infRunning'] == r['inf'] and r['inf'] >= 1, f'1 breath loops running ({r["infRunning"]}/{r["inf"]})')
@@ -132,7 +133,12 @@ with sync_playwright() as p:
     before = pg.evaluate('({ i: window.__play.i, h: location.hash })')
     fx0 = pg.evaluate("document.querySelectorAll('#fx-layer .fx-p').length")
     pg.locator('.q-card > .mascot.companion').click(); pg.wait_for_timeout(120)
-    t = pg.evaluate(RIG); tk = pg.evaluate('window.__companionTickle || null')
+    # the pose <img> opacity has a .18s CSS transition; under a loaded CPU poll up to 1s for the swap to become visible
+    for _ in range(10):
+        t = pg.evaluate(RIG)
+        if t['visible'] == ['happy']: break
+        pg.wait_for_timeout(100)
+    tk = pg.evaluate('window.__companionTickle || null')
     fx1 = pg.evaluate("document.querySelectorAll('#fx-layer .fx-p').length")
     after = pg.evaluate('({ i: window.__play.i, h: location.hash, fb: document.querySelectorAll(".feedback, [data-retry]").length })')
     check(t['mood'] == 'tickle' and t['visible'] == ['happy'] and tk and tk['id'] == t['id'], f'6 tickle: mood tickle, happy pose visible, __companionTickle set ({t["mood"]}, {t["visible"]})')
@@ -183,7 +189,7 @@ with sync_playwright() as p:
     # 11 - hygiene
     ver = json.load(open(os.path.join(ROOT, 'app', 'version.json')))
     idx = open(os.path.join(ROOT, 'app', 'index.html'), encoding='utf-8').read()
-    check(ver['v'] == '7.22', f'11 version.json = 7.22 (got {ver["v"]})')
+    check(ver['v'] >= '7.22', f'11 version.json >= 7.22 (got {ver["v"]})')
     check(f'?v={ver["v"]}' in idx, '11 index.html importmap/assets cache-busted with the current version')
     check(not errs, f'0 page errors {errs}')
     check(not bad, f'0 failed requests {bad}')
