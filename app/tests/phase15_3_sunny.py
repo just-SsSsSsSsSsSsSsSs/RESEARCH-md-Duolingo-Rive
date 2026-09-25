@@ -111,7 +111,9 @@ with sync_playwright() as p:
         check([n.translate(AR2EN) for n in t['nums']] == want, 'Phase 15.4: cubes numbered 1..b in every tray during the question (never the running total -> K3)')
     check(t and t['faces'] in (0, t['trays']), 'Phase 15.4: tray faces all-or-none')
     m = pg.evaluate(MASCOT)
-    check(m and m['hidden'] == 'true' and m['pe'] == 'none' and m['w'] >= 40, f'mascot present, aria-hidden, never takes taps {m}')
+    # Phase 18 mirror: the companion is tappable (tickle, pointer-events auto) but must never sit over a control; the
+    # code-drawn fallback monkey stays pointer-events none
+    check(m and m['hidden'] == 'true' and m['pe'] in ('none', 'auto') and m['w'] >= 40, f'mascot present, aria-hidden {m}')
     check(m and not m['hitHear'] and not m['hitBar'] and not m['hitText'] and not m['hitAns'], 'mascot overlaps no replay button / bar / text / answers')
     check(m and m['svgIds'] == 0, 'mascot SVG has no ids (no clash across repeated cards)')
     card_bg = pg.evaluate("getComputedStyle(document.querySelector('.q-card')).backgroundImage")

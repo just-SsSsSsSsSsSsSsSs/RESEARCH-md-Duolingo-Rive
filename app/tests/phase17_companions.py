@@ -34,6 +34,15 @@ def start(pg, act, settle=650):
 
 NUMPAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'del', '0', 'ok']
 def answer(pg, q, right):
+    # Phase 18 mirror: mult_3 mixes numpad / quiz / grid / pick / truefalse - every shape must be answerable right or wrong
+    if q.get('type') == 'pick':
+        want = set(q['correct']); items = pg.locator('.q-card .pick-grid .choice'); n = items.count()
+        wrong = [i for i in range(n) if i not in want]
+        idx = sorted(want) if right else (wrong[:1] if wrong else sorted(want)[:1])
+        for i in idx: items.nth(i).click()
+        pg.locator('.q-card .btn-primary').last.click(); return True
+    if q.get('type') == 'truefalse':
+        pg.locator('.q-card .choice').nth(0 if (bool(q['answer']) == right) else 1).click(); return True
     want = str(q['choices'][q['answer']]).translate(AR2EN) if q.get('choices') else str(q['answer']).translate(AR2EN)
     if pg.locator('.q-card .numpad').count() == 0 and q.get('choices'):
         for c in pg.locator('.q-card .choice').all():
@@ -48,7 +57,8 @@ def rect(pg, sel):
 def inter(a, b, pad=0):
     return a and b and not (a['r'] - pad <= b['l'] or b['r'] - pad <= a['l'] or a['b'] - pad <= b['t'] or b['b'] - pad <= a['t'])
 
-COMP = "(() => { const m = document.querySelector('.q-card > .mascot.companion'); if (!m) return null; const im = [...m.querySelectorAll('.cp-pose')]; return { id: m.dataset.companion, mood: m.dataset.mood, hidden: m.getAttribute('aria-hidden'), pe: getComputedStyle(m).pointerEvents, poses: im.map(i => i.dataset.pose), visible: im.filter(i => getComputedStyle(i).opacity > .5).map(i => i.dataset.pose), loaded: im.filter(i => i.complete && i.naturalWidth > 0).length, log: window.__companion?.rig?.log?.slice() || [] }; })()"
+# Phase 18: the sprite is drawn twice (body + head mask layers) -> probe one layer only (body, or the flat stage when unlayered)
+COMP = "(() => { const m = document.querySelector('.q-card > .mascot.companion'); if (!m) return null; const im = [...m.querySelectorAll('.cp-layer.body .cp-pose, .cp-stage > .cp-pose')]; return { id: m.dataset.companion, mood: m.dataset.mood, hidden: m.getAttribute('aria-hidden'), pe: getComputedStyle(m).pointerEvents, poses: im.map(i => i.dataset.pose), visible: im.filter(i => getComputedStyle(i).opacity > .5).map(i => i.dataset.pose), loaded: im.filter(i => i.complete && i.naturalWidth > 0).length, log: window.__companion?.rig?.log?.slice() || [] }; })()"
 FX = "(() => { const L = document.getElementById('fx-layer'); const n = (c) => L ? L.querySelectorAll(c).length : 0; return { ring: n('.fx-ring'), p: n('.fx-p'), ribbon: n('.fx-ribbon'), rays: n('.fx-rays'), last: window.__fxLast || null }; })()"
 
 # expected pool per activity (subject -> companions.json). arabic has cat + parrot -> either, rotating.
@@ -79,7 +89,8 @@ with sync_playwright() as p:
     seq = pg.evaluate("""async () => { const m = await import('./js/engines/companion.js'); await m.ready();
       const l = m.list(); const twin = { ...l.find(c => c.id === 'cat'), id: 'cat2', subjects: ['*'] }; l.push(twin);
       const out = []; for (let i = 0; i < 12; i++) out.push(m.pick('nothing_here').id); l.pop(); return out; }""")
-    check(len(set(seq)) == 2 and all(seq[i] != seq[i + 1] for i in range(len(seq) - 1)), f'2 rotation: no immediate repeat in {seq}')
+    # Phase 18: the '*' pool is cat + bee (+ the temporary twin) -> at least two distinct picks and never the same one twice in a row
+    check(len(set(seq)) >= 2 and all(seq[i] != seq[i + 1] for i in range(len(seq) - 1)), f'2 rotation: no immediate repeat in {seq}')
 
     # 3 - state machine on math (numpad -> can force right/wrong)
     q = start(pg, 'mult_3', settle=250)
@@ -109,11 +120,15 @@ with sync_playwright() as p:
     c5 = pg.evaluate(COMP); log = c5['log']
     check(len(log) >= 2 and len(set(log)) >= 2 and all(log[i] != log[i + 1] for i in range(len(log) - 1)), f'3 idle micro-actions vary, no immediate repeat {log}')
 
-    # 4 - layout
+    # 4 - layout. Phase 18 (AGENTS.md bend 5): the companion takes taps (tickle) but a tap never answers / navigates
     for act, _ in SUBJECTS:
         start(pg, act)
         c = pg.evaluate(COMP); m = rect(pg, '.q-card > .mascot.companion')
-        check(c['hidden'] == 'true' and c['pe'] == 'none', f'4 {act}: companion aria-hidden + pointer-events none')
+        check(c['hidden'] == 'true' and c['pe'] == 'auto', f'4 {act}: companion aria-hidden + pointer-events auto (tickle)')
+        before = pg.evaluate('({ i: window.__play.i, h: location.hash })')
+        pg.locator('.q-card > .mascot.companion').click(); pg.wait_for_timeout(250)
+        after = pg.evaluate('({ i: window.__play.i, h: location.hash, fb: document.querySelectorAll(".feedback, [data-retry]").length, t: window.__companionTickle?.id })')
+        check(after['i'] == before['i'] and after['h'] == before['h'] and after['fb'] == 0 and after['t'] == c['id'], f'4 {act}: a tap on the companion tickles only - never answers or navigates {after}')
         others = pg.evaluate("[...document.querySelectorAll('.q-card .q-text, .q-card .q-hear, .q-card .choice, .q-card .numpad .btn, .q-card .groups-bar')].map(e => { const r = e.getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom, cls: e.className }; })")
         hit = [o['cls'] for o in others if inter(m, o)]
         check(m and m['w'] >= 80 and not hit, f'4 {act}: companion ({m and round(m["w"])}px) overlaps nothing {hit}')

@@ -52,6 +52,16 @@
       ],
       "dir": "../assets/companions/parrot",
       "tint": "#57cc99"
+    },
+    {
+      "id": "bee",
+      "name": "النحلة نونة",
+      "subjects": [
+        "science",
+        "*"
+      ],
+      "dir": "../assets/companions/bee",
+      "tint": "#ffd166"
     }
   ]
 }

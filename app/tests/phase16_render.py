@@ -48,7 +48,7 @@ CUBES = """(() => { const g = document.querySelector('.q-card .groups-bar'); if 
 # Phase 17: the mascot is the companion engine (5 stacked poses: idle/think/happy/encourage/celebrate; the monkey's
 # missing think/celebrate renders fall back to idle/happy). The inline SVG exists only in the fallback monkey.
 MASCOT = """(() => { const m = document.querySelector('.q-card > .mascot'); if (!m) return null;
-  const imgs = [...m.querySelectorAll('.m-3d img')]; const svg = m.querySelector('svg');
+  const imgs = [...m.querySelectorAll('.cp-layer.body img, .cp-stage > img')]; const svg = m.querySelector('svg');  // Phase 18: probe the body layer only (the head layer repeats the sprites under a mask)
   return { is3d: m.classList.contains('is-3d'), mood: m.dataset.mood, svg: svg ? getComputedStyle(svg).display : 'none',
     loaded: imgs.map((i) => i.complete && i.naturalWidth > 0), op: imgs.map((i) => getComputedStyle(i).opacity),
     srcs: imgs.map((i) => i.src.split('/').pop().split('?')[0]) }; })()"""

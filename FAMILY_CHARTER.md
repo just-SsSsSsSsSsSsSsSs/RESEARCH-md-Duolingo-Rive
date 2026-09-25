@@ -8,8 +8,8 @@
 |---|---|
 | رابط العيلة - الرؤية التربوية وخارطة الطريق (تفريغ حرفي + نسخة منظمة) | <https://gist.github.com/pijsal1-tech/67494737afb25c7b338ad5cb6112c58f> |
 | تقرير Phase 17 والانتقال للمستودع الجديد | <https://gist.github.com/pijsal1-tech/c03b8983a400ab706345dd19958087d4> |
-| المستودع الرئيسي (GitHub) | <https://github.com/Kimi-K3-code/RESEARCH-md-Duolingo-Rive> |
-| المنصة المباشرة (GitHub Pages) | <https://kimi-k3-code.github.io/RESEARCH-md-Duolingo-Rive/app/index.html> |
+| المستودع الرئيسي (GitHub) | <https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive> |
+| المنصة المباشرة (GitHub Pages) | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/app/index.html> |
 
 ## 2. كلام المالك بالحرف (تفريغ التسجيلات الصوتية كما ورد في رابط العيلة)
 
@@ -77,9 +77,9 @@
 | المرحلة | الإصدار | الحالة | الهدف |
 |---|---|---|---|
 | Phase 17 | 7.20 | done | طاقم الرفقاء (قرد، بومة، قطة، ببغاء) + مؤثرات احتفال v3 + إزاحة الشمس عن [X] |
-| Phase 17.5 | 7.21 | current | ميثاق العيلة: روابط وخطة ومبادئ في ملفات متعددة وعلى الموقع مع فاحص آلي |
-| Phase 18 | - | next | حركة حية انسيابية للرفقاء (micro-physics) + استكمال النحلة والسلحفاة والروبوت فور تجدد الرصيد |
-| Phase 19 | - | planned | التحدي العائلي: لوحة متسابقين تجمع سليم وكارما وكندة وأقاربهم |
+| Phase 17.5 | 7.21 | done | ميثاق العيلة: روابط وخطة ومبادئ في ملفات متعددة وعلى الموقع مع فاحص آلي |
+| Phase 18 | 7.22 | done | حركة حية انسيابية للرفقاء (micro-physics) + استكمال النحلة والسلحفاة والروبوت فور تجدد الرصيد |
+| Phase 19 | 7.23 | current | التحدي العائلي: لوحة متسابقين تجمع سليم وكارما وكندة وأقاربهم |
 
 ## 5. أين توجد هذه المعلومات أيضًا (تكرار مقصود ضد انقطاع الجلسات)
 

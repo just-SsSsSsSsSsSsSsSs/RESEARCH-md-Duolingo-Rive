@@ -5,8 +5,8 @@
 ## روابط العيلة الدائمة
 | رابط العيلة - الرؤية التربوية وخارطة الطريق (تفريغ حرفي + نسخة منظمة) | <https://gist.github.com/pijsal1-tech/67494737afb25c7b338ad5cb6112c58f> |
 | تقرير Phase 17 والانتقال للمستودع الجديد | <https://gist.github.com/pijsal1-tech/c03b8983a400ab706345dd19958087d4> |
-| المستودع الرئيسي (GitHub) | <https://github.com/Kimi-K3-code/RESEARCH-md-Duolingo-Rive> |
-| المنصة المباشرة (GitHub Pages) | <https://kimi-k3-code.github.io/RESEARCH-md-Duolingo-Rive/app/index.html> |
+| المستودع الرئيسي (GitHub) | <https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive> |
+| المنصة المباشرة (GitHub Pages) | <https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/app/index.html> |
 
 ## القرارات
 
@@ -21,3 +21,6 @@
 | 2026-09-25 | 17.5 | الانتقال للمستودع `Kimi-K3-code/RESEARCH-md-Duolingo-Rive` | المستودع القديم مُعلّق (404)؛ التاريخ الكامل منقول حتى e50b5c9 |
 | 2026-09-25 | 17.5 | ميثاق العيلة: مصدر واحد `family.json` + نسخ متعددة + فاحص آلي + صفحة داخل الموقع | طلب المالك: الروابط في أكثر من ملف وعلى الموقع، ولا تختفي بانقطاع الجلسات |
 | 2026-09-25 | 17.5 | استرجاع سجل المراحل 9-17 الذي أزاله تعديل README (e50b5c9) إلى `docs/PHASES_HISTORY.md` | README append-only؛ التاريخ لا يُحذف |
+| 2026-09-25 | 18-prep | AGENTS.md دستور إلزامي (قواعد رفع هادئة: فاصل 10-15 دقيقة بالتوازي، لا push لكل اختبار، لا force-push، PR واحد؛ ممنوع AI Drive؛ حساب واحد) + الانتقال إلى `just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive` | تعليق حسابين آلياً بسبب حسابات متعددة + 83 push/يوم من IPs سحابية؛ قرار المالك (gist abb6d424) |
+| 2026-09-25 | 18 | الرفيق يقبل اللمس (`pointer-events: auto`) للدغدغة (tickle) - استثناء موثق لقاعدة «الزخرفي = none» في AGENTS.md بند 5؛ اللمسة تُبتلع ولا تجيب سؤالاً ولا تغطي زراً | طلب المالك: حركة حية تفاعلية كـDuolingo/Rive (تنفس دائم + رأس مستقل + نظرة للاختيار + انحناء عند الكتابة) بلا تبعيات |
+| 2026-09-25 | 18 | رِق طبقي بأقنعة CSS من نفس الـsprite (جسم/رأس) + `spring()->linear()` + تنفّس لا نهائي + حركات مركّبة `composite:add` بدل تبديل الصور؛ النحلة نونة في pool `'*'`؛ الإصدار 7.22 | طلب المالك: حركة حية بروح Rive بلا تبعيات ثقيلة؛ لا ملفات Rive/Lottie؛ نفس الواجهة العامة للمحرك |
