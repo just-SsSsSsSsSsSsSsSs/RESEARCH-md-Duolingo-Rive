@@ -140,6 +140,8 @@ export async function render(root, { id }) {
           if (wasRetry) confetti({ count: 90 }); // learned from the mistake -> bigger cheer
           cheers.say(wasRetry ? 'recovered' : 'correct');
           mascot.mood(card, wasRetry ? 'celebrate' : 'happy');
+          // Phase 18.5: the companion's own voice - only when the spoken sibling cheer stayed silent, and not every time
+          if (!wasRetry && !cheers.playing() && (s.i % 3 === 1)) setTimeout(() => { if (card.isConnected && !cheers.playing()) mascot.cheer(card); }, 350);
         } else {
           sound.play('wrong');
           fx.encourage({ x: pt.x, y: pt.y, el: meta.card });

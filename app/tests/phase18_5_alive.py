@@ -6,6 +6,8 @@
   A2b a running reaction (tickle) is never cut by the play view's 900ms 'think' nudge.
   B1  limbs: per-companion rig.limbs -> one mask layer per limb with its own infinite loop, cut out of the body layer;
       transforms keep changing (bee wings flutter, parrot wings flap, cat tail sways).
+  B2  voice: per-companion laugh/cheer clips (200, cache-busted), mouth mask layer hidden while silent, opens/closes
+      while speaking (data-speaking), mouthStop clears, sound-off keeps it silent.
   A1  links: README has the «روابط محدّثة» section and every live link in it answers 200 on GitHub Pages (network);
       the root index.html points to the new repository; no html-mobile-audio link remains outside the append-only history.
   hygiene: 0 page errors, 0 failed requests.
@@ -87,6 +89,32 @@ with sync_playwright() as p:
         check(r1 and r1['id'] == cid and r1['n'] == want[cid] == r1['declared'] and r1['loops'] == r1['running'] == r1['n'], f'B1 {cid}: {r1 and r1["n"]} limb layers ({r1 and r1["motions"]}) each with a running infinite loop')
         check(r1 and r1['bodyCut'] == want[cid] and 'exclude' in r1['comp'], f'B1 {cid}: body layer cuts out the limbs (mask-composite exclude, {r1 and r1["bodyCut"]} holes)')
         check(r1 and r2 and r1['tf'] != r2['tf'], f'B1 {cid}: limbs keep moving (transforms differ 160ms apart)')
+    pg.evaluate("async () => { const m = await import('./js/engines/companion.js'); m.setFavourite(''); }")
+
+    # B2 - voice identity + mouth layer. Headless chromium has no audio output, so the mouth is driven through the same
+    # method speak() uses when no analyser is available (timed fallback); the clips themselves must be real files (200).
+    VOICE = """(() => { const m = document.querySelector('.q-card > .mascot.companion'); const mo = m.querySelector('.cp-layer.mouth');
+      return { id: m.dataset.companion, mouth: !!mo, op: mo ? getComputedStyle(mo).opacity : null, speaking: m.dataset.speaking || null, tf: mo ? mo.style.transform : null, decl: window.__companion?.voice }; })()"""
+    ver = pg.evaluate("fetch('version.json').then(r => r.json()).then(j => j.v)")
+    for cid in ['bee', 'owl']:
+        pg.evaluate("async (id) => { const m = await import('./js/engines/companion.js'); await m.ready(); m.setFavourite(id); }", cid)
+        start(pg, 'mult_3'); pg.wait_for_timeout(300); v0 = pg.evaluate(VOICE)
+        check(v0['id'] == cid and v0['mouth'] and v0['op'] == '0' and v0['speaking'] is None and v0['decl'], f'B2 {cid}: mouth layer present, hidden while silent, voice declared')
+        urls = pg.evaluate("async () => { const m = await import('./js/engines/companion.js'); const c = window.__companion.rig.c; return [m.voiceUrl(c, 'laugh'), m.voiceUrl(c, 'cheer')]; }")
+        codes = [pg.request.get(u).status for u in urls]  # absolute (resolved against the content dir like spriteUrl)
+        check(all(u.endswith('.mp3?v=' + ver) for u in urls) and codes == [200, 200], f'B2 {cid}: laugh + cheer clips resolve (200) with cache-bust {codes}')
+        pg.evaluate("window.__companion.rig.mouthStart(null, 'laugh')"); pg.wait_for_timeout(60); a = pg.evaluate(VOICE); pg.wait_for_timeout(200); b_ = pg.evaluate(VOICE)
+        check(a['speaking'] == 'laugh' and a['op'] == '1' and (a['tf'] != b_['tf'] or 'scaleY' in (a['tf'] or '')), f'B2 {cid}: while speaking the mouth layer shows and opens/closes ({a["tf"]} -> {b_["tf"]})')
+        pg.evaluate("window.__companion.rig.mouthStop()"); c_ = pg.evaluate(VOICE)
+        check(c_['speaking'] is None and c_['op'] == '0' and not c_['tf'], f'B2 {cid}: mouthStop hides the mouth and clears the transform')
+    pg.locator('.q-card > .mascot.companion').click(); pg.wait_for_timeout(150)
+    t_ = pg.evaluate(VOICE)
+    check(t_['speaking'] in ('laugh', None), f'B2 tickle -> laugh path runs without error (speaking={t_["speaking"]})')
+    pg.evaluate("(() => { const k = 'abtal:v1:meta'; const m = JSON.parse(localStorage.getItem(k) || '{}'); m.sound = false; localStorage.setItem(k, JSON.stringify(m)); })()")
+    pg.goto(BASE); pg.wait_for_timeout(300); start(pg, 'mult_3'); pg.wait_for_timeout(200)
+    off = pg.evaluate("async () => { const m = await import('./js/engines/companion.js'); return m.speak(window.__companion.rig, 'laugh'); }")
+    check(off is False, 'B2 sound off -> the companion stays silent (speak returns false)')
+    pg.evaluate("(() => { const k = 'abtal:v1:meta'; const m = JSON.parse(localStorage.getItem(k) || '{}'); delete m.sound; localStorage.setItem(k, JSON.stringify(m)); })()")
     pg.evaluate("async () => { const m = await import('./js/engines/companion.js'); m.setFavourite(''); }")
 
     # A1 - links

@@ -117,6 +117,35 @@ const REACT_POSE = { tickle: 'happy' };
 const REACT_MS = { happy: 1300, encourage: 1400, celebrate: 1500, think: 900, tickle: 900 };
 const HOLD_MS = { happy: 2400, encourage: 2600, celebrate: 3200, think: 4000, tickle: 1400 };
 
+/* ---------- Phase 18.5 - voice identity + "poor man's viseme" ----------
+ * Each companion owns two short clips (laugh / cheer). While a clip plays, a small mouth mask layer opens and closes
+ * with the audio envelope (Web Audio AnalyserNode; a timed open/close fallback when the graph is unavailable).
+ * The idea is Duolingo's viseme state machine, without hand-drawn mouths and without a runtime. */
+let actx = null, voiceEl = null, voiceReq = 0;
+const soundOn = () => store.meta.sound !== false;
+export const voiceUrl = (c, kind) => (c?.voice?.[kind] ? new URL(`${c.dir}/${c.voice[kind]}?v=${APP_VERSION}`, DATA_URL).href : '');
+export function speak(rig, kind) {
+  const c = rig?.c; const url = voiceUrl(c, kind);
+  if (!url || !soundOn() || !rig.alive()) return false;
+  try {
+    if (!voiceEl) { voiceEl = new Audio(); voiceEl.preload = 'auto'; }
+    const req = ++voiceReq; voiceEl.pause(); voiceEl.src = url; voiceEl.currentTime = 0;
+    let level = null;
+    try {
+      if (!actx && ('AudioContext' in window)) { actx = new AudioContext(); const src = actx.createMediaElementSource(voiceEl); const an = actx.createAnalyser(); an.fftSize = 256; src.connect(an); an.connect(actx.destination); voiceEl.__an = an; }
+      if (actx?.state === 'suspended') actx.resume().catch(() => {});
+      const an = voiceEl.__an; const buf = an ? new Uint8Array(an.frequencyBinCount) : null;
+      if (an) level = () => { an.getByteFrequencyData(buf); let sum = 0; for (let i = 2; i < 40; i++) sum += buf[i]; return Math.min(1, sum / (38 * 140)); };
+    } catch { level = null; }
+    rig.mouthStart(level, kind);
+    const done = () => { if (req === voiceReq) rig.mouthStop(); };
+    voiceEl.onended = done; voiceEl.onerror = done; voiceEl.onpause = done;
+    voiceEl.play().then(() => { window.__companionVoice = { id: c.id, kind, at: Date.now(), analyser: !!level }; }).catch(() => done());
+    return true;
+  } catch { rig.mouthStop(); return false; }
+}
+export const voicePlaying = () => !!voiceEl && !voiceEl.paused && !voiceEl.ended;
+
 function bag(keys) { let b = []; let last = null; return () => { if (!b.length) { b = keys.slice().sort(() => Math.random() - .5); if (b[b.length - 1] === last && b.length > 1) b.unshift(b.pop()); } last = b.pop(); return last; }; }
 
 class Rig {
@@ -125,6 +154,7 @@ class Rig {
     this.body = root.querySelector('.cp-layer.body') || this.stage; this.head = root.querySelector('.cp-layer.head') || this.stage;
     this.layered = this.head !== this.body;
     this.limbs = [...root.querySelectorAll('.cp-layer.limb')];
+    this.mouth = root.querySelector('.cp-layer.mouth'); this.mouthRaf = 0; this.mouthTimer = 0;
     this.next = bag(Object.keys(IDLE)); this.timer = 0; this.anim = null; this.hold = 0; this.look = 0; this.antic = 0; this.log = []; this.loops = [];
     this.onVis = () => { if (!this.alive()) return; this.loops.forEach((a) => (document.hidden ? a.pause() : a.play())); };
     document.addEventListener('visibilitychange', this.onVis);
@@ -205,7 +235,26 @@ class Rig {
     if (!reduce()) this.play([{ transform: 'rotate(5deg) translateX(3px) scale(1.03)' }, { transform: 'rotate(0) translateX(0) scale(1)' }], 600, { easing: EASE_SOFT }); else this.anim?.cancel();
     this.schedule(400);
   }
-  stop() { clearTimeout(this.timer); clearTimeout(this.hold); clearTimeout(this.look); clearTimeout(this.antic); this.anim?.cancel(); this.loops.forEach((a) => a.cancel()); this.loops = []; document.removeEventListener('visibilitychange', this.onVis); }
+  /** mouth layer follows the voice envelope (or a timed open/close when no analyser) until mouthStop() */
+  mouthStart(level, kind) {
+    if (!this.mouth) return;
+    this.mouthStop(); this.root.dataset.speaking = kind || '1';
+    if (reduce()) return;
+    if (level) {
+      const tick = () => { if (!this.alive() || !this.root.dataset.speaking) return; const v = level(); this.mouth.style.transform = `translateY(${(v * 2.2).toFixed(2)}px) scaleY(${(1 + v * .9).toFixed(3)})`; this.mouthRaf = requestAnimationFrame(tick); };
+      this.mouthRaf = requestAnimationFrame(tick);
+    } else {
+      let open = false;
+      const flip = () => { if (!this.alive() || !this.root.dataset.speaking) return; open = !open; this.mouth.style.transform = open ? 'translateY(1.6px) scaleY(1.6)' : 'translateY(0) scaleY(1)'; this.mouthTimer = setTimeout(flip, 90 + Math.random() * 70); };
+      flip();
+    }
+  }
+  mouthStop() {
+    cancelAnimationFrame(this.mouthRaf); clearTimeout(this.mouthTimer); this.mouthRaf = 0; this.mouthTimer = 0;
+    delete this.root.dataset.speaking;
+    if (this.mouth) this.mouth.style.transform = '';
+  }
+  stop() { this.mouthStop(); clearTimeout(this.timer); clearTimeout(this.hold); clearTimeout(this.look); clearTimeout(this.antic); this.anim?.cancel(); this.loops.forEach((a) => a.cancel()); this.loops = []; document.removeEventListener('visibilitychange', this.onVis); }
 }
 
 const rigs = new WeakMap();
@@ -235,7 +284,10 @@ export function mount(card, { subject = '', session = null } = {}) {
   const limbHtml = limbs.map((L) => `<span class="cp-layer limb" data-limb="${L.id}" data-motion="${L.motion || 'sway'}" data-side="${L.x + L.w / 2 > 50 ? 'r' : 'l'}" style="-webkit-mask-image:${box(L)};mask-image:${box(L)};transform-origin:${L.origin || '50% 50%'}">${imgs}</span>`).join('');
   const cut = limbs.length ? `linear-gradient(to bottom, transparent 40%, #000 52%)${limbs.map((L) => `, ${box(L)}`).join('')}` : '';
   const bodyStyle = limbs.length ? ` style="-webkit-mask-image:${cut};mask-image:${cut};-webkit-mask-composite:source-out,source-over;mask-composite:exclude"` : '';
-  const inner = MASK_OK ? `<span class="cp-layer body"${bodyStyle}>${imgs}</span>${limbHtml}<span class="cp-layer head">${imgs}</span>` : imgs;
+  const M = MASK_OK ? c.rig?.mouth : null;
+  const mouthMask = M ? `radial-gradient(ellipse at ${M.x + M.w / 2}% ${M.y + M.h / 2}%, #000 ${Math.min(M.w, M.h) * .5}%, transparent ${Math.max(M.w, M.h) * .7}%)` : '';
+  const mouthHtml = M ? `<span class="cp-layer mouth" style="-webkit-mask-image:${mouthMask};mask-image:${mouthMask};transform-origin:${M.x + M.w / 2}% ${M.y + M.h / 2}%">${imgs}</span>` : '';
+  const inner = MASK_OK ? `<span class="cp-layer body"${bodyStyle}>${imgs}</span>${limbHtml}<span class="cp-layer head">${imgs}</span>${mouthHtml}` : imgs;
   const m = el(`<div class="mascot companion is-3d${MASK_OK ? ' is-layered' : ''}" data-companion="${c.id}" data-mood="idle" data-pose="idle" aria-hidden="true" title="${c.name}"><span class="cp-stage m-3d" style="display:block">${inner}</span></div>`);
   card.appendChild(m);
   const rig = new Rig(m, c); rigs.set(m, rig);
@@ -246,6 +298,7 @@ export function mount(card, { subject = '', session = null } = {}) {
   m.addEventListener('pointerdown', (e) => {
     e.stopPropagation(); e.preventDefault();
     rig.react('tickle');
+    speak(rig, 'laugh');
     if (fx.intensity() > 0 && !reduce()) fx.burstAt(e.clientX, e.clientY, 1, { color: '#ff6b8a' });
     window.__companionTickle = { at: Date.now(), id: c.id };
   });
@@ -258,10 +311,16 @@ export function mount(card, { subject = '', session = null } = {}) {
     else if (t.matches('.btn-primary')) rig.relax();
   };
   card.addEventListener('pointerdown', onTap, true);
-  window.__companion = { id: c.id, name: c.name, el: m, rig, layered: rig.layered, limbs: rig.limbs.length, linear: LINEAR_OK };
+  window.__companion = { id: c.id, name: c.name, el: m, rig, layered: rig.layered, limbs: rig.limbs.length, mouth: !!rig.mouth, voice: !!c.voice, linear: LINEAR_OK };
   // entrance: slide in from the card edge
   if (!reduce()) m.animate([{ transform: 'translateY(18px) scale(.6)', opacity: 0 }, { transform: 'translateY(0) scale(1)', opacity: 1 }], { duration: 520, easing: EASE_POP });
   return m;
+}
+
+/** Phase 18.5: the companion cheers in its own voice (play view calls it only when the sibling cheer is silent) */
+export function cheer(card) {
+  const m = card?.querySelector(':scope > .mascot'); const rig = m && rigs.get(m);
+  return rig ? speak(rig, 'cheer') : false;
 }
 
 export function mood(card, name = 'idle') {
@@ -273,4 +332,4 @@ export function mood(card, name = 'idle') {
   window.__lastMascot = { mood: name, at: Date.now(), companion: rig.c.id };
 }
 
-export default { ready, list, pick, forSession, mount, mood, favourite, setFavourite, spriteUrl, spring, easing };
+export default { ready, list, pick, forSession, mount, mood, cheer, speak, voicePlaying, voiceUrl, favourite, setFavourite, spriteUrl, spring, easing };
