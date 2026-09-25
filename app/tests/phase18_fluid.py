@@ -87,7 +87,8 @@ with sync_playwright() as p:
     if mask_ok:
         check(r['layered'] and r['hasBody'] and r['hasHead'], '1 two mask layers (body + head) when mask-image is supported')
         check('gradient' in r['maskBody'] and 'gradient' in r['maskHead'] and r['maskBody'] != r['maskHead'], f'1 body/head masks are distinct gradients')
-        check(r['inf'] == 2 and sorted(r['infDelays']) == [0, 120], f'1 two infinite breath loops, head phase-shifted 120ms (delays {r["infDelays"]})')
+        # Phase 18.5: limb layers add their own infinite loops on top of the two breath loops
+        check(r['inf'] >= 2 and 0 in r['infDelays'] and 120 in r['infDelays'], f'1 two infinite breath loops, head phase-shifted 120ms (+{r["inf"] - 2} limb loops; delays {r["infDelays"]})')
     else:
         check(not r['layered'] and r['inf'] == 1, '1 single-layer fallback (mask-image unsupported) with one breath loop')
     check(r['infRunning'] == r['inf'] and r['inf'] >= 1, f'1 breath loops running ({r["infRunning"]}/{r["inf"]})')

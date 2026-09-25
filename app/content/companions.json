@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "_doc": "Phase 17: encouragement companions (data-driven). Adding a companion = a folder app/assets/companions/<id>/<pose>.webp + one entry here. subjects: list of subject ids or \"*\" (any subject, incl. future ones). poses lists the sprites that exist; missing poses fall back (think->idle, celebrate->happy). Selection: the subject's own companions first, then the '*' pool; never the same companion two sessions in a row (per child); the child can pin a favourite in the profile.",
+  "_doc": "Phase 17: encouragement companions (data-driven). Adding a companion = a folder app/assets/companions/<id>/<pose>.webp + one entry here. subjects: list of subject ids or \"*\" (any subject, incl. future ones). poses lists the sprites that exist; missing poses fall back (think->idle, celebrate->happy). Selection: the subject's own companions first, then the '*' pool; never the same companion two sessions in a row (per child); the child can pin a favourite in the profile. Phase 18.5: optional rig.limbs = [{id,x,y,w,h (percent of the sprite box), origin, motion: flutter|flap|sway}] -> each box becomes its own mask layer with an infinite loop (wings flutter, tail sways) and is cut out of the body layer so nothing is drawn twice.",
   "poses": [
     "idle",
     "think",
@@ -21,7 +21,29 @@
         "happy": "monkey_happy.webp",
         "encourage": "monkey_encourage.webp"
       },
-      "tint": "#ffb703"
+      "tint": "#ffb703",
+      "rig": {
+        "limbs": [
+          {
+            "id": "armL",
+            "x": 0,
+            "y": 50,
+            "w": 20,
+            "h": 30,
+            "origin": "100% 0%",
+            "motion": "sway"
+          },
+          {
+            "id": "armR",
+            "x": 80,
+            "y": 50,
+            "w": 20,
+            "h": 30,
+            "origin": "0% 0%",
+            "motion": "sway"
+          }
+        ]
+      }
     },
     {
       "id": "owl",
@@ -31,7 +53,29 @@
         "deen"
       ],
       "dir": "../assets/companions/owl",
-      "tint": "#8ecae6"
+      "tint": "#8ecae6",
+      "rig": {
+        "limbs": [
+          {
+            "id": "wingL",
+            "x": 0,
+            "y": 46,
+            "w": 22,
+            "h": 42,
+            "origin": "100% 10%",
+            "motion": "flap"
+          },
+          {
+            "id": "wingR",
+            "x": 78,
+            "y": 46,
+            "w": 22,
+            "h": 42,
+            "origin": "0% 10%",
+            "motion": "flap"
+          }
+        ]
+      }
     },
     {
       "id": "cat",
@@ -41,7 +85,20 @@
         "*"
       ],
       "dir": "../assets/companions/cat",
-      "tint": "#ff8fa3"
+      "tint": "#ff8fa3",
+      "rig": {
+        "limbs": [
+          {
+            "id": "tail",
+            "x": 0,
+            "y": 55,
+            "w": 22,
+            "h": 40,
+            "origin": "100% 90%",
+            "motion": "sway"
+          }
+        ]
+      }
     },
     {
       "id": "parrot",
@@ -51,7 +108,29 @@
         "arabic"
       ],
       "dir": "../assets/companions/parrot",
-      "tint": "#57cc99"
+      "tint": "#57cc99",
+      "rig": {
+        "limbs": [
+          {
+            "id": "wingL",
+            "x": 0,
+            "y": 44,
+            "w": 24,
+            "h": 44,
+            "origin": "100% 10%",
+            "motion": "flap"
+          },
+          {
+            "id": "wingR",
+            "x": 76,
+            "y": 44,
+            "w": 24,
+            "h": 44,
+            "origin": "0% 10%",
+            "motion": "flap"
+          }
+        ]
+      }
     },
     {
       "id": "bee",
@@ -61,7 +140,29 @@
         "*"
       ],
       "dir": "../assets/companions/bee",
-      "tint": "#ffd166"
+      "tint": "#ffd166",
+      "rig": {
+        "limbs": [
+          {
+            "id": "wingL",
+            "x": 0,
+            "y": 38,
+            "w": 30,
+            "h": 30,
+            "origin": "100% 50%",
+            "motion": "flutter"
+          },
+          {
+            "id": "wingR",
+            "x": 70,
+            "y": 38,
+            "w": 30,
+            "h": 30,
+            "origin": "0% 50%",
+            "motion": "flutter"
+          }
+        ]
+      }
     }
   ]
 }

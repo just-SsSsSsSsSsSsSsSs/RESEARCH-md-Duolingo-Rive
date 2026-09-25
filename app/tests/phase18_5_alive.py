@@ -4,6 +4,8 @@
       «again» a new session picks again and never repeats the previous companion twice in a row (5 restarts);
       the child's favourite still wins across sessions.
   A2b a running reaction (tickle) is never cut by the play view's 900ms 'think' nudge.
+  B1  limbs: per-companion rig.limbs -> one mask layer per limb with its own infinite loop, cut out of the body layer;
+      transforms keep changing (bee wings flutter, parrot wings flap, cat tail sways).
   A1  links: README has the «روابط محدّثة» section and every live link in it answers 200 on GitHub Pages (network);
       the root index.html points to the new repository; no html-mobile-audio link remains outside the append-only history.
   hygiene: 0 page errors, 0 failed requests.
@@ -67,6 +69,25 @@ with sync_playwright() as p:
     pg.locator('.q-card > .mascot.companion').click(); pg.wait_for_timeout(500)  # crosses the 900ms mark
     mood = pg.evaluate("document.querySelector('.q-card > .mascot.companion').dataset.mood")
     check(mood == 'tickle', f'A2b a running tickle is not cut by the think nudge (mood {mood})')
+
+    # B1 - limbs: every companion with rig.limbs gets one mask layer per limb, each with its own infinite loop, and the
+    # body layer cuts them out (mask-composite) so a wing is never drawn twice; frames differ over time (never still)
+    LIMBS = """(() => { const m = document.querySelector('.q-card > .mascot.companion'); if (!m) return null; const L = [...m.querySelectorAll('.cp-layer.limb')];
+      const inf = m.getAnimations({ subtree: true }).filter(a => a.effect.getTiming().iterations === Infinity);
+      const onLimb = inf.filter(a => a.effect.target.classList.contains('limb'));
+      const body = m.querySelector('.cp-layer.body'); const cs = getComputedStyle(body);
+      return { id: m.dataset.companion, n: L.length, motions: L.map(l => l.dataset.motion), running: onLimb.filter(a => a.playState === 'running').length, loops: onLimb.length,
+        bodyCut: ((cs.maskImage || cs.webkitMaskImage || '').match(/radial-gradient/g) || []).length, comp: cs.maskComposite || cs.webkitMaskComposite || '', tf: L.map(l => getComputedStyle(l).transform), declared: window.__companion?.limbs }; })()"""
+    import json as _json
+    comp = _json.load(open(os.path.join(ROOT, 'app', 'content', 'companions.json'), encoding='utf-8'))
+    want = {c['id']: len(c.get('rig', {}).get('limbs', [])) for c in comp['companions']}
+    for cid in ['bee', 'parrot', 'cat']:
+        pg.evaluate("async (id) => { const m = await import('./js/engines/companion.js'); await m.ready(); m.setFavourite(id); }", cid)
+        start(pg, 'mult_3'); pg.wait_for_timeout(400); r1 = pg.evaluate(LIMBS); pg.wait_for_timeout(160); r2 = pg.evaluate(LIMBS)
+        check(r1 and r1['id'] == cid and r1['n'] == want[cid] == r1['declared'] and r1['loops'] == r1['running'] == r1['n'], f'B1 {cid}: {r1 and r1["n"]} limb layers ({r1 and r1["motions"]}) each with a running infinite loop')
+        check(r1 and r1['bodyCut'] == want[cid] and 'exclude' in r1['comp'], f'B1 {cid}: body layer cuts out the limbs (mask-composite exclude, {r1 and r1["bodyCut"]} holes)')
+        check(r1 and r2 and r1['tf'] != r2['tf'], f'B1 {cid}: limbs keep moving (transforms differ 160ms apart)')
+    pg.evaluate("async () => { const m = await import('./js/engines/companion.js'); m.setFavourite(''); }")
 
     # A1 - links
     readme = open(os.path.join(ROOT, 'README.md'), encoding='utf-8').read()

@@ -100,6 +100,12 @@ const BREATH = {
   body: [{ transform: 'scaleY(1) scaleX(1)' }, { transform: 'scaleY(1.035) scaleX(.99) translateY(-.5px)' }],
   head: [{ transform: 'translateY(0) rotate(0)' }, { transform: 'translateY(-1.6px) rotate(-1.2deg)' }],
 };
+/* Phase 18.5 - limbs: continuous secondary motion on their own mask layers (wings never stop, like a video) */
+const LIMB = {
+  flutter: { ms: 380, frames: [{ transform: 'rotate(0) scaleX(1)' }, { transform: 'rotate(-14deg) scaleX(.72) translateY(-2px)' }] },
+  flap: { ms: 1500, frames: [{ transform: 'rotate(0)' }, { transform: 'rotate(-7deg) translateY(-1.5px)' }] },
+  sway: { ms: 1900, frames: [{ transform: 'rotate(0)' }, { transform: 'rotate(9deg)' }] },
+};
 const REACT = {
   happy: [{ transform: 'translateY(0) rotate(0)' }, { transform: 'translateY(-16px) rotate(-6deg) scale(1.08)', offset: .3 }, { transform: 'translateY(0) rotate(4deg)', offset: .55 }, { transform: 'translateY(-10px) rotate(-3deg) scale(1.05)', offset: .75 }, { transform: 'translateY(0) rotate(0)' }],
   encourage: [{ transform: 'rotate(0)' }, { transform: 'rotate(-9deg) translateY(2px)', offset: .25 }, { transform: 'rotate(7deg)', offset: .5 }, { transform: 'rotate(-6deg)', offset: .75 }, { transform: 'rotate(0)' }],
@@ -118,6 +124,7 @@ class Rig {
     this.root = root; this.c = c; this.stage = root.querySelector('.cp-stage'); this.mood = 'idle';
     this.body = root.querySelector('.cp-layer.body') || this.stage; this.head = root.querySelector('.cp-layer.head') || this.stage;
     this.layered = this.head !== this.body;
+    this.limbs = [...root.querySelectorAll('.cp-layer.limb')];
     this.next = bag(Object.keys(IDLE)); this.timer = 0; this.anim = null; this.hold = 0; this.look = 0; this.antic = 0; this.log = []; this.loops = [];
     this.onVis = () => { if (!this.alive()) return; this.loops.forEach((a) => (document.hidden ? a.pause() : a.play())); };
     document.addEventListener('visibilitychange', this.onVis);
@@ -131,6 +138,9 @@ class Rig {
     const opts = { duration: BREATH_MS, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out', fill: 'none' };
     this.loops.push(this.body.animate(BREATH.body, opts));
     if (this.layered) this.loops.push(this.head.animate(BREATH.head, { ...opts, delay: 120 }));
+    this.limbs.forEach((L, i) => { const k = LIMB[L.dataset.motion] || LIMB.sway; const mirror = L.dataset.side === 'r';
+      const frames = mirror ? k.frames.map((f) => ({ transform: f.transform.replace(/rotate\((-?[\d.]+)deg\)/, (_, v) => `rotate(${-v}deg)`) })) : k.frames;
+      this.loops.push(L.animate(frames, { duration: k.ms, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out', fill: 'none', delay: i * (k.ms / 3) })); });
   }
   schedule(ms) { clearTimeout(this.timer); this.timer = setTimeout(() => this.tick(), ms); }
   tick() {
@@ -218,7 +228,14 @@ export function mount(card, { subject = '', session = null } = {}) {
   const c = forSession(session, subject) || { id: 'none', name: '', dir: '.', files: {}, subjects: [] };
   const poses = (data?.poses?.length ? data.poses : ['idle', 'happy', 'encourage']);
   const imgs = poses.map((p) => `<img class="cp-pose" data-pose="${p}" alt="" decoding="async" src="${spriteUrl(c, p)}" style="opacity:${p === 'idle' ? 1 : 0}">`).join('');
-  const inner = MASK_OK ? `<span class="cp-layer body">${imgs}</span><span class="cp-layer head">${imgs}</span>` : imgs;
+  // Phase 18.5: each declared limb box becomes its own mask layer (radial mask, soft edge) and is cut out of the body
+  // layer with mask-composite so the wing/tail is drawn once and moves on its own.
+  const limbs = MASK_OK ? (c.rig?.limbs || []) : [];
+  const box = (L) => `radial-gradient(ellipse at ${L.x + L.w / 2}% ${L.y + L.h / 2}%, #000 ${Math.min(L.w, L.h) * .42}%, transparent ${Math.max(L.w, L.h) * .62}%)`;
+  const limbHtml = limbs.map((L) => `<span class="cp-layer limb" data-limb="${L.id}" data-motion="${L.motion || 'sway'}" data-side="${L.x + L.w / 2 > 50 ? 'r' : 'l'}" style="-webkit-mask-image:${box(L)};mask-image:${box(L)};transform-origin:${L.origin || '50% 50%'}">${imgs}</span>`).join('');
+  const cut = limbs.length ? `linear-gradient(to bottom, transparent 40%, #000 52%)${limbs.map((L) => `, ${box(L)}`).join('')}` : '';
+  const bodyStyle = limbs.length ? ` style="-webkit-mask-image:${cut};mask-image:${cut};-webkit-mask-composite:source-out,source-over;mask-composite:exclude"` : '';
+  const inner = MASK_OK ? `<span class="cp-layer body"${bodyStyle}>${imgs}</span>${limbHtml}<span class="cp-layer head">${imgs}</span>` : imgs;
   const m = el(`<div class="mascot companion is-3d${MASK_OK ? ' is-layered' : ''}" data-companion="${c.id}" data-mood="idle" data-pose="idle" aria-hidden="true" title="${c.name}"><span class="cp-stage m-3d" style="display:block">${inner}</span></div>`);
   card.appendChild(m);
   const rig = new Rig(m, c); rigs.set(m, rig);
@@ -241,7 +258,7 @@ export function mount(card, { subject = '', session = null } = {}) {
     else if (t.matches('.btn-primary')) rig.relax();
   };
   card.addEventListener('pointerdown', onTap, true);
-  window.__companion = { id: c.id, name: c.name, el: m, rig, layered: rig.layered, linear: LINEAR_OK };
+  window.__companion = { id: c.id, name: c.name, el: m, rig, layered: rig.layered, limbs: rig.limbs.length, linear: LINEAR_OK };
   // entrance: slide in from the card edge
   if (!reduce()) m.animate([{ transform: 'translateY(18px) scale(.6)', opacity: 0 }, { transform: 'translateY(0) scale(1)', opacity: 1 }], { duration: 520, easing: EASE_POP });
   return m;
