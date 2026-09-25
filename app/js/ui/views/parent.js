@@ -14,6 +14,7 @@ import { ico } from '../icons.js';
 import { ico3d } from '../icons3d.js';
 import { renderSettings } from './parentSettings.js';
 import { renderInsights } from './parentInsights.js';
+import { renderFamilySection } from './parentFamily.js'; // Phase 19: family card + guests (PIN-gated)
 
 async function hash(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('abtal:' + s)); return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join(''); }
 let unlockedAt = 0;
@@ -162,6 +163,7 @@ function renderDash(root) {
   g.querySelector('[data-act="sound"]').onclick = (e) => { const on = sound.toggle(); e.currentTarget.classList.toggle('on', on); };
   g.querySelector('[data-act="wipe"]').onclick = async () => { if (await confirm('مسح كل البيانات؟', '<p class="muted">سيتم حذف كل الأبطال والتقدم والرقم السري. صدّر نسخة أولاً!</p>', 'نعم، امسح الكل', 'إلغاء')) store.wipeAll(); };
   root.appendChild(g);
+  renderFamilySection(root); // Phase 19 M3
   root.appendChild(nav('parent'));
 }
 
