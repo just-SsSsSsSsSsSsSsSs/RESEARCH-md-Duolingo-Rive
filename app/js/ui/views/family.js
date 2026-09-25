@@ -68,14 +68,16 @@ function questCard(q, headline) {
 
 /** every companion of the family cheers once (fx + own voice), respecting sound / celebration toggles */
 async function familyCheer(root) {
+  const cast = [...new Set([...root.querySelectorAll('.fam-tile')].map((t) => mascotFor(t.dataset.hero)?.id).filter(Boolean))];
+  window.__familyCheer = { at: Date.now(), cast, voices: 0 };
+  bus.emit('family:celebrate', { cast });
+  root.querySelectorAll('.fam-avatar img').forEach((img, i) => { const c = mascotFor(img.closest('.fam-tile')?.dataset.hero); if (c) img.src = companion.spriteUrl(c, 'celebrate'); if (!reduce()) img.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18) rotate(-6deg)' }, { transform: 'scale(1)' }], { duration: 700, delay: i * 120, easing: companion.easing?.().pop || 'ease-out' }); });
   confetti({ count: 140 });
   sound.play('fanfare');
   if (store.meta.sound === false) return;
-  const ids = [...root.querySelectorAll('.fam-tile')].map((t) => t.dataset.hero);
-  const cast = [...new Set(ids.map((id) => mascotFor(id)?.id).filter(Boolean))].map((id) => companion.list().find((c) => c.id === id));
-  for (const c of cast) {
-    const url = companion.voiceUrl(c, 'cheer'); if (!url) continue;
-    try { const a = new Audio(url); a.volume = 0.8; await a.play().catch(() => {}); await new Promise((r) => { a.onended = r; setTimeout(r, 2500); }); } catch { /* silent: never an error for the child */ }
+  for (const id of cast) {
+    const c = companion.list().find((x) => x.id === id); const url = companion.voiceUrl(c, 'cheer'); if (!url) continue;
+    try { const a = new Audio(url); a.volume = 0.8; window.__familyCheer.voices++; await a.play().catch(() => {}); await new Promise((r) => { a.onended = r; setTimeout(r, 2500); }); } catch { /* silent: never an error for the child */ }
   }
 }
 
@@ -106,10 +108,14 @@ export async function render(root) {
       <p class="small muted">التاج بيروح لكل اللي وصلوا لنفس الرقم، ومحدش بيتقارن بغيره: التقدم بيتحسب على رقمك انت في الاربع اسابيع اللي فاتوا.</p>
       <a class="btn btn-block btn-ghost" href="#/parent" data-act="parent">${ico('lock')} كارت العيلة والضيوف (من صفحة الاهل)</a>
     </div>`));
-    if (family.questJustReached(b)) setTimeout(() => familyCheer(wrap), 400);
-    window.__family = { tiles: b.tiles.map((t) => ({ id: t.id, leads: t.leads, crowns: t.crowns, growth: t.growth, line: t.line })), quest: b.quest, headline: b.headline.id, weekStart: b.weekStart };
+    const celebrate = family.questJustReached(b);
+    if (celebrate) setTimeout(() => familyCheer(wrap), 400);
+    window.__family = { tiles: b.tiles.map((t) => ({ id: t.id, leads: t.leads, crowns: t.crowns, growth: t.growth, line: t.line, guest: t.guest })), quest: b.quest, headline: b.headline.id, weekStart: b.weekStart, celebrate, celebratedWeek: store.meta.familyQuestWeek || null };
   };
   draw();
   const off = bus.on('family:change', draw);
-  return () => { off(); h.__cleanup?.(); };
+  const off2 = bus.on('activity:complete', draw);
+  const onStorage = (e) => { if (e.key && e.key.startsWith('abtal:')) draw(); };
+  addEventListener('storage', onStorage);
+  return () => { off(); off2(); removeEventListener('storage', onStorage); h.__cleanup?.(); };
 }
