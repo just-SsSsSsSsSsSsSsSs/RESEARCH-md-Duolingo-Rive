@@ -163,3 +163,10 @@
 - **إضافة رفيق جديد لاحقًا (بلا كود):** مجلد `app/assets/companions/<id>/{idle,think,happy,encourage,celebrate}.webp` + سطر في `companions.json` بـ`subjects` (أو `'*'`). نحلة/سلحفاة/روبوت مؤجّلون لنفاد رصيد توليد الصور.
 - **الاختبارات:** جديد `app/tests/phase17_companions.py` (٤٥ فحصًا: رفيق لكل مادة والوضعيات محمّلة وواحدة ظاهرة، دوران بلا تكرار، think/encourage/celebrate/happy، شريط «جرّب تاني» بلا كشف، fx v3 حلقة/نجوم/شرائط/أشعة وتنويع الأشكال، تنويع حركات الهدوء، لا تغطية للنص/الأزرار/الشريط، [X] لا يتقاطع مع الشمس، reduced-motion يوقف كل شيء، المفضّل يفوز على كل المواد و«مفاجأة» ترجّع الاختيار حسب المادة، ٠ أخطاء، ٠ طلبات فاشلة) + `cachebust.py` امتد تلقائيًا للـJSON والصور الجديدة (`?v=7.20`).
 - الملفات المحمية (plant.html, math.html, albayyinah.html, quran-alqadr/index.html, PROJECT_VISION.md) لم تُمس (sha256 مطابق).
+
+### Phase 18 - «حركة حية انسيابية»: الرفيق يتنفّس ويستجيب للّمس (micro-physics على WAAPI) + النحلة نونة - v7.22
+- **الرِّق الطبقي:** نفس sprite يُرسم طبقتين بأقنعة CSS (جسم: `transparent 40% -> #000 52%`؛ رأس: `#000 48% -> transparent 60%`) مع تراجع لطبقة واحدة عند عدم دعم `mask-image`. `spring()` -> `linear()` (+bezier احتياطي). تنفّس لا نهائي على الطبقتين (الرأس +120ms). حركات دقيقة `composite: 'add'`. squash/stretch عند تبديل الوضعية.
+- **التفاعل:** tickle (pointerdown على الرفيق: رد فعل + قلوب، اللمسة تُبتلع)، lookAt (الرأس نحو `.choice / .numpad .btn / .slot / .grid-dot`)، anticipate/relax (أول رقم / زر تمام). `visibilitychange` يوقف الحلقات؛ `prefers-reduced-motion` يلغي كل حركة.
+- **قرار موثق:** `pointer-events: auto` على الرفيق فقط (AGENTS.md بند 5) بشرط عدم تغطية أي زر وعدم الإجابة/التنقل - الاختبارات تفحصه.
+- **الطاقم:** النحلة نونة (5 وضعيات) في pool `'*'` + `science`. سلحفاة/روبوت مؤجّلان.
+- **الاختبارات:** `app/tests/phase18_fluid.py` (35) + مرايا phase17 (50) / phase15_3_sunny (25) / phase16_render (28). كل suites PASS على الخادمَين؛ الملفات المحمية sha256 مطابق.

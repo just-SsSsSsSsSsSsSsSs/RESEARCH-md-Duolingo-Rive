@@ -117,13 +117,13 @@
     {
       "phase": "18",
       "version": "7.22",
-      "status": "current",
+      "status": "done",
       "title": "حركة حية انسيابية للرفقاء (micro-physics) + استكمال النحلة والسلحفاة والروبوت فور تجدد الرصيد"
     },
     {
       "phase": "19",
-      "version": "",
-      "status": "planned",
+      "version": "7.23",
+      "status": "current",
       "title": "التحدي العائلي: لوحة متسابقين تجمع سليم وكارما وكندة وأقاربهم"
     }
   ]

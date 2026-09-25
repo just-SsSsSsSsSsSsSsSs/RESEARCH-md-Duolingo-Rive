@@ -89,7 +89,8 @@ with sync_playwright() as p:
     seq = pg.evaluate("""async () => { const m = await import('./js/engines/companion.js'); await m.ready();
       const l = m.list(); const twin = { ...l.find(c => c.id === 'cat'), id: 'cat2', subjects: ['*'] }; l.push(twin);
       const out = []; for (let i = 0; i < 12; i++) out.push(m.pick('nothing_here').id); l.pop(); return out; }""")
-    check(len(set(seq)) == 2 and all(seq[i] != seq[i + 1] for i in range(len(seq) - 1)), f'2 rotation: no immediate repeat in {seq}')
+    # Phase 18: the '*' pool is cat + bee (+ the temporary twin) -> at least two distinct picks and never the same one twice in a row
+    check(len(set(seq)) >= 2 and all(seq[i] != seq[i + 1] for i in range(len(seq) - 1)), f'2 rotation: no immediate repeat in {seq}')
 
     # 3 - state machine on math (numpad -> can force right/wrong)
     q = start(pg, 'mult_3', settle=250)
