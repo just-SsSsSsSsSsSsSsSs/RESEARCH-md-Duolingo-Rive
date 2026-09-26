@@ -7,7 +7,7 @@ K9.2c proof: the owner's 60-second closure checklist (gist 44e55e13), automated.
   3 brows flag     -> ?brows=0 hides (display none) (pixel regression proof lives in brows_proof.py)
   4 roll           -> forced medium flight: accumulated root rotation >= 300 deg mid-flight; lands level (|rot| < 2 deg)
     escalation     -> rig.escalate('flight') x7 == small small medium small small medium large
-  5 poses          -> ?poses=1 shows buttons; each of 6 freezes >= 3 joints away from neutral; release returns
+  5 poses          -> ?poses=1 shows buttons; each of 6 freezes >= 3 joints away from neutral; release sets every pose layer back to identity (breath keeps running, so DOM transforms are not compared)
   6 reel           -> ?reel=1 runs all 9 beats, total <= 30000 ms, 0 errors
   7 sfx=0          -> no SoundBus created, a wink still animates
   + dart           -> both pupils move >= 2 px mid-dart with L/R asymmetry, and return
@@ -122,10 +122,12 @@ async def main():
           const snap = () => Object.fromEntries(J.map(n => [n, getComputedStyle(r.j(n)).transform]));
           const visible = !document.getElementById('poseBtns').hidden; const neutral = snap(); const out = {};
           for (const b of btns) { const name = b.dataset.pose; if (!name) continue; b.click(); await sleep(450); const s = snap(); out[name] = J.filter(k => s[k] !== neutral[k]).length; }
-          btns.find(b => b.dataset.pose === '').click(); await sleep(800); const rel = snap();
-          const near = (a, b) => { const ma = a.match(/matrix\\(([^)]+)\\)/), mb = b.match(/matrix\\(([^)]+)\\)/); if (!ma || !mb) return a === b; const va = ma[1].split(',').map(Number), vb = mb[1].split(',').map(Number); return va.every((x, i) => Math.abs(x - vb[i]) < 0.05); };
-          return { visible, changedJointsPerPose: out, jointsBackToNeutral: J.filter(k => near(rel[k], neutral[k])).length, total: J.length }; }""")
-        R['5_poses'] = dict(**poses, pass_=poses['visible'] and len(poses['changedJointsPerPose']) == 6 and all(v >= 3 for v in poses['changedJointsPerPose'].values()) and poses['jointsBackToNeutral'] >= 5)
+          btns.find(b => b.dataset.pose === '').click(); await sleep(900);
+          // release check must not be fooled by the live breath/idle layers: read the pose layer's own end keyframe per joint (identity = released)
+          const layers = Object.entries(r.poses.layers).map(([j, a]) => [j, a.effect.getKeyframes()[1].transform]);
+          const releasedJoints = layers.filter(([, t]) => /^translate\\(0px, 0px\\)$/.test(t)).length;
+          return { visible, changedJointsPerPose: out, poseLayers: layers.length, releasedJoints, current: r.poses.current }; }""")
+        R['5_poses'] = dict(**poses, pass_=poses['visible'] and len(poses['changedJointsPerPose']) == 6 and all(v >= 3 for v in poses['changedJointsPerPose'].values()) and poses['releasedJoints'] == poses['poseLayers'] and poses['current'] is None)
         await ctx.close()
 
         # ---- 6 reel ----
