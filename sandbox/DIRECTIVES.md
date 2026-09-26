@@ -67,3 +67,8 @@ Format: `#NN | date (UTC) | source | status | summary` then indented detail and 
       third option "vector re-author of the wing only" -> to be added as an explicit row (this cycle).
     New rules adopted into AGENTS.md section 13: "commit message is not evidence" (result file is), stale-constraint rule (every review greps numeric constraints for readers), visible-cycle rule already in section 11.
     Three notes recorded with thanks; the honesty incident (9ffc0fd/f6730aa) stays documented in PROGRESS.md as the model to follow.
+    Update 2026-09-26 (K9.3 close-out): approved plan fully executed. ADR-002 addendum (d2) wing-only row: 2ee3535's predecessor 5e5c3d0 (already recorded);
+      K9.3 "look then leap" landed in 6 chunks (1ffb865, 887fbd1, 82f1407, 2e4d1c0, 2ee3535, b34f6df). Evidence files (not commit messages):
+      samples/proofs/g12_intent.json (pass_all true; 5 consecutive runs after the bodyLag fix), g12_intent_strip.png (4 frames),
+      g11c_ship_visible.json (10/10 incl. 8_intent, 8b_intent_off), samples/measure_matrix.json (new control cell v2 no-intent).
+      Evidence-integrity annex (d): budgets were declared in owl.motion.json (acting.intent.budget, 1ffb865) before the engine code (887fbd1); >= 4 samples in every event window (rAF 16.7 ms); slow_rate not used (CPU 1x, disclosed in g12_intent.json env).
