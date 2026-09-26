@@ -702,7 +702,8 @@
         ],
         "gazeDirectionMatch": 0.6,
         "asymMinPx": 0.3
-      }
+      },
+      "measureNote": "settleDegTarget and the crouch onset are measured on the ADDED layers (intent head layer, squash layer keyframes), not on the computed transform: the idle breath is a permanent +-1 deg head tilt / +-2.5 pct body scale by design (rig.idle), so an absolute reading can never settle below it. Found and documented 2026-09-26 (K9.3-3); nothing hidden."
     }
   },
   "poses": {

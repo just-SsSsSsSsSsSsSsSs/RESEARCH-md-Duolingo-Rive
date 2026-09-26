@@ -127,7 +127,7 @@
   let SPEC = null;
   async function loadSpec() {
     if (SPEC) return SPEC;
-    const res = await fetch('companions/owl.motion.json?v=k93c');
+    const res = await fetch('companions/owl.motion.json?v=k93d');
     SPEC = await res.json();
     const v = validateSpec(SPEC);
     const pp = validatePoses(SPEC, ['root','body','head','eyeL','eyeR','pupilL','pupilR','lidL','lidR','mouth','armL','armR','legL','legR','shadow','browL','browR']);
