@@ -45,8 +45,8 @@ def strip(paths, out, labels=None):
 
 async def shot_slot(pg, path, pad=70):
     """Screenshot the stage area around the (first) owl slot including flight room."""
-    box = await pg.evaluate("(() => { const r = document.getElementById('stage').getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height}; })()")
-    await pg.screenshot(path=path, clip={'x': box['x'], 'y': box['y'], 'width': box['w'], 'height': box['h']})
+    box = await pg.evaluate("(() => { const r = document.getElementById('stage').getBoundingClientRect(); return {x: r.left, y: r.top + scrollY, w: r.width, h: r.height}; })()")
+    await pg.screenshot(path=path, full_page=True, clip={'x': box['x'], 'y': box['y'], 'width': box['w'], 'height': box['h']})
 
 
 async def open_page(ctx, engine='v2', extra=''):
@@ -61,7 +61,7 @@ async def frames_during(pg, trigger_js, times_ms, prefix, meta_js):
     """Fire trigger, then screenshot the stage at each real-time offset; collect numeric metadata."""
     paths, meta = [], []
     t0 = time.perf_counter()
-    await pg.evaluate(trigger_js)
+    await pg.evaluate('void (' + trigger_js + ')')   # fire-and-forget: evaluate must not await the flight promise
     for i, t in enumerate(times_ms):
         wait = t / 1000 - (time.perf_counter() - t0)
         if wait > 0: await asyncio.sleep(wait)
@@ -100,7 +100,8 @@ async def main():
         strip(paths, os.path.join(OUT, 'g3_anticipation_strip.png'))
         report['gates']['G3_anticipation'] = meta
         # wait for landing: total flight 1400-3800 ms engine -> up to 15 s real
-        await pg.wait_for_function("window.__rigs[0].squash && !window.__rigs[0].squash.atRest", timeout=30000)
+        # landing moment = the path animation is committed to the host (commitStyles) right before the impact
+        await pg.wait_for_function("window.__rigs[0].svg.parentElement.style.transform.startsWith('translate(260px, -150px)')", timeout=60000)
         t0 = time.perf_counter(); paths, meta = [], []
         for i in range(6):
             m = await pg.evaluate(META); m['t_real_ms'] = round((time.perf_counter() - t0) * 1000)
@@ -122,9 +123,9 @@ async def main():
 
         # ---- G4 path trace: two flights with the overlay on ----
         pg = await open_page(ctx, extra='&trace=1')
-        await pg.evaluate("window.__rigs[0].flyBy(300, -170, {trace: true})")
+        await pg.evaluate("void window.__rigs[0].flyBy(300, -170, {trace: true})")
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
-        await pg.evaluate("window.__rigs[0].flyTo(null, {home: true, trace: true})")
+        await pg.evaluate("void window.__rigs[0].flyTo(null, {home: true, trace: true})")
         await pg.wait_for_timeout(700)
         await shot_slot(pg, os.path.join(OUT, 'g4_path_trace_midflight.png'))
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
@@ -135,12 +136,13 @@ async def main():
 
         # ---- G7 edge zoom: P2 feather edge at rest and mid-flight (DPR 2, 4x crop) ----
         pg = await open_page(ctx)
-        box = await pg.evaluate("(() => { const r = window.__rigs[0].j('armL').getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height}; })()")
-        await pg.screenshot(path=os.path.join(OUT, 'g7_edge_rest.png'), clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
-        await pg.evaluate("window.__rigs[0].flyBy(200, -120)")
+        JOINT = "(() => { const r = window.__rigs[0].j('armL').getBoundingClientRect(); return {x: r.left, y: r.top + scrollY, w: r.width, h: r.height}; })()"
+        box = await pg.evaluate(JOINT)
+        await pg.screenshot(path=os.path.join(OUT, 'g7_edge_rest.png'), full_page=True, clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
+        await pg.evaluate("void window.__rigs[0].flyBy(200, -120)")
         await pg.wait_for_timeout(900)
-        box = await pg.evaluate("(() => { const r = window.__rigs[0].j('armL').getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height}; })()")
-        await pg.screenshot(path=os.path.join(OUT, 'g7_edge_flight.png'), clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
+        box = await pg.evaluate(JOINT)
+        await pg.screenshot(path=os.path.join(OUT, 'g7_edge_flight.png'), full_page=True, clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
         if Image:
             for n in ('rest', 'flight'):
                 im = Image.open(os.path.join(OUT, f'g7_edge_{n}.png')); im = im.resize((im.width * 2, im.height * 2), Image.NEAREST); im.save(os.path.join(OUT, f'g7_edge_{n}.png'))
@@ -153,9 +155,10 @@ async def main():
         for eng in ('v1', 'v2'):
             pg = await open_page(ctx, engine=eng)
             if eng == 'v1':
-                await pg.evaluate("window.__rigs[0].fly([{x:0,y:0,t:0},{x:120,y:-140,t:.5},{x:240,y:-60,t:1}], {}, {base:{x:0,y:0}})")
+                await pg.evaluate("void window.__rigs[0].fly([{x:0,y:0,t:0},{x:120,y:-140,t:.5},{x:240,y:-60,t:1}], {}, {base:{x:0,y:0}})")
             else:
-                await pg.evaluate("window.__rigs[0].flyBy(240, -60)")
+                await pg.evaluate("void window.__rigs[0].flyBy(240, -60)")
+            await pg.wait_for_timeout(300)
             await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
             await pg.wait_for_timeout(60)
             pth = os.path.join(OUT, f'g8_{eng}.png'); await shot_slot(pg, pth); shots.append(pth)
@@ -171,18 +174,19 @@ async def main():
             await pg.goto(BASE + 'index.html?engine=v2&auto=0&sw=0&n=1&trace=1', wait_until='networkidle')
             await pg.wait_for_function('window.__rigs && window.__rigs.length===1')
             await pg.wait_for_timeout(1200)
-            await pg.evaluate("window.__rigs[0].states.fire('move:to', {target: document.getElementById('perch-card'), trace: true})")
+            await pg.evaluate("void window.__rigs[0].states.fire('move:to', {target: document.getElementById('perch-card'), trace: true})")
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(700)
-            await pg.evaluate("window.__rigs[0].states.fire('answer:correct')")
+            await pg.evaluate("void window.__rigs[0].states.fire('answer:correct')")
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(500)
-            await pg.evaluate("window.__rigs[0].states.fire('answer:pending')")
+            await pg.evaluate("void window.__rigs[0].states.fire('answer:pending')")
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(500)
-            await pg.evaluate("window.__rigs[0].states.fire('explain:start', {ms: 3200})")
+            await pg.evaluate("void window.__rigs[0].states.fire('explain:start', {ms: 3200})")
             await pg.wait_for_timeout(3600)
-            await pg.evaluate("window.__rigs[0].states.fire('move:to', {home: true, trace: true})")
+            await pg.evaluate("void window.__rigs[0].states.fire('move:to', {home: true, trace: true})")
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(1200)
             await pg.evaluate('window.__setSlow(true)')
-            await pg.evaluate("window.__rigs[0].flyBy(220, -140)")
+            await pg.evaluate("void window.__rigs[0].flyBy(220, -140)")
+            await pg.wait_for_timeout(300)
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=60000); await pg.wait_for_timeout(1500)
             await vctx.close()
             report['video'] = sorted(os.listdir(vdir))
