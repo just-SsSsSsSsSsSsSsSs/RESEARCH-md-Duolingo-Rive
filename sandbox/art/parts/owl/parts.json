@@ -7,103 +7,103 @@
   "parts": {
     "head": {
       "file": "head.webp",
-      "w": 284,
-      "h": 233,
+      "w": 340,
+      "h": 279,
       "cell_offset": [
-        44,
-        105
+        45,
+        107
       ],
-      "scale": 0.5,
-      "bytes": 14942
+      "scale": 0.6,
+      "bytes": 19396
     },
     "body": {
       "file": "body.webp",
-      "w": 241,
-      "h": 238,
+      "w": 290,
+      "h": 286,
       "cell_offset": [
-        91,
-        90
+        90,
+        89
       ],
-      "scale": 0.5,
-      "bytes": 10524
+      "scale": 0.6,
+      "bytes": 12918
     },
     "wingL": {
       "file": "wingL.webp",
-      "w": 192,
-      "h": 275,
+      "w": 232,
+      "h": 330,
       "cell_offset": [
-        141,
-        57
+        140,
+        56
       ],
-      "scale": 0.5,
-      "bytes": 10378
+      "scale": 0.6,
+      "bytes": 13154
     },
     "wingR": {
       "file": "wingR.webp",
-      "w": 193,
-      "h": 274,
+      "w": 232,
+      "h": 330,
       "cell_offset": [
         138,
-        57
+        56
       ],
-      "scale": 0.5,
-      "bytes": 10794
+      "scale": 0.6,
+      "bytes": 13942
     },
     "eyes": {
       "file": "eyes.webp",
-      "w": 280,
-      "h": 138,
+      "w": 336,
+      "h": 166,
       "cell_offset": [
         52,
-        194
+        193
       ],
-      "scale": 0.5,
-      "bytes": 13084
+      "scale": 0.6,
+      "bytes": 16350
     },
     "lids": {
       "file": "lids.webp",
-      "w": 280,
-      "h": 138,
+      "w": 336,
+      "h": 166,
       "cell_offset": [
-        53,
-        194
+        52,
+        193
       ],
-      "scale": 0.5,
-      "bytes": 10190
+      "scale": 0.6,
+      "bytes": 12668
     },
     "beak_closed": {
       "file": "beak_closed.webp",
-      "w": 114,
-      "h": 105,
+      "w": 137,
+      "h": 126,
       "cell_offset": [
         215,
         227
       ],
-      "scale": 0.5,
-      "bytes": 3692
+      "scale": 0.6,
+      "bytes": 4604
     },
     "beak_open": {
       "file": "beak_open.webp",
-      "w": 117,
-      "h": 135,
+      "w": 140,
+      "h": 163,
       "cell_offset": [
         215,
-        198
+        197
       ],
-      "scale": 0.5,
-      "bytes": 5072
+      "scale": 0.6,
+      "bytes": 6480
     },
     "legs": {
       "file": "legs.webp",
-      "w": 283,
-      "h": 144,
+      "w": 340,
+      "h": 172,
       "cell_offset": [
         49,
-        188
+        189
       ],
-      "scale": 0.5,
-      "bytes": 10586
+      "scale": 0.6,
+      "bytes": 13708
     }
   },
-  "total_bytes": 89262
+  "total_bytes": 113220
 }

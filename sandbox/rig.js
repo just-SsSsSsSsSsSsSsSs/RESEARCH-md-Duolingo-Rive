@@ -45,6 +45,10 @@ export const EASE = {
 
 const rand = (a, b) => a + Math.random() * (b - a);
 
+// Constitution section 5: decorative motion respects prefers-reduced-motion.
+// In reduced mode: breath/blink stay (subtle), flight/rolls/dizzy are replaced by a short fade-nudge.
+export const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 // ---------- rig ----------------------------------------------------------------
 
 export class SvgRig {
@@ -56,6 +60,7 @@ export class SvgRig {
     this.timers = new Set();
     this.disposed = false;
     this.hover = svg.dataset.hover === '1';
+    this.busy = false; this.flying = false;
 
     svg.querySelectorAll(`[data-joint]`).forEach((g) => {
       const name = g.dataset.joint;
@@ -207,6 +212,49 @@ export class SvgRig {
     this._talkRaf = requestAnimationFrame(step);
   }
 
+  /**
+   * Real audio envelope (Q-A1-4: expressive talking loop, no visemes).
+   * Plays `url` through one shared AudioContext + AnalyserNode and returns a
+   * 0..1 envelope function (RMS, smoothed, auto-gain) plus a promise for the end.
+   * Falls back to the synthetic envelope if autoplay/decoding is blocked.
+   */
+  static async audioEnvelope(url) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return { envelope: SvgRig.syntheticEnvelope(), durationMs: 3000, done: Promise.resolve(), real: false };
+    SvgRig._ac = SvgRig._ac || new AC();
+    const ac = SvgRig._ac;
+    if (ac.state === 'suspended') { try { await ac.resume(); } catch { /* gesture needed */ } }
+    const audio = new Audio(url); audio.crossOrigin = 'anonymous'; audio.preload = 'auto';
+    await new Promise((res, rej) => { audio.addEventListener('loadedmetadata', res, { once: true }); audio.addEventListener('error', rej, { once: true }); audio.load(); }).catch(() => {});
+    const durationMs = isFinite(audio.duration) && audio.duration > 0 ? audio.duration * 1000 : 3000;
+    const src = ac.createMediaElementSource(audio);
+    const an = ac.createAnalyser(); an.fftSize = 512; an.smoothingTimeConstant = 0.5;
+    src.connect(an); an.connect(ac.destination);
+    const buf = new Uint8Array(an.fftSize);
+    let peak = 0.08, smooth = 0;
+    const envelope = () => {
+      an.getByteTimeDomainData(buf);
+      let sum = 0; for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; sum += v * v; }
+      const rms = Math.sqrt(sum / buf.length);
+      peak = Math.max(rms, peak * 0.995);                 // slow auto-gain so quiet voices still open the beak
+      smooth = smooth * 0.55 + (rms / peak) * 0.45;       // attack fast, release soft
+      return Math.min(1, smooth * 1.15);
+    };
+    const done = new Promise((res) => { audio.addEventListener('ended', res, { once: true }); setTimeout(res, durationMs + 400); })
+      .then(() => { try { src.disconnect(); an.disconnect(); } catch { /* already gone */ } });
+    let real = true;
+    try { await audio.play(); } catch { real = false; }
+    return { envelope: real ? envelope : SvgRig.syntheticEnvelope(), durationMs, done, real, audio };
+  }
+
+  /** Speak a clip: real envelope drives the beak; returns when the clip ends. */
+  async say(url) {
+    if (this.busy) return; this.busy = true;
+    const { envelope, durationMs, done } = await SvgRig.audioEnvelope(url);
+    this.talk(envelope, durationMs);
+    await done; this.busy = false;
+  }
+
   // Synthetic speech-like envelope: syllable bursts 3-5 per second with pauses.
   static syntheticEnvelope() {
     const seed = Math.random() * 1000;
@@ -277,35 +325,225 @@ export class SvgRig {
     this.blink(true);
   }
 
-  sad() {
-    this.setMouth('sad');
-    this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: 'translateY(7px) rotate(-5deg)' }],
-      { duration: 700, easing: EASE.soft, composite: 'add', fill: 'forwards' }, true);
-    this.anim(this.j('body'), [{ transform: 'scale(1)' }, { transform: 'scale(0.98,0.96)' }],
-      { duration: 700, easing: EASE.soft, composite: 'add', fill: 'forwards' }, true);
-    this.later(() => {
-      for (const a of [...this.live]) {
-        const tgt = a.effect && a.effect.target;
-        if (tgt && /^(head|body)$/.test(tgt.dataset.joint || '') && a.effect.getTiming().fill === 'forwards') {
-          a.reverse(); a.finished.then(() => { a.cancel(); this.live.delete(a); }).catch(() => {});
-        }
-      }
-      this.setMouth('closed');
-    }, 1600);
+  // Helper: drop every fill:forwards layer on the given joints (returns to base pose)
+  release(re) {
+    for (const a of [...this.live]) {
+      const tgt = a.effect && a.effect.target;
+      if (tgt && re.test(tgt.dataset.joint || '') && a.effect.getTiming().fill === 'forwards') { a.cancel(); this.live.delete(a); }
+    }
   }
 
+  // Wrong answer: cartoon recoil - startled hop back, wings flail, a dizzy 360 head-spin
+  // wobble, then a cheeky shrug. Playful, never punishing (owner note 3).
+  sad() {
+    if (this.busy) return; this.busy = true;
+    if (REDUCED) { this.setMouth('sad'); this.later(() => { this.setMouth('smile'); this.blink(true); }, 900); this.later(() => { this.setMouth('closed'); this.busy = false; }, 1600); return; }
+    const root = this.j('root');
+    this.setMouth('open');
+    this.blink(false);
+    // startle: eyes wide -> body recoils backwards with squash
+    ['pupilL', 'pupilR'].forEach((p) => this.anim(this.j(p), [{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }],
+      { duration: 700, easing: EASE.soft, composite: 'add' }));
+    this.anim(root, [
+      { transform: 'translate(0,0) rotate(0)', offset: 0 },
+      { transform: 'translate(-6px,-14px) rotate(-8deg)', offset: 0.18 },
+      { transform: 'translate(-14px,0) rotate(-4deg)', offset: 0.34 },
+      { transform: 'translate(-12px,-8px) rotate(3deg)', offset: 0.5 },
+      { transform: 'translate(-10px,0) rotate(0)', offset: 0.64 },
+      { transform: 'translate(0,0) rotate(0)', offset: 1 }
+    ], { duration: 1600, easing: EASE.soft, composite: 'add' });
+    this.anim(this.j('body'), [
+      { transform: 'scale(1,1)' }, { transform: 'scale(0.9,1.14)', offset: 0.18 }, { transform: 'scale(1.12,0.88)', offset: 0.34 },
+      { transform: 'scale(1,1)', offset: 0.55 }, { transform: 'scale(1,1)' }
+    ], { duration: 1600, easing: EASE.soft, composite: 'add' });
+    // wings flail up and shake
+    [['armL', 1], ['armR', -1]].forEach(([n, s]) => this.anim(this.j(n), [
+      { transform: 'rotate(0)' }, { transform: `rotate(${95 * s}deg)`, offset: 0.2 }, { transform: `rotate(${75 * s}deg)`, offset: 0.3 },
+      { transform: `rotate(${100 * s}deg)`, offset: 0.4 }, { transform: `rotate(${80 * s}deg)`, offset: 0.5 }, { transform: 'rotate(0)', offset: 0.8 }, { transform: 'rotate(0)' }
+    ], { duration: 1600, easing: EASE.soft, composite: 'add' }));
+    // dizzy: head wobbles in a circle while pupils orbit (cartoon "seeing stars")
+    this.anim(this.j('head'), [
+      { transform: 'rotate(0) translate(0,0)' }, { transform: 'rotate(-10deg) translate(-3px,2px)' }, { transform: 'rotate(0) translate(0,4px)' },
+      { transform: 'rotate(10deg) translate(3px,2px)' }, { transform: 'rotate(0) translate(0,0)' }
+    ], { duration: 520, iterations: 3, easing: EASE.sine, composite: 'add', delay: 250 });
+    ['pupilL', 'pupilR'].forEach((p) => this.anim(this.j(p), [
+      { transform: 'translate(0,-4px)' }, { transform: 'translate(4px,0)' }, { transform: 'translate(0,4px)' }, { transform: 'translate(-4px,0)' }, { transform: 'translate(0,-4px)' }
+    ], { duration: 420, iterations: 4, easing: 'linear', composite: 'add', delay: 250 }));
+    this.later(() => this.setMouth('sad'), 700);
+    // recovery: shrug + "oops" smile, encourage retry
+    this.later(() => {
+      this.setMouth('smile');
+      [['armL', 1], ['armR', -1]].forEach(([n, s]) => this.anim(this.j(n), [{ transform: 'rotate(0)' }, { transform: `rotate(${35 * s}deg)` }, { transform: 'rotate(0)' }],
+        { duration: 600, easing: EASE.pop, composite: 'add' }));
+      this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: 'rotate(8deg) translateY(2px)' }, { transform: 'rotate(0)' }], { duration: 600, easing: EASE.soft, composite: 'add' });
+      this.blink(true);
+    }, 1700);
+    this.later(() => { this.setMouth('closed'); this.busy = false; }, 2500);
+  }
+
+  // Thinking: eyes roll up and around, head tilts, wing taps the beak like a finger on a chin,
+  // a small foot tap, then a light-bulb "aha" pop (owner note 3).
   think() {
-    ['pupilL', 'pupilR'].forEach((p) => this.anim(this.j(p), [{ transform: 'translate(0,0)' }, { transform: 'translate(3px,-4px)' }],
-      { duration: 500, easing: EASE.soft, fill: 'forwards' }, true));
-    this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: 'rotate(6deg) translateX(2px)' }],
-      { duration: 600, easing: EASE.soft, composite: 'add', fill: 'forwards' }, true);
+    if (this.busy) return; this.busy = true;
     this.setMouth('mid');
-    this.later(() => { this.lookCenter(); this.setMouth('closed');
-      for (const a of [...this.live]) {
-        const tgt = a.effect && a.effect.target;
-        if (tgt && tgt.dataset.joint === 'head' && a.effect.getTiming().fill === 'forwards') { a.cancel(); this.live.delete(a); }
-      }
-    }, 1800);
+    // eyes roll: up, sweep left, right, then settle looking up-right
+    ['pupilL', 'pupilR'].forEach((p) => this.anim(this.j(p), [
+      { transform: 'translate(0,0)' }, { transform: 'translate(0,-5px)', offset: 0.2 }, { transform: 'translate(-5px,-3px)', offset: 0.45 },
+      { transform: 'translate(5px,-3px)', offset: 0.7 }, { transform: 'translate(3px,-4px)', offset: 1 }
+    ], { duration: 1500, easing: EASE.soft, fill: 'forwards' }, true));
+    this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: 'rotate(9deg) translate(3px,-2px)' }],
+      { duration: 700, easing: EASE.soft, composite: 'add', fill: 'forwards' }, true);
+    // wing to chin, then small taps
+    this.anim(this.j('armR'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-128deg) translate(2px,-14px)' }],
+      { duration: 550, easing: EASE.pop, composite: 'add', fill: 'forwards', delay: 200 }, true);
+    this.anim(this.j('armR'), [{ transform: 'translate(0,0)' }, { transform: 'translate(0,-3px)' }, { transform: 'translate(0,0)' }],
+      { duration: 380, iterations: 4, easing: EASE.sine, composite: 'add', delay: 800 });
+    // foot tap
+    this.anim(this.j('legL'), [{ transform: 'translateY(0)' }, { transform: 'translateY(-3px) rotate(-6deg)' }, { transform: 'translateY(0)' }],
+      { duration: 340, iterations: 5, easing: EASE.sine, composite: 'add', delay: 700 });
+    // "hmm" mouth alternates
+    this.later(() => this.setMouth('closed'), 900); this.later(() => this.setMouth('mid'), 1500);
+    // aha: eyebrows up (head pops), eyes centre wide, wing flicks up, smile
+    this.later(() => {
+      this.release(/^(pupilL|pupilR|head|armR)$/);
+      this.anim(this.j('head'), [{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-6px) scale(1.06)' }, { transform: 'translateY(0) scale(1)' }],
+        { duration: 450, easing: EASE.pop, composite: 'add' });
+      ['pupilL', 'pupilR'].forEach((p) => this.anim(this.j(p), [{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 500, easing: EASE.pop, composite: 'add' }));
+      this.anim(this.j('armR'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-140deg)' }, { transform: 'rotate(0)' }], { duration: 700, easing: EASE.pop, composite: 'add' });
+      this.setMouth('open'); this.later(() => this.setMouth('smile'), 300);
+      this.blink(false);
+    }, 2600);
+    this.later(() => { this.setMouth('closed'); this.busy = false; }, 3500);
+  }
+
+  // ---- flight: free movement across the stage (owner note 1) --------------
+  // The stage moves the WHOLE svg (its host element) along a path while the
+  // rig flaps real wings, banks into turns and rolls 360 in the air.
+
+  flap(on) {
+    if (on && !this._flap) {
+      this._flap = [
+        this.anim(this.j('armL'), [{ transform: 'rotate(10deg)' }, { transform: 'rotate(-75deg)' }],
+          { duration: 170, iterations: Infinity, direction: 'alternate', easing: EASE.sine, composite: 'add' }, true),
+        this.anim(this.j('armR'), [{ transform: 'rotate(-10deg)' }, { transform: 'rotate(75deg)' }],
+          { duration: 170, iterations: Infinity, direction: 'alternate', easing: EASE.sine, composite: 'add' }, true),
+        // legs tuck up, body leans forward, head looks ahead
+        this.anim(this.j('legL'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-35deg) translateY(-6px)' }], { duration: 300, fill: 'forwards', easing: EASE.soft, composite: 'add' }, true),
+        this.anim(this.j('legR'), [{ transform: 'rotate(0)' }, { transform: 'rotate(35deg) translateY(-6px)' }], { duration: 300, fill: 'forwards', easing: EASE.soft, composite: 'add' }, true),
+        this.anim(this.j('body'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-6deg)' }], { duration: 300, fill: 'forwards', easing: EASE.soft, composite: 'add' }, true),
+        this.anim(this.j('shadow'), [{ opacity: 0.2, transform: 'scale(1)' }, { opacity: 0.04, transform: 'scale(0.5)' }], { duration: 400, fill: 'forwards', easing: EASE.soft }, true)
+      ];
+    } else if (!on && this._flap) {
+      this._flap.forEach((a) => { if (a) { a.cancel(); this.live.delete(a); } });
+      this._flap = null;
+      // landing: wings settle with a spring, small squash on touch-down
+      [['armL', -40], ['armR', 40]].forEach(([n, d]) => this.anim(this.j(n), [{ transform: `rotate(${d}deg)` }, { transform: 'rotate(0)' }], { duration: 650, easing: EASE.land, composite: 'add' }));
+      this.anim(this.j('body'), [{ transform: 'scale(1,1)' }, { transform: 'scale(1.1,0.9)' }, { transform: 'scale(1,1)' }], { duration: 420, easing: EASE.soft, composite: 'add' });
+    }
+  }
+
+  /**
+   * Fly along waypoints relative to the current position. Each point: {x, y, t}
+   * (px offsets, ms since start). Banking follows the horizontal velocity; optional
+   * rolls (360) and flips (180 heading change) are inserted at the given points.
+   * Returns a promise that resolves on landing.
+   */
+  fly(points, { roll = null, flipAt = null } = {}, { base = { x: 0, y: 0 } } = {}) {
+    if (this.busy || this.flying) return Promise.resolve(); this.busy = true; this.flying = true;
+    if (REDUCED) { this.busy = false; this.flying = false; this.nod(); return Promise.resolve(); }
+    const host = this.svg.parentElement;
+    const total = points[points.length - 1].t;
+    this.setMouth('smile');
+    // take-off crouch then launch
+    this.anim(this.j('body'), [{ transform: 'scale(1,1)' }, { transform: 'scale(1.12,0.85)' }, { transform: 'scale(0.95,1.08)' }, { transform: 'scale(1,1)' }],
+      { duration: 380, easing: EASE.soft, composite: 'add' });
+    this.later(() => this.flap(true), 200);
+
+    // path keyframes on the host: translate + bank rotation + facing flip
+    const kf = []; let facing = 1;
+    points.forEach((p, i) => {
+      const prev = points[i - 1] || { x: 0, y: 0, t: 0 };
+      const vx = p.x - prev.x, dt = Math.max(1, p.t - prev.t);
+      const bank = Math.max(-22, Math.min(22, (vx / dt) * 60));      // degrees, from horizontal speed
+      if (flipAt !== null && i === flipAt) facing = -facing;           // 180: turn around mid-air
+      kf.push({ transform: `translate(${base.x + p.x}px, ${base.y + p.y}px) rotate(${bank}deg) scaleX(${facing})`, offset: p.t / total, easing: EASE.sine });
+    });
+    const path = host.animate(kf, { duration: total, fill: 'forwards', composite: 'replace' });
+    this.live.add(path);
+
+    // 360 roll on the rig root at the requested moment
+    if (roll !== null) {
+      this.later(() => {
+        this.anim(this.j('root'), [{ transform: 'rotate(0)' }, { transform: 'rotate(360deg)' }], { duration: 650, easing: EASE.soft, composite: 'add' });
+        this.setMouth('open'); this.later(() => this.setMouth('smile'), 500);
+      }, roll);
+    }
+    // eyes track the direction of travel
+    const dir = Math.sign(points[Math.min(1, points.length - 1)].x || 1);
+    ['pupilL', 'pupilR'].forEach((p) => this.anim(this.j(p), [{ transform: 'translate(0,0)' }, { transform: `translate(${4 * dir}px,-2px)` }], { duration: 400, fill: 'forwards', easing: EASE.soft }, true));
+
+    return new Promise((res) => this.later(() => {
+      this.flap(false);
+      this.release(/pupil/);
+      // settle host back to base with a spring so the character ends where the path ended
+      path.commitStyles && path.commitStyles();
+      path.cancel(); this.live.delete(path);
+      const last = points[points.length - 1];
+      host.style.transform = `translate(${base.x + last.x}px, ${base.y + last.y}px) scaleX(${facing})`;
+      this.setMouth('closed');
+      this.flying = false; this.busy = false;
+      res();
+    }, total + 60));
+  }
+
+  /**
+   * Perch-to-perch: fly from the current spot to `target` (an Element) and land there.
+   * Path = rise, arc towards the target with a mid-air roll if far, settle. The host keeps the
+   * final offset (fill via inline transform) so the owl really lives at the new perch.
+   */
+  flyTo(target, { home = false } = {}) {
+    const host = this.svg.parentElement;
+    const hr = host.getBoundingClientRect();
+    const cur = this._perch || { x: 0, y: 0 };
+    let dx, dy;
+    if (home) { dx = -cur.x; dy = -cur.y; }
+    else {
+      const tr = target.getBoundingClientRect();
+      // land with feet at the top edge of the target, centred horizontally
+      dx = (tr.left + tr.width / 2) - (hr.left + hr.width / 2);
+      dy = (tr.top - hr.height * 0.92) - hr.top;
+    }
+    const dist = Math.hypot(dx, dy);
+    const t = Math.max(1400, Math.min(3600, dist * 3.2));
+    const lift = -Math.max(60, Math.min(200, dist * 0.35));
+    const pts = [
+      { x: 0, y: 0, t: 0 },
+      { x: dx * 0.25, y: lift, t: t * 0.3 },
+      { x: dx * 0.7, y: lift * 0.8 + dy * 0.5, t: t * 0.62 },
+      { x: dx, y: dy, t }
+    ];
+    if (REDUCED) {           // reduced motion: gentle fade-move, no flap or roll
+      host.style.transition = 'transform .5s ease, opacity .3s ease';
+      host.style.transform = `translate(${cur.x + dx}px, ${cur.y + dy}px)`;
+      this._perch = { x: cur.x + dx, y: cur.y + dy };
+      return Promise.resolve();
+    }
+    const p = this.fly(pts, { roll: dist > 260 ? t * 0.45 : null }, { base: cur });
+    this._perch = { x: cur.x + dx, y: cur.y + dy };
+    return p;
+  }
+
+  // Curated flight paths (relative). Stage picks one; each uses real turns.
+  static flightPlans(w, h) {
+    const W = w * 0.5, H = h * 0.5;
+    return [
+      // loop: up-right, across, roll at the top, swoop back and land at start
+      { pts: [{ x: 0, y: 0, t: 0 }, { x: W * 0.5, y: -H * 0.8, t: 900 }, { x: W, y: -H * 0.5, t: 1600 }, { x: W * 0.6, y: -H * 1.1, t: 2300 }, { x: -W * 0.2, y: -H * 0.6, t: 3200 }, { x: 0, y: 0, t: 4000 }], roll: 1600 },
+      // out-and-back with a 180 turn at the far end
+      { pts: [{ x: 0, y: 0, t: 0 }, { x: -W * 0.7, y: -H * 0.5, t: 900 }, { x: -W, y: -H * 0.9, t: 1500 }, { x: -W * 0.8, y: -H * 0.4, t: 2100 }, { x: -W * 0.2, y: -H * 0.7, t: 3000 }, { x: 0, y: 0, t: 3800 }], flipAt: 3 },
+      // figure-eight with a roll on the crossing
+      { pts: [{ x: 0, y: 0, t: 0 }, { x: W * 0.6, y: -H, t: 800 }, { x: W, y: -H * 0.3, t: 1500 }, { x: 0, y: -H * 0.6, t: 2200 }, { x: -W, y: -H * 0.2, t: 2900 }, { x: -W * 0.5, y: -H * 0.9, t: 3500 }, { x: 0, y: 0, t: 4300 }], roll: 2200 },
+    ];
   }
 
   // ---- lifecycle -----------------------------------------------------------

@@ -994,3 +994,46 @@ Coexistence risk register: (R1) a user who visited before Gate 7 has `sessionSto
 - PLANNED, not implemented: SW-1 above (needs Gate 6 plan + Gate 7 explicit order because it edits `app/`).
 - OPEN before Gate 6: remaining character sheets (bee, monkey, robot, turtle) when generation credits return; a real 2-3 GB Android measurement; the owner's visual sign-off on the owl P2 sample; the name and look of the turtle.
 - Isolation kept: no file under `app/` changed; protected files and family links untouched; `main` only receives docs + `sandbox/` via review PR.
+
+## R1-A1 Gate 5 addendum - owner's motion critique after PR #8 live review (2026-09-26)
+
+### 0. Input (owner, chat, verbatim points)
+1. Break the spatial freeze: the owl is a bird - fly across the screen with real wing beats, climb and dive, 180/360 turns with path changes. 2. Feather edges look clipped/chamfered at rest - fix the WebP cut. 3. Richer acting: think = eye rolls, taps, puzzled wing; wrong = dramatic cartoon recoil, spin, cheerful not punishing; more variety on tap. 4. Focus 100 percent on the owl; freeze other companions.
+
+### 1. Delivered on `sandbox/a1-gate5-art-sw` (isolated; `app/` untouched)
+- Note 2 - edge fix in `sandbox/art/cut_parts.py`: robust key colour (median of clear-background pixels), alpha ramp, then true colour un-mixing on edge pixels (`fg = (px - (1-a) key) / a`) instead of plain despill, plus a 0.7 px alpha blur; export at 60 percent (was 50). Owl parts now 110.6 KB (9 parts). Feather tips read as painted anti-aliased edges, not cut.
+- Note 1 - flight in `sandbox/rig.js`: `flap(on)` (170 ms wing beats at +/-75 degrees, legs tuck, body leans, shadow fades) and `fly(points, {roll, flipAt})` moving the WHOLE character host along waypoints with banking derived from horizontal velocity (clamped 22 degrees), an optional 360 roll on the root, an optional 180 heading flip (scaleX) mid-path, take-off crouch and a spring landing. Three curated plans (`flightPlans`): loop with roll, out-and-back with 180 turn, figure-eight with roll on the crossing; the stage clamps the path to the free room so the owl never leaves the viewport.
+- Note 3 - acting: `think()` = eye roll sweep, head tilt, wing to chin with 4 taps, foot taps, hmm mouth, then an "aha" pop (head scale, wide pupils, wing flick, open then smile). `sad()` (wrong answer) = startle (wide pupils, open beak), backwards hop with squash, wings flail and shake, dizzy head circles with orbiting pupils, then a shrug and an "oops" smile with double blink - playful, never punishing. Tap on the owl picks a different reaction each time (celebrate, fly, think, nod, wrong, talk; never the same twice in a row). Autonomous life: every 3.5-7.5 s the owl acts on her own (flight weighted x3); toggle button and `?auto=0` for measurement.
+- Note 4 - stage defaults to the owl P2 with a sky stage (stars, ground haze); P1 geometric rigs stay only as test fixtures behind the P1 toggle. No other companion sheet is generated.
+- SW precache bumped to `g5-2`.
+
+### 2. Measurements (P2 owl, scene now = fly 4.8 s + celebrate + talk within 10 s; sandbox CI proxy)
+| companions | heap delta scene MB | DOM nodes | anims idle | rig anims after dispose | rAF p50 ms | rAF p95 ms | frames over 33 ms | bytes |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 0.59 | 87 | 22 | 0 | 16.7 | 16.7 | 0 | 193208 |
+| 3 | 0.61 | 163 | 30 | 0 | 16.7 | 16.7 | 0 | 193208 |
+| 5 | 0.64 | 239 | 38 | 0 | 16.7 | 16.7 | 0 | 193208 |
+- Flight moves the host element with a single compositor `transform` animation; no layout work per frame. p95 stays at one frame (16.7 ms) even during 360 roll + flap + banking. Heap unchanged. Bytes grow to 193 KB because parts are now 60 percent scale (sharper edges).
+- Leak guard clarified: the 18 animations that remain after `dispose()` are the decorative CSS star twinkles on the stage; on the rig and its host the count is 0. The harness now counts rig/host animations only.
+
+### 3. Samples for the owner
+`sandbox/samples/p2_owl_acting_flight_30s.webm` (30.6 s: fly, think, wrong, celebrate, fly, talk, nod, fly), `p2_owl_flight_frames.png` (6 frames of one flight incl. the 360 roll), `p2_owl_think_wrong.png`.
+
+### 4. Honest limits
+- Flight plans are curated waypoint sets, not physics; a perch-to-perch system (fly to a target element, e.g. the answer card) is the natural next step for Gate 6.
+- The 180 flip mirrors the whole character (scaleX), which is correct for a symmetric front-facing design; a true side-view turn needs a side-view parts sheet (blocked by generation credits, and out of scope under note 4 until the owl is signed off).
+- Still measured on the sandbox machine, not a 2-3 GB Android.
+
+## R1-A1 Gate 5 addendum 2 - owl round 3: real voice, perch-to-perch, reduced motion (2026-09-26, branch `sandbox/a1-gate5-art-sw`)
+
+### 1. Delivered (sandbox only; `app/` untouched)
+- Real-audio talking loop (Q-A1-4, no visemes): `SvgRig.audioEnvelope(url)` plays a clip through one shared `AudioContext` + `AnalyserNode` (fftSize 512), computes RMS per frame with slow auto-gain (quiet voices still open the beak) and fast-attack/soft-release smoothing; `say(url)` drives the existing 3-level mouth with hysteresis. Fallback to the synthetic envelope if autoplay is blocked. Clips used: the owl's own `cheer.mp3` / `laugh.mp3` (copied from `app/assets/companions/owl`, read-only source) and one real explain clip (44 KB total). Verified: during a 3.1 s explain clip the mouth visited closed/mid/open = 26/21/32 samples at 40 ms - the beak follows the speech, not a loop.
+- Perch-to-perch flight: `flyTo(targetElement)` rises, arcs (mid-air roll if the distance is over 260 px), lands with feet on the top edge of the target and KEEPS the perch (`_perch` offset), so subsequent flights start from where the owl actually is; `flyTo(null,{home:true})` returns. Demo has mock lesson perches (question card, answer button) and autonomous life now hops between them.
+- `prefers-reduced-motion` (constitution section 5): breath/blink stay; flight becomes a nod or a 0.5 s eased slide to the perch; the wrong-answer dizzy spin becomes mouth-only. Verified with Playwright `reduced_motion='reduce'`: `REDUCED=true`, `flying=false` after a fly command.
+- Samples: `sandbox/samples/p2_owl_perch_voice_26s.webm` (perch to card, real explain voice, think, perch to answer, own cheer, celebrate, home, own laugh), `p2_owl_perch_frames.png`, `p2_owl_perch_home.png`.
+
+### 2. Cost check
+Same rig; the analyser adds one audio node graph per clip (disconnected on end). HUD during perch flights: p50 16.7 ms, p95 16.7-16.8 ms, 97 DOM nodes. No console errors.
+
+### 3. What this proves for Gate 6
+The skeleton + engine now covers the full companion vocabulary the app needs: idle life, tap variety, real voice talking, flight to any DOM target (answer card, streak badge), celebration and gentle wrong-answer acting, all under 200 KB per character and compositor-only. Remaining before the app switch (Gate 7): `rig.kind="svg"` adapter inside `companion.js` (behind data), the SW-1 registration, real 2-3 GB Android run, and the other four character sheets (credits).
