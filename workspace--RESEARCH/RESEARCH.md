@@ -785,3 +785,97 @@ Status: PLANNING ONLY. No implementation code exists for any item below. The own
 - Order: Phase 21 curriculum (data only) -> Phase 22 vector engine (new module beside the old one) -> Phase 23 turtle + robot as the first SVG-native companions (no image-generation credits needed).
 - Zero Regression: additions only; existing engines untouched in Phase 21; new engine behind a data switch, not a global flag; full gate + sha256 of protected files before every push; catalog schema unit test added.
 - Open decisions for the owner: (a) Rive vs constitution section 5; (b) turtle name vs owl «حكيمة»; (c) whether `mult_mix` widens to 2..9 (default: no); (d) levels for tables 6-7 vs 8-9.
+
+## R1 - Evidence-Based Research Before Execution - Axis A1: real cartoon motion and cast variety (2026-09-26)
+
+Governing reference (owner, permanent, may be updated by the owner): https://gist.github.com/pijsal1-tech/98e599291bb543d2237f71ac97d97749 (revision read: e14796a, 7019 lines; previous f477df0, 6778 lines; the 241 appended lines carry the owner's answers to the 8 Gate-0 questions and the Gate-1/Gate-2 clearance for A1 only).
+Status: research and analysis only. No code, no library, no technology adopted. Branch `research/evidence-a1-animation`.
+
+### 1. What was asked (as understood)
+A1: companions must stop looking like "a cut image that stretches" and become continuous cartoon motion (run, jump, fly, blink, facial expression, touch reaction, right/wrong reaction, synced sound, several states each), with many characters, added without rebuilding the system. Compare at least: CSS animation, SVG animation, Canvas 2D sprites, spritesheets, Rive, Lottie, dotLottie, PixiJS, Spine, WebGL/WebGPU, hybrids. Do not presume Rive or Canvas is best.
+Owner constraints (gist answers): baseline device budget Android 2-3 GB RAM, Chrome mobile; weak 3G/4G + Wi-Fi, fetch once then cache/offline; ages 6-10; constitution section 5 (no heavy deps) stays the default, revisited only on proof; PR #5 = frozen draft (merged 2026-09-26 02:59Z as docs only; nothing from it is authorised); experiments allowed only on an isolated sandbox branch; deliverables axis by axis.
+
+### 2. Open questions still needing the owner (A1 only)
+Q-A1-1. "Many characters": target count for the next 12 months (10? 20? 50?) - drives the authoring cost column.
+Q-A1-2. Who authors art: AI image generation (raster) as today, or hand-drawn vector by a person/tool? Rive and Spine need a human in an editor; raster pipelines do not.
+Q-A1-3. Is a paid tool acceptable at all (Rive Cadet 9 USD/seat/month to export .riv; Spine editor licence)? If "no", Rive and Spine drop out on authoring grounds regardless of runtime quality.
+Q-A1-4. Is sound-synced mouth (visemes like Duolingo) required, or is the current envelope-driven mouth enough?
+
+### 3. Current project state (verified from code on main e1315c6, read-only)
+| Fact | Evidence |
+|---|---|
+| Rig = one WebP per pose + CSS mask layers (body/head/limbs/mouth) + WAAPI keyframes; damped `spring()` sampled to `linear()`; limb loops flutter 380 ms / flap 1500 ms / sway 1900 ms; reactions happy/encourage/celebrate/think/tickle; mouth opens on a Web Audio envelope | `app/js/engines/companion.js` lines 70-125, 152-265 |
+| No skeleton, no per-part vector; 3 poses per character (idle/happy/encourage) | `app/content/companions.json` `files` |
+| Asset weight: monkey 10.8 KB per pose WebP; owl/bee/cat/parrot 84-100 KB per folder (3 poses + 2 mp3) | `ls -la app/assets/3d`, `du app/assets/companions` |
+| No Service Worker, no manifest, no offline: `purgeLegacyPWA()` unregisters any SW and clears caches | `app/js/app.js` 68-79 |
+| GitHub Pages live headers: `cache-control: max-age=600`, `accept-ranges: bytes`, `access-control-allow-origin: *` (curl -I 2026-09-26 on 097_001.mp3 194570 B, monkey.webp 10818 B, index.html 6715 B) | live measurement |
+| 637 mp3 = 49.5 MB on disk; repo pack 50.05 MiB; app/ 14 MB; largest tracked file 4.7 MB (legacy HTML) | `find`, `git count-objects -vH` |
+| Constitution: "no heavy deps (no Rive/Lottie/frameworks); WAAPI/CSS for motion" | AGENTS.md section 5 |
+| Companion fixed per lesson, shuffle without immediate repeat | Phase 18.5 `forSession` |
+| Must not break: 5 protected files, K3, family links, phase17/18/18.5/19/20 suites | AGENTS.md sections 4-5 |
+
+### 4. Evidence gathered (L1 official docs, L2 company engineering blog, L3 third-party measurement or community report). All accessed 2026-09-26.
+| # | Claim | Source | Level | Proves / does not prove |
+|---|---|---|---|---|
+| E1 | Rive web runtime sizes (brotli -9): canvas-lite 707 KB / 222 KB; canvas 1728 / 567 KB; webgl2 2179 / 648 KB; page "Last updated January 2026" | https://rive.app/docs/runtimes/runtime-sizes | L1 | Lightest Rive runtime costs ~222 KB compressed on first load (not 78 KB, not 175 KB as circulated). Says nothing about RAM. |
+| E2 | `@rive-app/canvas-lite` 2.43.1 JS wrapper 170.6 KB raw / 46.2 KB gzip; WASM fetched separately | https://bundlephobia.com/api/size?package=@rive-app/canvas-lite | L3 (automated) | JS part only; WASM in E1 is the bulk. |
+| E3 | canvas-lite drops text, layout, audio and scripting engines; Rive recommends webgl2; WebGL context cap per page; MSAA path makes non-Normal blend modes expensive on mobile; "measure on real devices" | https://rive.app/docs/runtimes/web/canvas-vs-webgl | L1 | Feature and perf trade-offs; vendor itself asks for device measurement. |
+| E4 | Rive creates C++ objects that must be cleaned up manually or they leak | https://rive.app/docs/runtimes/web/web-js (Clean up Rive) | L1 | Lifecycle risk for a SPA that mounts/unmounts a companion every lesson. |
+| E5 | rive-react issue #440 "Canvas memory leak in Safari": canvases accrue after ~100 mount/unmount cycles (reproducible repo); closed completed 2026-09-24 | https://github.com/rive-app/rive-react/issues/440 | L3 | Field report of exactly our pattern; recently fixed - version pinning would matter. |
+| E6 | rive-wasm runtime licence: MIT | https://raw.githubusercontent.com/rive-app/rive-wasm/master/LICENSE | L1 | Runtime free to ship. |
+| E7 | Rive pricing: Free = 3 collaborative files, no ".riv export"; Cadet 9 USD/seat/mo enables export ("Free to create, 9 USD/mo to ship") | https://rive.app/pricing | L1 | Authoring our own production characters needs a paid seat. |
+| E8 | Community Content is CC BY 4.0 (ToS section D-6-c, updated 2026-05-20) | https://rive.app/docs/legal/terms-of-service | L1 | Free community characters usable with attribution, but they are not our cast. |
+| E9 | Duolingo animates 10 World Characters with Rive state machines, 20+ viseme mouths, phoneme timings from in-house speech models; scale motive: 100+ courses | https://blog.duolingo.com/world-character-visemes/ | L2 | Rive fits a large multi-platform team with animators and speech infra. Does not prove fit for a one-person web project with AI raster art. |
+| E10 | Rive CEO benchmark, one animation: Lottie 181.7 KB vs Rive 18 KB; GPU 149-190 MB vs 2.6 MB; JS heap 16.9 vs 7.3 MB; CPU 91.8 vs 31.8 percent | https://pixelpoint.io/blog/rive-react-optimizations/ quoting https://x.com/guidorosso/status/1580267624050532352 | L3 (vendor, single case) | Directional only. Same article: WASM must be self-hosted and preloaded or the animation starts seconds late. |
+| E11 | Callstack, Sony Xperia Z3, React Native: Rive ~60 fps vs Lottie ~17 fps; total memory Rive 276 MB vs Lottie 246 MB (graphics 184 vs 123 MB) | https://www.callstack.com/blog/lottie-vs-rive-optimizing-mobile-app-animation | L3 | Rive is not automatically lighter in memory; native, not browser - transfer with caution. |
+| E12 | lottie-web 5.13.0: 305.9 KB raw / 76.8 KB gzip | https://bundlephobia.com/api/size?package=lottie-web@5.13.0 | L3 | Classic Lottie library cost. |
+| E13 | @lottiefiles/dotlottie-web 0.80.0: 164.9 KB raw / 33 KB gzip (JS; canvas + WASM fetched separately); state machines documented, docs updated 2026-09-11 | https://bundlephobia.com/api/size?package=@lottiefiles/dotlottie-web ; https://docs.lottiefiles.com/en/runtimes/distributions/js/v0.x | L3 + L1 | dotLottie has interactivity now; authoring still After Effects/LottieFiles. WASM size unverified. |
+| E14 | pixi.js 8.6.6: 758.9 KB raw / 214.9 KB gzip + 9 dependencies | https://bundlephobia.com/api/size?package=pixi.js@8.6.6 | L3 | Heaviest option; a game engine, not a character rig. |
+| E15 | Spine runtimes may only be integrated by holders of a Spine Editor licence (April 2025) | https://esotericsoftware.com/spine-runtimes-license | L1 | Paid editor mandatory; excluded unless the owner buys it. |
+| E16 | Animate only `transform`/`opacity` to stay on the compositor; DevTools FPS meter and paint flashing are the measurement method | https://web.dev/articles/animations-guide | L1 | Our WAAPI rig already follows this; cheapest possible pipeline. |
+| E17 | Web Animations API: `Element.animate`, `KeyframeEffect`, `getAnimations`; reduced-motion guidance | https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API | L1 | Zero-dependency animation control is a standard. |
+| E18 | SVG `<animateTransform>` is Baseline widely available since January 2020 | https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateTransform | L1 | Per-part SVG rigs run everywhere without a library. |
+| E19 | GitHub Pages: repo recommended <= 1 GB, site <= 1 GB, soft 100 GB/month bandwidth, 10 builds/hour | https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits | L1 | Hosting headroom is large; the binding constraint is per-device weight. |
+| E20 | Lighthouse expects long `max-age` for static assets; Pages sends 600 s (measured) | https://developer.chrome.com/docs/lighthouse/performance/uses-long-cache-ttl + curl | L1 + local | "Fetch once" needs a Service Worker or immutable versioned URLs; Pages headers alone re-validate every 10 minutes. |
+
+Rejected until measured locally (no L1/L2 source found): "Rive RAM 15-25 MB on mobile", "99 percent device compatibility", "Dirty-Rect zero CPU at idle", "Lottie RAM 40-70 MB as a rule", "spritesheet 4096x4096 = 67 MB per character" (arithmetic right, premise wrong: our poses are ~10 KB WebP at small sizes).
+
+### 5. Alternatives compared for OUR platform (browser only, GitHub Pages, 2-3 GB Android, child 6-10)
+| Criterion | A. Deepen current WAAPI mask rig | B. SVG per-part rig + WAAPI (no lib) | C. Canvas 2D spritesheet (no lib) | D. Rive canvas-lite | E. dotLottie-web | F. lottie-web | G. PixiJS v8 | H. Spine |
+|---|---|---|---|---|---|---|---|---|
+| Library download (compressed) | 0 | 0 | 0 | ~222 KB WASM + 46 KB JS (E1,E2) | ~33 KB JS + WASM unverified (E13) | ~77 KB (E12) | ~215 KB + deps (E14) | runtime + paid editor (E15) |
+| Asset per character | ~10-35 KB x 3 poses (measured) | est. 10-40 KB SVG - to measure | est. 100-400 KB per action strip - to measure | 2-35 KB .riv (E9,E10) | 20-150 KB - unverified | 50-200 KB JSON | as C | small |
+| Motion ceiling | stretch/rotate of raster parts, no true joints | true pivots (shoulder/knee/wing), blink and expressions via `<g>` swaps; cut-out style | frame-by-frame cartoon if frames are consistent | best-in-class bones, meshes, state machine (E9) | good; state machine exists (E13) | timeline only | anything, hand-built | best-in-class |
+| Interactivity (touch, right/wrong, look-at) | exists | same API | frame selection by state; look-at hard | inputs | state machine | weak | hand-built | yes |
+| Mouth sync | envelope (exists) | envelope or viseme swaps | frame swap | viseme states (E9) | possible | hard | hand-built | possible |
+| RAM / CPU | compositor-only, lowest (E16) - measure | SVG DOM; risk with hundreds of paths - measure | decoded strip per action in GPU; risk with many characters - measure | WASM heap + canvas; leak class (E4,E5); E10 says low, E11 says higher graphics memory - MUST measure | canvas + WASM - measure | CPU-heavy on complex files (E10) | GPU, biggest bundle | excluded |
+| Fetch once / offline | needs Service Worker (E20) - same for all | same | same | same + WASM cached | same | same | same | - |
+| Authoring a NEW character | AI raster x3 poses + JSON (exists; credit-dependent) | vector by hand or AI-to-SVG then split into parts - new pipeline | many consistent frames per action - AI consistency is the risk | human in Rive editor + 9 USD/seat (E7); CC-BY community files are not our characters (E8) | After Effects / LottieFiles | After Effects | code + art | paid editor |
+| Zero Regression fit | perfect, additive | high via `rig.kind` data switch | high, same switch | medium: new runtime, one canvas per companion, mandatory cleanup (E4) | medium | medium | low | excluded |
+| Constitution section 5 | compliant | compliant | compliant | violates (amendment needed) | violates | violates | violates | violates |
+| Verdict for us | ceiling too low alone | strongest no-dependency route to joints and expressions | strongest no-dependency route to video-like frames; heaviest assets | highest ceiling; costs: 222 KB runtime, paid authoring, WASM lifecycle, constitution change | viable middle; external authoring | not recommended | oversized | excluded by licence |
+
+### 6. What helps and what hurts (honest)
+Helps: current rig is already compositor-only (E16); a `rig.kind` switch lets any engine live beside it; Pages bandwidth is not the constraint (E19); one Service Worker makes "fetch once" true for every option (E20).
+Hurts: (1) no option yields video-like motion for free - the art pipeline (animator, consistent frames, or vector part split) is the real cost, not the runtime. (2) Rive's advantages (E9,E10) come with a paid seat, 222 KB WASM, a documented leak class under our exact mount/unmount pattern (E5), and a constitution amendment. (3) Every RAM/FPS figure in circulation is vendor-run or native-app; none is a browser measurement on a 2-3 GB Android. Nothing here is adoptable before Gate 4 measurement.
+
+### 7. Unproven hypotheses (explicit)
+H1 Rive canvas-lite stays under 20 MB heap delta per companion on a 2-3 GB Android in Chrome - unmeasured.
+H2 An SVG rig with 40-80 paths holds 60 fps on that device - unmeasured.
+H3 A Canvas strip of 24-48 frames at ~256 px stays under a few MB decoded per character - arithmetic says ~6-12 MB for 48 frames RGBA; needs a frame budget and measurement.
+H4 AI image generation can produce frame-consistent action strips for our existing characters - untested; credits ran out in Phase 17.
+
+### 8. Priority options for the owner (no final choice made here)
+Option A - Pedagogy first: research A3/A4/A5 next; keep the rig; schedule A1 Gate 4 later. Gain: zero risk, content value soon. Loss: the "montage" feel remains.
+Option B - Motion first via measurement: Gate 4 sandbox branch measuring B (SVG rig), C (Canvas sprites) and D (Rive canvas-lite with a CC-BY trial file) side by side with identical actions (idle, jump, fly, blink); report heap delta, FPS, decoded bytes, first-load bytes; then Gate 5. Gain: real numbers replace claims. Loss: 1-2 sessions without a user-visible feature.
+Option C - Balanced: approve the Service Worker research (benefits every option, constitution-compliant) and Gate 4 for B and C only; revisit D only if B and C fail the owner's "real cartoon" bar. Gain: keeps the constitution, moves motion, adds offline. Loss: postpones the Rive question.
+
+### 9. Suggested work packages (suggestions, not a plan)
+WP-A1-1 Measurement harness proposal: Playwright + DevTools protocol (JS heap, `performance.measureUserAgentSpecificMemory` where available, rAF-based FPS, transferred bytes), identical scene for B/C/(D).
+WP-A1-2 Art pipeline study: consistent multi-frame or vector-part art for the 5 existing characters - AI or human - cost per character.
+WP-A1-3 Motion vocabulary spec (data only, engine-independent): idle/blink/look/jump/run/fly/celebrate/sad; states right/wrong/idle.
+WP-A1-4 Offline/caching study (overlaps A2): cache-first Service Worker for versioned assets, respecting the existing `?v=` cache-busting.
+None is scheduled; each needs a separate explicit go.
+
+### 10. Statement
+I confirm this stage is research and analysis only. No code was written or executed for the platform. No final solution was adopted. Alternatives, risks and evidence are presented awaiting the owner's decision.
