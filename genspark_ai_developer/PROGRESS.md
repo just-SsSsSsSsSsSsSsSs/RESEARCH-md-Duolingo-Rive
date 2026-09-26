@@ -1018,3 +1018,5 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
    K9.3-5 perf re-run matrix cell v2+Foley CPU 1x/4x n=5 (3 rounds) -> measure_matrix.json updated; disclose any change.
    K9.3-6 record: PROGRESS K9.3 DONE + visible-change statement; DIRECTIVES #06 plan item done; ADR-002 unchanged.
   NEXT: K9.3-1.
+- 2026-09-26 resume-check #42 (after sandbox reset): branch at 8c71a6a == origin, clean; origin/main 120ce1a; app/ diff 0. Gist unchanged (97041677 = DIRECTIVES #06). Loss check: K9.3-1 (acting.intent spec + validateActing checks, spec v=k93b, sw g5-13) had been committed locally but NOT pushed before the reset -> not on the branch (grep intent = 0) -> redo now, nothing else missing. Lesson applied: push right after each frozen-plan chunk, not after two.
+  ack: DIRECTIVES #06 received.
