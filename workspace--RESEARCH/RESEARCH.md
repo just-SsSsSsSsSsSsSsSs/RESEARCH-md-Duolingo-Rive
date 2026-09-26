@@ -1120,3 +1120,71 @@ Notes: v2 adds +0.08..0.12 MB heap (spec + spring state) and 6 persistent paused
 
 ### 10. Single blocker
 None technical. Awaiting owner review of the visual proofs and the decision to open Gate 6 (adapter in `app/`).
+
+## R1-A1 Gate 5 cycle 5 - K8 Foley layer: procedural Sound DNA + micro-VFX (2026-09-26, branch `sandbox/a1-gate5-art-sw`)
+
+Governing reference: gist a402871d rev 71391abf (owner directive with three corrections: no "2-3 KB" claim, procedural-first, no headless-bypass proofs; close the telemetry finding first). EFRP 5b0800c3 and constitution 555a2147 remain binding. Scope: owl only, `app/` untouched.
+
+### 1. Goal
+Give every motion phase of the owl an organic, synchronised Foley cue and a matching cartoon micro-VFX: zero audio assets, zero licensing exposure, data-driven per character, inside the existing 60 fps / RAM budget - proven with numbers, not with a video.
+
+### 2. Research (evidence level)
+- Chrome autoplay policy blog, developer.chrome.com/blog/autoplay [L1]: Web Audio gated since Chrome 71; `AudioContext` starts `suspended`; `resume()` after a user gesture; `--autoplay-policy=no-user-gesture-required` is a test bypass. Our proofs launch Chromium with default flags and never set it.
+- MDN `navigator.userActivation` [L1, Baseline 2023-11]: `hasBeenActive` / `isActive`; recorded in `sfx_autoplay.json`.
+- feross/unmute-ios-audio (MIT) [L1]: the iOS mute switch silences Web Audio but not `<audio>`; a short silent `<audio>` played on the same gesture is the documented kick. Implemented in `SoundBus.unlock()`; a real-iPhone check is owner-side.
+- ZzFX (MIT, under 1 KB) and the sfxr lineage [L1]: procedural SFX is established in web games; we do NOT claim procedural synthesis as new.
+- Fujisaki and Nishida 2005, Exp Brain Res, and PMC4451240 [L2]: audio-visual asynchrony detection thresholds are of the order 65-110 ms. Our gate is far stricter: controlled offset <= 16.7 ms target, 40 ms cap.
+
+### 3. Hypothesis and the honest novelty claim
+Hypothesis: Foley scheduled on the audio clock at the exact motion phase and shaped by the same physics (vertical velocity -> whoosh pitch, wingbeat period -> flap cadence) reads as "the owl makes the sound", not "a sound plays near the owl". The claim we defend: the Sound DNA lives in the same Character Spec as the motion (`owl.motion.json` -> `sound.cues`, `vfx`, per-state `sfx`/`vfx` phase maps), is validated by the same `validateSpec`, and is driven by the same state-machine cues - a new companion ships numbers, no audio file, no code. The market scan (Rive, dotLottie, Howler.js, ZzFX, Duolingo's Rive pipeline) found procedural SFX and state machines separately, not a character spec carrying voice, motion physics and VFX with a data-only validation gate (L2, scan-limited).
+
+### 4. Implementation
+| file | bytes | role |
+|---|---|---|
+| `companions/owl.motion.json` | 11733 | `sound` (17 cues: breath, blink, crouch, takeoff, flap+rustle, whoosh, land+click, boing, settle, hmm, tick, chime, sparkle, aww, pant, snore, gulp), `vfx` catalogue (dust, speedLines, stars, question, zzz, glint, sweat), per-state phase maps, new `rest` state (`idle:long` after 14 s -> snore + Zzz; any tap wakes) |
+| `engine/sound.js` | 14041 | `SoundBus`: generators tone / noise (white, pink, brown buffers built once) / thud / chord + rustle/click textures; ADSR on the audio clock; polyphony 3 with priority steal; same-cue gap 120 ms; duck -9 dB under speech; slow-motion aware (mute below 0.5x, stretch 0.5-1x); gesture-only `unlock()` + iOS kick; one-clock sync telemetry; `renderOffline()` for the mix gate |
+| `engine/vfx.js` | 6967 | `VfxLayer`: one shared SVG per stage, pooled nodes, WAAPI transform/opacity only, reduced-motion skip, engine-clock durations |
+| `engine/foley.js` | 3088 | director: `rig.cue(phase)` -> state `sfx[phase]` / `vfx[phase]`; beats (think ticks) and loops (rest); duck on talk |
+| `motion.js`, `flight.js`, `states.js` | cue bus | `rig.cue(phase, {tVisual})` at anticipate / takeoff / flap (340 ms) / cruise (vy) / land / settle / after / jump / blink / enter / beat / loop / wake. Engine stays audio-agnostic: remove `foley.js` and the owl moves unchanged |
+| `index.html`, `sw.js` g5-5 | wiring | capture-phase gesture unlock, mute button, hud audio status, `?sfx=0`, wake on tap |
+Audio assets added: 0 bytes. Runtime dependencies: 0.
+
+### 5. Measurements (`sandbox/samples/sfx/*.json`, headless Chromium default flags, 2026-09-26T16:05Z)
+| gate | rule | result | pass |
+|---|---|---|---|
+| autoplay | context created/resumed only inside our synchronous gesture handler; no flag bypass | `locked`, no context, 0 cues played while 3 were requested and 2 VFX spawned (visuals unaffected) -> one real click -> `running`, base 10 ms, output 32 ms, 44.1 kHz | PASS |
+| sync, controlled | (play() call - visual onset) + lookahead: target 16.7 ms, cap 40 ms | n = 33: min 0.2, mean 0.73, p95 2.0, max 2.9 ms (worst: crouch 2.9, tick 2.8) | PASS |
+| sync, device | reported, not gated | render-ahead 40.2 ms (= base 10 + output 32), constant; total audible 31.5-40.7 ms, under the 65 ms perception threshold | reported |
+| slow motion | at x0.25 cues mute or stretch | rate 0.25: played +0, muted +2 | PASS |
+| mix | peak <= -3 dBFS, 0 clipping, duck >= 8 dB | loudest cue `land` -14.5 dBFS, quietest `breath` -34.0; 5-cue overlap peak -12.9 dBFS, RMS -33.4, clipped 0; duck -9 dB | PASS |
+| polyphony, 5 owls | concurrent <= 3, same cue >= 120 ms apart, priority | max 3; played 34, dropped 44 by the guards, stolen 3 by priority; min same-cue gap 130.6 ms | PASS |
+| perf, Foley on | jank < 1 %, idle loops 0, heap | 1/3/5 owls: p95 16.7-16.8 ms, jank 0 / 0 / 0.5 %, idle loops 0, heap +0.71 / 0.80 / 0.84 MB (0.67 / 0.74 / 0.77 without Foley: +0.07 MB) | PASS |
+| G10 | fake character by data only | node test PASS; `validateSpec` rejects unknown cues, unknown vfx, unknown generators, gain outside (0,1] | PASS |
+Honesty notes: (a) `navigator.userActivation.hasBeenActive` was already true before our click in headless (navigation counts as activation), so the browser gate is weaker there than on a phone; what is proven is that OUR code never creates the context outside its gesture handler. (b) The iPhone mute-switch kick is unverified until the owner tries it. (c) 44 of 78 cue requests in the 5-owl scene were dropped by design; with one owl (the app case) 0 were dropped.
+
+### 6. Telemetry finding from the gist - closed
+`proofs.json` had shown `state: idle` while `flying: true`. Root cause: `proofs.py` called `rig.flyBy()` directly for deterministic slow-motion captures, bypassing `CharacterStates`; the machine itself was exercised by the smoke tests and the showcase video. Fix (K8.0): the `flight` clip accepts `by:{dx,dy}`, proofs fire `states.fire('move:to', {by})`, and every frame records `state` plus the transition history (`K4_state_history`: idle -> fly -> idle -> settled with timestamps).
+
+### 7. 12 principles - rows touched by K8
+| principle | before | now |
+|---|---|---|
+| 6 Slow in / slow out | motion only | Foley envelopes follow the engine clock (stretch 0.5-1x, mute below), so slowed motion never carries full-speed sound |
+| 7 Arcs | Bezier path | whoosh pitch follows the arc's vertical velocity (`pitchFromVy`); wingbeat cues follow the flap period |
+| 8 Secondary action | head spring from voice envelope | landing dust, takeoff speed lines, think question mark + ticks, celebrate stars, wrong sweat drop, rest Zzz + snore, blink glint - each bound to a state phase in data |
+| 12 Appeal | idle and tap variety | organic micro-sounds (pant after long flights, gulp on wake, breath) and a mute control; sound never blocks or breaks motion |
+
+### 8. Risks and rollback
+| risk | mitigation |
+|---|---|
+| iOS mute switch / suspended context | silent `<audio>` kick on the same gesture; status in hud; visuals never depend on audio |
+| Speech intelligibility | -9 dB duck while `say()` runs; cue priorities keep Foley under the voice |
+| Cue spam with many owls | polyphony 3 + 120 ms same-cue gap + priority steal (measured) |
+| Noise buffers RAM | 3 x 2 s mono at 44.1 kHz, allocated once per page; measured heap delta +0.07 MB after GC |
+| Rollback | `?sfx=0`, or delete `foley.js` / `sound.js` / `vfx.js`; the motion engine is untouched by design |
+
+### 9. Objections considered
+- "Use tiny MP3/OGG files": rejected per directive - licensing, repetition, RAM after decode (1 s mono 44.1 kHz = 176 KB), and each new character would need a sound pass.
+- "Gate the sync on device latency too": it is reported (40 ms here) but not gated - hardware-constant, applies equally to the voice clips already in production, below perception thresholds; gating it would hide the part we can engineer.
+
+### 10. Single blocker
+None technical. Owner decisions: (1) listen on a real phone (Chrome Android + iPhone) and report the mute-switch behaviour; (2) approve the K8 review PR; (3) Gate 6 adapter into `app/` stays closed until approved.
