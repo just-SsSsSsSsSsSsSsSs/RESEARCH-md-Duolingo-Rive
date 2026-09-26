@@ -189,7 +189,9 @@
       "closed": 0.18,
       "mid": 0.28,
       "open": 0.62
-    }
+    },
+    "scale": 1.25,
+    "scaleComment": "beak readability (docs/ART_INVENTORY.md): measured 19.4 pct of head width at 1.0 -> 24 pct at 1.25, within the 20-30 pct cartoon range; ?beak=1 forces 1.0 for A/B"
   },
   "states": {
     "comment": "three concurrent layers; each state names a clip per layer; transitions blend out over blendMs; next = auto transition when the body clip ends",

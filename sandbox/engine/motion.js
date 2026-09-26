@@ -40,6 +40,11 @@ export class CinematicRig extends SvgRig {
     }
     this.secondary = new SecondaryRig(spec.secondary, (n, deg) => this._writeSecondary(n, deg));
 
+    // K9.2c-6 beak readability: spec.mouth.scale (default 1) is a persistent additive scale on the mouth joint about its
+    // pivot (100 104), so every beak plate reads larger without touching the art. Measured: 1.25 takes the closed beak from
+    // 19.4 pct to 24 pct of head width (docs/ART_INVENTORY.md). URL ?beak=1 forces scale 1 for A/B.
+    const beakScale = (typeof location !== 'undefined' && new URLSearchParams(location.search).get('beak') === '1') ? 1 : (spec.mouth && spec.mouth.scale) || 1;
+    if (beakScale !== 1 && this.j('mouth')) { const a = this.j('mouth').animate(KF2(`scale(${beakScale})`), { duration: 1000, fill: 'both', composite: 'add' }); a.pause(); this.live.add(a); this.mouthScaleLayer = a; }
     this.squashLayer = this.j('body').animate(KF2('scale(1,1)'), { duration: 1000, fill: 'both', composite: 'add' });
     this.squashLayer.pause(); this.live.add(this.squashLayer);
     this.squash = new SquashSpring(spec.squash.landing);
