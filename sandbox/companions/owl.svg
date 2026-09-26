@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" class="rig rig-owl" data-companion="owl" data-hover="0" aria-label="owl companion rig">
+  <defs>
+    <radialGradient id="owl-body" cx="45%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#b9793f"/>
+      <stop offset="0.7" stop-color="#8a5322"/>
+      <stop offset="1" stop-color="#5e3613"/>
+    </radialGradient>
+    <radialGradient id="owl-head" cx="50%" cy="40%" r="70%">
+      <stop offset="0" stop-color="#c58a4c"/>
+      <stop offset="0.75" stop-color="#8f5a25"/>
+      <stop offset="1" stop-color="#5e3613"/>
+    </radialGradient>
+    <radialGradient id="owl-belly" cx="50%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#fff4dc"/>
+      <stop offset="1" stop-color="#e8c9a0"/>
+    </radialGradient>
+    <radialGradient id="owl-iris" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#ffd166"/>
+      <stop offset="0.7" stop-color="#f29e1b"/>
+      <stop offset="1" stop-color="#a85d00"/>
+    </radialGradient>
+    <linearGradient id="owl-wing" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a4a1e"/>
+      <stop offset="1" stop-color="#4a2a0d"/>
+    </linearGradient>
+    <linearGradient id="owl-beak" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb347"/>
+      <stop offset="1" stop-color="#d97b06"/>
+    </linearGradient>
+    <filter id="owl-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+  </defs>
+
+  <ellipse data-joint="shadow" data-pivot="100 228" cx="100" cy="228" rx="46" ry="7" fill="#000" opacity="0.18" filter="url(#owl-soft)"/>
+
+  <g data-joint="root" data-pivot="100 220">
+    <g data-joint="legL" data-pivot="82 208">
+      <path d="M78 206 l-8 16 M82 206 l0 17 M86 206 l8 16" stroke="#e08a1a" stroke-width="5" stroke-linecap="round" fill="none"/>
+    </g>
+    <g data-joint="legR" data-pivot="118 208">
+      <path d="M114 206 l-8 16 M118 206 l0 17 M122 206 l8 16" stroke="#e08a1a" stroke-width="5" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <g data-joint="armL" data-pivot="52 128">
+      <path d="M52 128 C28 150 26 192 44 208 C58 200 62 160 52 128 Z" fill="url(#owl-wing)"/>
+      <path d="M36 176 q6 8 12 0 M34 190 q6 8 12 0" stroke="#3a2008" stroke-width="2" fill="none" opacity="0.6"/>
+    </g>
+    <g data-joint="armR" data-pivot="148 128">
+      <path d="M148 128 C172 150 174 192 156 208 C142 200 138 160 148 128 Z" fill="url(#owl-wing)"/>
+      <path d="M152 176 q6 8 12 0 M154 190 q6 8 12 0" stroke="#3a2008" stroke-width="2" fill="none" opacity="0.6"/>
+    </g>
+
+    <g data-joint="body" data-pivot="100 212">
+      <ellipse cx="100" cy="158" rx="56" ry="60" fill="url(#owl-body)"/>
+      <ellipse cx="100" cy="170" rx="36" ry="42" fill="url(#owl-belly)"/>
+      <g stroke="#c9a273" stroke-width="1.6" fill="none" opacity="0.8">
+        <path d="M78 156 q8 9 16 0 q8 9 16 0 q8 9 16 0"/>
+        <path d="M74 172 q8 9 16 0 q8 9 16 0 q8 9 16 0 q8 9 16 0" transform="translate(-4 0)"/>
+        <path d="M78 188 q8 9 16 0 q8 9 16 0 q8 9 16 0"/>
+      </g>
+    </g>
+
+    <g data-joint="head" data-pivot="100 128">
+      <path d="M58 60 L46 26 L78 48 Z" fill="#5e3613"/>
+      <path d="M142 60 L154 26 L122 48 Z" fill="#5e3613"/>
+      <circle cx="100" cy="92" r="56" fill="url(#owl-head)"/>
+      <circle cx="76" cy="92" r="30" fill="url(#owl-belly)"/>
+      <circle cx="124" cy="92" r="30" fill="url(#owl-belly)"/>
+
+      <g data-joint="eyeL" data-pivot="76 92">
+        <circle cx="76" cy="92" r="21" fill="#fff"/>
+        <g data-joint="pupilL" data-pivot="76 92">
+          <circle cx="76" cy="92" r="13" fill="url(#owl-iris)"/>
+          <circle cx="76" cy="92" r="6.5" fill="#1b1008"/>
+          <circle cx="72" cy="87" r="2.6" fill="#fff" opacity="0.9"/>
+        </g>
+      </g>
+      <g data-joint="eyeR" data-pivot="124 92">
+        <circle cx="124" cy="92" r="21" fill="#fff"/>
+        <g data-joint="pupilR" data-pivot="124 92">
+          <circle cx="124" cy="92" r="13" fill="url(#owl-iris)"/>
+          <circle cx="124" cy="92" r="6.5" fill="#1b1008"/>
+          <circle cx="120" cy="87" r="2.6" fill="#fff" opacity="0.9"/>
+        </g>
+      </g>
+      <g data-joint="lidL" data-pivot="76 71" style="transform: scaleY(0)">
+        <circle cx="76" cy="92" r="22" fill="#8f5a25"/>
+      </g>
+      <g data-joint="lidR" data-pivot="124 71" style="transform: scaleY(0)">
+        <circle cx="124" cy="92" r="22" fill="#8f5a25"/>
+      </g>
+      <path d="M86 84 q-10 -6 -20 2" stroke="#5e3613" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M114 84 q10 -6 20 2" stroke="#5e3613" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+      <path d="M100 100 L91 112 L109 112 Z" fill="url(#owl-beak)"/>
+      <g data-joint="mouth" data-pivot="100 112">
+        <g data-mouth="closed"><path d="M92 113 Q100 118 108 113" stroke="#a85d00" stroke-width="2.2" stroke-linecap="round" fill="none"/></g>
+        <g data-mouth="mid"><path d="M92 112 Q100 124 108 112 Z" fill="#4a1d10"/><path d="M92 112 Q100 120 108 112" fill="#d97b06"/></g>
+        <g data-mouth="open"><path d="M91 112 Q100 132 109 112 Z" fill="#4a1d10"/><ellipse cx="100" cy="124" rx="4.5" ry="3" fill="#f0748c"/></g>
+        <g data-mouth="smile"><path d="M89 112 Q100 126 111 112" stroke="#a85d00" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M92 113 Q100 122 108 113 Z" fill="#4a1d10" opacity="0.7"/></g>
+        <g data-mouth="sad"><path d="M92 118 Q100 111 108 118" stroke="#a85d00" stroke-width="2.4" stroke-linecap="round" fill="none"/></g>
+      </g>
+    </g>
+  </g>
+</svg>
