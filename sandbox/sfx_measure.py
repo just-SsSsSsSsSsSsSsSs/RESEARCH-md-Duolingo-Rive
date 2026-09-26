@@ -125,7 +125,7 @@ async def main():
         # ---------------- mix (offline) ----------------
         mix = await pg.evaluate("""async () => {
           const { renderOffline } = await import('./engine/sound.js');
-          const spec = await (await fetch('companions/owl.motion.json?v=k5')).json();
+          const spec = await (await fetch('companions/owl.motion.json?v=k9')).json();
           const out = { cues: {}, overlap: null, duckDb: spec.sound.duckDb };
           for (const name of Object.keys(spec.sound.cues)) out.cues[name] = await renderOffline(spec.sound, [name]);
           out.overlap = await renderOffline(spec.sound, ['land', 'boing', 'chime', 'flap', 'takeoff'], { overlap: true });

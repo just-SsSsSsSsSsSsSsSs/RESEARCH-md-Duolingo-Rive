@@ -88,10 +88,12 @@
   import './engine/flight.js';
   import { CharacterStates, validateSpec } from './engine/states.js';
   import { Foley } from './engine/foley.js';
+  import { PoseLayer, validatePoses } from './engine/poses.js';
   import { SoundBus } from './engine/sound.js';
 
   const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
   const params = new URLSearchParams(location.search);
+  const ACTING = params.get('acting') !== '0';   // K9 feature flag: ?acting=0 restores the K8 behaviour exactly
   let art = params.get('art') === 'p1' ? 'p1' : 'p2';
   let FILES = ART[art];
   let count = Number(params.get('n')) || 1;
@@ -104,9 +106,11 @@
   let SPEC = null;
   async function loadSpec() {
     if (SPEC) return SPEC;
-    const res = await fetch('companions/owl.motion.json?v=k5');
+    const res = await fetch('companions/owl.motion.json?v=k9');
     SPEC = await res.json();
     const v = validateSpec(SPEC);
+    const pp = validatePoses(SPEC, ['root','body','head','eyeL','eyeR','pupilL','pupilR','lidL','lidR','mouth','armL','armR','legL','legR','shadow']);
+    if (pp.length) { v.ok = false; v.problems.push(...pp); }
     if (!v.ok) console.warn('spec problems', v.problems);
     window.__specCheck = v;
     return SPEC;
@@ -144,7 +148,7 @@
 
   async function build(n) {
     count = n; FILES = ART[art];
-    rigs.forEach((r) => { if (r.states) r.states.dispose(); r.dispose(); });
+    rigs.forEach((r) => { if (r.states) r.states.dispose(); if (r.poses) r.poses.dispose(); r.dispose(); });
     rigs = [];
     if (foley) { foley.dispose(); foley = null; }
     stage.replaceChildren(); traceSvg = null;
@@ -164,7 +168,8 @@
         tag.textContent = NAMES[rig.svg.dataset.companion] || '';
         slot.appendChild(tag);
         slot.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); tapReact(rig, slot); });
-        if (useV2) { rig.trace = makeTracer(slot); rig.states = new CharacterStates(rig, spec); rig.states.on((ev) => { if (ev.type === 'enter') slot.dataset.state = ev.to; }); if (foley) foley.attach(rig, rig.states); }
+        if (useV2) { rig.trace = makeTracer(slot); rig.states = new CharacterStates(rig, spec); rig.states.on((ev) => { if (ev.type === 'enter') slot.dataset.state = ev.to; }); if (foley) foley.attach(rig, rig.states);
+          if (ACTING && spec.acting && spec.acting.enabled !== false) rig.poses = new PoseLayer(rig, spec); }   // K9 acting layer, flag ?acting=0
         return rig;
       }));
     }

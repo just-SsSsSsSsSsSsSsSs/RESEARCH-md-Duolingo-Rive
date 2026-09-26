@@ -121,8 +121,11 @@ export function validatePoses(spec, knownJoints) {
     }
     if (p.mouth && spec.mouth && spec.mouth.shapes && !spec.mouth.shapes.includes(p.mouth)) problems.push(`pose ${name}: unknown mouth ${p.mouth}`);
   }
-  for (const [st, s] of Object.entries(spec.states || {})) {
+  const list = (spec.states && spec.states.list) || {};
+  for (const [st, s] of Object.entries(list)) {
+    if (!s || typeof s !== 'object') continue;
     for (const b of (s.beats || [])) if (!poses[b.pose]) problems.push(`state ${st}: beat references unknown pose ${b.pose}`);
+    if (s.pose && !poses[s.pose]) problems.push(`state ${st}: unknown pose ${s.pose}`);
   }
   return problems;
 }
