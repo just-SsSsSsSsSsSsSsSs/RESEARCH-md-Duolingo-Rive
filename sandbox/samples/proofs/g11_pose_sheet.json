@@ -1,0 +1,86 @@
+{
+  "captured_at": "2026-09-26T19:14:34Z",
+  "dpr": 2,
+  "poses": {
+    "alert": {
+      "joints_applied": {
+        "pupilL": "translate(3px, -2px)",
+        "pupilR": "translate(2.59005px, -2px)",
+        "head": "translate(0px, -3px) rotate(-6deg)",
+        "body": "scale(0.985, 1.03)",
+        "armL": "rotate(6deg)",
+        "armR": "rotate(-3.4534deg)"
+      },
+      "mouth": "closed"
+    },
+    "charged": {
+      "joints_applied": {
+        "pupilL": "translate(0px, -3px)",
+        "pupilR": "translate(0px, -3px)",
+        "head": "translate(0px, 6px) rotate(4deg)",
+        "body": "translate(0px, 8px) scale(1.12, 0.86)",
+        "armL": "rotate(26deg)",
+        "armR": "rotate(-23.0845deg)",
+        "legL": "rotate(-8deg)",
+        "legR": "rotate(10.493deg)"
+      },
+      "mouth": "closed"
+    },
+    "launch": {
+      "joints_applied": {
+        "pupilL": "translate(0px, -4px)",
+        "pupilR": "translate(0px, -4px)",
+        "head": "translate(0px, -10px) rotate(-12deg)",
+        "body": "translate(0px, -14px) scale(0.9, 1.16)",
+        "armL": "translate(0px, -6px) rotate(-58deg)",
+        "armR": "translate(0px, -6px) rotate(48.7921deg)",
+        "legL": "rotate(22deg)",
+        "legR": "rotate(13.1363deg)"
+      },
+      "mouth": "smile"
+    },
+    "puzzled": {
+      "joints_applied": {
+        "pupilL": "translate(-5px, -5px)",
+        "pupilR": "translate(-5.25102px, -5px)",
+        "head": "translate(-3px, 2px) rotate(-19deg)",
+        "body": "rotate(3deg) scale(0.98, 1)",
+        "armL": "rotate(-14deg)",
+        "armR": "translate(0px, -16px) rotate(35.7069deg)",
+        "legL": "translate(0px, 0px)",
+        "legR": "translate(0px, 0px)",
+        "lidL": "translate(0px, 3px)"
+      },
+      "mouth": "mid"
+    },
+    "triumph": {
+      "joints_applied": {
+        "pupilL": "translate(0px, -4px)",
+        "pupilR": "translate(0px, -4px)",
+        "head": "translate(0px, -8px) rotate(8deg)",
+        "body": "translate(0px, -6px) scale(0.95, 1.1)",
+        "armL": "translate(0px, -10px) rotate(-74deg)",
+        "armR": "translate(0px, -10px) rotate(71.4792deg)",
+        "legL": "rotate(-12deg)",
+        "legR": "rotate(12.2536deg)",
+        "lidL": "translate(0px, 0px)"
+      },
+      "mouth": "open"
+    },
+    "oops": {
+      "joints_applied": {
+        "pupilL": "translate(6px, 2px)",
+        "pupilR": "translate(6.84305px, 2px)",
+        "head": "translate(6px, 4px) rotate(14deg)",
+        "body": "translate(5px, 0px) rotate(-6deg) scale(1.05, 0.94)",
+        "armL": "rotate(40deg)",
+        "armR": "rotate(13.6861deg)",
+        "legL": "rotate(6deg)",
+        "legR": "translate(0px, 0px)",
+        "lidL": "translate(0px, 0px)"
+      },
+      "mouth": "sad"
+    }
+  },
+  "sheet": "g11_pose_sheet.png"
+}
