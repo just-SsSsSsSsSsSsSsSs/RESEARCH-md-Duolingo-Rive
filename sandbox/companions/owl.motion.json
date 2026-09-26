@@ -3,82 +3,285 @@
   "name": "حكيمة",
   "art": "companions/owl_p2.svg",
   "flyer": true,
-
   "hierarchy": {
     "comment": "overlapping action: each joint follows its parent's motion with a delay (ms) and a gain",
-    "body": { "parent": "root", "delayMs": 40, "gain": 0.9 },
-    "head": { "parent": "body", "delayMs": 110, "gain": 0.75 },
-    "eyes": { "parent": "head", "delayMs": 60, "gain": 0.5 }
+    "body": {
+      "parent": "root",
+      "delayMs": 40,
+      "gain": 0.9
+    },
+    "head": {
+      "parent": "body",
+      "delayMs": 110,
+      "gain": 0.75
+    },
+    "eyes": {
+      "parent": "head",
+      "delayMs": 60,
+      "gain": 0.5
+    }
   },
-
   "secondary": {
     "comment": "spring-damper groups driven by the character's own velocity/acceleration. k stiffness (1/s^2), c damping (1/s), gainV deg per (px/ms), gainA deg per (px/ms^2), axis of the driving component, limit deg, settleMs how long the solver keeps running after the primary motion stops",
-    "armL": { "k": 180, "c": 16, "gainV": -38, "gainA": -220, "axis": "y", "limit": 55, "settleMs": 900 },
-    "armR": { "k": 180, "c": 16, "gainV": 38, "gainA": 220, "axis": "y", "limit": 55, "settleMs": 900 },
-    "head": { "k": 260, "c": 20, "gainV": -6, "gainA": -60, "axis": "x", "limit": 14, "settleMs": 700 },
-    "legL": { "k": 120, "c": 10, "gainV": -22, "gainA": -90, "axis": "x", "limit": 40, "settleMs": 1100 },
-    "legR": { "k": 120, "c": 10, "gainV": -22, "gainA": -90, "axis": "x", "limit": 40, "settleMs": 1100 }
+    "armL": {
+      "k": 180,
+      "c": 16,
+      "gainV": -38,
+      "gainA": -220,
+      "axis": "y",
+      "limit": 55,
+      "settleMs": 900
+    },
+    "armR": {
+      "k": 180,
+      "c": 16,
+      "gainV": 38,
+      "gainA": 220,
+      "axis": "y",
+      "limit": 55,
+      "settleMs": 900
+    },
+    "head": {
+      "k": 260,
+      "c": 20,
+      "gainV": -6,
+      "gainA": -60,
+      "axis": "x",
+      "limit": 14,
+      "settleMs": 700
+    },
+    "legL": {
+      "k": 120,
+      "c": 10,
+      "gainV": -22,
+      "gainA": -90,
+      "axis": "x",
+      "limit": 40,
+      "settleMs": 1100
+    },
+    "legR": {
+      "k": 120,
+      "c": 10,
+      "gainV": -22,
+      "gainA": -90,
+      "axis": "x",
+      "limit": 40,
+      "settleMs": 1100
+    }
   },
-
   "squash": {
     "comment": "volume preserving: scaleX = 1 / scaleY. Landing is a spring towards 1 from the impact value",
-    "landing": { "scaleY": 0.8, "k": 320, "c": 14 },
-    "takeoffCrouch": { "scaleY": 0.86, "holdMs": [150, 250] },
-    "takeoffStretch": { "scaleY": 1.12, "ms": 140 },
-    "jump": { "scaleY": 0.84, "stretch": 1.1 }
+    "landing": {
+      "scaleY": 0.8,
+      "k": 320,
+      "c": 14
+    },
+    "takeoffCrouch": {
+      "scaleY": 0.86,
+      "holdMs": [
+        150,
+        250
+      ]
+    },
+    "takeoffStretch": {
+      "scaleY": 1.12,
+      "ms": 140
+    },
+    "jump": {
+      "scaleY": 0.84,
+      "stretch": 1.1
+    }
   },
-
   "timing": {
     "comment": "ranges [min,max] ms - sampled per performance so no two are identical",
-    "breath": [2600, 3400],
-    "blinkGap": [1800, 4200],
+    "breath": [
+      2600,
+      3400
+    ],
+    "blinkGap": [
+      1800,
+      4200
+    ],
     "doubleBlinkChance": 0.2,
-    "lookGap": [2500, 6000],
-    "lookHold": [900, 1800],
-    "flightMsPerPx": [2.8, 3.6],
+    "lookGap": [
+      2500,
+      6000
+    ],
+    "lookHold": [
+      900,
+      1800
+    ],
+    "flightMsPerPx": [
+      2.8,
+      3.6
+    ],
     "flightMinMs": 1400,
     "flightMaxMs": 3800,
-    "flapMs": [150, 185],
-    "idleWingbeatMs": [110, 130]
+    "flapMs": [
+      150,
+      185
+    ],
+    "idleWingbeatMs": [
+      110,
+      130
+    ]
   },
-
   "flight": {
     "comment": "arcs: cubic Bezier lifted above the chord. apexLift = fraction of chord length; apexSkew = where along the chord the apex sits; bank deg per (px/ms) of horizontal velocity",
-    "apexLift": [0.28, 0.42],
-    "apexSkew": [0.35, 0.65],
+    "apexLift": [
+      0.28,
+      0.42
+    ],
+    "apexSkew": [
+      0.35,
+      0.65
+    ],
     "bankPerVx": 55,
     "bankLimit": 24,
     "rollIfDistOver": 260,
     "rollMs": 620,
-    "glidePhase": [0.45, 0.7],
+    "glidePhase": [
+      0.45,
+      0.7
+    ],
     "easing": "cubic-bezier(.35,.05,.25,1)"
   },
-
   "gaze": {
     "comment": "secondary action while talking: head and gaze react to the audio envelope, not to a fixed loop",
     "envelopeToHeadTilt": 3.5,
     "envelopeToHeadLift": -2.0,
     "onsetThreshold": 0.55,
-    "onsetGazeShift": [3, 5],
+    "onsetGazeShift": [
+      3,
+      5
+    ],
     "onsetBlinkChance": 0.18,
     "phraseEndNodChance": 0.6
   },
-
-  "mouth": { "levels": { "closed": 0.18, "mid": 0.28, "open": 0.62 } },
-
+  "mouth": {
+    "levels": {
+      "closed": 0.18,
+      "mid": 0.28,
+      "open": 0.62
+    }
+  },
   "states": {
     "comment": "three concurrent layers; each state names a clip per layer; transitions blend out over blendMs; next = auto transition when the body clip ends",
-    "layers": ["body", "mouth", "gaze"],
+    "layers": [
+      "body",
+      "mouth",
+      "gaze"
+    ],
     "initial": "idle",
     "blendMs": 220,
     "list": {
-      "idle": { "body": "breathe", "mouth": "closed", "gaze": "wander" },
-      "greet": { "body": "wave", "mouth": "smile", "gaze": "toUser", "next": "idle" },
-      "talk": { "body": "bob", "mouth": "envelope", "gaze": "conversational" },
-      "think": { "body": "ponder", "mouth": "mid", "gaze": "rollUp", "next": "idle" },
-      "celebrate": { "body": "jumpJoy", "mouth": "smileOpen", "gaze": "toUser", "next": "idle" },
-      "wrong": { "body": "recoil", "mouth": "oops", "gaze": "dizzy", "next": "idle" },
-      "fly": { "body": "flight", "mouth": "smile", "gaze": "ahead", "next": "idle" }
+      "idle": {
+        "body": "breathe",
+        "mouth": "closed",
+        "gaze": "wander",
+        "sfx": {
+          "enter": null,
+          "blink": "blink",
+          "breath": null
+        },
+        "vfx": {
+          "blink": "glint"
+        }
+      },
+      "greet": {
+        "body": "wave",
+        "mouth": "smile",
+        "gaze": "toUser",
+        "next": "idle",
+        "sfx": {
+          "enter": "chime"
+        },
+        "vfx": {
+          "enter": "stars"
+        }
+      },
+      "talk": {
+        "body": "bob",
+        "mouth": "envelope",
+        "gaze": "conversational",
+        "sfx": {
+          "enter": null,
+          "duck": true
+        },
+        "vfx": {}
+      },
+      "think": {
+        "body": "ponder",
+        "mouth": "mid",
+        "gaze": "rollUp",
+        "next": "idle",
+        "sfx": {
+          "enter": "hmm",
+          "beat": "tick",
+          "beatMs": 700
+        },
+        "vfx": {
+          "enter": "question"
+        }
+      },
+      "celebrate": {
+        "body": "jumpJoy",
+        "mouth": "smileOpen",
+        "gaze": "toUser",
+        "next": "idle",
+        "sfx": {
+          "enter": "chime",
+          "land": "boing"
+        },
+        "vfx": {
+          "enter": "stars",
+          "land": "dust"
+        }
+      },
+      "wrong": {
+        "body": "recoil",
+        "mouth": "oops",
+        "gaze": "dizzy",
+        "next": "idle",
+        "sfx": {
+          "enter": "aww"
+        },
+        "vfx": {
+          "enter": "sweat"
+        }
+      },
+      "fly": {
+        "body": "flight",
+        "mouth": "smile",
+        "gaze": "ahead",
+        "next": "idle",
+        "sfx": {
+          "anticipate": "crouch",
+          "takeoff": "takeoff",
+          "flap": "flap",
+          "cruise": "whoosh",
+          "land": "land",
+          "settle": "settle",
+          "after": "pant"
+        },
+        "vfx": {
+          "takeoff": "speedLines",
+          "land": "dust"
+        }
+      },
+      "rest": {
+        "body": "breathe",
+        "mouth": "closed",
+        "gaze": "wander",
+        "sfx": {
+          "enter": "snore",
+          "loopMs": 3200
+        },
+        "vfx": {
+          "enter": "zzz",
+          "loopMs": 2400
+        }
+      }
     },
     "events": {
       "lesson:start": "greet",
@@ -88,8 +291,287 @@
       "answer:correct": "celebrate",
       "answer:wrong": "wrong",
       "move:to": "fly",
-      "user:tap": "@variety"
+      "user:tap": "@variety",
+      "idle:long": "rest",
+      "wake": "idle"
     },
-    "variety": { "pool": ["celebrate", "fly", "think", "greet", "wrong", "talk"], "noRepeat": true }
+    "variety": {
+      "pool": [
+        "celebrate",
+        "fly",
+        "think",
+        "greet",
+        "wrong",
+        "talk"
+      ],
+      "noRepeat": true
+    },
+    "idleToRestMs": 14000
+  },
+  "sound": {
+    "comment": "Sound DNA - procedural Web Audio only, zero assets. Cues reference generator types in engine/sound.js; every number here shapes the character's voice.",
+    "baseHz": 330,
+    "voiceDetune": 0.04,
+    "master": 0.6,
+    "duckDb": -9,
+    "polyphony": 3,
+    "sameCueGapMs": 120,
+    "cues": {
+      "breath": {
+        "gen": "noise",
+        "color": "pink",
+        "hz": 300,
+        "q": 0.7,
+        "a": 0.6,
+        "d": 0.9,
+        "gain": 0.05,
+        "priority": 0
+      },
+      "blink": {
+        "gen": "tone",
+        "wave": "sine",
+        "hz": 1800,
+        "slide": -0.3,
+        "a": 0.002,
+        "d": 0.05,
+        "gain": 0.06,
+        "priority": 0
+      },
+      "crouch": {
+        "gen": "tone",
+        "wave": "triangle",
+        "hz": 260,
+        "slide": -0.35,
+        "a": 0.01,
+        "d": 0.16,
+        "gain": 0.18,
+        "priority": 1
+      },
+      "takeoff": {
+        "gen": "noise",
+        "color": "white",
+        "hz": 900,
+        "q": 1.2,
+        "sweep": 2.2,
+        "a": 0.02,
+        "d": 0.28,
+        "gain": 0.22,
+        "priority": 2
+      },
+      "flap": {
+        "gen": "noise",
+        "color": "brown",
+        "hz": 420,
+        "q": 0.9,
+        "a": 0.012,
+        "d": 0.11,
+        "gain": 0.16,
+        "priority": 1,
+        "rustle": {
+          "hz": 3200,
+          "gain": 0.05,
+          "d": 0.06
+        }
+      },
+      "whoosh": {
+        "gen": "noise",
+        "color": "white",
+        "hz": 600,
+        "q": 1.5,
+        "sweep": 1.8,
+        "a": 0.08,
+        "d": 0.5,
+        "gain": 0.12,
+        "priority": 1,
+        "pitchFromVy": 0.35
+      },
+      "land": {
+        "gen": "thud",
+        "hz": 110,
+        "slide": -0.5,
+        "a": 0.003,
+        "d": 0.14,
+        "gain": 0.3,
+        "priority": 3,
+        "click": {
+          "hz": 2400,
+          "d": 0.02,
+          "gain": 0.12
+        }
+      },
+      "boing": {
+        "gen": "tone",
+        "wave": "sine",
+        "hz": 220,
+        "wobbleHz": 14,
+        "wobbleDepth": 0.25,
+        "a": 0.005,
+        "d": 0.32,
+        "gain": 0.2,
+        "priority": 2
+      },
+      "settle": {
+        "gen": "tone",
+        "wave": "sine",
+        "hz": 660,
+        "slide": -0.15,
+        "a": 0.02,
+        "d": 0.4,
+        "gain": 0.05,
+        "priority": 0
+      },
+      "hmm": {
+        "gen": "tone",
+        "wave": "triangle",
+        "hz": 196,
+        "slide": 0.18,
+        "a": 0.08,
+        "d": 0.55,
+        "gain": 0.16,
+        "priority": 2,
+        "vibratoHz": 5,
+        "vibratoDepth": 0.02
+      },
+      "tick": {
+        "gen": "tone",
+        "wave": "square",
+        "hz": 2600,
+        "a": 0.001,
+        "d": 0.03,
+        "gain": 0.04,
+        "priority": 0
+      },
+      "chime": {
+        "gen": "chord",
+        "wave": "sine",
+        "notes": [
+          523.25,
+          659.25,
+          783.99,
+          1046.5
+        ],
+        "spreadMs": 70,
+        "a": 0.005,
+        "d": 0.7,
+        "gain": 0.2,
+        "priority": 3
+      },
+      "sparkle": {
+        "gen": "tone",
+        "wave": "sine",
+        "hz": 2093,
+        "slide": 0.4,
+        "a": 0.002,
+        "d": 0.18,
+        "gain": 0.08,
+        "priority": 1,
+        "count": 4,
+        "gapMs": 60
+      },
+      "aww": {
+        "gen": "tone",
+        "wave": "triangle",
+        "hz": 392,
+        "slide": -0.45,
+        "a": 0.04,
+        "d": 0.6,
+        "gain": 0.18,
+        "priority": 3,
+        "wobbleHz": 6,
+        "wobbleDepth": 0.08
+      },
+      "pant": {
+        "gen": "noise",
+        "color": "pink",
+        "hz": 700,
+        "q": 1.0,
+        "a": 0.03,
+        "d": 0.12,
+        "gain": 0.07,
+        "priority": 0,
+        "count": 3,
+        "gapMs": 260
+      },
+      "snore": {
+        "gen": "noise",
+        "color": "brown",
+        "hz": 180,
+        "q": 0.8,
+        "a": 0.5,
+        "d": 0.7,
+        "gain": 0.07,
+        "priority": 0
+      },
+      "gulp": {
+        "gen": "tone",
+        "wave": "sine",
+        "hz": 240,
+        "slide": -0.6,
+        "a": 0.01,
+        "d": 0.12,
+        "gain": 0.12,
+        "priority": 1
+      }
+    }
+  },
+  "vfx": {
+    "comment": "VFX catalogue names used by states; drawn on one shared SVG layer per stage, transform/opacity only, pooled nodes.",
+    "dust": {
+      "count": 5,
+      "radius": [
+        3,
+        6
+      ],
+      "spread": 26,
+      "rise": 10,
+      "ms": 420,
+      "color": "#c9b58a"
+    },
+    "speedLines": {
+      "count": 4,
+      "length": [
+        18,
+        34
+      ],
+      "ms": 260,
+      "color": "#ffffff",
+      "opacity": 0.45
+    },
+    "stars": {
+      "count": 7,
+      "radius": [
+        3,
+        5
+      ],
+      "spread": 70,
+      "rise": 60,
+      "ms": 900,
+      "colors": [
+        "#ffd166",
+        "#ff7b9c",
+        "#7bdff2",
+        "#c3f584"
+      ]
+    },
+    "question": {
+      "ms": 1800,
+      "bob": 6,
+      "color": "#ffd166"
+    },
+    "zzz": {
+      "count": 3,
+      "ms": 2400,
+      "rise": 46,
+      "drift": 14,
+      "color": "#9fb3ff"
+    },
+    "glint": {
+      "ms": 160,
+      "color": "#ffffff"
+    },
+    "sweat": {
+      "ms": 700,
+      "color": "#7bdff2"
+    }
   }
 }

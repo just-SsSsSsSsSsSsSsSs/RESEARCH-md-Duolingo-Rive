@@ -14,6 +14,8 @@
 import { REDUCED } from '../rig.js?v=g4';
 
 const noop = () => null;
+/** Generator types implemented by engine/sound.js (kept here so validateSpec stays DOM-free). */
+const GENS = new Set(['tone', 'noise', 'thud', 'chord']);
 
 const CLIPS = {
   body: {
@@ -149,6 +151,23 @@ export function validateSpec(spec) {
       if (target !== '@variety' && !S.list[target]) problems.push(`event ${ev} -> undefined state ${target}`);
     }
     if (S.variety) for (const p of S.variety.pool || []) if (!S.list[p]) problems.push(`variety pool has undefined state ${p}`);
+    // K8: every sfx cue must exist in sound.cues, every vfx name in the vfx catalogue (data-only extension test)
+    const cues = (spec.sound && spec.sound.cues) || {};
+    const vfx = spec.vfx || {};
+    for (const [name, st] of Object.entries(S.list || {})) {
+      for (const [phase, cue] of Object.entries(st.sfx || {})) {
+        if (typeof cue === 'string' && !cues[cue]) problems.push(`state ${name}: sfx.${phase} -> unknown cue "${cue}"`);
+      }
+      for (const [phase, fx] of Object.entries(st.vfx || {})) {
+        if (typeof fx === 'string' && !vfx[fx]) problems.push(`state ${name}: vfx.${phase} -> unknown vfx "${fx}"`);
+      }
+    }
+    for (const [cueName, c] of Object.entries(cues)) {
+      if (!c || typeof c !== 'object') continue;
+      if (!GENS.has(c.gen)) problems.push(`sound.cues.${cueName}: unknown generator "${c.gen}"`);
+      if (!(c.gain > 0 && c.gain <= 1)) problems.push(`sound.cues.${cueName}: gain must be in (0,1]`);
+      if (!(c.d > 0)) problems.push(`sound.cues.${cueName}: d (decay s) must be > 0`);
+    }
   }
   if (spec && spec.secondary) {
     for (const [g, s] of Object.entries(spec.secondary)) {
