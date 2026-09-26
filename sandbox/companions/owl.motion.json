@@ -305,12 +305,14 @@
           "land": "land",
           "settle": "settle",
           "after": "pant",
-          "roll": "whoosh"
+          "roll": "whoosh",
+          "intent": null
         },
         "vfx": {
           "takeoff": "speedLines",
           "land": "dust",
-          "roll": "speedLines"
+          "roll": "speedLines",
+          "intent": null
         }
       },
       "rest": {
@@ -671,7 +673,37 @@
       "headTiltDeg": 4,
       "comment": "one lid closes fully, the other squints 22 pct; open pupil leans to the winking side; head tilts 4 deg (overlap)"
     },
-    "escalationComment": "consumed by rig.escalate(channel): small most of the time, medium every 3rd, large every 7th; channels: flight, celebrate"
+    "escalationComment": "consumed by rig.escalate(channel): small most of the time, medium every 3rd, large every 7th; channels: flight, celebrate",
+    "intent": {
+      "comment": "K9.3 intent: look before you leap. Before every flight the pupils snap toward the target (eyes first), the head turns after headLagMs (P1 Zangemeister-Stark 1982: normal eye-head latency 40-50 ms), then the body crouches after bodyLagMs (P2 Fang 2015: a fixation-saccade cycle is >= 200 ms). Budgets are declared here and measured by sandbox/intent_proof.py; ?intent=0 disables for A/B.",
+      "enabled": true,
+      "gazeSnapMs": [
+        40,
+        70
+      ],
+      "gazeFractionOfDart": 0.85,
+      "headLagMs": [
+        40,
+        50
+      ],
+      "headDeg": 5,
+      "headMs": 220,
+      "bodyLagMs": [
+        120,
+        200
+      ],
+      "landRecentreMs": 100,
+      "settleDegTarget": 0.5,
+      "settleWithinMs": 400,
+      "budget": {
+        "preTakeoffMs": [
+          350,
+          600
+        ],
+        "gazeDirectionMatch": 0.6,
+        "asymMinPx": 0.3
+      }
+    }
   },
   "poses": {
     "comment": "Six signature poses (G11 pose sheet). Channels per joint: rot deg, x/y px, sx/sy scale, skew deg. lids 0 open .. 1 closed. Poses are additive on top of breath/physics.",

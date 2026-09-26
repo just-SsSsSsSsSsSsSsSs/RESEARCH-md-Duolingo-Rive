@@ -109,6 +109,11 @@ export function validateActing(spec) {
   if (A.wink && A.wink.ms !== undefined && !(A.wink.ms > 0)) problems.push('acting.wink.ms must be > 0');
   if (G.saccade) { if (!(G.saccade.ampPx > 0)) problems.push('gaze.saccade.ampPx must be > 0'); if (!Array.isArray(G.saccade.everyMs)) problems.push('gaze.saccade.everyMs must be [min,max]'); }
   if (G.dart) { if (G.dart.ampPx && !Array.isArray(G.dart.ampPx)) problems.push('gaze.dart.ampPx must be [min,max]'); }
+  if (A.intent && A.intent.enabled !== false) {                        // K9.3 intent budgets must be well-formed, or the spec is rejected
+    for (const k of ['gazeSnapMs', 'headLagMs', 'bodyLagMs']) if (!Array.isArray(A.intent[k]) || A.intent[k].length !== 2 || !(A.intent[k][0] <= A.intent[k][1])) problems.push(`acting.intent.${k} must be [min,max]`);
+    for (const k of ['headDeg', 'headMs', 'landRecentreMs', 'settleDegTarget', 'settleWithinMs']) if (!(typeof A.intent[k] === 'number' && A.intent[k] > 0)) problems.push(`acting.intent.${k} must be a number > 0`);
+    if (A.intent.headLagMs && A.intent.bodyLagMs && !(A.intent.headLagMs[1] <= A.intent.bodyLagMs[0])) problems.push('acting.intent: head must lead the body (headLagMs.max <= bodyLagMs.min)');
+  }
   if (spec.flight && spec.flight.roll) for (const k of ['small', 'medium', 'large']) if (!['bank', 'roll', 'rollFlip'].includes(spec.flight.roll[k])) problems.push(`flight.roll.${k} must be bank | roll | rollFlip`);
   return problems;
 }
