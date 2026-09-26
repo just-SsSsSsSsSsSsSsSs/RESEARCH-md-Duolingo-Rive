@@ -17,15 +17,15 @@
   button:active { transform:translateY(1px); box-shadow:none }
   button.primary { background:var(--accent); color:#111 }
   button[aria-pressed="true"] { outline:3px solid var(--ok) }
-  #stage { display:grid; gap:12px; padding:10px 16px 24px; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); align-items:end; justify-items:center; min-height:min(64dvh, 560px); position:relative; overflow:hidden }
+  #stage { display:grid; gap:12px; padding:10px 16px 24px; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); align-items:end; justify-items:center; min-height:min(64dvh, 560px); position:relative; overflow:visible; padding-top:200px }
   #stage.sky { background:linear-gradient(180deg,#0000 0%, #0002 100%); border-radius:24px; margin:0 12px }
   #stage.sky::before { content:""; position:absolute; inset:auto 0 0 0; height:14%; background:linear-gradient(180deg,#0000,#0b1224); }
   .slot { width:100%; max-width:220px; aspect-ratio:200/240; background:linear-gradient(180deg,#0000 60%, #0003); border-radius:20px; position:relative; overflow:visible; will-change:transform; transform-origin:50% 60% }
   .slot.flying, .slot:has(svg) { z-index:5 }
   #stage.sky .slot { background:none }
   .perch { position:absolute; display:grid; place-items:center; background:#ffffff14; border:1px solid #ffffff2a; border-radius:16px; color:#fff; font-weight:800; pointer-events:none; direction:ltr }
-  .perch.card { left:6%; top:14%; width:min(34%,220px); height:72px; font-size:22px }
-  .perch.answer { right:8%; top:22%; width:min(22%,120px); height:56px; font-size:20px; background:#22c55e33; border-color:#22c55e66 }
+  .perch.card { left:6%; top:42%; width:min(34%,220px); height:72px; font-size:22px }
+  .perch.answer { right:8%; top:48%; width:min(22%,120px); height:56px; font-size:20px; background:#22c55e33; border-color:#22c55e66 }
   #stage:not(.sky) .perch { display:none }
   .star { position:absolute; width:3px; height:3px; border-radius:50%; background:#fff; opacity:.5; animation:tw 3s ease-in-out infinite alternate }
   @keyframes tw { from { opacity:.15 } to { opacity:.7 } }
@@ -68,10 +68,7 @@
   <button data-act="auto" id="autoBtn" aria-pressed="true">حياة تلقائية: تعمل</button>
 </div>
 
-<main id="stage" aria-live="polite">
-  <div class="perch card" id="perch-card" aria-hidden="true"><span>7 x 8 = ?</span></div>
-  <div class="perch answer" id="perch-answer" aria-hidden="true"><span>56</span></div>
-</main>
+<main id="stage" aria-live="polite"></main>
 <p id="note">التركيز الحالي: «حكيمة» البومة (P2 طبقات مجسمة). اضغط عليها لتفاعل مختلف كل مرة؛ تطير وتدور وتحط من تلقاء نفسها كل بضع ثوان. P1 الهندسي يبقى كمرجع اختبار فقط.</p>
 <div id="hud" aria-hidden="true">fps --</div>
 
@@ -109,7 +106,7 @@
     }
     rigs = await Promise.all(jobs);
     stage.classList.toggle('sky', art === 'p2');
-    if (art === 'p2') sprinkleStars();
+    if (art === 'p2') { sprinkleStars(); addPerches(); }
     window.__rigs = rigs;
     document.dispatchEvent(new CustomEvent('rigs-ready', { detail: { n } }));
   }
@@ -197,6 +194,14 @@
     lifeTick();
   });
   document.addEventListener('rigs-ready', lifeTick);
+
+  // Mock lesson elements the owl can perch on (decorative, aria-hidden, pointer-events none)
+  function addPerches() {
+    for (const [id, cls, txt] of [['perch-card', 'card', '7 x 8 = ?'], ['perch-answer', 'answer', '56']]) {
+      const d = document.createElement('div'); d.className = 'perch ' + cls; d.id = id; d.setAttribute('aria-hidden', 'true');
+      const sp = document.createElement('span'); sp.textContent = txt; d.appendChild(sp); stage.prepend(d);
+    }
+  }
 
   function sprinkleStars() {
     stage.querySelectorAll('.star').forEach((s) => s.remove());
