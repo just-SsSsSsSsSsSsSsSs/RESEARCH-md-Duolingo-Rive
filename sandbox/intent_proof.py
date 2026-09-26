@@ -32,11 +32,13 @@ async (args) => {
   const SQ = () => { const k = r.squashLayer.effect.getKeyframes()[0].transform; const m = k.match(/scale\(([^,]+),\s*([^)]+)\)/); return m ? +m[2] : 1; };
   const HEADADD = () => (r._intentLayers || []).filter(a => a.effect && a.effect.target === r.j('head')).length;
   const PUPADD = () => (r._intentLayers || []).filter(a => a.effect && /pupil/.test(a.effect.target.dataset.joint || '')).length;
+  const HPROG = () => { const a = (r._intentLayers || []).find(a => a.effect && a.effect.target === r.j('head')); if (!a) return 0; const p = a.effect.getComputedTiming().progress; return p == null ? 0 : p; };
+  const LOOK = () => [...r.live].filter(a => a.effect && a.effect.target && /pupil|head/.test(a.effect.target.dataset.joint || '') && a.effect.getTiming().fill === 'forwards' && !(r._intentLayers || []).includes(a)).length;
   const host = r.svg.parentElement;
   const HOSTX = () => { const t = getComputedStyle(host).transform; const m = t.match(/matrix\(([^)]+)\)/); return m ? +m[1].split(',')[4] : 0; };
   const cues = []; const prev = r.onCue; r.onCue = (ph, ctx) => { cues.push({ ph, t: performance.now(), ctx }); if (prev) prev(ph, ctx); };
   const samples = []; let go = true; const t0 = performance.now();
-  const tick = () => { samples.push({ t: performance.now() - t0, pL: TX('pupilL'), pR: TX('pupilR'), head: ROT('head'), sq: SQ(), hAdd: HEADADD(), pAdd: PUPADD(), hx: HOSTX() }); if (go) requestAnimationFrame(tick); };
+  const tick = () => { samples.push({ t: performance.now() - t0, pL: TX('pupilL'), pR: TX('pupilR'), head: ROT('head'), sq: SQ(), hAdd: HEADADD(), hProg: HPROG(), pAdd: PUPADD(), look: LOOK(), hx: HOSTX() }); if (go) requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
   await new Promise(res => setTimeout(res, 150));
   await r.flyBy(args.dx, args.dy);
@@ -58,7 +60,7 @@ def analyse(run, dx, dy, I):
         return None
     t_eye_obs = first(lambda s: mag(s) > 0.3)                     # first visible pupil displacement (can read late when the snap first cancels an idle drift)
     t_eye = cues.get('intent', t_eye_obs)                          # reference = the intent cue (pupil layers start on this frame); observed kept for disclosure
-    t_head = first(lambda s: s['hAdd'] > 0 and abs(s['head'] - base['head']) > 0.5)
+    t_head = first(lambda s: s['hProg'] > 0.02)                   # intent head layer past its delay (breath-independent: the breath is +-1 deg and would fake a 0.5 deg threshold)
     t_body = first(lambda s: s['sq'] < 0.99)                       # crouch = squash layer keyframe below 1 (breath never touches this layer)
     t_take = cues.get('takeoff'); t_land = cues.get('land')
     dist = (dx * dx + dy * dy) ** 0.5; ux, uy = dx / dist, dy / dist
@@ -72,11 +74,13 @@ def analyse(run, dx, dy, I):
     head_pre = [s['head'] - base['head'] for s in pre if s['hAdd'] > 0]
     head_peak = max(head_pre, key=abs) if head_pre else 0.0
     post = [s for s in S if t_land is not None and s['t'] >= t_land]
-    t_recentre = next((s['t'] - t_land for s in post if s['pAdd'] == 0 and mag(s) < 0.3), None)
+    # after landing the idle look() legitimately takes the pupils/head (random glance); those samples are excluded from recentre/settle and counted
+    t_recentre = next((s['t'] - t_land for s in post if s['pAdd'] == 0 and (mag(s) < 0.3 or s['look'] > 0)), None)
+    idle_look_samples = sum(1 for s in post if s['look'] > 0)
     breath_band = 1.2 + 0.5                                         # idle breath +-1 deg (rig.idle) + tolerance; settle = added layers gone AND inside the band, held to the end
     settled = None
     for i, s in enumerate(post):
-        if s['hAdd'] == 0 and len(post) - i >= 4 and all(abs(q['head'] - base['head']) < breath_band for q in post[i:]):
+        if s['hAdd'] == 0 and len(post) - i >= 4 and all(abs(q['head'] - base['head']) < breath_band for q in post[i:] if q['look'] == 0):
             settled = s['t'] - t_land; break
     dt = [b['t'] - a['t'] for a, b in zip(S, S[1:])]
     return {
@@ -90,7 +94,7 @@ def analyse(run, dx, dy, I):
         'asym_px': round(asym, 3), 'head_peak_deg_pre_takeoff': round(head_peak, 2),
         'head_sign_matches_target': ((head_peak > 0) == (dx > 0)) if abs(head_peak) > 0.5 else False,
         'land_recentre_ms': None if t_recentre is None else round(t_recentre, 1), 'head_settle_ms': None if settled is None else round(settled, 1),
-        'head_max_abs_after_land_deg': round(max((abs(s['head'] - base['head']) for s in post), default=0), 2),
+        'head_max_abs_after_land_deg': round(max((abs(s['head'] - base['head']) for s in post), default=0), 2), 'idle_look_samples_after_land': idle_look_samples,
         'intent_reported': run['intent'],
     }
 
