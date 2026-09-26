@@ -14,7 +14,7 @@ Usage:  python3 tools/serve.py 8080 &  then  python3 sandbox/measure.py [--video
 Output: sandbox/samples/measure.json and a markdown table on stdout.
 Numbers come from the CI/sandbox machine (a proxy), not from a 2-3 GB Android.
 """
-import argparse, asyncio, json, os, statistics, sys, time
+import argparse, asyncio, json, os, platform, statistics, sys, time
 from playwright.async_api import async_playwright
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +36,7 @@ async def heap_mb(cdp):
     d = {x['name']: x['value'] for x in m['metrics']}
     return d.get('JSHeapUsedSize', 0) / 1e6, d.get('Nodes', 0)
 
-async def measure(n, seconds, video_dir, art='p1', engine='v1'):
+async def measure(n, seconds, video_dir, art='p1', engine='v1', cpu_throttle=1.0):
     async with async_playwright() as p:
         b = await p.chromium.launch(args=['--enable-precise-memory-info'])
         ctx_kw = {'viewport': {'width': 900, 'height': 600}}
@@ -57,6 +57,9 @@ async def measure(n, seconds, video_dir, art='p1', engine='v1'):
 
         cdp = await ctx.new_cdp_session(pg)
         await cdp.send('Performance.enable')
+        if cpu_throttle and cpu_throttle > 1:
+            await cdp.send('Emulation.setCPUThrottlingRate', {'rate': cpu_throttle})   # mid-tier device proxy (DevTools "4x slowdown")
+        env = await pg.evaluate("({ua: navigator.userAgent, cores: navigator.hardwareConcurrency, deviceMemoryGb: navigator.deviceMemory || null, dpr: devicePixelRatio, viewport: [innerWidth, innerHeight]})")
         # blank baseline heap in the same renderer
         await pg.goto(BASE + f'index.html?n=0&sw=0&auto=0&art={art}&engine={engine}')
         await pg.wait_for_timeout(500)
@@ -105,7 +108,10 @@ async def measure(n, seconds, video_dir, art='p1', engine='v1'):
             'frames': len(deltas),
             'raf_p50_ms': round(pct(deltas, 0.5), 2),
             'raf_p95_ms': round(pct(deltas, 0.95), 2),
+            'raf_p99_ms': round(pct(deltas, 0.99), 2),
             'raf_max_ms': round(max(deltas), 2),
+            'cpu_throttle': cpu_throttle,
+            'env': env,
             'long_frames_over_33ms': sum(1 for d in deltas if d > 33),
             'jank_frames_over_20ms': sum(1 for d in deltas if d > 20),
             'jank_pct': round(100 * sum(1 for d in deltas if d > 20) / max(1, len(deltas)), 2),
@@ -122,22 +128,26 @@ async def main():
     ap.add_argument('--counts', default='1,3,5')
     ap.add_argument('--art', default='p1', help='p1 geometric | p2 layered parts')
     ap.add_argument('--engine', default='v1', help='v1 reference rig | v2 spec + physics (ADR-001)')
+    ap.add_argument('--cpu', type=float, default=1.0, help='CDP CPU throttling rate (4 = DevTools 4x slowdown, mid-tier proxy)')
     a = ap.parse_args()
     out = []
     for n in [int(x) for x in a.counts.split(',')]:
         vdir = os.path.join(ROOT, 'samples', f'video_{a.art}_{a.engine}_{n}') if (a.video and n == 3) else None
-        r = await measure(n, a.seconds, vdir, a.art, a.engine)
+        r = await measure(n, a.seconds, vdir, a.art, a.engine, a.cpu)
         out.append(r)
         print(json.dumps(r, ensure_ascii=False))
+    host = {'platform': platform.platform(), 'python': platform.python_version(), 'cpu_count': os.cpu_count(),
+            'cpu_model': next((l.split(':', 1)[1].strip() for l in open('/proc/cpuinfo') if l.startswith('model name')), None) if os.path.exists('/proc/cpuinfo') else None,
+            'mem_total_gb': round(int(next(l for l in open('/proc/meminfo') if l.startswith('MemTotal')).split()[1]) / 1048576, 1) if os.path.exists('/proc/meminfo') else None}
     res = {'measured_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'base': BASE,
-           'machine': 'sandbox CI proxy (not a 2-3 GB Android)', 'results': out}
-    name = 'measure.json' if (a.art == 'p1' and a.engine == 'v1') else f'measure_{a.art}_{a.engine}.json'
+           'machine': 'sandbox CI proxy (not a 2-3 GB Android)', 'host': host, 'cpu_throttle': a.cpu, 'browser': out[0]['env']['ua'] if out else None, 'results': out}
+    name = 'measure.json' if (a.art == 'p1' and a.engine == 'v1') else f'measure_{a.art}_{a.engine}' + (f'_cpu{int(a.cpu)}x' if a.cpu > 1 else '') + '.json'
     with open(os.path.join(ROOT, 'samples', name), 'w', encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, indent=2)
-    print(f'\n| engine {a.engine} art {a.art} | heap delta mount MB | heap delta scene MB | DOM nodes | anims idle | anims after dispose | rAF p50 ms | rAF p95 ms | max ms | jank >20ms (%) | idle loops | bytes |')
+    print(f'\n| engine {a.engine} art {a.art} | heap delta mount MB | heap delta scene MB | DOM nodes | anims idle | anims after dispose | rAF p50 ms | rAF p95 ms | p99 ms | max ms | jank >20ms (%) | idle loops | bytes |')
     print('|---|---|---|---|---|---|---|---|---|---|---|---|')
     for r in out:
-        print(f"| {r['companions']} | {r['heap_delta_mb_after_mount']} | {r['heap_delta_mb_after_scene']} | {r['dom_nodes']} | {r['animations_idle']} | {r['animations_after_dispose']} | {r['raf_p50_ms']} | {r['raf_p95_ms']} | {r['raf_max_ms']} | {r['jank_frames_over_20ms']} ({r['jank_pct']}%) | {r['engine_idle_loops_after_scene']} | {r['transferred_bytes']} |")
+        print(f"| {r['companions']} | {r['heap_delta_mb_after_mount']} | {r['heap_delta_mb_after_scene']} | {r['dom_nodes']} | {r['animations_idle']} | {r['animations_after_dispose']} | {r['raf_p50_ms']} | {r['raf_p95_ms']} | {r['raf_p99_ms']} | {r['raf_max_ms']} | {r['jank_frames_over_20ms']} ({r['jank_pct']}%) | {r['engine_idle_loops_after_scene']} | {r['transferred_bytes']} |")
     thresholds = {'p95_at_3_le_20ms': None, 'heap_at_5_le_20mb': None, 'jank_lt_1pct_all': all(r['jank_pct'] < 1 for r in out), 'no_idle_loops_all': all(r['engine_idle_loops_after_scene'] == 0 for r in out)}
     for r in out:
         if r['companions'] == 3: thresholds['p95_at_3_le_20ms'] = r['raf_p95_ms'] <= 20
