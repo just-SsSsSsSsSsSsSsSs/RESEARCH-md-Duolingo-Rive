@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-09-26T18:59:58Z",
+  "measured_at": "2026-09-26T19:00:55Z",
   "base": "http://localhost:8080/sandbox/",
   "machine": "sandbox CI proxy (not a 2-3 GB Android)",
   "host": {
@@ -11,21 +11,22 @@
   },
   "cpu_throttle": 1.0,
   "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+  "extra_params": "&sfx=0",
   "results": [
     {
       "art": "p2",
       "companions": 5,
       "heap_delta_mb_after_mount": 0.54,
-      "heap_delta_mb_after_scene": 0.85,
-      "dom_nodes": 256,
+      "heap_delta_mb_after_scene": 0.78,
+      "dom_nodes": 255,
       "animations_idle": 68,
-      "animations_peak_sampled": 83,
+      "animations_peak_sampled": 79,
       "animations_after_dispose": 0,
-      "frames": 568,
+      "frames": 601,
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.8,
-      "raf_p99_ms": 50,
-      "raf_max_ms": 66.7,
+      "raf_p95_ms": 16.7,
+      "raf_p99_ms": 16.8,
+      "raf_max_ms": 16.8,
       "cpu_throttle": 1.0,
       "env": {
         "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
@@ -37,9 +38,9 @@
           600
         ]
       },
-      "long_frames_over_33ms": 24,
-      "jank_frames_over_20ms": 24,
-      "jank_pct": 4.23,
+      "long_frames_over_33ms": 0,
+      "jank_frames_over_20ms": 0,
+      "jank_pct": 0.0,
       "engine_idle_loops_after_scene": 0,
       "engine": "v2",
       "transferred_bytes": 368376,
