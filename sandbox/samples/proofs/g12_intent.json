@@ -1,0 +1,422 @@
+{
+  "tool": "sandbox/intent_proof.py",
+  "budgets_declared": {
+    "comment": "K9.3 intent: look before you leap. Before every flight the pupils snap toward the target (eyes first), the head turns after headLagMs (P1 Zangemeister-Stark 1982: normal eye-head latency 40-50 ms), then the body crouches after bodyLagMs (P2 Fang 2015: a fixation-saccade cycle is >= 200 ms). Budgets are declared here and measured by sandbox/intent_proof.py; ?intent=0 disables for A/B.",
+    "enabled": true,
+    "gazeSnapMs": [
+      40,
+      70
+    ],
+    "gazeFractionOfDart": 0.85,
+    "headLagMs": [
+      40,
+      50
+    ],
+    "headDeg": 5,
+    "headMs": 220,
+    "bodyLagMs": [
+      120,
+      200
+    ],
+    "landRecentreMs": 100,
+    "settleDegTarget": 0.5,
+    "settleWithinMs": 400,
+    "budget": {
+      "preTakeoffMs": [
+        350,
+        600
+      ],
+      "gazeDirectionMatch": 0.6,
+      "asymMinPx": 0.3
+    },
+    "measureNote": "settleDegTarget and the crouch onset are measured on the ADDED layers (intent head layer, squash layer keyframes), not on the computed transform: the idle breath is a permanent +-1 deg head tilt / +-2.5 pct body scale by design (rig.idle), so an absolute reading can never settle below it. Found and documented 2026-09-26 (K9.3-3); nothing hidden."
+  },
+  "arms": {
+    "A_intent_on": {
+      "flights": [
+        {
+          "dx": 220,
+          "dy": -40,
+          "samples": 184,
+          "sample_dt_ms_median": 16.7,
+          "cues_ms": {
+            "intent": 153.8,
+            "anticipate": 315.6,
+            "takeoff": 561.5,
+            "land": 1998.8,
+            "settle": 2163.9
+          },
+          "onset_ms": {
+            "eyes": 179.1,
+            "head": 245.8,
+            "body": 329.8
+          },
+          "eye_to_head_ms": 66.7,
+          "eye_to_body_ms": 150.7,
+          "pre_takeoff_ms": 382.4,
+          "gaze_match_L": 0.999,
+          "gaze_match_R": 1.0,
+          "gaze_disp_px": {
+            "L": [
+              3.73,
+              -0.49
+            ],
+            "R": [
+              3.51,
+              -0.64
+            ]
+          },
+          "asym_px": 0.266,
+          "head_peak_deg_pre_takeoff": 5.23,
+          "head_sign_matches_target": true,
+          "land_recentre_ms": 0.2,
+          "head_settle_ms": 0.2,
+          "head_max_abs_after_land_deg": 1.51,
+          "intent_reported": {
+            "ran": true,
+            "t0": 1549.4000000000233,
+            "snapMs": 64.2682440876384,
+            "headLagMs": 47.136355228528025,
+            "bodyLagMs": 161.78108913028726,
+            "headDeg": 5.345673308974897
+          },
+          "checks": {
+            "order_eyes_head_body": true,
+            "eye_to_head_in_budget": true,
+            "eye_to_body_in_budget": true,
+            "pre_takeoff_in_budget": true,
+            "gaze_matches_target": true,
+            "asym_min": false,
+            "head_toward_target": true,
+            "land_recentre": true,
+            "head_settle": true
+          }
+        },
+        {
+          "dx": -220,
+          "dy": -40,
+          "samples": 180,
+          "sample_dt_ms_median": 16.7,
+          "cues_ms": {
+            "intent": 151,
+            "anticipate": 312.5,
+            "takeoff": 485.6,
+            "land": 1927.5,
+            "settle": 2093.8
+          },
+          "onset_ms": {
+            "eyes": 192.5,
+            "head": 276.7,
+            "body": 327.5
+          },
+          "eye_to_head_ms": 84.2,
+          "eye_to_body_ms": 135.0,
+          "pre_takeoff_ms": 293.1,
+          "gaze_match_L": 0.987,
+          "gaze_match_R": 0.991,
+          "gaze_disp_px": {
+            "L": [
+              -4.95,
+              -0.08
+            ],
+            "R": [
+              -3.75,
+              -0.18
+            ]
+          },
+          "asym_px": 1.204,
+          "head_peak_deg_pre_takeoff": -7.06,
+          "head_sign_matches_target": true,
+          "land_recentre_ms": 0.0,
+          "head_settle_ms": 0.0,
+          "head_max_abs_after_land_deg": 1.43,
+          "intent_reported": {
+            "ran": true,
+            "t0": 7383.800000000047,
+            "snapMs": 69.29261107342617,
+            "headLagMs": 46.756560462208235,
+            "bodyLagMs": 158.34260501468424,
+            "headDeg": -4.630131556174964
+          },
+          "checks": {
+            "order_eyes_head_body": true,
+            "eye_to_head_in_budget": true,
+            "eye_to_body_in_budget": true,
+            "pre_takeoff_in_budget": false,
+            "gaze_matches_target": true,
+            "asym_min": true,
+            "head_toward_target": true,
+            "land_recentre": true,
+            "head_settle": true
+          }
+        },
+        {
+          "dx": 220,
+          "dy": -40,
+          "samples": 180,
+          "sample_dt_ms_median": 16.7,
+          "cues_ms": {
+            "intent": 150.9,
+            "anticipate": 288.4,
+            "takeoff": 491.3,
+            "land": 1930.2,
+            "settle": 2096.3
+          },
+          "onset_ms": {
+            "eyes": 178.9,
+            "head": 245.4,
+            "body": 296.3
+          },
+          "eye_to_head_ms": 66.5,
+          "eye_to_body_ms": 117.4,
+          "pre_takeoff_ms": 312.4,
+          "gaze_match_L": 0.986,
+          "gaze_match_R": 0.997,
+          "gaze_disp_px": {
+            "L": [
+              4.86,
+              -0.06
+            ],
+            "R": [
+              3.52,
+              -0.36
+            ]
+          },
+          "asym_px": 1.373,
+          "head_peak_deg_pre_takeoff": 4.51,
+          "head_sign_matches_target": true,
+          "land_recentre_ms": 0.0,
+          "head_settle_ms": 0.0,
+          "head_max_abs_after_land_deg": 1.47,
+          "intent_reported": {
+            "ran": true,
+            "t0": 13097.300000000047,
+            "snapMs": 44.596499765186024,
+            "headLagMs": 47.547013145829155,
+            "bodyLagMs": 137.79961775583698,
+            "headDeg": 5.345673308974897
+          },
+          "checks": {
+            "order_eyes_head_body": true,
+            "eye_to_head_in_budget": true,
+            "eye_to_body_in_budget": true,
+            "pre_takeoff_in_budget": false,
+            "gaze_matches_target": true,
+            "asym_min": true,
+            "head_toward_target": true,
+            "land_recentre": true,
+            "head_settle": true
+          }
+        }
+      ],
+      "errors": [],
+      "intents_counted": 6
+    },
+    "B_intent_off": {
+      "flights": [
+        {
+          "dx": 220,
+          "dy": -40,
+          "samples": 167,
+          "sample_dt_ms_median": 16.7,
+          "cues_ms": {
+            "anticipate": 152.4,
+            "takeoff": 308,
+            "land": 1713.5,
+            "settle": 1879.4
+          },
+          "onset_ms": {
+            "eyes": null,
+            "head": null,
+            "body": 162.2
+          },
+          "eye_to_head_ms": null,
+          "eye_to_body_ms": null,
+          "pre_takeoff_ms": null,
+          "gaze_match_L": 0.0,
+          "gaze_match_R": 0.0,
+          "gaze_disp_px": {
+            "L": [
+              0,
+              0
+            ],
+            "R": [
+              0,
+              0
+            ]
+          },
+          "asym_px": 0.0,
+          "head_peak_deg_pre_takeoff": 0.0,
+          "head_sign_matches_target": false,
+          "land_recentre_ms": 0.3,
+          "head_settle_ms": 0.3,
+          "head_max_abs_after_land_deg": 1.62,
+          "intent_reported": {
+            "ran": false
+          },
+          "checks": {
+            "order_eyes_head_body": false,
+            "eye_to_head_in_budget": false,
+            "eye_to_body_in_budget": false,
+            "pre_takeoff_in_budget": false,
+            "gaze_matches_target": false,
+            "asym_min": false,
+            "head_toward_target": false,
+            "land_recentre": true,
+            "head_settle": true
+          }
+        },
+        {
+          "dx": -220,
+          "dy": -40,
+          "samples": 172,
+          "sample_dt_ms_median": 16.7,
+          "cues_ms": {
+            "anticipate": 150.5,
+            "takeoff": 358.5,
+            "land": 1796.8,
+            "settle": 1962.9
+          },
+          "onset_ms": {
+            "eyes": 2594.6,
+            "head": null,
+            "body": 162.1
+          },
+          "eye_to_head_ms": null,
+          "eye_to_body_ms": -2432.5,
+          "pre_takeoff_ms": -2236.1,
+          "gaze_match_L": 0.0,
+          "gaze_match_R": 0.0,
+          "gaze_disp_px": {
+            "L": [
+              0,
+              0
+            ],
+            "R": [
+              0,
+              0
+            ]
+          },
+          "asym_px": 0.0,
+          "head_peak_deg_pre_takeoff": 0.0,
+          "head_sign_matches_target": false,
+          "land_recentre_ms": 0.2,
+          "head_settle_ms": null,
+          "head_max_abs_after_land_deg": 3.02,
+          "intent_reported": {
+            "ran": false
+          },
+          "checks": {
+            "order_eyes_head_body": false,
+            "eye_to_head_in_budget": false,
+            "eye_to_body_in_budget": false,
+            "pre_takeoff_in_budget": false,
+            "gaze_matches_target": false,
+            "asym_min": false,
+            "head_toward_target": false,
+            "land_recentre": true,
+            "head_settle": false
+          }
+        },
+        {
+          "dx": 220,
+          "dy": -40,
+          "samples": 175,
+          "sample_dt_ms_median": 16.7,
+          "cues_ms": {
+            "anticipate": 150.5,
+            "takeoff": 397.7,
+            "land": 1846.4,
+            "settle": 2012.3
+          },
+          "onset_ms": {
+            "eyes": null,
+            "head": null,
+            "body": 162.6
+          },
+          "eye_to_head_ms": null,
+          "eye_to_body_ms": null,
+          "pre_takeoff_ms": null,
+          "gaze_match_L": 0.0,
+          "gaze_match_R": 0.0,
+          "gaze_disp_px": {
+            "L": [
+              0,
+              0
+            ],
+            "R": [
+              0,
+              0
+            ]
+          },
+          "asym_px": 0.0,
+          "head_peak_deg_pre_takeoff": 0.0,
+          "head_sign_matches_target": false,
+          "land_recentre_ms": 0.1,
+          "head_settle_ms": 0.1,
+          "head_max_abs_after_land_deg": 0.9,
+          "intent_reported": {
+            "ran": false
+          },
+          "checks": {
+            "order_eyes_head_body": false,
+            "eye_to_head_in_budget": false,
+            "eye_to_body_in_budget": false,
+            "pre_takeoff_in_budget": false,
+            "gaze_matches_target": false,
+            "asym_min": false,
+            "head_toward_target": false,
+            "land_recentre": true,
+            "head_settle": true
+          }
+        }
+      ],
+      "errors": [],
+      "intents_counted": 0
+    }
+  },
+  "captured_at": "2026-09-26T22:35:12Z",
+  "env": "headless Chromium, DPR 1, CPU 1x, sfx=0, n=1",
+  "strip": "g12_intent_strip.png",
+  "summary": {
+    "A_pass_per_flight": [
+      false,
+      false,
+      false
+    ],
+    "A_failed_checks": [
+      "asym_min",
+      "pre_takeoff_in_budget"
+    ],
+    "A_median": {
+      "eye_to_head_ms": 66.7,
+      "eye_to_body_ms": 135.0,
+      "pre_takeoff_ms": 312.4,
+      "asym_px": 1.204,
+      "head_peak_deg_pre_takeoff": 4.51,
+      "land_recentre_ms": 0.0,
+      "head_settle_ms": 0.0,
+      "head_max_abs_after_land_deg": 1.47
+    },
+    "B_eyes_moved_toward_target_before_takeoff": [
+      false,
+      false,
+      false
+    ],
+    "B_pre_takeoff_ms_crouch_only": [
+      155.6,
+      208.0,
+      247.2
+    ],
+    "A_pre_takeoff_ms_from_intent_cue": [
+      407.7,
+      334.6,
+      340.4
+    ],
+    "B_intents_counted": 0,
+    "A_intents_counted": 6,
+    "sample_dt_ms_median": 16.7,
+    "errors": [],
+    "pass_all": false
+  }
+}

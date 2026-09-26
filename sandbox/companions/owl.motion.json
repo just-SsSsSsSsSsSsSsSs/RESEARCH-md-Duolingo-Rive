@@ -689,8 +689,8 @@
       "headDeg": 5,
       "headMs": 220,
       "bodyLagMs": [
-        120,
-        200
+        200,
+        280
       ],
       "landRecentreMs": 100,
       "settleDegTarget": 0.5,
@@ -703,7 +703,9 @@
         "gazeDirectionMatch": 0.6,
         "asymMinPx": 0.3
       },
-      "measureNote": "settleDegTarget and the crouch onset are measured on the ADDED layers (intent head layer, squash layer keyframes), not on the computed transform: the idle breath is a permanent +-1 deg head tilt / +-2.5 pct body scale by design (rig.idle), so an absolute reading can never settle below it. Found and documented 2026-09-26 (K9.3-3); nothing hidden."
+      "measureNote": "settleDegTarget and the crouch onset are measured on the ADDED layers (intent head layer, squash layer keyframes), not on the computed transform: the idle breath is a permanent +-1 deg head tilt / +-2.5 pct body scale by design (rig.idle), so an absolute reading can never settle below it. Found and documented 2026-09-26 (K9.3-3); nothing hidden.",
+      "bodyLagNote": "was [120,200]: measured pre-takeoff 293-382 ms fell short of the declared 350-600 (bodyLag + crouch hold 150-250). 200-280 = the body waits one fixation-saccade cycle (P2 Fang 2015: >= 200 ms) -> 350-530 ms total.",
+      "asymNote": "L/R pupil jitter is now min budget.asymMinPx .. gaze.dart.asymPx apart by construction (one flight measured 0.27 px with independent jitters)."
     }
   },
   "poses": {

@@ -102,8 +102,12 @@ P.intent = async function (dx, dy) {
   const t0 = performance.now();
   this.release(/pupil/);
   this._intentLayers = [];
+  const asymMin = (I.budget && I.budget.asymMinPx) || 0;
+  const jL = [rand(-asym, asym), rand(-asym, asym) * 0.5];                                   // left eye jitter
+  const sgn = Math.random() < 0.5 ? -1 : 1, gap = rand(Math.max(asymMin, 0.05), Math.max(asym, asymMin + 0.05));
+  const jR = [jL[0] + sgn * gap, jL[1] + sgn * gap * 0.35];                                    // right eye = left + a guaranteed gap (never a mirror)
   for (const p of ['pupilL', 'pupilR']) {
-    const jx = rand(-asym, asym), jy = rand(-asym, asym) * 0.5;
+    const [jx, jy] = p === 'pupilL' ? jL : jR;
     const a = this.anim(this.j(p), [{ transform: 'translate(0,0)' }, { transform: `translate(${(ux * amp + jx).toFixed(2)}px, ${(uy * amp * 0.6 + jy).toFixed(2)}px)` }],
       { duration: snap, easing: 'cubic-bezier(.2,.9,.3,1.05)', fill: 'forwards' }, true);
     if (a) this._intentLayers.push(a);
