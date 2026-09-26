@@ -592,7 +592,9 @@ html:not(.no-3d) .gb-cube b { margin-top: -4%; font-size: calc(var(--gb-cube) * 
 .nav a{position:relative}
 .nav a .nav-dot{position:absolute;top:6px;inset-inline-end:18%;width:9px;height:9px;border-radius:50%;background:var(--neon-rose,#ff5c8a);box-shadow:0 0 0 2px var(--surface,#fff)}
 @media print{
-  body[data-print="report"] #app > *:not(.rp-printing){display:none!important}
+  /* hide everything that is not the printing card or one of its ancestors */
+  body[data-print="report"] #app :not(.rp-printing):not(:has(.rp-printing)):not(.rp-printing *){display:none!important}
   body[data-print="report"] .rp-card.rp-printing{display:block!important;break-inside:avoid;border:1px solid #999;color:#000;background:#fff}
+  body[data-print="report"] .rp-card.rp-printing .no-print{display:none!important}
   .rp-card .rp-stat,.rp-card .rp-headline,.rp-card .rp-trend,.rp-member{background:#f2f2f2!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }

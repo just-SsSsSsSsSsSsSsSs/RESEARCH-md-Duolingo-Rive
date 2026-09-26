@@ -68,6 +68,7 @@ export function renderReportCard(body, { hero }) {
     if (msg) toast(ico3d('box') + ' ' + msg, { type: res === 'failed' ? 'error' : 'success' });
   };
   card.querySelector('[data-act="rp-print"]').onclick = () => {
+    if (document.body.dataset.print) return; // re-entrancy guard
     document.body.dataset.print = 'report'; card.classList.add('rp-printing');
     const done = () => { delete document.body.dataset.print; card.classList.remove('rp-printing'); removeEventListener('afterprint', done); };
     addEventListener('afterprint', done); window.print();
