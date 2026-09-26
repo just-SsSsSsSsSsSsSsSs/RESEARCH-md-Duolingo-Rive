@@ -1023,3 +1023,17 @@ Coexistence risk register: (R1) a user who visited before Gate 7 has `sessionSto
 - Flight plans are curated waypoint sets, not physics; a perch-to-perch system (fly to a target element, e.g. the answer card) is the natural next step for Gate 6.
 - The 180 flip mirrors the whole character (scaleX), which is correct for a symmetric front-facing design; a true side-view turn needs a side-view parts sheet (blocked by generation credits, and out of scope under note 4 until the owl is signed off).
 - Still measured on the sandbox machine, not a 2-3 GB Android.
+
+## R1-A1 Gate 5 addendum 2 - owl round 3: real voice, perch-to-perch, reduced motion (2026-09-26, branch `sandbox/a1-gate5-art-sw`)
+
+### 1. Delivered (sandbox only; `app/` untouched)
+- Real-audio talking loop (Q-A1-4, no visemes): `SvgRig.audioEnvelope(url)` plays a clip through one shared `AudioContext` + `AnalyserNode` (fftSize 512), computes RMS per frame with slow auto-gain (quiet voices still open the beak) and fast-attack/soft-release smoothing; `say(url)` drives the existing 3-level mouth with hysteresis. Fallback to the synthetic envelope if autoplay is blocked. Clips used: the owl's own `cheer.mp3` / `laugh.mp3` (copied from `app/assets/companions/owl`, read-only source) and one real explain clip (44 KB total). Verified: during a 3.1 s explain clip the mouth visited closed/mid/open = 26/21/32 samples at 40 ms - the beak follows the speech, not a loop.
+- Perch-to-perch flight: `flyTo(targetElement)` rises, arcs (mid-air roll if the distance is over 260 px), lands with feet on the top edge of the target and KEEPS the perch (`_perch` offset), so subsequent flights start from where the owl actually is; `flyTo(null,{home:true})` returns. Demo has mock lesson perches (question card, answer button) and autonomous life now hops between them.
+- `prefers-reduced-motion` (constitution section 5): breath/blink stay; flight becomes a nod or a 0.5 s eased slide to the perch; the wrong-answer dizzy spin becomes mouth-only. Verified with Playwright `reduced_motion='reduce'`: `REDUCED=true`, `flying=false` after a fly command.
+- Samples: `sandbox/samples/p2_owl_perch_voice_26s.webm` (perch to card, real explain voice, think, perch to answer, own cheer, celebrate, home, own laugh), `p2_owl_perch_frames.png`, `p2_owl_perch_home.png`.
+
+### 2. Cost check
+Same rig; the analyser adds one audio node graph per clip (disconnected on end). HUD during perch flights: p50 16.7 ms, p95 16.7-16.8 ms, 97 DOM nodes. No console errors.
+
+### 3. What this proves for Gate 6
+The skeleton + engine now covers the full companion vocabulary the app needs: idle life, tap variety, real voice talking, flight to any DOM target (answer card, streak badge), celebration and gentle wrong-answer acting, all under 200 KB per character and compositor-only. Remaining before the app switch (Gate 7): `rig.kind="svg"` adapter inside `companion.js` (behind data), the SW-1 registration, real 2-3 GB Android run, and the other four character sheets (credits).
