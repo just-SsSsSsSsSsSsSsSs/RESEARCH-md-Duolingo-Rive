@@ -21,8 +21,12 @@
   #stage.sky { background:linear-gradient(180deg,#0000 0%, #0002 100%); border-radius:24px; margin:0 12px }
   #stage.sky::before { content:""; position:absolute; inset:auto 0 0 0; height:14%; background:linear-gradient(180deg,#0000,#0b1224); }
   .slot { width:100%; max-width:220px; aspect-ratio:200/240; background:linear-gradient(180deg,#0000 60%, #0003); border-radius:20px; position:relative; overflow:visible; will-change:transform; transform-origin:50% 60% }
-  .slot.flying { z-index:5 }
+  .slot.flying, .slot:has(svg) { z-index:5 }
   #stage.sky .slot { background:none }
+  .perch { position:absolute; display:grid; place-items:center; background:#ffffff14; border:1px solid #ffffff2a; border-radius:16px; color:#fff; font-weight:800; pointer-events:none; direction:ltr }
+  .perch.card { left:6%; top:14%; width:min(34%,220px); height:72px; font-size:22px }
+  .perch.answer { right:8%; top:22%; width:min(22%,120px); height:56px; font-size:20px; background:#22c55e33; border-color:#22c55e66 }
+  #stage:not(.sky) .perch { display:none }
   .star { position:absolute; width:3px; height:3px; border-radius:50%; background:#fff; opacity:.5; animation:tw 3s ease-in-out infinite alternate }
   @keyframes tw { from { opacity:.15 } to { opacity:.7 } }
   @media (prefers-reduced-motion: reduce) { .star { animation:none } }
@@ -49,7 +53,13 @@
 </div>
 <div class="bar" id="actions" role="group" aria-label="الحركات">
   <button class="primary" data-act="fly">تطير في الشاشة</button>
-  <button data-act="talk">يتكلم</button>
+  <button data-act="talk">يتكلم (مغلف اصطناعي)</button>
+  <button data-act="say:audio/explain_sample.mp3">تشرح بصوت حقيقي</button>
+  <button data-act="say:audio/owl_cheer.mp3">تهلل بصوتها</button>
+  <button data-act="say:audio/owl_laugh.mp3">تضحك بصوتها</button>
+  <button data-act="perch:card">تطير إلى الكارت</button>
+  <button data-act="perch:answer">تطير إلى زر الإجابة</button>
+  <button data-act="perch:home">تعود لمكانها</button>
   <button data-act="celebrate">إجابة صحيحة</button>
   <button data-act="nod">إيماءة</button>
   <button data-act="think">يفكر</button>
@@ -58,7 +68,10 @@
   <button data-act="auto" id="autoBtn" aria-pressed="true">حياة تلقائية: تعمل</button>
 </div>
 
-<main id="stage" aria-live="polite"></main>
+<main id="stage" aria-live="polite">
+  <div class="perch card" id="perch-card" aria-hidden="true"><span>7 x 8 = ?</span></div>
+  <div class="perch answer" id="perch-answer" aria-hidden="true"><span>56</span></div>
+</main>
 <p id="note">التركيز الحالي: «حكيمة» البومة (P2 طبقات مجسمة). اضغط عليها لتفاعل مختلف كل مرة؛ تطير وتدور وتحط من تلقاء نفسها كل بضع ثوان. P1 الهندسي يبقى كمرجع اختبار فقط.</p>
 <div id="hud" aria-hidden="true">fps --</div>
 
@@ -131,6 +144,12 @@
 
   function runAct(rig, slot, name) {
     if (name === 'fly') return flyOne(rig, slot);
+    if (name.startsWith('say:')) return rig.say(name.slice(4));
+    if (name.startsWith('perch:')) {
+      const where = name.slice(6);
+      if (where === 'home') return rig.flyTo(null, { home: true });
+      return rig.flyTo(document.getElementById('perch-' + where));
+    }
     if (name === 'talk') return rig.talk(rig.constructor.syntheticEnvelope(), 3200);
     if (name === 'blink') return rig.blink(true);
     return rig[name] && rig[name]();
@@ -149,14 +168,13 @@
       y: Math.max(-roomUp, Math.min(0, p.y)), t: p.t
     }));
     slot.classList.add('flying');
-    await rig.fly(pts, { roll: plan.roll ?? null, flipAt: plan.flipAt ?? null });
+    await rig.fly(pts, { roll: plan.roll ?? null, flipAt: plan.flipAt ?? null }, { base: rig._perch || { x: 0, y: 0 } });
     slot.classList.remove('flying');
-    slot.style.transform = ''; // path ends at the origin by design
   }
 
   // Autonomous life: every few seconds the owl does something on her own (flight is frequent).
   let autoOn = params.get('auto') !== '0', autoTimer = 0;
-  const LIFE_POOL = ['fly', 'look', 'nod', 'fly', 'think', 'talk', 'blink', 'fly'];
+  const LIFE_POOL = ['fly', 'look', 'nod', 'perch:card', 'think', 'talk', 'blink', 'perch:answer', 'fly', 'perch:home'];
   function lifeTick() {
     clearTimeout(autoTimer);
     if (!autoOn) return;
@@ -166,7 +184,9 @@
         const rig = idle[Math.floor(Math.random() * idle.length)];
         const slot = rig.svg.parentElement;
         const pick = LIFE_POOL[Math.floor(Math.random() * LIFE_POOL.length)];
-        if (pick === 'look') rig.look(); else runAct(rig, slot, pick);
+        if (pick === 'look') rig.look();
+        else if (pick.startsWith('perch:') && rigs.length > 1) runAct(rig, slot, 'fly');   // perches are for the solo owl scene
+        else runAct(rig, slot, pick);
       }
       lifeTick();
     }, 3500 + Math.random() * 4000);

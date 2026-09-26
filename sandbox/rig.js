@@ -45,6 +45,10 @@ export const EASE = {
 
 const rand = (a, b) => a + Math.random() * (b - a);
 
+// Constitution section 5: decorative motion respects prefers-reduced-motion.
+// In reduced mode: breath/blink stay (subtle), flight/rolls/dizzy are replaced by a short fade-nudge.
+export const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 // ---------- rig ----------------------------------------------------------------
 
 export class SvgRig {
@@ -208,6 +212,49 @@ export class SvgRig {
     this._talkRaf = requestAnimationFrame(step);
   }
 
+  /**
+   * Real audio envelope (Q-A1-4: expressive talking loop, no visemes).
+   * Plays `url` through one shared AudioContext + AnalyserNode and returns a
+   * 0..1 envelope function (RMS, smoothed, auto-gain) plus a promise for the end.
+   * Falls back to the synthetic envelope if autoplay/decoding is blocked.
+   */
+  static async audioEnvelope(url) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return { envelope: SvgRig.syntheticEnvelope(), durationMs: 3000, done: Promise.resolve(), real: false };
+    SvgRig._ac = SvgRig._ac || new AC();
+    const ac = SvgRig._ac;
+    if (ac.state === 'suspended') { try { await ac.resume(); } catch { /* gesture needed */ } }
+    const audio = new Audio(url); audio.crossOrigin = 'anonymous'; audio.preload = 'auto';
+    await new Promise((res, rej) => { audio.addEventListener('loadedmetadata', res, { once: true }); audio.addEventListener('error', rej, { once: true }); audio.load(); }).catch(() => {});
+    const durationMs = isFinite(audio.duration) && audio.duration > 0 ? audio.duration * 1000 : 3000;
+    const src = ac.createMediaElementSource(audio);
+    const an = ac.createAnalyser(); an.fftSize = 512; an.smoothingTimeConstant = 0.5;
+    src.connect(an); an.connect(ac.destination);
+    const buf = new Uint8Array(an.fftSize);
+    let peak = 0.08, smooth = 0;
+    const envelope = () => {
+      an.getByteTimeDomainData(buf);
+      let sum = 0; for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; sum += v * v; }
+      const rms = Math.sqrt(sum / buf.length);
+      peak = Math.max(rms, peak * 0.995);                 // slow auto-gain so quiet voices still open the beak
+      smooth = smooth * 0.55 + (rms / peak) * 0.45;       // attack fast, release soft
+      return Math.min(1, smooth * 1.15);
+    };
+    const done = new Promise((res) => { audio.addEventListener('ended', res, { once: true }); setTimeout(res, durationMs + 400); })
+      .then(() => { try { src.disconnect(); an.disconnect(); } catch { /* already gone */ } });
+    let real = true;
+    try { await audio.play(); } catch { real = false; }
+    return { envelope: real ? envelope : SvgRig.syntheticEnvelope(), durationMs, done, real, audio };
+  }
+
+  /** Speak a clip: real envelope drives the beak; returns when the clip ends. */
+  async say(url) {
+    if (this.busy) return; this.busy = true;
+    const { envelope, durationMs, done } = await SvgRig.audioEnvelope(url);
+    this.talk(envelope, durationMs);
+    await done; this.busy = false;
+  }
+
   // Synthetic speech-like envelope: syllable bursts 3-5 per second with pauses.
   static syntheticEnvelope() {
     const seed = Math.random() * 1000;
@@ -290,6 +337,7 @@ export class SvgRig {
   // wobble, then a cheeky shrug. Playful, never punishing (owner note 3).
   sad() {
     if (this.busy) return; this.busy = true;
+    if (REDUCED) { this.setMouth('sad'); this.later(() => { this.setMouth('smile'); this.blink(true); }, 900); this.later(() => { this.setMouth('closed'); this.busy = false; }, 1600); return; }
     const root = this.j('root');
     this.setMouth('open');
     this.blink(false);
@@ -400,8 +448,9 @@ export class SvgRig {
    * rolls (360) and flips (180 heading change) are inserted at the given points.
    * Returns a promise that resolves on landing.
    */
-  fly(points, { roll = null, flipAt = null } = {}) {
+  fly(points, { roll = null, flipAt = null } = {}, { base = { x: 0, y: 0 } } = {}) {
     if (this.busy || this.flying) return Promise.resolve(); this.busy = true; this.flying = true;
+    if (REDUCED) { this.busy = false; this.flying = false; this.nod(); return Promise.resolve(); }
     const host = this.svg.parentElement;
     const total = points[points.length - 1].t;
     this.setMouth('smile');
@@ -417,7 +466,7 @@ export class SvgRig {
       const vx = p.x - prev.x, dt = Math.max(1, p.t - prev.t);
       const bank = Math.max(-22, Math.min(22, (vx / dt) * 60));      // degrees, from horizontal speed
       if (flipAt !== null && i === flipAt) facing = -facing;           // 180: turn around mid-air
-      kf.push({ transform: `translate(${p.x}px, ${p.y}px) rotate(${bank}deg) scaleX(${facing})`, offset: p.t / total, easing: EASE.sine });
+      kf.push({ transform: `translate(${base.x + p.x}px, ${base.y + p.y}px) rotate(${bank}deg) scaleX(${facing})`, offset: p.t / total, easing: EASE.sine });
     });
     const path = host.animate(kf, { duration: total, fill: 'forwards', composite: 'replace' });
     this.live.add(path);
@@ -439,11 +488,49 @@ export class SvgRig {
       // settle host back to base with a spring so the character ends where the path ended
       path.commitStyles && path.commitStyles();
       path.cancel(); this.live.delete(path);
-      host.style.transform = `translate(${points[points.length - 1].x}px, ${points[points.length - 1].y}px) scaleX(${facing})`;
+      const last = points[points.length - 1];
+      host.style.transform = `translate(${base.x + last.x}px, ${base.y + last.y}px) scaleX(${facing})`;
       this.setMouth('closed');
       this.flying = false; this.busy = false;
       res();
     }, total + 60));
+  }
+
+  /**
+   * Perch-to-perch: fly from the current spot to `target` (an Element) and land there.
+   * Path = rise, arc towards the target with a mid-air roll if far, settle. The host keeps the
+   * final offset (fill via inline transform) so the owl really lives at the new perch.
+   */
+  flyTo(target, { home = false } = {}) {
+    const host = this.svg.parentElement;
+    const hr = host.getBoundingClientRect();
+    const cur = this._perch || { x: 0, y: 0 };
+    let dx, dy;
+    if (home) { dx = -cur.x; dy = -cur.y; }
+    else {
+      const tr = target.getBoundingClientRect();
+      // land with feet at the top edge of the target, centred horizontally
+      dx = (tr.left + tr.width / 2) - (hr.left + hr.width / 2);
+      dy = (tr.top - hr.height * 0.92) - hr.top;
+    }
+    const dist = Math.hypot(dx, dy);
+    const t = Math.max(1400, Math.min(3600, dist * 3.2));
+    const lift = -Math.max(60, Math.min(200, dist * 0.35));
+    const pts = [
+      { x: 0, y: 0, t: 0 },
+      { x: dx * 0.25, y: lift, t: t * 0.3 },
+      { x: dx * 0.7, y: lift * 0.8 + dy * 0.5, t: t * 0.62 },
+      { x: dx, y: dy, t }
+    ];
+    if (REDUCED) {           // reduced motion: gentle fade-move, no flap or roll
+      host.style.transition = 'transform .5s ease, opacity .3s ease';
+      host.style.transform = `translate(${cur.x + dx}px, ${cur.y + dy}px)`;
+      this._perch = { x: cur.x + dx, y: cur.y + dy };
+      return Promise.resolve();
+    }
+    const p = this.fly(pts, { roll: dist > 260 ? t * 0.45 : null }, { base: cur });
+    this._perch = { x: cur.x + dx, y: cur.y + dy };
+    return p;
   }
 
   // Curated flight paths (relative). Stage picks one; each uses real turns.
