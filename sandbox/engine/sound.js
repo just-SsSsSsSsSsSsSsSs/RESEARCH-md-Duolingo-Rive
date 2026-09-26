@@ -149,7 +149,10 @@ export class SoundBus {
       if (this.log.length > 400) this.log.shift();
       // The JS write is not yet on screen: the compositor presents it at the next vsync. The first rAF
       // timestamp after the write is the earliest present time observable from JS (measured, not assumed).
-      if (typeof requestAnimationFrame === 'function') requestAnimationFrame((tFrame) => {
+      // performance.now() inside the callback, not the rAF timestamp argument: the argument is the frame
+      // start time and in headless/throttled renderers it can trail the wall clock by hundreds of ms.
+      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => {
+        const tFrame = performance.now();
         entry.tVisualEffective = +tFrame.toFixed(1);
         entry.presentDelayMs = +(tFrame - opts.tVisual).toFixed(1);
         entry.offsetEffectiveMs = +(entry.tAudible - tFrame).toFixed(1);   // negative = audio leads the presented frame

@@ -1,19 +1,28 @@
 {
-  "measured_at": "2026-09-26T16:05:05Z",
+  "measured_at": "2026-09-26T18:51:03Z",
   "launch_flags": "playwright default (policy not bypassed)",
   "before_gesture": {
     "status": "locked",
     "hasCtx": false,
-    "userActive": true
+    "userActivation": {
+      "isActive": true,
+      "hasBeenActive": true
+    }
   },
   "cues_without_gesture": {
     "played": 0,
     "dropped": 0,
     "stolen": 0,
     "muted": 0,
+    "droppedByCue": {},
+    "playedByCue": {},
     "status": "locked",
     "cuesRequested": 3,
-    "vfxSpawned": 2
+    "vfxSpawned": 2,
+    "userActivation": {
+      "isActive": true,
+      "hasBeenActive": true
+    }
   },
   "after_one_click": {
     "status": "running",
@@ -21,9 +30,13 @@
     "baseLatencyMs": 10,
     "outputLatencyMs": 32,
     "sampleRate": 44100,
-    "userActive": true
+    "userActivation": {
+      "isActive": true,
+      "hasBeenActive": true
+    }
   },
   "unlock_call_site": "document pointerdown/keydown listener, capture phase, synchronous (index.html unlockAudio -> SoundBus.unlock)",
   "pass": true,
-  "note": "headless Chromium honours the gesture requirement here (status stayed locked until the click); a real-device iPhone mute-switch check remains owner-side."
+  "context": "fresh incognito BrowserContext, first navigation, zero prior input events; userActivation logged at each step (isActive = transient, hasBeenActive = sticky)",
+  "note": "headless Chromium honours the gesture requirement here (status stayed locked until the click); a real-device iPhone mute-switch check remains owner-side. If hasBeenActive reads true before the click, the automation runtime granted activation and the flag is reported as-is; the gate is the AudioContext state, not the flag."
 }
