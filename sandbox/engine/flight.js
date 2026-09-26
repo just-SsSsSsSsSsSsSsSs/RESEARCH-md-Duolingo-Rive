@@ -51,8 +51,10 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
   const facing = dx < -10 ? -1 : 1;
   const kf = points.map((p, i) => {
     const prev = points[i - 1] || p, next = points[i + 1] || p;
-    const bank = Math.max(-F.bankLimit, Math.min(F.bankLimit, (next.x - prev.x) * F.bankPerVx / 60));
-    return { transform: `translate(${(base.x + p.x).toFixed(1)}px, ${(base.y + p.y).toFixed(1)}px) rotate(${bank.toFixed(1)}deg) scaleX(${facing})`, offset: i / (points.length - 1) };
+    const u = i / (points.length - 1);
+    const levelOff = u > 0.82 ? 1 - (u - 0.82) / 0.18 : 1;   // wings level before touchdown, no residual tilt on the perch
+    const bank = levelOff * Math.max(-F.bankLimit, Math.min(F.bankLimit, (next.x - prev.x) * F.bankPerVx / 60));
+    return { transform: `translate(${(base.x + p.x).toFixed(1)}px, ${(base.y + p.y).toFixed(1)}px) rotate(${bank.toFixed(1)}deg) scaleX(${facing})`, offset: u };
   });
   const path = host.animate(kf, { duration: total, easing: F.easing, fill: 'forwards' });
   this.live.add(path);
