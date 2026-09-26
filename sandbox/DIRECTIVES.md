@@ -44,3 +44,8 @@ Format: `#NN | date (UTC) | source | status | summary` then indented detail and 
     Evidence: proto sandbox/proto/meshwarp.html + sandbox/meshwarp_measure.py; samples/proofs/g11d_meshwarp_cost.json,
     g11d_meshwarp.png; SVG baseline re-measured same host (samples/measure_p2_v2_nosfx.json, measure_p2_v2_cpu4x_nosfx.json).
     Result: mesh-warp rAF p50 76 ms at 5 owls/CPU 4x vs SVG engine 16.7 ms; recommendation = stay A, vector re-author only if G11 v2 fails.
+
+#03 G11 v2 update | 2026-09-26 22:05 | ref #03 (gist rev b5d111c1: G11 v2 silhouette-first) | done
+    pose_sheet.py: silhouette_delta_pct + 6 px blur test, gate 8 pct; alert restaged 7.9 -> 12.3-13.7 pct; 6/6 PASS.
+    Evidence: samples/proofs/g11_pose_sheet.png (2 rows), g11_pose_sheet.json (silhouette block), commit "feat(g11-v2)".
+    Consequence: vector re-author not opened (ADR-002 visual proof update). Perf matrix (K9.2b-6) still OPEN, then K9.3.

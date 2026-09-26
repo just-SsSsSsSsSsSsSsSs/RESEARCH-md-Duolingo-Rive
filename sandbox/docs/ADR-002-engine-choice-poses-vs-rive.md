@@ -109,3 +109,22 @@ before any engineering. The only route to real soft deformation is (2), a vector
 art decision, not an engine decision: open it only if G11 v2 (silhouette-first poses + blur test) shows the
 silhouettes do not read at 8 %+ delta with slicing alone.
 Rollback: the prototype lives only under `sandbox/proto/`; nothing in the engine references it.
+
+## Visual proof update - G11 v2 silhouette-first (2026-09-26, K9.2b-5)
+`sandbox/pose_sheet.py` now scores every pose as a silhouette: area(neutral XOR pose) / area(neutral), alpha > 0.5,
+DPR 2, sharp and after a 6 px gaussian blur of both masks (the squint test). Gate: blurred delta >= 8 %.
+Sheet `samples/proofs/g11_pose_sheet.png` row 2 = the blurred stills with scores; raw in `g11_pose_sheet.json`.
+
+| pose | before (blur %) | after (blur %) | gate 8 % |
+|---|---|---|---|
+| alert | 7.9 (face-only: pupils + brows + 6 deg head) | 12.3-13.7 over 3 runs (body tall/narrow from the feet pivot, wings tucked, neck up) | PASS |
+| charged | 19.5 | 19.6 | PASS |
+| launch | 27.4 | 26.8 | PASS |
+| puzzled | 20.3 | 19.9 | PASS |
+| triumph | 21.4 | 21.8 | PASS |
+| oops | 21.8 | 22.2 | PASS |
+
+Result [measured]: 6/6 poses read as silhouettes with joint transforms on the raster slices alone; the
+vector re-author route (2) in addendum (d) is therefore NOT opened by G11 v2. Calibration note: the 8 % gate sits
+between the face-only value (7.9) and the weakest true body pose (12.3), so it separates "face beat" from
+"silhouette pose" on this rig; it is a floor, not a target.
