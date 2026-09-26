@@ -75,6 +75,7 @@
   <button data-engine="v1">محرك v1 (مرجع)</button>
   <button data-tool="trace" id="traceBtn" aria-pressed="false">مسار الطيران: مخفي</button>
   <button data-tool="slow" id="slowBtn" aria-pressed="false">حركة بطيئة x0.25: متوقفة</button>
+  <button data-tool="mute" id="muteBtn" aria-pressed="false">الصوت: مفعّل (يحتاج ضغطة أولى)</button>
 </div>
 
 <main id="stage" aria-live="polite"></main>
@@ -86,6 +87,8 @@
   import { mountCinematic, clock } from './engine/motion.js';
   import './engine/flight.js';
   import { CharacterStates, validateSpec } from './engine/states.js';
+  import { Foley } from './engine/foley.js';
+  import { SoundBus } from './engine/sound.js';
 
   const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
   const params = new URLSearchParams(location.search);
@@ -143,8 +146,10 @@
     count = n; FILES = ART[art];
     rigs.forEach((r) => { if (r.states) r.states.dispose(); r.dispose(); });
     rigs = [];
+    if (foley) { foley.dispose(); foley = null; }
     stage.replaceChildren(); traceSvg = null;
-    const useV2 = engine === 'v2' && art === 'p2';   // v2 spec names the P2 owl art; P1 stays on v1 as the reference
+    const useV2 = engine === 'v2' && art === 'p2';
+    if (useV2 && params.get('sfx') !== '0') { const sp = await loadSpec(); foley = new Foley(sp, stage, bus || (bus = new SoundBus(sp.sound))); window.__foley = foley; window.__bus = bus; }   // v2 spec names the P2 owl art; P1 stays on v1 as the reference
     const spec = useV2 ? await loadSpec() : null;
     const jobs = [];
     for (let i = 0; i < n; i++) {
@@ -159,7 +164,7 @@
         tag.textContent = NAMES[rig.svg.dataset.companion] || '';
         slot.appendChild(tag);
         slot.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); tapReact(rig, slot); });
-        if (useV2) { rig.trace = makeTracer(slot); rig.states = new CharacterStates(rig, spec); rig.states.on((ev) => { if (ev.type === 'enter') slot.dataset.state = ev.to; }); }
+        if (useV2) { rig.trace = makeTracer(slot); rig.states = new CharacterStates(rig, spec); rig.states.on((ev) => { if (ev.type === 'enter') slot.dataset.state = ev.to; }); if (foley) foley.attach(rig, rig.states); }
         return rig;
       }));
     }
@@ -206,6 +211,24 @@
   const _animate = Element.prototype.animate;
   Element.prototype.animate = function (...a) { const an = _animate.apply(this, a); if (slowOn) an.playbackRate = SLOW; return an; };
   window.__setSlow = setSlow;
+
+  // K8 Foley: one SoundBus per page. Unlock ONLY inside a synchronous user gesture (autoplay policy);
+  // never bypassed with flags. Any failure leaves the visuals untouched and is reported in the hud.
+  let bus = null, foley = null;
+  function unlockAudio() {
+    if (!bus) return;
+    const ok = bus.unlock();
+    const b = document.getElementById('muteBtn');
+    if (!ok) { b.textContent = 'الصوت: غير متاح (' + bus.status + ')'; b.disabled = true; return; }
+    b.textContent = bus.muted ? 'الصوت: مكتوم' : 'الصوت: يعمل';
+  }
+  ['pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, unlockAudio, { capture: true, passive: true }));
+  document.getElementById('muteBtn').addEventListener('click', (e) => {
+    if (!bus) return; bus.setMuted(!bus.muted); e.currentTarget.setAttribute('aria-pressed', String(bus.muted));
+    e.currentTarget.textContent = bus.muted ? 'الصوت: مكتوم' : 'الصوت: يعمل';
+  });
+  // any interaction wakes a resting owl
+  stage.addEventListener('pointerdown', () => rigs.forEach((r) => r.states && r.states.wake()), { capture: true });
   if (params.get('slowmo') === '1') document.addEventListener('rigs-ready', () => setSlow(true), { once: true });
 
   document.getElementById('count').addEventListener('click', (e) => {
@@ -349,7 +372,7 @@
     if (frames.length >= 60) {
       const s = [...frames].sort((a, b) => a - b);
       const p50 = s[Math.floor(s.length * 0.5)], p95 = s[Math.floor(s.length * 0.95)];
-      hud.textContent = `frames ${frames.length}\np50 ${p50.toFixed(1)} ms\np95 ${p95.toFixed(1)} ms\nanims ${document.getAnimations().length}\nnodes ${document.getElementsByTagName('*').length}`;
+      hud.textContent = `frames ${frames.length}\np50 ${p50.toFixed(1)} ms\np95 ${p95.toFixed(1)} ms\nanims ${document.getAnimations().length}\nnodes ${document.getElementsByTagName('*').length}\naudio ${bus ? bus.status + (bus.muted ? ' muted' : '') + ' v' + bus.stats.played : 'off'}`;
       frames = [];
     }
     requestAnimationFrame(loop);

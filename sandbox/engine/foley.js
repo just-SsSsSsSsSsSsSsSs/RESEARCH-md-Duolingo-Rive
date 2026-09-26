@@ -35,7 +35,9 @@ export class Foley {
   detach(rig) { rig.onCue = null; this.rigs.delete(rig); }
 
   _onCue(rig, states, phase, ctx) {
-    const stName = ctx.state || states.state;
+    // 'after' and 'settle' belong to the motion that just ended, even if the machine already moved on
+    const prevSt = states.history.length ? [...states.history].reverse().find((h) => h.type === 'enter' && h.to !== states.state) : null;
+    const stName = ctx.state || ((phase === 'after' || phase === 'settle') && prevSt ? prevSt.to : states.state);
     const st = this.spec.states.list[stName] || {};
     const sfx = st.sfx || {}, vfx = st.vfx || {};
     let cue = null, fx = null;

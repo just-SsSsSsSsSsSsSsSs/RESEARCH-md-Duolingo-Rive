@@ -117,7 +117,7 @@ export class SoundBus {
       if (weakest.priority < (c.priority || 0)) { this._stop(weakest); this.stats.stolen++; }
       else { this.stats.dropped++; return null; }
     }
-    const t0 = now + 0.005;                        // 5 ms lookahead: scheduled on the audio clock, not on a timer
+    const t0 = now;                                // head of the audio clock; the render quantum (128 frames ~2.7 ms) is the only wait
     const stretch = 1 / rate;                      // slow-motion between 0.5x and 1x stretches the envelope
     const count = c.count || 1, gapS = (c.gapMs || 0) / 1000 * stretch;
     let end = t0;
