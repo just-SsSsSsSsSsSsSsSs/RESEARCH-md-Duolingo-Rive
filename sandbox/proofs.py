@@ -201,6 +201,47 @@ async def main():
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
         await pg.close()
 
+        # ---- G7 edge width in device pixels at DPR 1 and DPR 2 (rest + mid-flight, wingL raster part) ----
+        # method: screenshot the wing box, scan each row from the outside in, count pixels whose luminance sits between the background and the
+        # part colour (the anti-aliased ramp). Width is reported in device px and CSS px; temporal aliasing = the same width mid-flight (rotation+translate).
+        if Image:
+            edge = {}
+            for dpr in (1, 2):
+                ectx = await b.new_context(viewport=VIEW, device_scale_factor=dpr)
+                pg = await open_page(ectx)
+                for phase in ('rest', 'flight'):
+                    if phase == 'flight':
+                        await pg.evaluate("void window.__rigs[0].states.fire('move:to', {by:{dx:200,dy:-120}})"); await pg.wait_for_timeout(900)
+                    box = await pg.evaluate(JOINT)
+                    pth = os.path.join(OUT, f'g7_edge_dpr{dpr}_{phase}.png')
+                    await pg.screenshot(path=pth, full_page=True, clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
+                    im = Image.open(pth).convert('RGBA'); W, H = im.size; px = im.load()
+                    bg = px[1, 1]
+                    widths = []
+                    for y in range(H // 4, 3 * H // 4, max(1, H // 40)):
+                        # walk from the left edge until the pixel differs from background, then count the ramp until it stabilises
+                        x = 0
+                        while x < W - 1 and abs(px[x, y][0] - bg[0]) + abs(px[x, y][1] - bg[1]) + abs(px[x, y][2] - bg[2]) < 24: x += 1
+                        if x >= W - 2: continue
+                        x0 = x; prev = px[x, y]
+                        while x < W - 1:
+                            cur = px[x + 1, y]
+                            if abs(cur[0] - prev[0]) + abs(cur[1] - prev[1]) + abs(cur[2] - prev[2]) < 12: break
+                            prev = cur; x += 1
+                        widths.append(x - x0 + 1)
+                    widths.sort()
+                    med = widths[len(widths) // 2] if widths else None
+                    edge[f'dpr{dpr}_{phase}'] = {'rows_sampled': len(widths), 'edge_width_device_px_median': med, 'edge_width_device_px_max': widths[-1] if widths else None,
+                                                'edge_width_css_px_median': round(med / dpr, 2) if med else None}
+                if phase == 'flight': await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
+                await ectx.close()
+            r1, r2 = edge['dpr1_rest']['edge_width_device_px_median'], edge['dpr2_rest']['edge_width_device_px_median']
+            f1, f2 = edge['dpr1_flight']['edge_width_device_px_median'], edge['dpr2_flight']['edge_width_device_px_median']
+            edge['pass_soft_edge'] = bool(r1 and r2 and 1 <= r1 <= 4 and 1 <= r2 <= 6)            # anti-aliased (>= 1 px ramp), not blurred (> 4-6 device px)
+            edge['pass_no_temporal_aliasing'] = bool(f1 and f2 and abs(f1 - r1) <= 1 and abs(f2 - r2) <= 2)   # rotating/translating does not harden or smear the edge
+            edge['method'] = 'row scan of the wingL screenshot: ramp length between background and stable part colour, median over ~20 rows; raster webp parts drawn through SVG <image> are resampled by the compositor'
+            report['gates']['G7_edge_width'] = edge
+
         # ---- G8 v1 vs v2: same flight vector, snapshot 60 ms after landing + at rest ----
         shots = []
         for eng in ('v1', 'v2'):
