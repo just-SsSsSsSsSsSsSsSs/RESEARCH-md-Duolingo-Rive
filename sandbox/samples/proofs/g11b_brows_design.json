@@ -92,8 +92,8 @@
     }
   },
   "flag": {
-    "svg": "data-feature=\"brows\" style=\"display:none\"",
-    "spec": "acting.brows",
-    "url": "?brows=0 disables"
+    "svg": "data-feature=\"brows\" (visible by default)",
+    "spec": "acting.brows must be true",
+    "url": "?brows=0 hides"
   }
 }

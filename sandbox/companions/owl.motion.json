@@ -15,11 +15,7 @@
       "delayMs": 110,
       "gain": 0.75
     },
-    "eyes": {
-      "parent": "head",
-      "delayMs": 60,
-      "gain": 0.5
-    }
+    "removedEyes": "hierarchy.eyes (delayMs 60) was never read by code (grep 0 uses, 2026-09-26); eye timing is governed by acting.lead/leadMs (eyes first). Removed to end the silent two-system conflict."
   },
   "secondary": {
     "comment": "spring-damper groups driven by the character's own velocity/acceleration. k stiffness (1/s^2), c damping (1/s), gainV deg per (px/ms), gainA deg per (px/ms^2), axis of the driving component, limit deg, settleMs how long the solver keeps running after the primary motion stops",
@@ -144,7 +140,14 @@
       0.45,
       0.7
     ],
-    "easing": "cubic-bezier(.35,.05,.25,1)"
+    "easing": "cubic-bezier(.35,.05,.25,1)",
+    "roll": {
+      "small": "bank",
+      "medium": "roll",
+      "large": "rollFlip",
+      "forceIfDistOver": 260,
+      "comment": "tier from rig.escalate('flight'): small = bank only, medium = 360 roll at 45 pct of the arc, large = roll + 180 heading flip; a flight longer than forceIfDistOver px is at least medium; level-off before touchdown always; prefers-reduced-motion disables all"
+    }
   },
   "gaze": {
     "comment": "secondary action while talking: head and gaze react to the audio envelope, not to a fixed loop",
@@ -156,7 +159,30 @@
       5
     ],
     "onsetBlinkChance": 0.18,
-    "phraseEndNodChance": 0.6
+    "phraseEndNodChance": 0.6,
+    "dart": {
+      "ampPx": [
+        3,
+        5
+      ],
+      "holdMs": [
+        350,
+        800
+      ],
+      "snapMs": 70,
+      "asymPx": 0.8,
+      "headFollowDeg": 0.6,
+      "comment": "eye-dart: pupils snap to a point inside the eye, hold, return; L/R jitter <= 0.8 px so the eyes are never mechanically identical"
+    },
+    "saccade": {
+      "everyMs": [
+        1400,
+        3200
+      ],
+      "ampPx": 0.9,
+      "ms": 45,
+      "comment": "idle micro-saccades on the pupils only; below this the eye reads dead, above ~1.5 px it reads nervous"
+    }
   },
   "mouth": {
     "levels": {
@@ -182,10 +208,13 @@
         "sfx": {
           "enter": null,
           "blink": "blink",
-          "breath": null
+          "breath": null,
+          "wink": "wink",
+          "dart": null
         },
         "vfx": {
-          "blink": "glint"
+          "blink": "glint",
+          "wink": "glint"
         }
       },
       "greet": {
@@ -206,9 +235,13 @@
         "gaze": "conversational",
         "sfx": {
           "enter": null,
-          "duck": true
+          "duck": true,
+          "wink": "wink",
+          "dart": null
         },
-        "vfx": {}
+        "vfx": {
+          "wink": "glint"
+        }
       },
       "think": {
         "body": "ponder",
@@ -218,10 +251,13 @@
         "sfx": {
           "enter": "hmm",
           "beat": "tick",
-          "beatMs": 700
+          "beatMs": 700,
+          "wink": "wink",
+          "dart": null
         },
         "vfx": {
-          "enter": "question"
+          "enter": "question",
+          "wink": "glint"
         }
       },
       "celebrate": {
@@ -231,11 +267,14 @@
         "next": "idle",
         "sfx": {
           "enter": "chime",
-          "land": "boing"
+          "land": "boing",
+          "wink": "wink",
+          "dart": null
         },
         "vfx": {
           "enter": "stars",
-          "land": "dust"
+          "land": "dust",
+          "wink": "glint"
         }
       },
       "wrong": {
@@ -262,11 +301,13 @@
           "cruise": "whoosh",
           "land": "land",
           "settle": "settle",
-          "after": "pant"
+          "after": "pant",
+          "roll": "whoosh"
         },
         "vfx": {
           "takeoff": "speedLines",
-          "land": "dust"
+          "land": "dust",
+          "roll": "speedLines"
         }
       },
       "rest": {
@@ -511,6 +552,22 @@
         "d": 0.12,
         "gain": 0.12,
         "priority": 1
+      },
+      "wink": {
+        "gen": "chord",
+        "wave": "sine",
+        "notes": [
+          523.25,
+          659.25,
+          783.99,
+          1046.5
+        ],
+        "spreadMs": 70,
+        "a": 0.005,
+        "d": 0.7,
+        "gain": 0.11,
+        "priority": 1,
+        "comment": "chime at 55 pct gain: a wink is a small gesture, not a fanfare"
       }
     }
   },
@@ -603,7 +660,15 @@
       "largeEveryN": 7
     },
     "brows": true,
-    "browsComment": "vector brows (data-feature=brows in owl_p2.svg); shown only when acting.brows is true and the page flag ?brows!=0; joints browL/browR, pivot at brow centre lower edge; channels rot (tilt, deg) and y (raise, px)"
+    "browsComment": "vector brows (data-feature=brows in owl_p2.svg); shown only when acting.brows is true and the page flag ?brows!=0; joints browL/browR, pivot at brow centre lower edge; channels rot (tilt, deg) and y (raise, px)",
+    "wink": {
+      "ms": 180,
+      "otherSquint": 0.22,
+      "pupilLeanPx": 1.5,
+      "headTiltDeg": 4,
+      "comment": "one lid closes fully, the other squints 22 pct; open pupil leans to the winking side; head tilts 4 deg (overlap)"
+    },
+    "escalationComment": "consumed by rig.escalate(channel): small most of the time, medium every 3rd, large every 7th; channels: flight, celebrate"
   },
   "poses": {
     "comment": "Six signature poses (G11 pose sheet). Channels per joint: rot deg, x/y px, sx/sy scale, skew deg. lids 0 open .. 1 closed. Poses are additive on top of breath/physics.",

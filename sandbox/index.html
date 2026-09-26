@@ -35,6 +35,8 @@
   #trace polyline { fill:none; stroke:#ffd166; stroke-width:2; stroke-dasharray:6 5; opacity:.9 }
   #trace circle { fill:#ffd166; opacity:.9 }
   .slot .tag { position:absolute; inset:auto 0 -4px 0; text-align:center; font-size:13px; opacity:.75 }
+  #caption { position:fixed; left:50%; bottom:14px; transform:translateX(-50%); background:#000c; color:#ffe9b0; font:600 18px/1.3 system-ui, sans-serif; padding:10px 18px; border-radius:14px; max-width:80vw; text-align:center; z-index:5 }
+  #caption[hidden] { display:none }
   #hud { position:fixed; inset:auto 8px 8px auto; background:#000a; font:12px/1.4 ui-monospace, monospace; padding:8px 10px; border-radius:10px; direction:ltr; white-space:pre; min-width:180px }
   #note { padding:0 16px 16px; font-size:13px; opacity:.75 }
 </style>
@@ -70,6 +72,19 @@
   <button data-act="blink">رمشة</button>
   <button data-act="auto" id="autoBtn" aria-pressed="true">حياة تلقائية: تعمل</button>
 </div>
+<div class="bar" id="acting" role="group" aria-label="التمثيل (K9)">
+  <button data-actx="wink">غمزة</button>
+  <button data-actx="dart">نظرة خاطفة</button>
+  <button data-actx="roll">لفة هوائية</button>
+  <button data-actx="brows" id="browsBtn" aria-pressed="true">الحواجب: ظاهرة</button>
+  <button data-actx="poses" id="posesBtn" aria-pressed="false">الأوضاع 1-6</button>
+  <span id="poseBtns" hidden>
+    <button data-pose="alert">1 يقظة</button><button data-pose="charged">2 تحفز</button><button data-pose="launch">3 انطلاق</button>
+    <button data-pose="puzzled">4 حيرة</button><button data-pose="triumph">5 انتصار</button><button data-pose="oops">6 خطأ</button><button data-pose="">تحرير</button>
+  </span>
+  <button data-actx="reel" class="primary">عرض 30 ثانية</button>
+</div>
+<div id="caption" hidden></div>
 <div class="bar" id="engine" role="group" aria-label="محرك الحركة">
   <button data-engine="v2" aria-pressed="true">محرك v2 (فيزياء + مواصفة)</button>
   <button data-engine="v1">محرك v1 (مرجع)</button>
@@ -89,12 +104,17 @@
   import { CharacterStates, validateSpec } from './engine/states.js';
   import { Foley } from './engine/foley.js';
   import { PoseLayer, validatePoses } from './engine/poses.js';
+  import './engine/acting.js';
+  import { validateActing } from './engine/acting.js';
   import { SoundBus } from './engine/sound.js';
 
   const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
   const params = new URLSearchParams(location.search);
   const ACTING = params.get('acting') !== '0';   // K9 feature flag: ?acting=0 restores the K8 behaviour exactly
-  const BROWS = params.get('brows') !== '0';     // K9.2b-2 feature flag: vector brows (also needs spec.acting.brows === true); off = display:none = zero paint
+  const BROWS = params.get('brows') !== '0';
+  const POSES = params.get('poses') === '1';     // K9.2c-3: pose buttons 1..6 (freeze) + release
+  const REEL = params.get('reel') === '1';       // K9.2c-7: 30 s scripted showcase
+  const WINK_AUTO = params.get('wink') !== '0';  // K9.2c-2: wink on celebrate by escalation (medium tier); ?wink=0 disables     // K9.2b-2 feature flag: vector brows (also needs spec.acting.brows === true); off = display:none = zero paint
   let art = params.get('art') === 'p1' ? 'p1' : 'p2';
   let FILES = ART[art];
   let count = Number(params.get('n')) || 1;
@@ -107,11 +127,12 @@
   let SPEC = null;
   async function loadSpec() {
     if (SPEC) return SPEC;
-    const res = await fetch('companions/owl.motion.json?v=k9');
+    const res = await fetch('companions/owl.motion.json?v=k92c');
     SPEC = await res.json();
     const v = validateSpec(SPEC);
     const pp = validatePoses(SPEC, ['root','body','head','eyeL','eyeR','pupilL','pupilR','lidL','lidR','mouth','armL','armR','legL','legR','shadow','browL','browR']);
     if (pp.length) { v.ok = false; v.problems.push(...pp); }
+    const pa = validateActing(SPEC); if (pa.length) { v.ok = false; v.problems.push(...pa); }
     if (!v.ok) console.warn('spec problems', v.problems);
     window.__specCheck = v;
     return SPEC;
@@ -171,7 +192,11 @@
         slot.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); tapReact(rig, slot); });
         if (useV2) { rig.trace = makeTracer(slot); rig.states = new CharacterStates(rig, spec); rig.states.on((ev) => { if (ev.type === 'enter') slot.dataset.state = ev.to; }); if (foley) foley.attach(rig, rig.states);
           if (ACTING && spec.acting && spec.acting.enabled !== false) rig.poses = new PoseLayer(rig, spec);
-          if (ACTING && BROWS && spec.acting && spec.acting.brows === true) rig.svg.querySelectorAll('[data-feature="brows"]').forEach((g) => { g.style.display = ''; }); }   // K9 acting layer, flags ?acting=0 ?brows=0
+          const browsOn = ACTING && BROWS && spec.acting && spec.acting.brows === true;   // K9.2c: brows ship ON; ?brows=0 (or spec false) hides them
+          rig.svg.querySelectorAll('[data-feature="brows"]').forEach((g) => { g.style.display = browsOn ? '' : 'none'; });
+          if (ACTING) rig._stopSaccades = rig.startSaccades();   // K9.2c-2 idle micro-saccades (spec.gaze.saccade)
+          if (ACTING && WINK_AUTO && rig.states) rig.states.on((ev) => { if (ev.type === 'enter' && ev.to === 'celebrate') { const t = rig.escalate('celebrate'); if (t !== 'small') rig.later(() => rig.wink(), 420); } });   // wink on every 3rd celebration, not every one
+        }   // K9 acting layer, flags ?acting=0 ?brows=0 ?wink=0
         return rig;
       }));
     }
@@ -367,6 +392,68 @@
       setTimeout(() => runAct(r, r.svg.parentElement, name), delay);
     });
   }
+
+  // ---- K9.2c acting bar: everything here flips existing engine capabilities on demand ----
+  const browsBtn = document.getElementById('browsBtn'), posesBtn = document.getElementById('posesBtn'), poseBtns = document.getElementById('poseBtns'), caption = document.getElementById('caption');
+  let browsShown = BROWS;
+  function setBrows(on) {
+    browsShown = on; browsBtn.setAttribute('aria-pressed', String(on)); browsBtn.textContent = on ? 'الحواجب: ظاهرة' : 'الحواجب: مخفية';
+    rigs.forEach((r) => r.svg.querySelectorAll('[data-feature="brows"]').forEach((g) => { g.style.display = on ? '' : 'none'; }));
+  }
+  function showPoses(on) { posesBtn.setAttribute('aria-pressed', String(on)); poseBtns.hidden = !on; if (!on) rigs.forEach((r) => r.poses && r.poses.release()); }
+  function freezePose(name) {
+    rigs.forEach((r) => {
+      if (!r.poses) return;
+      if (!name) { r.poses.release(); r.svg.getAnimations({ subtree: true }).forEach((a) => { if (a.playState === 'paused' && !r.poses.layers[a.effect.target.dataset.joint]) a.play(); }); return; }
+      r.poses.apply(name, { stay: true, snapMs: r.spec.poses[name].snapMs || 60 }).then(() => r.later(() => r.poses.freeze(), 120));
+    });
+  }
+  function say(txt, ms) { caption.textContent = txt; caption.hidden = !txt; if (ms) setTimeout(() => { if (caption.textContent === txt) caption.hidden = true; }, ms); }
+  document.getElementById('acting').addEventListener('click', (e) => {
+    const p = e.target.closest('button[data-pose]'); if (p) { freezePose(p.dataset.pose); return; }
+    const b = e.target.closest('button[data-actx]'); if (!b) return;
+    const x = b.dataset.actx;
+    if (x === 'brows') return setBrows(!browsShown);
+    if (x === 'poses') return showPoses(poseBtns.hidden);
+    if (x === 'wink') return rigs.forEach((r, i) => r.wink && setTimeout(() => r.wink(), i * 120));
+    if (x === 'dart') return rigs.forEach((r) => r.dart && r.dart());
+    if (x === 'roll') return rigs.forEach((r) => { if (r.busy || !r.states) return; r._forcedRoll = 'medium'; r.states.fire('move:to', { room: roomOf(r.svg.parentElement), trace: traceOn }); });
+    if (x === 'reel') return reel();
+  });
+  if (!BROWS) setBrows(false);
+  if (POSES) showPoses(true);
+
+  // ---- K9.2c-7 reel: <= 30 s, one owl, every capability in order; each beat is logged to window.__reel ----
+  const REEL_BEATS = [
+    { t: 0,     name: 'alert',    cap: 'يقظة: الحواجب والعينان تسبقان الرأس',      run: (r) => r.poses.apply('alert', { holdMs: 900 }) },
+    { t: 1600,  name: 'dart',     cap: 'نظرة خاطفة: الحدقتان تتحركان داخل العين',   run: (r) => r.dart() },
+    { t: 3200,  name: 'charged',  cap: 'تحفز: انحناء قبل الانطلاق',                 run: (r) => r.poses.apply('charged', { holdMs: 700 }) },
+    { t: 4600,  name: 'roll',     cap: 'انطلاق بلفة هوائية كاملة',                   run: (r) => { r._forcedRoll = 'large'; return r.states.fire('move:to', { by: { dx: 240, dy: -140 }, trace: traceOn }); } },
+    { t: 10500, name: 'puzzled',  cap: 'حيرة: ميل رأس وحاجب مرفوع وحده',            run: (r) => r.states.fire('answer:pending') },
+    { t: 14500, name: 'triumph',  cap: 'انتصار: غمزة ونجوم',                          run: (r) => { r.states.fire('answer:correct'); r.later(() => r.wink('R'), 500); } },
+    { t: 18500, name: 'oops',     cap: 'خطأ: تراجع وحواجب منكسرة',                    run: (r) => r.states.fire('answer:wrong') },
+    { t: 22500, name: 'home',     cap: 'عودة إلى المكان',                              run: (r) => r.states.fire('move:to', { home: true, target: null, trace: traceOn }) },
+    { t: 26500, name: 'rest',     cap: 'سكون: Zzz',                                    run: (r) => r.states.fire('idle:long') },
+  ];
+  let reelRunning = false;
+  async function reel() {
+    if (reelRunning) return; reelRunning = true;
+    const r = rigs[0]; if (!r || !r.states || !r.poses) { reelRunning = false; return; }
+    const wasAuto = autoOn; autoOn = false; clearTimeout(autoTimer);
+    if (r.states.state === 'rest') await r.states.wake();
+    const t0 = performance.now(); window.__reel = { t0, beats: [], done: false };
+    for (const b of REEL_BEATS) {
+      const wait = b.t - (performance.now() - t0); if (wait > 0) await new Promise((res) => setTimeout(res, wait));
+      say(b.cap, 3500);
+      window.__reel.beats.push({ name: b.name, t: Math.round(performance.now() - t0), state: r.states.state, busy: r.busy });
+      try { await Promise.race([Promise.resolve(b.run(r)), new Promise((res) => setTimeout(res, 5200))]); } catch (err) { console.warn('reel beat', b.name, err); }
+    }
+    window.__reel.total = Math.round(performance.now() - t0); window.__reel.done = true;
+    say(`انتهى العرض في ${(window.__reel.total / 1000).toFixed(1)} ث`, 3000);
+    autoOn = wasAuto; if (autoOn) lifeTick(); reelRunning = false;
+  }
+  window.__reel_start = reel;
+  if (REEL) document.addEventListener('rigs-ready', () => setTimeout(reel, 800), { once: true });
   window.__act = act;
   window.__build = build;
 

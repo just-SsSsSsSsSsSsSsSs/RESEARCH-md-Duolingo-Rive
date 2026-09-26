@@ -68,7 +68,22 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
   const beatTimer = () => { if (!this.flying) return; this.cue('flap', { beat: beats++ }); this.later(beatTimer, beatMs); };
   this.later(beatTimer, 60);
   this.later(() => this.flying && this.cue('cruise', { vy: -(dy) / total, dist }), total * 0.35);
-  if (dist > F.rollIfDistOver) this.later(() => this.anim(this.j('root'), [{ transform: 'rotate(0)' }, { transform: `rotate(${360 * facing}deg)` }], { duration: F.rollMs, easing: EASE.soft, composite: 'add' }), total * 0.45);
+  // K9.2c-4 aerial roll by escalation tier (spec.flight.roll): small = bank only, medium = 360 roll, large = roll + heading flip.
+  // A long flight (dist > forceIfDistOver) is at least medium so the old behaviour is preserved. Level-off before touchdown is in the bank keyframes above.
+  const R = F.roll || null;
+  let tier = this._forcedRoll || (R ? this.escalate('flight') : (dist > F.rollIfDistOver ? 'medium' : 'small'));
+  this._forcedRoll = null;
+  if (R && dist > (R.forceIfDistOver ?? F.rollIfDistOver) && tier === 'small') tier = 'medium';
+  const mode = R ? R[tier] : (tier === 'small' ? 'bank' : 'roll');
+  this._lastRoll = { tier, mode, dist: Math.round(dist) };
+  if (mode === 'roll' || mode === 'rollFlip') {
+    this.later(() => this.anim(this.j('root'), [{ transform: 'rotate(0)' }, { transform: `rotate(${360 * facing}deg)` }], { duration: F.rollMs, easing: EASE.soft, composite: 'add' }), total * 0.45);
+    this.later(() => this.cue('roll', { tier }), total * 0.45);
+  }
+  if (mode === 'rollFlip') {
+    // 180 heading flip at the apex: scaleX flips on the root for the second half of the arc, back to facing before touchdown
+    this.later(() => this.anim(this.j('root'), [{ transform: 'scaleX(1)' }, { transform: 'scaleX(-1)', offset: 0.5 }, { transform: 'scaleX(1)' }], { duration: total * 0.4, easing: EASE.soft, composite: 'add' }), total * 0.5);
+  }
 
   // 3) physics driven by the analytic velocity of the path (no layout reads)
   const t0 = clock.now(), ease = cssEase(F.easing), N = points.length - 1;

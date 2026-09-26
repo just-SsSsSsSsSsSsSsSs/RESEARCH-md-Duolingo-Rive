@@ -18,10 +18,12 @@ temple side, as on horned owls), thickness 3.8 units at the peak, ends 0.
 Pivot = brow centre on its lower edge (cx, 64.2) so rot = tilt, y = raise/lower.
 
 Flag contract:
-  * SVG: <g data-feature="brows" style="display:none"> ... </g> -> hidden by default
-  * runtime (index.html): shown only when ?brows!=0 AND spec.acting.brows === true
+  * SVG: <g data-feature="brows"> ... </g> -> VISIBLE by default (owner rule K9.2c:
+    the feature ships ON; the flag is for turning it off)
+  * runtime (index.html): hidden (display:none) when ?brows=0 OR spec.acting.brows !== true
   * with the flag off the element is display:none -> not painted -> pixel identical
-    to the pre-brow SVG (proved by brows_proof.py)
+    to the pre-brow SVG (regression proof, brows_proof.py); with the flag on the brows
+    are visible and animate with the poses (the achievement)
 
 Idempotent: re-running replaces the existing brows block and spec joints.
 Writes: companions/owl_p2.svg, companions/owl.motion.json (acting.brows, poses[*].joints.brow*),
@@ -77,7 +79,7 @@ def brow_paths(cx, side):
 
 
 def build_block():
-    parts = ['<g data-feature="brows" style="display:none">']
+    parts = ['<g data-feature="brows">']
     for side in ('L', 'R'):
         cx = EYE[side][0]
         body, hi = brow_paths(cx, side)
@@ -90,7 +92,7 @@ def build_block():
 def main():
     svg = open(SVG, encoding='utf-8').read()
     block = build_block()
-    svg, n = re.subn(r'<g data-feature="brows".*?</g>\s*</g>', block, svg, count=1, flags=re.S)
+    svg, n = re.subn(r'<g data-feature="brows"[^>]*>.*?</g>\s*</g>', block, svg, count=1, flags=re.S)
     if n == 0:
         # insert right before the mouth group (brows sit above eyes, below beak in z-order is irrelevant: no overlap)
         svg, n = re.subn(r'(\n\s*)(<g data-joint="mouth")', r'\1' + block.replace('\\', '\\\\') + r'\1\2', svg, count=1)
@@ -120,7 +122,7 @@ def main():
                   colours=dict(body=hexc(DARK), body_rgb=DARK, highlight=hexc(MID), highlight_rgb=MID, highlight_opacity=0.55,
                                source='head.webp brow band y 58..66 x 60..140: p10 luminance (dark) and p40-60 (mid)'),
                   pivot_y=PIVOT_Y, peak_thickness_units=3.8, span_units=34.0, brow_pose_channels=brow_pose,
-                  flag=dict(svg='data-feature="brows" style="display:none"', spec='acting.brows', url='?brows=0 disables'))
+                  flag=dict(svg='data-feature="brows" (visible by default)', spec='acting.brows must be true', url='?brows=0 hides'))
     json.dump(design, open(os.path.join(PROOFS, 'g11b_brows_design.json'), 'w'), indent=2)
     print(block)
 
