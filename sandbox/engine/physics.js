@@ -46,7 +46,7 @@ export class SecondaryRig {
   constructor(spec, apply) {
     this.spec = spec; this.apply = apply;
     this.springs = {};
-    for (const n in spec) this.springs[n] = new Spring(spec[n]);
+    for (const n in spec) if (spec[n] && typeof spec[n] === 'object') this.springs[n] = new Spring(spec[n]);
     this.raf = 0; this.last = 0; this.settleUntil = 0; this.driving = false;
     this.prevV = { x: 0, y: 0 };
     this.velocity = { x: 0, y: 0 };  // set by the primary motion each frame

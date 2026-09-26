@@ -150,6 +150,7 @@ export function validateSpec(spec) {
   }
   if (spec && spec.secondary) {
     for (const [g, s] of Object.entries(spec.secondary)) {
+      if (!s || typeof s !== 'object') continue;               // documentation strings are allowed
       if (!(s.k > 0) || !(s.c >= 0)) problems.push(`secondary ${g}: k must be > 0 and c >= 0`);
     }
   }

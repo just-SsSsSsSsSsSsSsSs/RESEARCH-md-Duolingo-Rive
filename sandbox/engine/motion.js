@@ -31,6 +31,7 @@ export class CinematicRig extends SvgRig {
     // writes rotate() into it via setKeyframes (compositor-only, no layout)
     this.secLayers = {};
     for (const n in spec.secondary) {
+      if (!spec.secondary[n] || typeof spec.secondary[n] !== 'object') continue; // skip comment strings
       const el = this.j(n); if (!el) continue;
       const a = el.animate(KF2('rotate(0deg)'), { duration: 1000, fill: 'both', composite: 'add' });
       a.pause(); this.live.add(a); this.secLayers[n] = a;
