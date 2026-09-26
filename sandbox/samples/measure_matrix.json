@@ -1,8 +1,8 @@
 {
-  "measured_at": "2026-09-26T21:58:33Z",
+  "measured_at": "2026-09-26T22:05:15Z",
   "base": "http://localhost:8080/sandbox/",
   "companions": 5,
-  "seconds_per_run": 6.0,
+  "seconds_per_run": 10.0,
   "rounds": 3,
   "schedule": "interleaved round-robin over all cells per round (identical host conditions)",
   "host": {
@@ -19,27 +19,27 @@
       "engine": "v2",
       "extra": "",
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.7,
+      "raf_p95_ms": 16.8,
       "raf_p99_ms": 16.8,
       "raf_max_ms": 16.8,
       "jank_pct": 0.0,
-      "heap_delta_mb_after_scene": 0.85,
+      "heap_delta_mb_after_scene": 0.86,
       "animations_idle": 73,
       "dom_nodes": 327,
-      "engine_idle_loops_after_scene": 5,
+      "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
         0.0,
-        3.5,
+        1.69,
         0.0
       ],
       "runs_p95_ms": [
-        16.7,
         16.8,
-        16.7
+        16.8,
+        16.8
       ],
       "errors": 0,
-      "budget_p95_le_16_7": true,
-      "budget_jank_lt_1pct": true
+      "budget_jank_lt_1pct": true,
+      "budget_p95_le_20": true
     },
     {
       "cell": "v2 no-Foley",
@@ -49,27 +49,27 @@
       "engine": "v2",
       "extra": "&sfx=0",
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.8,
+      "raf_p95_ms": 16.7,
       "raf_p99_ms": 16.8,
       "raf_max_ms": 16.8,
       "jank_pct": 0.0,
-      "heap_delta_mb_after_scene": 0.88,
+      "heap_delta_mb_after_scene": 0.8,
       "animations_idle": 73,
       "dom_nodes": 326,
-      "engine_idle_loops_after_scene": 5,
+      "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        10.79,
         0.0,
+        1.18,
         0.0
       ],
       "runs_p95_ms": [
-        33.4,
         16.7,
-        16.8
+        16.8,
+        16.7
       ],
       "errors": 0,
-      "budget_p95_le_16_7": false,
-      "budget_jank_lt_1pct": true
+      "budget_jank_lt_1pct": true,
+      "budget_p95_le_20": true
     },
     {
       "cell": "v1 reference",
@@ -80,17 +80,17 @@
       "extra": "",
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 16.8,
-      "raf_p99_ms": 50,
-      "raf_max_ms": 66.6,
-      "jank_pct": 2.88,
-      "heap_delta_mb_after_scene": 0.63,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 50,
+      "jank_pct": 2.76,
+      "heap_delta_mb_after_scene": 0.65,
       "animations_idle": 38,
       "dom_nodes": 326,
-      "engine_idle_loops_after_scene": 5,
+      "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        2.88,
-        3.52,
-        1.7
+        3.68,
+        0.84,
+        2.76
       ],
       "runs_p95_ms": [
         16.8,
@@ -98,8 +98,8 @@
         16.8
       ],
       "errors": 0,
-      "budget_p95_le_16_7": false,
-      "budget_jank_lt_1pct": false
+      "budget_jank_lt_1pct": false,
+      "budget_p95_le_20": true
     },
     {
       "cell": "v2 + Foley",
@@ -112,24 +112,24 @@
       "raf_p95_ms": 33.3,
       "raf_p99_ms": 33.4,
       "raf_max_ms": 50,
-      "jank_pct": 9.79,
-      "heap_delta_mb_after_scene": 0.85,
+      "jank_pct": 5.84,
+      "heap_delta_mb_after_scene": 0.86,
       "animations_idle": 73,
       "dom_nodes": 327,
-      "engine_idle_loops_after_scene": 5,
+      "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        7.12,
-        9.79,
-        11.29
+        5.83,
+        5.84,
+        7.17
       ],
       "runs_p95_ms": [
         33.3,
         33.3,
-        33.4
+        33.3
       ],
       "errors": 0,
-      "budget_p95_le_16_7": false,
-      "budget_jank_lt_1pct": false
+      "budget_jank_lt_1pct": false,
+      "budget_p95_le_20": false
     },
     {
       "cell": "v2 no-Foley",
@@ -139,27 +139,27 @@
       "engine": "v2",
       "extra": "&sfx=0",
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 33.3,
+      "raf_p95_ms": 16.8,
       "raf_p99_ms": 33.4,
       "raf_max_ms": 50,
-      "jank_pct": 8.13,
-      "heap_delta_mb_after_scene": 0.79,
+      "jank_pct": 4.53,
+      "heap_delta_mb_after_scene": 0.8,
       "animations_idle": 73,
       "dom_nodes": 326,
-      "engine_idle_loops_after_scene": 5,
+      "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        6.19,
-        8.13,
-        10.53
+        2.21,
+        4.53,
+        5.48
       ],
       "runs_p95_ms": [
-        33.3,
-        33.3,
-        33.4
+        16.8,
+        16.8,
+        33.3
       ],
       "errors": 0,
-      "budget_p95_le_16_7": false,
-      "budget_jank_lt_1pct": false
+      "budget_jank_lt_1pct": false,
+      "budget_p95_le_20": true
     },
     {
       "cell": "v1 reference",
@@ -169,27 +169,28 @@
       "engine": "v1",
       "extra": "",
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 33.3,
-      "raf_p99_ms": 33.5,
+      "raf_p95_ms": 16.8,
+      "raf_p99_ms": 33.4,
       "raf_max_ms": 50,
-      "jank_pct": 5.62,
-      "heap_delta_mb_after_scene": 0.63,
+      "jank_pct": 2.92,
+      "heap_delta_mb_after_scene": 0.65,
       "animations_idle": 38,
       "dom_nodes": 326,
-      "engine_idle_loops_after_scene": 5,
+      "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        6.23,
-        5.62,
-        3.16
+        2.23,
+        2.92,
+        3.81
       ],
       "runs_p95_ms": [
-        33.3,
-        33.3,
+        16.8,
+        16.8,
         16.8
       ],
       "errors": 0,
-      "budget_p95_le_16_7": false,
-      "budget_jank_lt_1pct": false
+      "budget_jank_lt_1pct": false,
+      "budget_p95_le_20": true
     }
-  ]
+  ],
+  "note": "budget flags: p95 <= 20 ms (measure.py threshold; rAF quantum 16.7 +- 0.1 ms) and jank < 1 pct; flags re-derived from the same cells after the first collation used 16.7 literally"
 }
