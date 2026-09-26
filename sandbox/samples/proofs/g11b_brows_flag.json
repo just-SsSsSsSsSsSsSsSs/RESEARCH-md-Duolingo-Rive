@@ -1,0 +1,236 @@
+{
+  "tool": "sandbox/brows_proof.py",
+  "ref_pre_brows": "55934bc",
+  "url": "http://127.0.0.1:8080/sandbox/index.html",
+  "renders_per_doc": 3,
+  "A_flag_off": {
+    "dpr1": {
+      "shape": [
+        265,
+        220
+      ],
+      "median_diff": {
+        "max_abs_diff": 0,
+        "pixels_differing": 0,
+        "diff_bbox_px": null
+      },
+      "raw_pairs": [
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        }
+      ],
+      "control_pre_vs_pre": [
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        }
+      ],
+      "browsDisplay": [
+        "none",
+        "none",
+        "none"
+      ],
+      "errors": [
+        [],
+        [],
+        []
+      ],
+      "pass_pixel_diff_0": true,
+      "pass_hidden": true
+    },
+    "dpr2": {
+      "shape": [
+        530,
+        440
+      ],
+      "median_diff": {
+        "max_abs_diff": 0,
+        "pixels_differing": 0,
+        "diff_bbox_px": null
+      },
+      "raw_pairs": [
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        }
+      ],
+      "control_pre_vs_pre": [
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null
+        }
+      ],
+      "browsDisplay": [
+        "none",
+        "none",
+        "none"
+      ],
+      "errors": [
+        [],
+        [],
+        []
+      ],
+      "pass_pixel_diff_0": true,
+      "pass_hidden": true
+    }
+  },
+  "B_flag_on": {
+    "info": {
+      "browsDisplay": "inline",
+      "browJoints": [
+        true,
+        true
+      ],
+      "specCheck": {
+        "ok": true,
+        "problems": [],
+        "reduced": false
+      },
+      "hasPoses": true
+    },
+    "errors": [],
+    "diff_vs_off": {
+      "max_abs_diff": 161,
+      "pixels_differing": 1216,
+      "diff_bbox_px": [
+        139,
+        130,
+        298,
+        149
+      ]
+    },
+    "brow_band_device_px": [
+      121.5,
+      148.0
+    ],
+    "fraction_of_diff_inside_brow_band": 1.0,
+    "pose_transforms": {
+      "before": {
+        "L": "none",
+        "R": "none"
+      },
+      "after": {
+        "L": "matrix(0.987688, -0.156434, 0.156434, 0.987688, 0, -4)",
+        "R": "matrix(0.994718, 0.102649, -0.102649, 0.994718, 0, 1)"
+      },
+      "changed": true
+    },
+    "pass_visible": true,
+    "pass_confined_to_brow_band": true,
+    "pass_no_errors": true,
+    "pass_spec_ok": true,
+    "pass_brows_animate": true
+  },
+  "C_spec_gate": {
+    "browsDisplay": "none",
+    "errors": [],
+    "pass_hidden_when_spec_false": true
+  },
+  "pass_zero_regression_when_off": true,
+  "pass_all": true
+}
