@@ -1,0 +1,16 @@
+{
+  "measured_at": "2026-09-26T16:05:05Z",
+  "owls": 5,
+  "scene": "celebrate x5 staggered 90 ms, then fly x5",
+  "max_concurrent_voices": 3,
+  "polyphony_cap": 3,
+  "stats": {
+    "played": 34,
+    "dropped": 44,
+    "stolen": 3,
+    "muted": 0
+  },
+  "same_cue_min_gap_ms": 130.6,
+  "same_cue_gap_rule_ms": 120,
+  "pass": true
+}

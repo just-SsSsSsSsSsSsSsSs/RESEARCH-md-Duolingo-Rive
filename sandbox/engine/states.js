@@ -14,6 +14,8 @@
 import { REDUCED } from '../rig.js?v=g4';
 
 const noop = () => null;
+/** Generator types implemented by engine/sound.js (kept here so validateSpec stays DOM-free). */
+const GENS = new Set(['tone', 'noise', 'thud', 'chord']);
 
 const CLIPS = {
   body: {
@@ -25,7 +27,9 @@ const CLIPS = {
     recoil: (rig) => rig.sad(),
     flight: (rig, ctx) => {
       const trace = !!(ctx && ctx.trace);
-      if (ctx && ctx.target) return rig.flyTo(ctx.target, { trace, home: !!ctx.home });
+      if (ctx && ctx.home) return rig.flyTo(null, { trace, home: true });
+      if (ctx && ctx.by) return rig.flyBy(ctx.by.dx, ctx.by.dy, { trace });          // deterministic vector (proofs, tests)
+      if (ctx && ctx.target) return rig.flyTo(ctx.target, { trace, home: false });
       return rig.roam((ctx && ctx.room) || { left: 200, right: 200, up: 220 }, { trace });
     },
   },
@@ -88,10 +92,14 @@ export class CharacterStates {
     const st = this.spec.list[name];
     if (!st) { this._emit({ type: 'unknown', state: name }); return false; }
     if (this.rig.busy && name !== 'idle') { this._emit({ type: 'rejected', state: name, reason: 'busy' }); return false; }
+    if (this.state === 'rest' && name !== 'idle') { this.state = 'idle'; if (this.rig.cue) this.rig.cue('wake', {}); }
     const seq = ++this._seq;
     const from = this.state;
     this.state = name;
     this._emit({ type: 'enter', from, to: name, t: performance.now() });
+    if (this.rig.cue) this.rig.cue('enter', { state: name, from });
+    this._armRestTimer(name);
+    this._armBeat(name, st);
 
     const runs = [];
     for (const layer of this.spec.layers) {
@@ -109,6 +117,28 @@ export class CharacterStates {
     return true;
   }
 
+  /** idle for spec.idleToRestMs -> `idle:long` (rest state with Zzz); any other state cancels. */
+  _armRestTimer(name) {
+    clearTimeout(this._restTimer);
+    const ms = this.spec.idleToRestMs;
+    if (name === 'idle' && ms > 0 && this.spec.events['idle:long']) {
+      this._restTimer = setTimeout(() => { if (this.state === 'idle' && !this.rig.busy) this.fire('idle:long'); }, ms);
+    }
+  }
+  /** periodic cue while in a state (think ticks, rest snores) - cleared on the next transition. */
+  _armBeat(name, st) {
+    clearInterval(this._beatTimer);
+    const sfx = st.sfx || {}, vfx = st.vfx || {};
+    const ms = sfx.beatMs || sfx.loopMs || vfx.loopMs;
+    if (!ms) return;
+    this._beatTimer = setInterval(() => {
+      if (this.state !== name) { clearInterval(this._beatTimer); return; }
+      if (this.rig.cue) this.rig.cue(sfx.beatMs ? 'beat' : 'loop', { state: name });
+    }, ms);
+  }
+  /** leave rest on any interaction */
+  wake() { if (this.state === 'rest') return this.enter('idle'); return Promise.resolve(false); }
+
   _untilFree(minMs) {
     return new Promise((resolve) => {
       const t0 = performance.now();
@@ -120,7 +150,7 @@ export class CharacterStates {
     });
   }
 
-  dispose() { this.listeners.clear(); this._seq++; }
+  dispose() { this.listeners.clear(); this._seq++; clearTimeout(this._restTimer); clearInterval(this._beatTimer); }
 }
 
 /**
@@ -147,6 +177,23 @@ export function validateSpec(spec) {
       if (target !== '@variety' && !S.list[target]) problems.push(`event ${ev} -> undefined state ${target}`);
     }
     if (S.variety) for (const p of S.variety.pool || []) if (!S.list[p]) problems.push(`variety pool has undefined state ${p}`);
+    // K8: every sfx cue must exist in sound.cues, every vfx name in the vfx catalogue (data-only extension test)
+    const cues = (spec.sound && spec.sound.cues) || {};
+    const vfx = spec.vfx || {};
+    for (const [name, st] of Object.entries(S.list || {})) {
+      for (const [phase, cue] of Object.entries(st.sfx || {})) {
+        if (typeof cue === 'string' && !cues[cue]) problems.push(`state ${name}: sfx.${phase} -> unknown cue "${cue}"`);
+      }
+      for (const [phase, fx] of Object.entries(st.vfx || {})) {
+        if (typeof fx === 'string' && !vfx[fx]) problems.push(`state ${name}: vfx.${phase} -> unknown vfx "${fx}"`);
+      }
+    }
+    for (const [cueName, c] of Object.entries(cues)) {
+      if (!c || typeof c !== 'object') continue;
+      if (!GENS.has(c.gen)) problems.push(`sound.cues.${cueName}: unknown generator "${c.gen}"`);
+      if (!(c.gain > 0 && c.gain <= 1)) problems.push(`sound.cues.${cueName}: gain must be in (0,1]`);
+      if (!(c.d > 0)) problems.push(`sound.cues.${cueName}: d (decay s) must be > 0`);
+    }
   }
   if (spec && spec.secondary) {
     for (const [g, s] of Object.entries(spec.secondary)) {

@@ -26,6 +26,7 @@ export class CinematicRig extends SvgRig {
     this._perch = { x: 0, y: 0 };
     this.trace = null;   // optional path-trace sink (G4 proof): fn(points[])
     this.stats = { flights: 0, physicsWrites: 0, physicsSkipped: 0 };
+    this.onCue = null;   // K8: fn(phase, ctx) - set by the state/Foley layer; engine stays audio-agnostic
     this._lastDeg = {}; this._lastSquash = null;
 
     // one persistent, paused, additive animation per secondary group; physics
@@ -63,6 +64,9 @@ export class CinematicRig extends SvgRig {
   }
   later(fn, ms) { return super.later(fn, ms / clock.rate); }   // timers follow the engine clock (slow-mo proofs)
   _sleep(ms) { return new Promise((r) => this.later(r, ms)); }
+  /** Emit a motion phase cue with the visual onset timestamp (performance.now()). */
+  cue(phase, ctx = {}) { if (this.onCue) { try { this.onCue(phase, { tVisual: performance.now(), ...ctx }); } catch (e) { /* Foley must never break motion */ } } }
+  blink(double = false) { super.blink(double); this.cue('blink'); }
 
   // ---- idle from spec ranges (never identical twice) -------------------------
   idle() {
