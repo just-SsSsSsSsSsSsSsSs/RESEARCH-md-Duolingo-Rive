@@ -573,5 +573,241 @@
       "ms": 700,
       "color": "#7bdff2"
     }
+  },
+  "acting": {
+    "comment": "K9 performance layer. leadMs: eyes arrive first, head next, body last (eye-lead, replaces eye lag). asym: right side gets an extra delay and gain jitter so no two sides are mirrors. snapMs: attack for fast beats (1-3 frames). releaseMs: settle back to neutral. Escalation ladder for reactions: small (default) -> medium (streak 3) -> large (rare).",
+    "enabled": true,
+    "leadMs": 45,
+    "lead": [
+      "eyes",
+      "head",
+      "body"
+    ],
+    "asym": {
+      "delayMs": [
+        8,
+        45
+      ],
+      "gainJitter": 0.18
+    },
+    "snapMs": 40,
+    "holdFrames": [
+      2,
+      8
+    ],
+    "releaseMs": 340,
+    "settleEasing": "cubic-bezier(.34,1.56,.64,1)",
+    "escalation": {
+      "small": 1,
+      "medium": 3,
+      "largeEveryN": 7
+    }
+  },
+  "poses": {
+    "comment": "Six signature poses (G11 pose sheet). Channels per joint: rot deg, x/y px, sx/sy scale, skew deg. lids 0 open .. 1 closed. Poses are additive on top of breath/physics.",
+    "alert": {
+      "joints": {
+        "head": {
+          "rot": -6,
+          "y": -3
+        },
+        "body": {
+          "sy": 1.03,
+          "sx": 0.985
+        },
+        "armL": {
+          "rot": 6
+        },
+        "armR": {
+          "rot": -4
+        },
+        "pupilL": {
+          "x": 3,
+          "y": -2
+        },
+        "pupilR": {
+          "x": 3,
+          "y": -2
+        }
+      },
+      "lids": 0.0,
+      "mouth": "closed",
+      "snapMs": 60
+    },
+    "charged": {
+      "joints": {
+        "head": {
+          "rot": 4,
+          "y": 6
+        },
+        "body": {
+          "sy": 0.86,
+          "sx": 1.12,
+          "y": 8
+        },
+        "armL": {
+          "rot": 26
+        },
+        "armR": {
+          "rot": -22
+        },
+        "legL": {
+          "rot": -8
+        },
+        "legR": {
+          "rot": 10
+        },
+        "pupilL": {
+          "y": -3
+        },
+        "pupilR": {
+          "y": -3
+        }
+      },
+      "lids": 0.35,
+      "mouth": "closed",
+      "snapMs": 90
+    },
+    "launch": {
+      "joints": {
+        "head": {
+          "rot": -12,
+          "y": -10
+        },
+        "body": {
+          "sy": 1.16,
+          "sx": 0.9,
+          "y": -14
+        },
+        "armL": {
+          "rot": -58,
+          "y": -6
+        },
+        "armR": {
+          "rot": 52,
+          "y": -6
+        },
+        "legL": {
+          "rot": 22
+        },
+        "legR": {
+          "rot": 14
+        },
+        "pupilL": {
+          "y": -4
+        },
+        "pupilR": {
+          "y": -4
+        }
+      },
+      "lids": 0.0,
+      "mouth": "smile",
+      "snapMs": 35
+    },
+    "puzzled": {
+      "joints": {
+        "head": {
+          "rot": -19,
+          "x": -3,
+          "y": 2
+        },
+        "body": {
+          "rot": 3,
+          "sx": 0.98
+        },
+        "armL": {
+          "rot": -14
+        },
+        "armR": {
+          "rot": 34,
+          "y": -16
+        },
+        "pupilL": {
+          "x": -5,
+          "y": -5
+        },
+        "pupilR": {
+          "x": -5,
+          "y": -5
+        },
+        "lidL": {
+          "y": 3
+        }
+      },
+      "lids": 0.3,
+      "mouth": "mid",
+      "snapMs": 140
+    },
+    "triumph": {
+      "joints": {
+        "head": {
+          "rot": 8,
+          "y": -8
+        },
+        "body": {
+          "sy": 1.1,
+          "sx": 0.95,
+          "y": -6
+        },
+        "armL": {
+          "rot": -74,
+          "y": -10
+        },
+        "armR": {
+          "rot": 70,
+          "y": -10
+        },
+        "legL": {
+          "rot": -12
+        },
+        "legR": {
+          "rot": 12
+        },
+        "pupilL": {
+          "y": -4
+        },
+        "pupilR": {
+          "y": -4
+        }
+      },
+      "lids": 0.0,
+      "mouth": "open",
+      "snapMs": 45
+    },
+    "oops": {
+      "joints": {
+        "head": {
+          "rot": 14,
+          "x": 6,
+          "y": 4
+        },
+        "body": {
+          "rot": -6,
+          "sy": 0.94,
+          "sx": 1.05,
+          "x": 5
+        },
+        "armL": {
+          "rot": 40
+        },
+        "armR": {
+          "rot": 12
+        },
+        "legL": {
+          "rot": 6
+        },
+        "pupilL": {
+          "x": 6,
+          "y": 2
+        },
+        "pupilR": {
+          "x": 6,
+          "y": 2
+        }
+      },
+      "lids": 0.55,
+      "mouth": "sad",
+      "snapMs": 70
+    }
   }
 }
