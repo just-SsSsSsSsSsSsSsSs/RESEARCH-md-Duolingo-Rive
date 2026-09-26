@@ -128,3 +128,23 @@ Result [measured]: 6/6 poses read as silhouettes with joint transforms on the ra
 vector re-author route (2) in addendum (d) is therefore NOT opened by G11 v2. Calibration note: the 8 % gate sits
 between the face-only value (7.9) and the weakest true body pose (12.3), so it separates "face beat" from
 "silhouette pose" on this rig; it is a floor, not a target.
+
+## Performance matrix under identical conditions (2026-09-26, K9.2b-6) [measured]
+`sandbox/measure_matrix.py` (reuses `measure.measure()`), n = 5 owls, 10 s scene (fly, celebrate, talk),
+3 interleaved rounds, medians; raw `samples/measure_matrix.json`.
+
+| cell (n=5) | cpu | rAF p50 | p95 | p99 | max | jank >20 ms % (3 rounds) | heap MB | anims idle | idle loops | p95 <= 20 | jank < 1 % |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| v2 + Foley | 1x | 16.7 | 16.8 | 16.8 | 16.8 | 0.0 (0.0, 1.7, 0.0) | 0.86 | 73 | 0 | yes | yes |
+| v2 no-Foley | 1x | 16.7 | 16.7 | 16.8 | 16.8 | 0.0 (0.0, 1.2, 0.0) | 0.80 | 73 | 0 | yes | yes |
+| v1 reference | 1x | 16.7 | 16.8 | 33.4 | 50 | 2.8 (3.7, 0.8, 2.8) | 0.65 | 38 | 0 | yes | NO |
+| v2 + Foley | 4x | 16.7 | 33.3 | 33.4 | 50 | 5.8 (5.8, 5.8, 7.2) | 0.86 | 73 | 0 | NO | NO |
+| v2 no-Foley | 4x | 16.7 | 16.8 | 33.4 | 50 | 4.5 (2.2, 4.5, 5.5) | 0.80 | 73 | 0 | yes | NO |
+| v1 reference | 4x | 16.7 | 16.8 | 33.4 | 50 | 2.9 (2.2, 2.9, 3.8) | 0.65 | 38 | 0 | yes | NO |
+
+Reading: at CPU 1x the v2 engine (with all K9.2c acting: brows, saccades, wink, roll, poses) holds the budget with
+5 owls and is cleaner than v1 (v1 drops frames during its own flight clip). At the 4x mid-tier proxy nobody holds
+jank < 1 % with 5 owls; v2 + Foley is the worst cell (p95 33 ms), and Foley alone costs about 1.3 jank points there.
+Idle-loop guard is 0 in every cell (a 6 s window had shown 5 - it was the still-running 3.2 s talk clip, verified
+with a probe, not a leak). Consequence for K9.3: keep the Foley bus gated on the active owl only when the device
+proxy is slow (existing `?sfx=0` path becomes the automatic fallback), and measure again after beats + intent land.

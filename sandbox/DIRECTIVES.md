@@ -49,3 +49,8 @@ Format: `#NN | date (UTC) | source | status | summary` then indented detail and 
     pose_sheet.py: silhouette_delta_pct + 6 px blur test, gate 8 pct; alert restaged 7.9 -> 12.3-13.7 pct; 6/6 PASS.
     Evidence: samples/proofs/g11_pose_sheet.png (2 rows), g11_pose_sheet.json (silhouette block), commit "feat(g11-v2)".
     Consequence: vector re-author not opened (ADR-002 visual proof update). Perf matrix (K9.2b-6) still OPEN, then K9.3.
+
+#03 perf-matrix update | 2026-09-26 22:40 | ref #03 (gist rev b5d111c1: perf matrix identical conditions) | done
+    sandbox/measure_matrix.py + samples/measure_matrix.json (v2+Foley / v2 no-Foley / v1 x CPU 1x/4x, n=5, 3 interleaved rounds, 10 s).
+    Result: CPU 1x v2 holds budget (p95 16.8, jank 0), v1 janks 2.8 pct; CPU 4x no cell holds jank < 1 pct, v2+Foley worst (p95 33.3, 5.8 pct).
+    All #03 items now done; next = K9.3 (beats + intent), K9.4-K9.6.
