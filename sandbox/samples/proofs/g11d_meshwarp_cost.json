@@ -1,0 +1,170 @@
+{
+  "measured_at": "2026-09-26T21:40:23Z",
+  "base": "http://localhost:8080/sandbox/",
+  "host": {
+    "platform": "Linux-6.1.155-x86_64-with-glibc2.41",
+    "cpu_count": 2,
+    "cpu_model": "Intel(R) Xeon(R) Processor @ 2.50GHz"
+  },
+  "method": "Canvas2D affine-textured triangles (setTransform+clip+drawImage), GRIDxGRID cells x 2 tris per wing, 2 wings per owl; 3 runs x 240 frames per cell; value = median over runs of the per-run median; CDP CPU throttle 1x and 4x",
+  "cells": [
+    {
+      "cpu_throttle": 1,
+      "owls": 1,
+      "grid": 4,
+      "wings": 2,
+      "triangles_per_frame": 64,
+      "frames_per_run": 240,
+      "runs": 3,
+      "draw_ms_median": 1,
+      "draw_ms_p95": 1.4,
+      "budget_share_60fps_pct": 6.0,
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.9,
+      "raf_p99_ms": 18.1,
+      "jank_pct": 0.84,
+      "runs_draw_ms_median": [
+        1,
+        1,
+        1
+      ],
+      "runs_raf_p95_ms": [
+        16.9,
+        16.8,
+        16.9
+      ]
+    },
+    {
+      "cpu_throttle": 1,
+      "owls": 5,
+      "grid": 4,
+      "wings": 10,
+      "triangles_per_frame": 320,
+      "frames_per_run": 240,
+      "runs": 3,
+      "draw_ms_median": 1.1,
+      "draw_ms_p95": 2.4,
+      "budget_share_60fps_pct": 6.6,
+      "raf_p50_ms": 18.2,
+      "raf_p95_ms": 28,
+      "raf_p99_ms": 51.6,
+      "jank_pct": 14.23,
+      "runs_draw_ms_median": [
+        1.2,
+        1.1,
+        1.1
+      ],
+      "runs_raf_p95_ms": [
+        39.6,
+        26.2,
+        28
+      ]
+    },
+    {
+      "cpu_throttle": 1,
+      "owls": 5,
+      "grid": 6,
+      "wings": 10,
+      "triangles_per_frame": 720,
+      "frames_per_run": 240,
+      "runs": 3,
+      "draw_ms_median": 2.5,
+      "draw_ms_p95": 7.4,
+      "budget_share_60fps_pct": 15.0,
+      "raf_p50_ms": 27.7,
+      "raf_p95_ms": 59.7,
+      "raf_p99_ms": 73,
+      "jank_pct": 100,
+      "runs_draw_ms_median": [
+        2.7,
+        2.4,
+        2.5
+      ],
+      "runs_raf_p95_ms": [
+        68.3,
+        58.1,
+        59.7
+      ]
+    },
+    {
+      "cpu_throttle": 4,
+      "owls": 1,
+      "grid": 4,
+      "wings": 2,
+      "triangles_per_frame": 64,
+      "frames_per_run": 240,
+      "runs": 3,
+      "draw_ms_median": 1.6,
+      "draw_ms_p95": 2.8,
+      "budget_share_60fps_pct": 9.6,
+      "raf_p50_ms": 20.6,
+      "raf_p95_ms": 28.8,
+      "raf_p99_ms": 46.5,
+      "jank_pct": 65.69,
+      "runs_draw_ms_median": [
+        1.4,
+        1.6,
+        1.7
+      ],
+      "runs_raf_p95_ms": [
+        28.8,
+        29.3,
+        22.4
+      ]
+    },
+    {
+      "cpu_throttle": 4,
+      "owls": 5,
+      "grid": 4,
+      "wings": 10,
+      "triangles_per_frame": 320,
+      "frames_per_run": 240,
+      "runs": 3,
+      "draw_ms_median": 1.2,
+      "draw_ms_p95": 4.7,
+      "budget_share_60fps_pct": 7.2,
+      "raf_p50_ms": 76.2,
+      "raf_p95_ms": 86,
+      "raf_p99_ms": 92,
+      "jank_pct": 100,
+      "runs_draw_ms_median": [
+        1.2,
+        1.1,
+        1.2
+      ],
+      "runs_raf_p95_ms": [
+        84.1,
+        86,
+        87.9
+      ]
+    },
+    {
+      "cpu_throttle": 4,
+      "owls": 5,
+      "grid": 6,
+      "wings": 10,
+      "triangles_per_frame": 720,
+      "frames_per_run": 240,
+      "runs": 3,
+      "draw_ms_median": 3.5,
+      "draw_ms_p95": 11,
+      "budget_share_60fps_pct": 21.0,
+      "raf_p50_ms": 117.8,
+      "raf_p95_ms": 129.3,
+      "raf_p99_ms": 150.1,
+      "jank_pct": 100,
+      "runs_draw_ms_median": [
+        3.5,
+        3,
+        4
+      ],
+      "runs_raf_p95_ms": [
+        126.2,
+        136.1,
+        129.3
+      ]
+    }
+  ],
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+  "errors": []
+}
