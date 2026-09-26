@@ -9,7 +9,7 @@
  *
  * Joint channels: rot (deg), x, y (px), sx, sy (scale), skew (deg).
  * Asymmetry: pose.asym = { delayMs: [min,max], gainJitter } applies a different delay
- * and gain to the right side (armR, legR, eyeR, lidR) versus the left, per apply().
+ * and gain to the right side (armR, legR, eyeR, lidR, browR) versus the left, per apply().
  * Eye-lead: pose.lead = ['eyes','head','body'] applies joints in that order with the
  * spec.acting.leadMs stagger, so the eyes arrive first and the body last.
  */
@@ -47,7 +47,7 @@ export class PoseLayer {
   /** Order joints so the lead chain (eyes -> head -> body) goes first, each group staggered by leadMs. */
   _schedule(pose) {
     const lead = pose.lead || this.acting.lead || ['eyes', 'head', 'body'];
-    const groups = { eyes: ['eyeL', 'eyeR', 'pupilL', 'pupilR', 'lidL', 'lidR'], head: ['head', 'mouth'], body: ['body', 'root', 'armL', 'armR', 'legL', 'legR', 'shadow'] };
+    const groups = { eyes: ['eyeL', 'eyeR', 'pupilL', 'pupilR', 'lidL', 'lidR', 'browL', 'browR'], head: ['head', 'mouth'], body: ['body', 'root', 'armL', 'armR', 'legL', 'legR', 'shadow'] };
     const leadMs = this.acting.leadMs || 0;
     const out = [];
     for (const j of Object.keys(pose.joints || {})) {

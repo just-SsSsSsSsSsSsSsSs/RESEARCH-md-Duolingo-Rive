@@ -94,6 +94,7 @@
   const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
   const params = new URLSearchParams(location.search);
   const ACTING = params.get('acting') !== '0';   // K9 feature flag: ?acting=0 restores the K8 behaviour exactly
+  const BROWS = params.get('brows') !== '0';     // K9.2b-2 feature flag: vector brows (also needs spec.acting.brows === true); off = display:none = zero paint
   let art = params.get('art') === 'p1' ? 'p1' : 'p2';
   let FILES = ART[art];
   let count = Number(params.get('n')) || 1;
@@ -109,7 +110,7 @@
     const res = await fetch('companions/owl.motion.json?v=k9');
     SPEC = await res.json();
     const v = validateSpec(SPEC);
-    const pp = validatePoses(SPEC, ['root','body','head','eyeL','eyeR','pupilL','pupilR','lidL','lidR','mouth','armL','armR','legL','legR','shadow']);
+    const pp = validatePoses(SPEC, ['root','body','head','eyeL','eyeR','pupilL','pupilR','lidL','lidR','mouth','armL','armR','legL','legR','shadow','browL','browR']);
     if (pp.length) { v.ok = false; v.problems.push(...pp); }
     if (!v.ok) console.warn('spec problems', v.problems);
     window.__specCheck = v;
@@ -169,7 +170,8 @@
         slot.appendChild(tag);
         slot.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); tapReact(rig, slot); });
         if (useV2) { rig.trace = makeTracer(slot); rig.states = new CharacterStates(rig, spec); rig.states.on((ev) => { if (ev.type === 'enter') slot.dataset.state = ev.to; }); if (foley) foley.attach(rig, rig.states);
-          if (ACTING && spec.acting && spec.acting.enabled !== false) rig.poses = new PoseLayer(rig, spec); }   // K9 acting layer, flag ?acting=0
+          if (ACTING && spec.acting && spec.acting.enabled !== false) rig.poses = new PoseLayer(rig, spec);
+          if (ACTING && BROWS && spec.acting && spec.acting.brows === true) rig.svg.querySelectorAll('[data-feature="brows"]').forEach((g) => { g.style.display = ''; }); }   // K9 acting layer, flags ?acting=0 ?brows=0
         return rig;
       }));
     }

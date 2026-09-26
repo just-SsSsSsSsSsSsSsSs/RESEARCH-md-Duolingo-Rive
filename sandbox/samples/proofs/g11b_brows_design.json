@@ -1,0 +1,99 @@
+{
+  "tool": "sandbox/tools/add_brows.py",
+  "eye_centres": {
+    "L": [
+      81.2872,
+      85.1917
+    ],
+    "R": [
+      118.2701,
+      85.1868
+    ]
+  },
+  "eye_top_units": 65.8,
+  "mirror_axis": 99.779,
+  "colours": {
+    "body": "#592c17",
+    "body_rgb": [
+      89,
+      44,
+      23
+    ],
+    "highlight": "#ba8454",
+    "highlight_rgb": [
+      186,
+      132,
+      84
+    ],
+    "highlight_opacity": 0.55,
+    "source": "head.webp brow band y 58..66 x 60..140: p10 luminance (dark) and p40-60 (mid)"
+  },
+  "pivot_y": 64.2,
+  "peak_thickness_units": 3.8,
+  "span_units": 34.0,
+  "brow_pose_channels": {
+    "alert": {
+      "browL": {
+        "y": -2.5
+      },
+      "browR": {
+        "y": -2.5
+      }
+    },
+    "charged": {
+      "browL": {
+        "rot": 10,
+        "y": 1.5
+      },
+      "browR": {
+        "rot": -10,
+        "y": 1.5
+      }
+    },
+    "launch": {
+      "browL": {
+        "y": -3,
+        "rot": -6
+      },
+      "browR": {
+        "y": -3,
+        "rot": 6
+      }
+    },
+    "puzzled": {
+      "browL": {
+        "y": -4,
+        "rot": -9
+      },
+      "browR": {
+        "y": 1,
+        "rot": 7
+      }
+    },
+    "triumph": {
+      "browL": {
+        "y": -3.5,
+        "rot": -5
+      },
+      "browR": {
+        "y": -3.5,
+        "rot": 5
+      }
+    },
+    "oops": {
+      "browL": {
+        "y": -1,
+        "rot": 12
+      },
+      "browR": {
+        "y": -1,
+        "rot": -12
+      }
+    }
+  },
+  "flag": {
+    "svg": "data-feature=\"brows\" style=\"display:none\"",
+    "spec": "acting.brows",
+    "url": "?brows=0 disables"
+  }
+}

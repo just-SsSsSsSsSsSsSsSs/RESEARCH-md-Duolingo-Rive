@@ -601,7 +601,9 @@
       "small": 1,
       "medium": 3,
       "largeEveryN": 7
-    }
+    },
+    "brows": true,
+    "browsComment": "vector brows (data-feature=brows in owl_p2.svg); shown only when acting.brows is true and the page flag ?brows!=0; joints browL/browR, pivot at brow centre lower edge; channels rot (tilt, deg) and y (raise, px)"
   },
   "poses": {
     "comment": "Six signature poses (G11 pose sheet). Channels per joint: rot deg, x/y px, sx/sy scale, skew deg. lids 0 open .. 1 closed. Poses are additive on top of breath/physics.",
@@ -628,6 +630,12 @@
         "pupilR": {
           "x": 3,
           "y": -2
+        },
+        "browL": {
+          "y": -2.5
+        },
+        "browR": {
+          "y": -2.5
         }
       },
       "lids": 0.0,
@@ -662,6 +670,14 @@
         },
         "pupilR": {
           "y": -3
+        },
+        "browL": {
+          "rot": 10,
+          "y": 1.5
+        },
+        "browR": {
+          "rot": -10,
+          "y": 1.5
         }
       },
       "lids": 0.35,
@@ -698,6 +714,14 @@
         },
         "pupilR": {
           "y": -4
+        },
+        "browL": {
+          "y": -3,
+          "rot": -6
+        },
+        "browR": {
+          "y": -3,
+          "rot": 6
         }
       },
       "lids": 0.0,
@@ -732,6 +756,14 @@
         },
         "lidL": {
           "y": 3
+        },
+        "browL": {
+          "y": -4,
+          "rot": -9
+        },
+        "browR": {
+          "y": 1,
+          "rot": 7
         }
       },
       "lids": 0.3,
@@ -768,6 +800,14 @@
         },
         "pupilR": {
           "y": -4
+        },
+        "browL": {
+          "y": -3.5,
+          "rot": -5
+        },
+        "browR": {
+          "y": -3.5,
+          "rot": 5
         }
       },
       "lids": 0.0,
@@ -803,6 +843,14 @@
         "pupilR": {
           "x": 6,
           "y": 2
+        },
+        "browL": {
+          "y": -1,
+          "rot": 12
+        },
+        "browR": {
+          "y": -1,
+          "rot": -12
         }
       },
       "lids": 0.55,
