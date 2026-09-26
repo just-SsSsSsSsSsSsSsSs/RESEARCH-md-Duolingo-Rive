@@ -724,3 +724,38 @@ Docker + CI/CD
 - `app/js/engines/family.js`: pure functions over `listProfiles()` daily buckets. Week = Saturday..Friday (Egypt school week). Metrics per hero: answers, correct, accuracy, xp, minutes, recovered (correct after a wrong on the same day, from `activities`), active days, streak. Growth % = this week's correct vs mean of the previous 4 weeks (min baseline 5 to avoid infinite growth; first week = «اول اسبوع» badge instead of a percentage). Category winners rotate the crown by ISO week number so the headline category differs each week. Quest target scales with number of active heroes (100 correct per hero, min 150).
 - `app/js/ui/views/family.js` + CSS: hero tiles (companion sprite, growth ring, crown, one personal-best line), quest bar, family card actions, guests (PIN). Entry from home + profile.
 - Tests `app/tests/phase19_family.py` (Playwright, 8090) + node unit checks of the engine math.
+
+
+## Appendix - Phase 20 «تقرير الأهل الأسبوعي» Parent Weekly Report linked to the Family Board (R0, 2026-09-26)
+
+### Verified facts (evidence first)
+- PR #3 merged (origin/main 942268d, 2026-09-25T23:57Z); live Pages version.json 7.24; `app/js/ui/views/family.js` -> 200. Roadmap: 20 current (7.25).
+- Already on the branch (do not rebuild): parent dashboard PIN-gated with per-child level/streak/accuracy, 7-day XP chart, subjects, activities table (`parent.js`); Phase 10 «نقاط الضعف والسلوك» (`parentInsights.js` over `insights.analyze()`: weakest skills, error patterns, trend, guess rate, parent script per stumbled question); settings + telemetry privacy (`parentSettings.js`); Phase 19 `family_core` weekly metrics (growth vs own 4-week baseline, crowns, quest, recovered); telemetry `question_attempted` has `hour`, `time_ms`, `skill`, `correct`; `@media print` already hides nav/topbar (base.css:86).
+- Gap: nothing summarises a WEEK for the parent, nothing compares this week to last week, nothing turns the data into what to SAY to the child, nothing survives the 120-day daily pruning as a history, and nothing tells the parent a new week's report is ready.
+
+### What the market actually does (checked 2026-09-26)
+| Product | Mechanism | Lesson for us |
+|---|---|---|
+| Duolingo weekly progress e-mail (reallygoodemails.com/emails/your-weekly-progress-report-duolingo; users report it stopped early 2024) | Server-sent e-mail: lessons, XP, streak, time; marketing tone | Numbers alone; needs a server + e-mail address -> impossible and undesirable here (children's privacy) |
+| Khan Academy Parent Dashboard (support.khanacademy.org 36120531499789) | Activity Overview, Individual Student Report, Assignment Scores; cloud account | Detailed but generic tables; no «what to do at home» |
+| Prodigy parent dashboard (prodigygame.com blog) | Skills mastered + time spent, real-time, cloud; upsell to membership | Time + mastery are the two parents understand instantly |
+| Kraft & Rogers 2015 (Econ. of Education Review) - weekly one-sentence individualised teacher-to-parent messages | Course failure fell 41 %; messages about what to IMPROVE beat pure praise | One individualised sentence per child per week, improvement-framed |
+| Kraft & Bolves 2022 (EFP) - communication technology | Works when it gives parents concrete conversation starters about what the child is learning | Data-driven conversation starters, not dashboards |
+
+### Gap / novelty (what nobody does, locally)
+- A one-page **weekly report card per child generated on the device** from the same buckets as the family board: this week vs last week (ipsative deltas), best learning time of day (from telemetry hours), strongest + weakest skill with ONE home tip, self-corrections, contribution to the family quest, and **three data-driven Arabic conversation starters for the dinner table** («اسأل سليم يشرح لك إزاي طلّع ٧×٨ بعد ما غلط فيها مرة»).
+- **Family summary** page: the three children together (no ranking) + the quest outcome + the crown of the week.
+- **Local archive** of the last 8 weekly snapshots in `store.meta.parentReports` so trends survive daily pruning; **«new report ready» dot** on the parent nav item when the week changed and the parent has not opened it (no notifications, no server).
+- **Print / share as the parent's explicit act**: A4/A5 print stylesheet; Web Share of plain text (fallback clipboard). Nothing leaves the device unless the parent presses share.
+
+### Safety / privacy decisions (constitution)
+- No backend, no e-mail, no analytics. Report is computed at read time from local data; archive holds aggregated numbers only (no question keys, no free text).
+- Report lives only behind the parent PIN; the child never sees weakness labels (Phase 10 rule kept). Names appear only on the parent's own screen/print.
+- Language: improvement-framed (Kraft), never comparative between siblings; the family summary reuses Phase 19 «nobody last» rules.
+- K3 untouched, protected files untouched, Zero-Emoji, no deps, README append-only.
+
+### Engineering decision
+- `app/js/engines/report_core.js` (pure): `weekReport(member, events, now)` -> { week, prev, deltas, bestSlot (صباح/بعد المدرسة/مساء by hour histogram), topSkill, weakSkill (from insights output passed in), tips, headline (one sentence, rule-based), starters[3], nextFocus }, `familySummary(reports, board)`, `archiveMerge(list, snapshot, max=8)`, `reportText(report)` plain text for share/print.
+- `app/js/engines/report.js` (store-bound): gathers profile daily + events + `insights.analyze` + `family.board()`; `isFresh()` (week changed and `meta.reportSeenWeek !== weekStart`); `markSeen()`; archive in `meta.parentReports`.
+- `app/js/ui/views/parentReport.js`: section inside PIN-gated dashboard (per active child tab) + family summary card; print CSS; share/copy; nav dot.
+- Tests: `app/tests/unit/report_core.test.mjs` + `app/tests/phase20_report.py` (Playwright 8090).
