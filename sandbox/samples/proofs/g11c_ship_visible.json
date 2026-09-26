@@ -1,0 +1,208 @@
+{
+  "tool": "sandbox/ship_visible_proof.py",
+  "url": "http://127.0.0.1:8080/sandbox/index.html",
+  "1_default": {
+    "errors": [],
+    "info": {
+      "brows": "inline",
+      "spec": {
+        "ok": true,
+        "problems": [],
+        "reduced": false
+      },
+      "hasWink": true,
+      "hasDart": true,
+      "bar": true,
+      "browsBtn": "true"
+    },
+    "pass_": true
+  },
+  "2_wink": {
+    "peakL": 1,
+    "peakR": 0.169187,
+    "after": {
+      "L": 0,
+      "R": 0
+    },
+    "cues": [
+      "wink"
+    ],
+    "winks": 1,
+    "pass_": true
+  },
+  "dart": {
+    "mid": {
+      "L": [
+        2.05,
+        1.95
+      ],
+      "R": [
+        2.71,
+        1.38
+      ]
+    },
+    "end": {
+      "L": [
+        0,
+        0
+      ],
+      "R": [
+        0,
+        0
+      ]
+    },
+    "darts": 1,
+    "dispL": 2.8293108701590213,
+    "dispR": 3.0411346566701054,
+    "asym": 0.8720665112249182,
+    "pass_": true
+  },
+  "saccades": {
+    "before": 2,
+    "after_7s": 5,
+    "pass_": true
+  },
+  "3_brows_flag": {
+    "default_visible": true,
+    "off": {
+      "brows": "none",
+      "btn": "الحواجب: مخفية"
+    },
+    "pass_": true
+  },
+  "4_roll": {
+    "samples": 54,
+    "maxAbsAccumulatedDeg": 360,
+    "landingDeg": 0,
+    "lastRoll": {
+      "tier": "medium",
+      "mode": "roll",
+      "dist": 286
+    },
+    "ms": 2666,
+    "pass_": true
+  },
+  "4_escalation": {
+    "tiers": [
+      "small",
+      "small",
+      "medium",
+      "small",
+      "small",
+      "medium",
+      "large"
+    ],
+    "pass_": true
+  },
+  "5_poses": {
+    "visible": true,
+    "changedJointsPerPose": {
+      "alert": 6,
+      "charged": 7,
+      "launch": 7,
+      "puzzled": 7,
+      "triumph": 7,
+      "oops": 7
+    },
+    "jointsBackToNeutral": 4,
+    "total": 7,
+    "pass_": false
+  },
+  "6_reel": {
+    "total_ms": 26746,
+    "beats": [
+      {
+        "name": "alert",
+        "t": 0,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 965,
+        "pose": null,
+        "roll": null
+      },
+      {
+        "name": "dart",
+        "t": 1600,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 2160,
+        "pose": null,
+        "roll": null
+      },
+      {
+        "name": "charged",
+        "t": 3200,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 3994,
+        "pose": null,
+        "roll": null
+      },
+      {
+        "name": "roll",
+        "t": 4600,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 6897,
+        "pose": null,
+        "roll": "rollFlip"
+      },
+      {
+        "name": "puzzled",
+        "t": 10500,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 14297,
+        "pose": null,
+        "roll": "rollFlip"
+      },
+      {
+        "name": "triumph",
+        "t": 14500,
+        "stateBefore": "idle",
+        "stateAfter": "celebrate",
+        "tEnd": 14504,
+        "pose": null,
+        "roll": "rollFlip"
+      },
+      {
+        "name": "oops",
+        "t": 18500,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 21252,
+        "pose": null,
+        "roll": "rollFlip"
+      },
+      {
+        "name": "home",
+        "t": 22500,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 24759,
+        "pose": null,
+        "roll": "roll"
+      },
+      {
+        "name": "rest",
+        "t": 26500,
+        "stateBefore": "idle",
+        "stateAfter": "rest",
+        "tEnd": 26746,
+        "pose": null,
+        "roll": "roll"
+      }
+    ],
+    "errors": [],
+    "pass_": true
+  },
+  "7_sfx0": {
+    "winkRan": true,
+    "lidR_sy": 1,
+    "bus": false,
+    "foley": false,
+    "errors": [],
+    "pass_": true
+  },
+  "pass_all": false
+}
