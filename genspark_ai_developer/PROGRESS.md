@@ -879,3 +879,12 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
 6. The owner's announced architecture changes: which of the tasks above are removed, replaced or reprioritised?
 
 - PLAN-ONLY: branch `genspark_plan_phase21` (from main 47080d3) carries this plan + RESEARCH appendix + roadmap titles + AGENTS.md planning rules; zero implementation code. NEXT: owner reviews the planning PR, states the architecture changes, and answers the 6 open questions; only then M0 of the approved phase starts on `genspark_ai_developer`.
+
+## EFRP - Evidence-First Review Protocol (owner gist 98e59929, permanent reference) - research branches, docs only
+
+- Permanent governing reference: https://gist.github.com/pijsal1-tech/98e599291bb543d2237f71ac97d97749 (read from raw every session; revision e14796a = 7019 lines read 2026-09-26; AGENTS.md section 9 records it).
+- resume-check (reset #17): main @ e1315c6 = PR #5 merged (docs only, frozen draft per owner). No research branch existed on remote; the R1-A1 report, AGENTS section 9 and this PROGRESS section had been written but the reset hit before commit -> rewritten now from the same sources and pushed immediately.
+- Gate 0 DONE (chat): understanding, 6 axes, claims list, 8 questions. Owner answered all 8 in the gist: PR #5 frozen draft; section 5 default, revisit only on proof; baseline Android 2-3 GB Chrome; weak 3G/4G + Wi-Fi, fetch once + offline; ages 6-10; axis by axis starting A1; sandbox branch allowed for measurements only; tafsir Al-Muyassar / Al-Mukhtasar.
+- Gate 1 DONE (read-only, RESEARCH.md R1 section 3): CSS-mask + WAAPI rig without joints, 3 poses per character, no Service Worker (purgeLegacyPWA), Pages max-age=600 + accept-ranges + CORS *, 637 mp3 = 49.5 MB, pack 50 MiB, catalog 29 items (13 external).
+- Gate 2 DONE for A1 (RESEARCH.md `R1 - ... Axis A1`): 20 evidence rows E1-E20 with L1/L2/L3 and direct links; circulating numbers without source rejected; 8 alternatives x 10 criteria; 4 unproven hypotheses; 3 priority options (A pedagogy first / B measure B,C,D / C balanced SW + B,C); 4 work-package suggestions; 4 new questions Q-A1-1..4.
+- NOT done, not authorised: Gate 3 decision, Gate 4 measurement, any code. Branch `research/evidence-a1-animation` (docs only) -> docs PR. NEXT: owner reads R1-A1, answers Q-A1-1..4, picks Option A/B/C; then Gate 3/4 only with separate explicit approval.
