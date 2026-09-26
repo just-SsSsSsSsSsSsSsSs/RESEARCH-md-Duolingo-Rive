@@ -1037,3 +1037,86 @@ Same rig; the analyser adds one audio node graph per clip (disconnected on end).
 
 ### 3. What this proves for Gate 6
 The skeleton + engine now covers the full companion vocabulary the app needs: idle life, tap variety, real voice talking, flight to any DOM target (answer card, streak badge), celebration and gentle wrong-answer acting, all under 200 KB per character and compositor-only. Remaining before the app switch (Gate 7): `rig.kind="svg"` adapter inside `companion.js` (behind data), the SW-1 registration, real 2-3 GB Android run, and the other four character sheets (credits).
+
+## R1-A1 Gate 5 cycle 4 - Owl cinematic engine v2 (ADR-001), 10-point report (2026-09-26, branch `sandbox/a1-gate5-art-sw`)
+
+Governing references: EFRP gist rev 5b0800c3 (evidence levels), constitution gist rev 555a2147 (12 principles, gates G1-G10, deliverables). Scope lock respected: owl only, `app/` untouched (`git diff origin/main -- app` = 0), `rig.js` v1 frozen as rollback.
+
+### 1. Goal
+Take the owl from "acceptable" to a motion quality no companion mascot on the web ships today: physically grounded flight and landing (not keyframe imitation), voice-driven acting from a real audio envelope, a data-driven character spec, all inside the 60 fps / near-zero RAM budget, without a runtime or a paid editor.
+
+### 2. Research and references (evidence level in brackets)
+- Duolingo, "How Duolingo's world characters were animated" (blog, 2022-11-10) [L2]: Rive state machines + precomputed viseme timing per phrase; every phrase needs a lip-sync pass in tooling. Our envelope path needs none.
+- Rive runtime (web, 2.x) [L1: rive.app docs + npm]: 220 KB+ WASM, editor export is the source of truth, no per-character physics in the exported state machine (Rive "physics" arrived in 2025 as editor-side constraints, not runtime springs driven by app velocity).
+- dotLottie / Lottie web [L1: dotlottie.io docs]: state machines with themes, interactivity by triggers; still keyframe playback, no spring dynamics from motion velocity, no audio-envelope input.
+- MDN `linear()` easing [L1, Baseline 2024], `KeyframeEffect.composite: add` [L1]: the two platform features that let us layer physics on top of authored WAAPI clips without JS style writes per frame.
+- Classic reference for principles: Thomas and Johnston, "The Illusion of Life" (1981) - the 12 principles used in the matrix below.
+Market table with 4 options is in `sandbox/docs/ADR-001-owl-cinematic-engine.md` (decision: native SVG + WAAPI + spring physics + JSON spec).
+
+### 3. Hypothesis
+A companion that (a) derives follow-through from the analytic velocity/acceleration of its own flight path, (b) preserves volume on impact via a spring, (c) reads its acting parameters from data, and (d) drives its beak/head from a real audio envelope, will read as "alive" at 60 fps with under 1 MB heap growth - and can be reproduced for a new character by data alone. Owner statement "no one did this before" treated as hypothesis: what we could not find in the market scan is the combination of runtime spring dynamics driven by path kinematics + audio-envelope acting + zero-dependency web delivery under 35 KB of code. Individual pieces exist elsewhere; the combination and the budget are the novelty claim (L2, scan-limited).
+
+### 4. Implementation (files, all under `sandbox/`)
+| file | bytes | role |
+|---|---|---|
+| `companions/owl.motion.json` | 4069 | Character Spec: hierarchy delays, 5 spring groups, squash values, timing ranges, flight arcs, gaze-from-envelope, layered state machine |
+| `engine/physics.js` | 6802 | shared engine clock, `Spring` (semi-implicit Euler, 120 Hz substeps), `SecondaryRig` (runs only while driving + settle window), `SquashSpring` (sx = 1/sy), `bezier.sampleEven` |
+| `engine/motion.js` | 9019 | `CinematicRig extends SvgRig`: paused additive WAAPI layers written via `setKeyframes` (compositor-only), write coalescing, spec-driven idle, envelope talk with head spring + onset gaze |
+| `engine/flight.js` | 7858 | `flyBy`: anticipation crouch (150-250 ms hold) -> takeoff stretch -> cubic Bezier arc (40 even samples) with banking that levels off at 82% -> landing impact -> follow-through impulses -> settle; `flyTo`, `roam`, `celebrate` |
+| `engine/states.js` | 6962 | `CharacterStates`: 3 layers, events -> states, `@variety` no-repeat, `next` chains, supersede-safe; `validateSpec` |
+| `index.html` | - | `?engine=v2` default, `v1` rollback; trace overlay; slow-motion helper (engine clock + WAAPI playbackRate); `?hud=0` |
+| `measure.py`, `proofs.py`, `tests/g10_fake_character.mjs` | - | numbers, visual proofs, architecture gate |
+Total engine + spec: 34.7 KB unminified, 0 dependencies, no build step.
+
+### 5. Measurements (Chromium headless, 900x600, 10 s scripted scene fly -> celebrate -> talk; `sandbox/samples/measure_p2_v1.json`, `measure_p2_v2.json`)
+| owls | engine | heap delta scene MB | anims idle | rAF p50 / p95 / max ms | frames >20 ms (jank %) | idle loops after scene |
+|---|---|---|---|---|---|---|
+| 1 | v1 | 0.59 | 22 | 16.7 / 16.8 / 49.9 | 4 (0.67%) | 0 |
+| 1 | v2 | 0.67 | 28 | 16.7 / 16.7 / 16.8 | 0 (0.00%) | 0 |
+| 3 | v1 | 0.62 | 30 | 16.7 / 16.8 / 33.3 | 3 (0.50%) | 0 |
+| 3 | v2 | 0.74 | 48 | 16.7 / 16.8 / 16.8 | 0 (0.00%) | 0 |
+| 5 | v1 | 0.65 | 38 | 16.7 / 16.8 / 50 | 8 (1.36%) | 0 |
+| 5 | v2 | 0.77 | 68 | 16.7 / 16.7 / 50 | 5 (0.84%) | 0 |
+Notes: v2 adds +0.08..0.12 MB heap (spec + spring state) and 6 persistent paused layers per owl; jank at 5 owls varies 0-3.7% run to run on the shared sandbox CPU (3 runs), 1 owl is 0% in every run. Physics write coalescing (skip <0.05 deg / <0.002 scale) removed ~45% of compositor writes (866 writes / 988 skipped in a 12 s 5-owl scene). Transfer 290 KB (includes P2 parts and audio sample). Threshold checks: p95 at 3 owls <= 20 ms PASS, heap at 5 owls <= 20 MB PASS, jank < 1% PASS (single-run), no idle loops PASS.
+
+### 6. Visual proof (`sandbox/samples/proofs/`, slow motion x0.25, DPR 2)
+- `g3_anticipation_strip.png` + `proofs.json` G3: squash 0.86 held ~0.9 s real (= 225 ms engine), then stretch 1.12 before the arc.
+- `g2_landing_strip.png` G2: impact scale(1.25, 0.8) -> rebound scale(0.967, 1.034) -> rest; wings at -6.6 deg overshoot during rebound.
+- `g4_path_trace.png`: two dashed Bezier arcs out/back with apex markers, different apex heights (spec ranges) - not a straight line, not a mirrored copy.
+- `g5_settle_strip.png` G5: wing springs -0.9 -> -6.6 -> +0.4 -> -0.05 deg over 0.75 s engine time; head -0.6 deg; final host transform `rotate(0deg)` (level-off proven).
+- `g7_edge_zoom.png`: wing edge at rest and mid-flight, 4x, no aliasing steps (P2 alpha ramp from Gate 5).
+- `g8_side_by_side.png`: v1 vs v2 60 ms after landing on the same vector; v1 lands stiff, v2 shows squash + wing flare.
+- `v2_owl_showcase.webm` (26 s): independent model review of the recording confirmed, in order: crouch -> stretch -> curved arc with trace -> squash and rebound -> wing settle -> jump -> think -> talk with varying beak openings -> slow-motion flight; no teleports, flicker, detached parts, aliased edges, or residual tilt.
+
+### 7. 12 principles - status matrix
+| principle | implementation | acceptance | proof |
+|---|---|---|---|
+| Squash and stretch | `SquashSpring`, sx = 1/sy, k320 c14 | volume error < 1e-9; impact 0.80 -> rebound 1.05 -> rest in 0.17 s | G10 test, g2 strip |
+| Anticipation | crouch 0.86 held 150-250 ms + head dip + wing lift, then stretch 1.12 | hold sampled in range every flight | g3 strip, proofs.json |
+| Staging | perches on lesson elements, facing = travel direction, trace overlay for review | owl faces target; lands on card top edge | g4, showcase |
+| Straight ahead / pose to pose | authored WAAPI poses + physics in-betweens | - | code |
+| Follow-through and overlapping | hierarchy delays body 40 / head 110 / eyes 60 ms; impulses at landing | wings -6.6 deg after body stops | g5 strip |
+| Slow in / slow out | `cubic-bezier(.35,.05,.25,1)` arc, sampled-spring `linear()` easings, no linear | no `linear` easing in engine | grep, g2 |
+| Arcs | cubic Bezier, arc-length even sampling (spread 0.0%) | 41 points per arc | g4, G10 |
+| Secondary action | envelope -> head tilt spring, onset gaze shifts, phrase-end nod | talk drives 3 mouth levels + head | showcase 8.5-14 s |
+| Timing | every duration sampled from spec ranges; flight ms/px 2.8-3.6 | no two idles identical | spec |
+| Exaggeration | takeoff 1.12 stretch, 360 roll for long flights, jump 52 px | - | showcase |
+| Solid drawing | P2 layered parts, pivots per joint, volume preservation | - | g7 |
+| Appeal | idle non-repeating, tap variety no-repeat, reduced-motion fallback | - | states.js |
+
+### 8. Risks and rollback
+| risk | impact | mitigation |
+|---|---|---|
+| 5-owl jank variance on weak devices | frames > 20 ms during simultaneous landings | spec `settleMs` and coalescing thresholds are data; app uses 1 owl (Gate 6) |
+| Shared engine clock monkey-patches `Element.prototype.animate` only in the demo slow-mo helper | none in app; demo only | not shipped to app |
+| `commitStyles` on host after flight writes inline transform | conflicts if app also transforms the host | Gate 6 adapter owns the host element |
+| AudioContext autoplay policy | talk from envelope silently falls back to synthetic | existing `say()` guard (Gate 5 addendum 2) |
+| Rollback | - | `?engine=v1` or remove 4 files; `rig.js` untouched |
+
+### 9. Objections and alternatives considered
+- "Use Rive, it is the industry standard": rejected for 220 KB WASM, editor lock-in, and no runtime spring dynamics from app kinematics (ADR-001 table).
+- "Precompute visemes like Duolingo": rejected; every new phrase would need tooling; envelope + 3 levels + head spring reads well at 60 fps and costs one AnalyserNode.
+- "Ship v2 straight into app/": rejected by scope lock; Gate 6 adapter (`rig.kind`) is the owner's decision.
+
+### 10. Single blocker
+None technical. Awaiting owner review of the visual proofs and the decision to open Gate 6 (adapter in `app/`).

@@ -1,0 +1,95 @@
+{
+  "id": "owl",
+  "name": "حكيمة",
+  "art": "companions/owl_p2.svg",
+  "flyer": true,
+
+  "hierarchy": {
+    "comment": "overlapping action: each joint follows its parent's motion with a delay (ms) and a gain",
+    "body": { "parent": "root", "delayMs": 40, "gain": 0.9 },
+    "head": { "parent": "body", "delayMs": 110, "gain": 0.75 },
+    "eyes": { "parent": "head", "delayMs": 60, "gain": 0.5 }
+  },
+
+  "secondary": {
+    "comment": "spring-damper groups driven by the character's own velocity/acceleration. k stiffness (1/s^2), c damping (1/s), gainV deg per (px/ms), gainA deg per (px/ms^2), axis of the driving component, limit deg, settleMs how long the solver keeps running after the primary motion stops",
+    "armL": { "k": 180, "c": 16, "gainV": -38, "gainA": -220, "axis": "y", "limit": 55, "settleMs": 900 },
+    "armR": { "k": 180, "c": 16, "gainV": 38, "gainA": 220, "axis": "y", "limit": 55, "settleMs": 900 },
+    "head": { "k": 260, "c": 20, "gainV": -6, "gainA": -60, "axis": "x", "limit": 14, "settleMs": 700 },
+    "legL": { "k": 120, "c": 10, "gainV": -22, "gainA": -90, "axis": "x", "limit": 40, "settleMs": 1100 },
+    "legR": { "k": 120, "c": 10, "gainV": -22, "gainA": -90, "axis": "x", "limit": 40, "settleMs": 1100 }
+  },
+
+  "squash": {
+    "comment": "volume preserving: scaleX = 1 / scaleY. Landing is a spring towards 1 from the impact value",
+    "landing": { "scaleY": 0.8, "k": 320, "c": 14 },
+    "takeoffCrouch": { "scaleY": 0.86, "holdMs": [150, 250] },
+    "takeoffStretch": { "scaleY": 1.12, "ms": 140 },
+    "jump": { "scaleY": 0.84, "stretch": 1.1 }
+  },
+
+  "timing": {
+    "comment": "ranges [min,max] ms - sampled per performance so no two are identical",
+    "breath": [2600, 3400],
+    "blinkGap": [1800, 4200],
+    "doubleBlinkChance": 0.2,
+    "lookGap": [2500, 6000],
+    "lookHold": [900, 1800],
+    "flightMsPerPx": [2.8, 3.6],
+    "flightMinMs": 1400,
+    "flightMaxMs": 3800,
+    "flapMs": [150, 185],
+    "idleWingbeatMs": [110, 130]
+  },
+
+  "flight": {
+    "comment": "arcs: cubic Bezier lifted above the chord. apexLift = fraction of chord length; apexSkew = where along the chord the apex sits; bank deg per (px/ms) of horizontal velocity",
+    "apexLift": [0.28, 0.42],
+    "apexSkew": [0.35, 0.65],
+    "bankPerVx": 55,
+    "bankLimit": 24,
+    "rollIfDistOver": 260,
+    "rollMs": 620,
+    "glidePhase": [0.45, 0.7],
+    "easing": "cubic-bezier(.35,.05,.25,1)"
+  },
+
+  "gaze": {
+    "comment": "secondary action while talking: head and gaze react to the audio envelope, not to a fixed loop",
+    "envelopeToHeadTilt": 3.5,
+    "envelopeToHeadLift": -2.0,
+    "onsetThreshold": 0.55,
+    "onsetGazeShift": [3, 5],
+    "onsetBlinkChance": 0.18,
+    "phraseEndNodChance": 0.6
+  },
+
+  "mouth": { "levels": { "closed": 0.18, "mid": 0.28, "open": 0.62 } },
+
+  "states": {
+    "comment": "three concurrent layers; each state names a clip per layer; transitions blend out over blendMs; next = auto transition when the body clip ends",
+    "layers": ["body", "mouth", "gaze"],
+    "initial": "idle",
+    "blendMs": 220,
+    "list": {
+      "idle": { "body": "breathe", "mouth": "closed", "gaze": "wander" },
+      "greet": { "body": "wave", "mouth": "smile", "gaze": "toUser", "next": "idle" },
+      "talk": { "body": "bob", "mouth": "envelope", "gaze": "conversational" },
+      "think": { "body": "ponder", "mouth": "mid", "gaze": "rollUp", "next": "idle" },
+      "celebrate": { "body": "jumpJoy", "mouth": "smileOpen", "gaze": "toUser", "next": "idle" },
+      "wrong": { "body": "recoil", "mouth": "oops", "gaze": "dizzy", "next": "idle" },
+      "fly": { "body": "flight", "mouth": "smile", "gaze": "ahead", "next": "idle" }
+    },
+    "events": {
+      "lesson:start": "greet",
+      "explain:start": "talk",
+      "explain:end": "idle",
+      "answer:pending": "think",
+      "answer:correct": "celebrate",
+      "answer:wrong": "wrong",
+      "move:to": "fly",
+      "user:tap": "@variety"
+    },
+    "variety": { "pool": ["celebrate", "fly", "think", "greet", "wrong", "talk"], "noRepeat": true }
+  }
+}
