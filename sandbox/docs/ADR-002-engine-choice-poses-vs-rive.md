@@ -148,3 +148,21 @@ jank < 1 % with 5 owls; v2 + Foley is the worst cell (p95 33 ms), and Foley alon
 Idle-loop guard is 0 in every cell (a 6 s window had shown 5 - it was the still-running 3.2 s talk clip, verified
 with a probe, not a leak). Consequence for K9.3: keep the Foley bus gated on the active owl only when the device
 proxy is slow (existing `?sfx=0` path becomes the automatic fallback), and measure again after beats + intent land.
+
+## Addendum (d2) - third route requested by the owner: vector re-author of the WING only (2026-09-26, DIRECTIVES #06)
+Facts [measured on the branch]: wingL.webp + wingR.webp = 27.1 KB of the 113 KB active plates (24 %); the two wings
+are 16.6 % of the owl's drawn opaque area (upper bound, overlaps counted); they are the only parts whose acting asks
+for bend (flap, fold, wing-tip curl) - head, body, eyes, beak and legs act fully with rigid transforms today.
+Every wing pose already reads at silhouette level (G11 v2: charged 19.6 %, launch 26.8 %, oops 22.2 %).
+
+| route | scope | time | perf | who | unlocks | risk |
+|---|---|---|---|---|---|---|
+| (2a) vector re-author, whole owl | 12 parts | weeks of art | fine (few paths) | artist | everything soft | style drift across 12 parts; eyes/beak gain nothing |
+| (2b) vector re-author, wings only | 2 parts (mirror-authored once) | days of art + 1 day rig | fine: 2 paths with `d` morph, measured before merge | artist or agent-authored path + owner review | wing-tip curl, fold, feather-edge morph = the whole "soft" ask; keeps 10 raster plates and pixel_diff 0 elsewhere | style seam between vector wing and raster body (must be checked on the pose sheet at DPR 1/2) |
+| (3) stay A with a 2-3 segment sliced wing | 2 parts sliced | hours (tools/slice_parts.py exists) | 0 measurable | agent | fold + tip lag by joint transforms only; no curl | ceiling: no continuous bend |
+
+Assessment: (2b) is the best return/cost ratio of the three IF continuous bend is required, because the wings carry
+the entire deformation need at a quarter of the art bytes and a sixth of the silhouette. It is still an art decision:
+the trigger stays the same as in (d) - open (2b) only if a K9.3+ beat cannot read with (3). Until then (3) is the
+path (0 art work, measured 0 cost, same silhouette technique that made the eye slices pixel-exact).
+Provenance: all numbers above are internal measurements (parts.json byte sizes, alpha masks, g11_pose_sheet.json).
