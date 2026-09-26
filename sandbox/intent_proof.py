@@ -152,12 +152,13 @@ async def strip(b, f0):
     # box in page (document) coordinates; wide enough to keep the owl inside while it flies 220 px to the right
     box = await pg.evaluate("(() => { const r = window.__rigs[0].svg.getBoundingClientRect(); return {x: Math.max(0, r.left - 40), y: Math.max(0, r.top + window.scrollY - 40), width: r.width + 300, height: r.height + 80}; })()")
     marks = [('eyes snap', (f0['onset_ms']['eyes'] or 60) + 30), ('head turns', (f0['onset_ms']['head'] or 120) + 130), ('body crouch', (f0['onset_ms']['body'] or 300) + 80), ('take-off', (f0['cues_ms'].get('takeoff') or 520) + 70)]
-    await pg.evaluate("window.__rigs[0].flyBy(220, -40)")
+    # do not await the flight promise (evaluate would block until landing); fire and sample
+    await pg.evaluate("() => { window.__rigs[0].flyBy(220, -40); return 0; }")
     t_start = time.time() * 1000; shots = []
     for name, at in marks:
         wait = at - (time.time() * 1000 - t_start)
         if wait > 0: await pg.wait_for_timeout(wait)
-        pth = os.path.join(OUT, f'g12_intent_{len(shots)}.png'); await pg.screenshot(path=pth, clip=box, full_page=True); shots.append((name, at, pth))
+        pth = os.path.join(OUT, f'g12_intent_{len(shots)}.png'); t_shot = time.time() * 1000 - t_start; await pg.screenshot(path=pth, clip=box, full_page=True); shots.append((name, t_shot, pth))
     await pg.wait_for_function('!window.__rigs[0].busy', timeout=10000); await ctx.close()
     if not Image: return None
     ims = [Image.open(p_).convert('RGB') for _, _, p_ in shots]; w = max(i.width for i in ims); h = max(i.height for i in ims); cap = 40
@@ -169,7 +170,8 @@ async def strip(b, f0):
         if k: d.line([(k * w, 0), (k * w, h + cap)], fill=(60, 64, 80), width=2)
     sheet.save(os.path.join(OUT, 'g12_intent_strip.png'))
     for _, _, p_ in shots: os.remove(p_)
-    return 'g12_intent_strip.png'
+    # frame times are the real capture instants (DPR 2 screenshots cost ~150 ms each, so frames land later than the planned marks; labels are the planned beat, times are measured)
+    return {'file': 'g12_intent_strip.png', 'frames': [{'label': n, 'captured_ms': round(t, 1)} for n, t, _ in shots]}
 
 async def main():
     os.makedirs(OUT, exist_ok=True)

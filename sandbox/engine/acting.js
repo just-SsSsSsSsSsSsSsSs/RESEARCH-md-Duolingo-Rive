@@ -118,6 +118,9 @@ P.intent = async function (dx, dy) {
   if (head) this._intentLayers.push(head);
   this.cue('intent', { dx, dy, snapMs: snap * clock.rate, headLagMs: headLag * clock.rate, bodyLagMs: bodyLag * clock.rate, headDeg });
   this.stats.intents = (this.stats.intents || 0) + 1;
+  // bodyLag is counted from the moment the eyes actually start (WAAPI resolves startTime at the next
+  // rendering frame, 1-3 frames after this call); otherwise the body lead shrinks by that frame gap.
+  await Promise.all(this._intentLayers.map(a => (a.ready || Promise.resolve()).catch(() => {})));
   await this._sleep(bodyLag * clock.rate);
   return { ran: true, t0, snapMs: snap * clock.rate, headLagMs: headLag * clock.rate, bodyLagMs: bodyLag * clock.rate, headDeg };
 };
