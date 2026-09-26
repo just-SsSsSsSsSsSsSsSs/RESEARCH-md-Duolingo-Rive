@@ -24,22 +24,45 @@ LAYOUT = {
 }
 
 
-def chroma_alpha(rgb):
-    """alpha 0..1 from green dominance. rgb float32 0..255"""
+def key_colour(rgb):
+    """median colour of the clearly-background pixels (robust key estimate)"""
     r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    dom = g - np.maximum(r, b)              # how much greener than the other channels
-    # dom > 60 -> background, dom < 10 -> foreground, soft ramp between
-    a = 1.0 - np.clip((dom - 10.0) / 50.0, 0.0, 1.0)
+    mask = (g - np.maximum(r, b)) > 90
+    if mask.sum() < 50: return np.array([0.0, 255.0, 0.0], dtype=np.float32)
+    return np.median(rgb[mask], axis=0).astype(np.float32)
+
+
+def chroma_alpha(rgb):
+    """alpha 0..1 from green dominance with a soft ramp (anti-aliased edges)"""
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    dom = g - np.maximum(r, b)
+    a = 1.0 - np.clip((dom - 8.0) / 45.0, 0.0, 1.0)
     return a
 
 
-def despill(rgb, alpha):
-    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    lim = np.maximum(r, b)
-    spill = np.clip(g - lim, 0, None)
-    g2 = g - spill * (1.0 - alpha * 0.2)     # pull green down to the max of r/b on semi-transparent edges
-    out = rgb.copy(); out[..., 1] = g2
-    return out
+def unmix(rgb, alpha, key):
+    """Recover the true foreground colour on semi-transparent edge pixels.
+    Each edge pixel is a blend  px = a*fg + (1-a)*key  ->  fg = (px - (1-a)*key) / a.
+    This removes the dark/green rim that a plain despill leaves on feather tips."""
+    a = np.clip(alpha, 0.06, 1.0)[..., None]
+    fg = (rgb - (1.0 - a) * key) / a
+    fg = np.where(alpha[..., None] < 1.0, fg, rgb)
+    # residual spill guard: green never above the max of red/blue on edge pixels
+    lim = np.maximum(fg[..., 0], fg[..., 2])
+    fg[..., 1] = np.where(alpha < 1.0, np.minimum(fg[..., 1], lim + 6), fg[..., 1])
+    return np.clip(fg, 0, 255)
+
+
+def smooth_alpha(alpha):
+    """tiny blur + slight erosion of the ramp so the silhouette reads as a soft painted edge"""
+    from PIL import ImageFilter
+    im = Image.fromarray((alpha * 255).astype(np.uint8), 'L').filter(ImageFilter.GaussianBlur(0.7))
+    a = np.asarray(im).astype(np.float32) / 255.0
+    return np.clip((a - 0.10) / 0.90, 0.0, 1.0)
+
+
+def despill(rgb, alpha):  # kept for backward compatibility of the module API
+    return rgb
 
 
 def trim(rgba, pad=4):
@@ -73,13 +96,15 @@ def process(name, target_h=None):
     total = 0
     for part, cell in zip(LAYOUT[name], cells):
         rgb = np.asarray(cell).astype(np.float32)
+        key = key_colour(rgb)
         a = chroma_alpha(rgb)
-        rgb = despill(rgb, a)
+        rgb = unmix(rgb, a, key)
+        a = smooth_alpha(a)
         rgba = np.dstack([np.clip(rgb, 0, 255), a * 255.0]).astype(np.uint8)
         rgba, (ox, oy) = trim(rgba)
         im = Image.fromarray(rgba, 'RGBA')
         # downscale for the web budget: parts are authored at ~680 px per cell
-        scale = 0.5
+        scale = 0.6
         im = im.resize((max(1, int(im.width * scale)), max(1, int(im.height * scale))), Image.LANCZOS)
         path = os.path.join(out_dir, f'{part}.webp')
         im.save(path, 'WEBP', quality=88, method=6)
