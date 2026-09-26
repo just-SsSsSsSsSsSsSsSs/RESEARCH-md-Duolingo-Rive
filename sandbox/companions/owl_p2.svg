@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 240" class="rig rig-owl rig-p2" data-companion="owl" data-hover="0" data-art="p2" aria-label="owl companion rig (P2 layered art)">
+  <defs><filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.4"/></filter></defs>
+  <ellipse data-joint="shadow" data-pivot="100 228" cx="100" cy="228" rx="48" ry="7" fill="#000" opacity="0.2" filter="url(#soft)"/>
+  <g data-joint="root" data-pivot="100 220">
+    <g data-joint="legL" data-pivot="100 200"><image href="art/parts/owl/legs.webp" x="63.0" y="196.0" width="74.0" height="37.7" /></g>
+    <g data-joint="legR" data-pivot="100 200"></g>
+    <g data-joint="armL" data-pivot="64 122"><image href="art/parts/owl/wingL.webp" x="30.0" y="116.0" width="50.0" height="71.6" /></g>
+    <g data-joint="armR" data-pivot="136 122"><image href="art/parts/owl/wingR.webp" x="120.0" y="116.0" width="50.0" height="71.0" /></g>
+    <g data-joint="body" data-pivot="100 210"><image href="art/parts/owl/body.webp" x="56.0" y="118.0" width="88.0" height="86.9" /></g>
+    <g data-joint="head" data-pivot="100 128">
+      <image href="art/parts/owl/head.webp" x="44.0" y="26.0" width="112.0" height="91.9" />
+      <g data-joint="eyeL" data-pivot="100 85"><g data-joint="pupilL" data-pivot="100 85"><image href="art/parts/owl/eyes.webp" x="61.0" y="66.0" width="78.0" height="38.4" /></g></g>
+      <g data-joint="eyeR" data-pivot="100 85"><g data-joint="pupilR" data-pivot="100 85"></g></g>
+      <g data-joint="lidL" data-pivot="100 68" style="transform: scaleY(0)"><image href="art/parts/owl/lids.webp" x="61.0" y="66.0" width="78.0" height="38.4" /></g>
+      <g data-joint="lidR" data-pivot="100 68" style="transform: scaleY(0)"></g>
+      <g data-joint="mouth" data-pivot="100 104">
+        <g data-mouth="closed"><image href="art/parts/owl/beak_closed.webp" x="89.0" y="101.0" width="22.0" height="20.3" /></g>
+        <g data-mouth="mid"><image href="art/parts/owl/beak_open.webp" x="89.0" y="101.0" width="22.1" height="25.5" /></g>
+        <g data-mouth="open"><image href="art/parts/owl/beak_open.webp" x="88.0" y="101.0" width="24.0" height="27.7" /></g>
+        <g data-mouth="smile"><image href="art/parts/owl/beak_closed.webp" x="88.1" y="100.0" width="23.8" height="21.9" /></g>
+        <g data-mouth="sad"><image href="art/parts/owl/beak_closed.webp" x="89.5" y="103.0" width="20.9" height="19.2" /></g>
+      </g>
+    </g>
+  </g>
+</svg>

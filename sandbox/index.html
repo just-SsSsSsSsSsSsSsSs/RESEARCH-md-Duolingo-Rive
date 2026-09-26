@@ -36,6 +36,10 @@
   <button data-n="3">3 رفقاء</button>
   <button data-n="5">5 رفقاء</button>
 </div>
+<div class="bar" id="art" role="group" aria-label="نوع الرسم">
+  <button data-art="p1" aria-pressed="true">P1 رسم هندسي (إثبات)</button>
+  <button data-art="p2">P2 طبقات مجسمة (AI)</button>
+</div>
 <div class="bar" id="actions" role="group" aria-label="الحركات">
   <button class="primary" data-act="talk">يتكلم</button>
   <button data-act="celebrate">إجابة صحيحة</button>
@@ -52,12 +56,17 @@
 <script type="module">
   import { mount } from './rig.js?v=g4';
 
-  const FILES = ['companions/owl.svg', 'companions/bee.svg'];
+  const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
+  const params = new URLSearchParams(location.search);
+  let art = params.get('art') === 'p2' ? 'p2' : 'p1';
+  let FILES = ART[art];
+  let count = Number(params.get('n')) || 1;
   const NAMES = { owl: 'حكيمة', bee: 'نونة' };
   const stage = document.getElementById('stage');
   let rigs = [];
 
   async function build(n) {
+    count = n; FILES = ART[art];
     rigs.forEach((r) => r.dispose());
     rigs = [];
     stage.replaceChildren();
@@ -86,6 +95,13 @@
     document.querySelectorAll('#count button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     build(Number(b.dataset.n));
   });
+
+  document.getElementById('art').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-art]'); if (!b) return;
+    document.querySelectorAll('#art button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    art = b.dataset.art; build(count);
+  });
+  document.querySelectorAll('#art button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.art === art)));
 
   document.getElementById('actions').addEventListener('click', (e) => {
     const b = e.target.closest('button[data-act]'); if (!b) return;
@@ -120,8 +136,8 @@
   }
   requestAnimationFrame(loop);
 
-  const params = new URLSearchParams(location.search);
-  build(Number(params.get('n')) || 1);
+  document.querySelectorAll('#count button').forEach((x) => x.setAttribute('aria-pressed', String(Number(x.dataset.n) === count)));
+  build(count);
 
   // Path C (a): sandbox-scoped Service Worker (scope = this folder only).
   if ('serviceWorker' in navigator && params.get('sw') !== '0') {

@@ -953,3 +953,44 @@ Gate 3 is a written decision only. No code exists yet under `sandbox/` at the ti
 
 ### 5. Statement
 Gate 4 is a sandbox measurement on an isolated branch. Nothing is adopted. The owner judges the sample (screenshots and video under `sandbox/samples/`, or open `sandbox/index.html` from the branch with `python3 tools/serve.py 8080`) and then decides Gate 5.
+
+## R1-A1 Gate 5 - Architectural adoption report (branch `sandbox/a1-gate5-art-sw`, 2026-09-26)
+
+### 0. Authorisation trail
+- Owner chat message after PR #7 merged (`53a3f80`, verified via API): adopts the WAAPI joint skeleton as the platform engineering standard; authorises Gate 5 = (a) P2 art pipeline with 3D-rendered layered parts for the core companions, (b) Service Worker coexistence plan for platform assets, (c) full isolation until Gate 5 approval, nothing merged into `app/` behaviour. Gist still rev `5b0800c3` at the time of this section.
+- Everything below lives in `sandbox/` and docs. `app/` is untouched.
+
+### 1. P2 art pipeline (built and measured for the owl)
+Pipeline, all local except the image generation step:
+1. C1 `sandbox/art/src/owl_sheet.png` - one AI-generated 3x3 parts sheet on chroma green (head without eyes, body, left wing, right wing, eyes, closed lids, beak closed, beak open, legs). One generation call per character; 2048 px sheet.
+2. C2 `sandbox/art/cut_parts.py` - splits the grid, chroma-keys with a soft alpha ramp and green despill, trims, downsamples to 50 percent, writes WebP q88 + `parts.json` (w, h, offsets, bytes). Owl: 9 parts, 87.2 KB total.
+3. C3 `sandbox/art/assemble.py` - writes `sandbox/companions/owl_p2.svg` (2.5 KB): the SAME skeleton contract as P1 (`data-joint`, `data-pivot`, `data-mouth`), with `<image>` parts placed by a per-character layout table. `sandbox/rig.js` animates it with zero changes; the demo has a P1/P2 toggle (`?art=p2`).
+Result: the owl reads as a 3D-rendered character (soft lighting, feather detail, glossy eyes) while wings rotate at the shoulder pivot, lids blink, beak swaps closed/mid/open with the talking envelope, and celebrate/nod/think/sad run unchanged. Samples: `sandbox/samples/p2_owl_idle.png`, `p2_owl_idle_talk.png`, `p2_owl_celebrate.png`, `p2_owl_scene_3_10s.webm`.
+
+Measurements (same harness, `--art p2`, sandbox CI proxy, headless Chromium; not a 2-3 GB Android):
+| art | companions | heap delta scene MB | DOM nodes | anims idle | anims after dispose | rAF p50 ms | rAF p95 ms | frames over 33 ms | bytes |
+|---|---|---|---|---|---|---|---|---|---|
+| P2 | 1 | 0.58 | 67 | 4 | 0 | 16.7 | 16.8 | 0 | 139294 |
+| P2 | 3 | 0.58 | 143 | 12 | 0 | 16.7 | 16.7 | 0 | 139294 |
+| P2 | 5 | 0.60 | 219 | 20 | 0 | 16.7 | 16.7 | 0 | 139294 |
+- P2 costs fewer DOM nodes than P1 (9 images vs 30-60 paths) and the same heap; bytes rise from 60 KB to 139 KB for the scene (owl parts 87 KB + page + engine), fetched once and shared by all instances. D5 thresholds PASS. Decoded raster memory is not visible in JS heap (GPU/image cache); estimate for the owl: about 9 parts x average 250x200 px x 4 B = about 1.8 MB decoded, well under the D2 budget.
+- Honest gap: only the owl sheet exists. The bee sheet generation was blocked by exhausted image-generation credits in this session (rule: no improvisation, document and resume when credits return). The monkey, robot and turtle sheets are queued behind it. `cut_parts.py` already carries the bee layout table.
+
+### 2. Service Worker coexistence plan for the platform (written design; implementation = Gate 7, separate order)
+Current state (audit): `app/js/app.js` `purgeLegacyPWA()` unregisters every SW and deletes every cache at boot (Phase 6 decision "100 percent online"); cache-busting is `?v=7.25` on every module via the importmap and `app/version.json` (`{"v":"7.25","ts":...}`); 518 mp3 under `app/content/audio/` = 11.75 MB in the repo (explain/f 306, explain/n 100, cheers 52, quran 28, plant 12); companions art in `app/assets/3d` (508 KB); GitHub Pages serves `cache-control: max-age=600`.
+
+Design SW-1 (proposed for Gate 7):
+1. Replace `purgeLegacyPWA()` by `registerPlatformSW()` guarded by a data flag in `version.json` (`"sw": true`); when the flag is false the old purge path runs, so rollback is a JSON edit, not a code change (data-driven, constitution section 5).
+2. `app/sw.js` at the app root (scope `/app/` on Pages). Cache name `salim-<v>` taken from `version.json` at install; `activate` deletes other `salim-*` caches. `skipWaiting` + `clients.claim` so the new version takes over on the next navigation, matching today's "updates arrive live" expectation within one reload.
+3. Routing: navigation and `version.json`, `catalog.json`, `family.json` = network-first, cache fallback (fresh content when online, offline still boots); versioned modules `?v=` and `app/assets/**`, `app/content/**` images and SVG rigs = cache-first (immutable by construction); audio `app/content/audio/**` = cache-first with range-request passthrough (Pages already answers `accept-ranges: bytes`; the SW must not cache partial 206 responses, only full 200s fetched on first complete play).
+4. Precache on install: shell + modules + the current companions' parts only (about 150-300 KB). Audio and the rest fill the cache lazily on first use ("fetch once"), so the first visit costs the same as today and every repeat visit is free of data usage.
+5. Budget and eviction: cap the audio cache at 64 MB (full corpus today is 11.75 MB); an `audio-manifest.json` (data) lists clips per lesson so a "download this lesson for offline" button can pre-fill deliberately on Wi-Fi; LRU eviction by a stored timestamp map when the cap is hit.
+6. Family links: `family.json` and its mirrors stay network-first with cache fallback so an edit propagates within one online visit; `tools/check_family_links.py` runs unchanged.
+7. Tests to add in Gate 7: Playwright checks for registration scope, offline reload of a lesson, cache invalidation on version bump, no 206 in cache, K3 unaffected (SW does not touch answer flow).
+Coexistence risk register: (R1) a user who visited before Gate 7 has `sessionStorage 'pwa-purged'` and no SW - harmless, the new register path ignores it; (R2) Pages `max-age=600` on `sw.js` delays SW updates by up to 10 minutes - acceptable, document it; (R3) Safari evicts caches after 7 days of no use - acceptable for the Android baseline, note for iPhone users; (R4) constitution section 5 says "pure-web" - a hand-written SW is pure-web, no dependency added.
+
+### 3. Adoption statement (Gate 5)
+- ADOPTED as engineering standard (owner decision): native SVG skeleton with `data-joint`/`data-pivot`/`data-mouth` + WAAPI engine, zero libraries; P2 layered 3D-rendered parts as the production art lane on that skeleton; P1 geometric rigs remain as fallback and test fixtures.
+- PLANNED, not implemented: SW-1 above (needs Gate 6 plan + Gate 7 explicit order because it edits `app/`).
+- OPEN before Gate 6: remaining character sheets (bee, monkey, robot, turtle) when generation credits return; a real 2-3 GB Android measurement; the owner's visual sign-off on the owl P2 sample; the name and look of the turtle.
+- Isolation kept: no file under `app/` changed; protected files and family links untouched; `main` only receives docs + `sandbox/` via review PR.
