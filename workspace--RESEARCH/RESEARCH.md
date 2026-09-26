@@ -879,3 +879,77 @@ None is scheduled; each needs a separate explicit go.
 
 ### 10. Statement
 I confirm this stage is research and analysis only. No code was written or executed for the platform. No final solution was adopted. Alternatives, risks and evidence are presented awaiting the owner's decision.
+
+## R1-A1 Gate 3 - Written architectural decision (owner-approved path C, 2026-09-26; gist 98e59929 rev 5b0800c3, PR #6 merged 127189f)
+
+### 0. Authorisation trail (verified, not assumed)
+- Gist revision `5b0800c3` (committed 2026-09-26T05:08:26Z, read from raw via API): owner accepts PR #6 as evidence, answers Q-A1-1..4, chooses path C, and authorises Gate 3 (this section) then Gate 4 on branch `sandbox/a1-vector-rig` only, without touching `main` or `app/`.
+- PR #6 merge verified via GitHub API: merged 2026-09-26T04:56:22Z, merge commit `127189f`.
+- Owner answers: Q-A1-1 = 3-5 core companions (owl, monkey/bee, robot, turtle) at cinematic quality. Q-A1-2 = AI-generated layered parts assembled by local scripts, no human animator. Q-A1-3 = no paid or subscription tools; open web standards only (SVG/Canvas/CSS). Q-A1-4 = no visemes; expressive talking loop (open/close/smile driven by the audio envelope) + blink + head nod + joint motion + celebration.
+- Owner's quality bar (voice transcript in the gist): "the code does not draw the art"; the art must be high-quality layered parts; the code moves the joints at 60 fps "like a video, not a glued montage"; a sample on the sandbox branch is required before any adoption.
+
+### 1. Decision D1 - Runtime: native SVG parts + Web Animations API, zero libraries
+- Each companion is one inline `<svg>` whose parts are `<g>` groups (head, eyes, eyelids, beak/mouth shapes, wings/arms, legs, body). Every joint is a `<g>` with `transform-origin` at the pivot (CSS `transform-box: fill-box` or explicit origin in user units).
+- Motion = `Element.animate()` keyframes on `transform` and `opacity` only (compositor-friendly per E16 web.dev), `composite:'add'` for layered micro-actions, `iterations: Infinity, direction: 'alternate'` for breath. This is the same mechanism the current `Rig` in `app/js/engines/companion.js` already uses for its CSS-mask layers, so a later `rig.kind = "svg"` switch is additive (Zero Regression).
+- No external runtime, no WASM, no paid editor (Q-A1-3). Evidence base: E12 MDN WAAPI (L1), E13 SVG transforms Baseline (L1), E16 compositor-only properties (L1).
+- Rejected here: Rive (E7 paid export, E5 leak class, 222 KB WASM, constitution section 5), Lottie/dotLottie (external authoring in After Effects, 33-77 KB gz runtime), Pixi (215 KB gz, oversized), Spine (paid editor licence).
+
+### 2. Decision D2 - Fallback per action: Canvas frame strip only where WAAPI cannot express the motion
+- Actions that need shape morphing beyond transforms (squash on landing, big laugh) may use a short pre-rendered frame strip (WebP, 8-16 frames at 256 px) drawn on one shared `<canvas>` per companion. Budget: decoded RGBA at 256x256x4 = 256 KB per frame, so 16 frames = 4 MB, 48 frames = 12 MB (H3). The strip is optional per action, never the default idle.
+- Decision: the prototype in Gate 4 uses D1 only; D2 is measured only if D1 fails the "video-like" bar in section 5.
+
+### 3. Decision D3 - Art pipeline (two lanes, P1 first)
+- P1 (Gate 4 prototype): hand-authored geometric SVG rigs (owl, bee) with 30-60 paths each, gradients and soft shadows via SVG filters kept to one blur per character. Purpose: prove the joint system, the metrics and the talking loop without waiting for generated art. This is a rig proof, not the final look.
+- P2 (production lane, after owner sees the sample): AI-generated character sheets rendered as layered raster parts (head, body, each limb, eye pair, three mouth shapes) on transparent background, cut into parts by a local script (reuse the column/gap detection idea from `tools/cut_sprite_sheet.py`), embedded as `<image>` elements inside the same SVG skeleton used by P1. The skeleton (joint names, pivots, action keyframes) is shared; only the visuals differ. Budget target: 60 KB or less per companion in WebP.
+- Rule: code never draws the final art; code owns the skeleton and the motion (owner's bar).
+
+### 4. Decision D4 - Service Worker (path C step a): scope, strategy, coexistence
+- Strategy: cache-first for versioned static assets (`?v=` query from `app/version.json`), audio clips and companion art; network-first with cache fallback for `version.json` and `catalog.json`; navigation requests network-first with the cached shell as fallback. One named cache per app version; old caches deleted on `activate`.
+- Conflict recorded: `app/js/app.js` lines 68-79 `purgeLegacyPWA()` unregisters every Service Worker and clears every cache on boot. Any production SW requires replacing that purge with a versioned registration, and that is a Gate 5/7 change to `app/` which is NOT authorised now. In Gate 4 the SW is prototyped only inside `sandbox/` (own scope `/sandbox/`), so it can never affect `app/`.
+- Evidence: E20 (SW required for fetch-once/offline, L1), GitHub Pages headers measured live (`cache-control: max-age=600`, `accept-ranges: bytes`, `access-control-allow-origin: *`).
+
+### 5. Decision D5 - Isolation and measurable acceptance for Gate 4
+- Location: repo-root `sandbox/` on branch `sandbox/a1-vector-rig` only. No import from `app/`, no change to `app/`, `main`, protected files or family links. The sandbox PR is for owner review of the sample; it is not merged into `app/` behaviour.
+- Scene: 1, 3 and 5 companions on screen; actions idle (breath + blink + look), talk (3 mouth shapes on a synthetic or real audio envelope), nod, celebrate (jump with spring easing + arms up), sad. Frame budget target 60 fps.
+- Metrics collected by `sandbox/measure.py` (Playwright + CDP): JS heap delta after mount (MB), DOM node count, `document.getAnimations().length`, rAF frame time p50/p95 over 10 s, transferred bytes for the scene. Repeated for 1/3/5 companions.
+- Proposed thresholds (CI machine as proxy, not the 2-3 GB Android): p95 frame time 20 ms or less at 3 companions; heap delta 20 MB or less at 5 companions; assets 60 KB or less per companion. Real-device confirmation stays an open item for Gate 5.
+- Definition of "video-like" for the owner's judgement: no visible pop between poses, joints rotate around anatomically plausible pivots, overlapping action (head follows body with a small delay), blink and breath never stop, talking mouth follows the sound envelope.
+
+### 6. Statement
+Gate 3 is a written decision only. No code exists yet under `sandbox/` at the time of this section. Gate 4 starts next on this branch under the authorisation quoted in section 0; Gate 5 (final architectural adoption, including the `purgeLegacyPWA` replacement) waits for the owner's judgement of the sample.
+
+## R1-A1 Gate 4 - Sandbox measurement report (branch `sandbox/a1-vector-rig`, 2026-09-26)
+
+### 1. What was built (isolated, review only)
+- `sandbox/companions/owl.svg` (5.6 KB) and `sandbox/companions/bee.svg` (5.7 KB): hand-authored layered SVG rigs (P1, decision D3). Skeleton contract: `<g data-joint="name" data-pivot="x y">` for root, body, head, eyeL/R, pupilL/R, lidL/R, mouth, armL/R, legL/R, shadow (+ antL/R for the bee); five mouth shapes `data-mouth="closed|mid|open|smile|sad"`. 47 joints across 3 companions on screen.
+- `sandbox/rig.js` (15 KB, zero imports): `SvgRig` sets `transform-origin` per joint from `data-pivot`, animates only `transform`/`opacity` with `Element.animate()`; idle = breath (body squash-stretch, alternate infinite) + head follow with 120 ms delay (overlapping action) + wing sway or fast flap and hover for `data-hover="1"` + random blink (single/double) + pupil look with head follow; `talk(envelope, ms)` = three mouth levels with hysteresis on a 0..1 envelope sampled per frame (synthetic syllable envelope for the sample; the real one is the same Web Audio analyser the app already uses) + soft head bob; `celebrate` = anticipation squash, jump, arms up with spring overshoot (`linear()` easing sampled from a damped spring), landing squash, follow-through head tilt, shadow scale; `nod`, `think`, `sad`; `dispose()` cancels every animation and timer.
+- `sandbox/index.html`: RTL Arabic demo, 1/3/5 companions, action buttons, tap-to-celebrate, FPS HUD.
+- `sandbox/sw.js` + registration with `scope: './'` (path C step a prototype): versioned cache `sandbox-a1-g4-1`, cache-first for static assets, network-first with cache fallback for the shell, old caches deleted on activate.
+- `sandbox/measure.py`: Playwright + CDP harness producing `sandbox/samples/measure.json`.
+- Samples for the owner: `sandbox/samples/idle_3.png`, `celebrate_3.png`, `talk_3.png`, `scene_3_companions_10s.webm` (12.6 s, 900x600, 1.4 MB).
+
+### 2. Measurements (sandbox CI machine, headless Chromium; a proxy, NOT a 2-3 GB Android)
+| companions | heap delta after mount MB | heap delta after scene MB | DOM nodes | animations idle | animations after dispose | rAF p50 ms | rAF p95 ms | max ms | frames over 33 ms / 600 | transferred bytes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 0.51 | 0.58 | 111 | 4 | 0 | 16.7 | 16.7 | 16.8 | 0 | 54344 |
+| 3 | 0.52 | 0.59 | 280 | 16 | 0 | 16.7 | 16.8 | 33.4 | 5 | 60071 |
+| 5 | 0.52 | 0.60 | 449 | 28 | 0 | 16.7 | 16.7 | 16.8 | 0 | 60071 |
+- Scene per run: 10 s sampling with idle, `celebrate` at 2 s, `talk` (3.2 s) at 4.5 s, `nod` at 8 s.
+- D5 thresholds: p95 at 3 companions 16.8 ms (limit 20) PASS; heap delta at 5 companions 0.60 MB (limit 20) PASS; assets per companion about 5.7 KB (limit 60 KB) PASS. Transferred bytes include the demo page and rig.js; the two SVGs are fetched once and cloned, so 5 companions cost the same bytes as 3.
+- Leak guard: `document.getAnimations({subtree:true}).length` = 0 after `dispose()` in all three runs (contrast with the Rive leak class E5).
+- The 5 long frames in the 3-companion run coincide with the celebrate burst (spring arms + jump on 3 rigs at once) and did not recur in the 5-companion run; treated as noise on a shared CI machine, to be re-checked on a real device.
+- Console errors: none.
+
+### 3. Service Worker prototype check (sandbox scope only)
+- Registration scope `http://localhost:8080/sandbox/`, active; cache `sandbox-a1-g4-1` holds `/sandbox/`, `index.html`, `rig.js?v=g4`, both SVGs.
+- Offline reload with the network disabled: page loads and the rig mounts from cache (verified by Playwright `context.set_offline(True)` + reload).
+- Only one registration exists and its scope is `/sandbox/`; nothing under `/app/` is controlled. The production coexistence question (`purgeLegacyPWA`) remains a Gate 5 decision as recorded in D4.
+
+### 4. Honest limits
+- The art is P1 geometric SVG drawn to prove the skeleton; it is not the cinematic look the owner asked for. The P2 lane (AI-generated layered parts dropped into the same `data-joint` skeleton via `<image>`) is the production path and was not built here.
+- Numbers are from a headless desktop Chromium on the sandbox machine. The 2-3 GB Android baseline still needs a real-device run (open item for Gate 5).
+- The talking envelope in the sample is synthetic; wiring the app's existing Web Audio analyser is a Gate 7 task.
+- No change was made to `app/`, `main`, protected files or family links (verified: protected files identical to origin/main; `tools/check_family_links.py` PASS; Zero-Emoji PASS on all added lines).
+
+### 5. Statement
+Gate 4 is a sandbox measurement on an isolated branch. Nothing is adopted. The owner judges the sample (screenshots and video under `sandbox/samples/`, or open `sandbox/index.html` from the branch with `python3 tools/serve.py 8080`) and then decides Gate 5.

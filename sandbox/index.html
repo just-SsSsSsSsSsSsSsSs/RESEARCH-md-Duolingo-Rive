@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sandbox A1 - SVG rig prototype (Gate 4)</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --ink:#f1f5f9; --accent:#f59e0b; --ok:#22c55e; }
+  * { box-sizing:border-box }
+  html,body { margin:0; background:radial-gradient(120% 80% at 50% 0%, #1e3a5f 0%, var(--bg) 60%); color:var(--ink); font:16px/1.5 system-ui, "Segoe UI", Tahoma, sans-serif; min-height:100dvh }
+  header { padding:14px 16px 6px; display:flex; flex-wrap:wrap; gap:8px 14px; align-items:baseline }
+  header h1 { font-size:18px; margin:0 }
+  header small { opacity:.7 }
+  .bar { display:flex; flex-wrap:wrap; gap:8px; padding:8px 16px }
+  button { border:0; border-radius:12px; padding:10px 14px; font:inherit; font-weight:700; background:var(--card); color:var(--ink); cursor:pointer; box-shadow:0 2px 0 #0008 }
+  button:active { transform:translateY(1px); box-shadow:none }
+  button.primary { background:var(--accent); color:#111 }
+  button[aria-pressed="true"] { outline:3px solid var(--ok) }
+  #stage { display:grid; gap:12px; padding:10px 16px 24px; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); align-items:end; justify-items:center }
+  .slot { width:100%; max-width:220px; aspect-ratio:200/240; background:linear-gradient(180deg,#0000 60%, #0003); border-radius:20px; position:relative; overflow:visible }
+  .slot svg { width:100%; height:100%; display:block; overflow:visible }
+  .slot .tag { position:absolute; inset:auto 0 -4px 0; text-align:center; font-size:13px; opacity:.75 }
+  #hud { position:fixed; inset:auto 8px 8px auto; background:#000a; font:12px/1.4 ui-monospace, monospace; padding:8px 10px; border-radius:10px; direction:ltr; white-space:pre; min-width:180px }
+  #note { padding:0 16px 16px; font-size:13px; opacity:.75 }
+</style>
+</head>
+<body>
+<header>
+  <h1>عينة Gate 4: هيكل SVG بمفاصل حيّة (بدون أي مكتبة)</h1>
+  <small>فرع sandbox/a1-vector-rig فقط - لا يمس التطبيق</small>
+</header>
+
+<div class="bar" id="count" role="group" aria-label="عدد الرفقاء">
+  <button data-n="1" aria-pressed="true">رفيق واحد</button>
+  <button data-n="3">3 رفقاء</button>
+  <button data-n="5">5 رفقاء</button>
+</div>
+<div class="bar" id="actions" role="group" aria-label="الحركات">
+  <button class="primary" data-act="talk">يتكلم</button>
+  <button data-act="celebrate">إجابة صحيحة</button>
+  <button data-act="nod">إيماءة</button>
+  <button data-act="think">يفكر</button>
+  <button data-act="sad">إجابة خطأ</button>
+  <button data-act="blink">رمشة</button>
+</div>
+
+<main id="stage" aria-live="polite"></main>
+<p id="note">الرسم هنا هندسي مؤقت (P1) لإثبات المفاصل والقياس؛ الفن النهائي يأتي من مسار الطبقات (P2) على نفس الهيكل. اضغط على أي رفيق ليتفاعل.</p>
+<div id="hud" aria-hidden="true">fps --</div>
+
+<script type="module">
+  import { mount } from './rig.js?v=g4';
+
+  const FILES = ['companions/owl.svg', 'companions/bee.svg'];
+  const NAMES = { owl: 'حكيمة', bee: 'نونة' };
+  const stage = document.getElementById('stage');
+  let rigs = [];
+
+  async function build(n) {
+    rigs.forEach((r) => r.dispose());
+    rigs = [];
+    stage.replaceChildren();
+    const jobs = [];
+    for (let i = 0; i < n; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      stage.appendChild(slot);
+      const file = FILES[i % FILES.length];
+      jobs.push(mount(slot, file, `i${i}`).then((rig) => {
+        const tag = document.createElement('div');
+        tag.className = 'tag';
+        tag.textContent = NAMES[rig.svg.dataset.companion] || '';
+        slot.appendChild(tag);
+        slot.addEventListener('pointerdown', () => rig.celebrate());
+        return rig;
+      }));
+    }
+    rigs = await Promise.all(jobs);
+    window.__rigs = rigs;
+    document.dispatchEvent(new CustomEvent('rigs-ready', { detail: { n } }));
+  }
+
+  document.getElementById('count').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-n]'); if (!b) return;
+    document.querySelectorAll('#count button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    build(Number(b.dataset.n));
+  });
+
+  document.getElementById('actions').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-act]'); if (!b) return;
+    act(b.dataset.act);
+  });
+
+  function act(name) {
+    rigs.forEach((r, i) => {
+      const delay = i * 90; // stagger so the group reads as a crowd, not a copy
+      setTimeout(() => {
+        if (name === 'talk') r.talk(r.constructor.syntheticEnvelope(), 3200);
+        else if (name === 'blink') r.blink(true);
+        else r[name]();
+      }, delay);
+    });
+  }
+  window.__act = act;
+  window.__build = build;
+
+  // FPS HUD (rAF delta sampling; cheap)
+  const hud = document.getElementById('hud');
+  let frames = [], last = performance.now();
+  function loop(now) {
+    frames.push(now - last); last = now;
+    if (frames.length >= 60) {
+      const s = [...frames].sort((a, b) => a - b);
+      const p50 = s[Math.floor(s.length * 0.5)], p95 = s[Math.floor(s.length * 0.95)];
+      hud.textContent = `frames ${frames.length}\np50 ${p50.toFixed(1)} ms\np95 ${p95.toFixed(1)} ms\nanims ${document.getAnimations().length}\nnodes ${document.getElementsByTagName('*').length}`;
+      frames = [];
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  const params = new URLSearchParams(location.search);
+  build(Number(params.get('n')) || 1);
+
+  // Path C (a): sandbox-scoped Service Worker (scope = this folder only).
+  if ('serviceWorker' in navigator && params.get('sw') !== '0') {
+    navigator.serviceWorker.register('./sw.js', { scope: './' }).catch((err) => console.warn('sw', err.message));
+  }
+</script>
+</body>
+</html>
