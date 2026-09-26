@@ -1,5 +1,5 @@
 {
-  "measured_at": "2026-09-26T19:03:35Z",
+  "measured_at": "2026-09-26T19:06:00Z",
   "base": "http://localhost:8080/sandbox/",
   "machine": "sandbox CI proxy (not a 2-3 GB Android)",
   "host": {
@@ -9,7 +9,7 @@
     "cpu_model": "Intel(R) Xeon(R) Processor @ 2.50GHz",
     "mem_total_gb": 1.0
   },
-  "cpu_throttle": 1.0,
+  "cpu_throttle": 4.0,
   "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
   "extra_params": "",
   "results": [
@@ -20,14 +20,14 @@
       "heap_delta_mb_after_scene": 0.71,
       "dom_nodes": 104,
       "animations_idle": 28,
-      "animations_peak_sampled": 29,
+      "animations_peak_sampled": 30,
       "animations_after_dispose": 0,
-      "frames": 601,
+      "frames": 600,
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.8,
+      "raf_p95_ms": 16.7,
       "raf_p99_ms": 16.8,
-      "raf_max_ms": 16.8,
-      "cpu_throttle": 1.0,
+      "raf_max_ms": 33.4,
+      "cpu_throttle": 4.0,
       "env": {
         "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
         "cores": 2,
@@ -38,41 +38,41 @@
           600
         ]
       },
-      "long_frames_over_33ms": 0,
-      "jank_frames_over_20ms": 0,
-      "jank_pct": 0.0,
+      "long_frames_over_33ms": 1,
+      "jank_frames_over_20ms": 1,
+      "jank_pct": 0.17,
       "engine_idle_loops_after_scene": 0,
       "engine": "v2",
       "transferred_bytes": 368376,
       "errors": [],
       "runs": 3,
       "runs_jank_pct": [
-        0.0,
-        0.0,
-        0.0
+        0.17,
+        0.17,
+        0.33
       ],
       "runs_p99_ms": [
         16.8,
         16.8,
         16.8
       ],
-      "runs_min_jank_pct": 0.0
+      "runs_min_jank_pct": 0.17
     },
     {
       "art": "p2",
       "companions": 3,
       "heap_delta_mb_after_mount": 0.52,
-      "heap_delta_mb_after_scene": 0.81,
+      "heap_delta_mb_after_scene": 0.8,
       "dom_nodes": 180,
       "animations_idle": 48,
-      "animations_peak_sampled": 56,
+      "animations_peak_sampled": 59,
       "animations_after_dispose": 0,
-      "frames": 601,
+      "frames": 593,
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.7,
-      "raf_p99_ms": 16.8,
-      "raf_max_ms": 16.8,
-      "cpu_throttle": 1.0,
+      "raf_p95_ms": 16.8,
+      "raf_p99_ms": 33.3,
+      "raf_max_ms": 33.4,
+      "cpu_throttle": 4.0,
       "env": {
         "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
         "cores": 2,
@@ -83,25 +83,25 @@
           600
         ]
       },
-      "long_frames_over_33ms": 0,
-      "jank_frames_over_20ms": 0,
-      "jank_pct": 0.0,
+      "long_frames_over_33ms": 9,
+      "jank_frames_over_20ms": 9,
+      "jank_pct": 1.52,
       "engine_idle_loops_after_scene": 0,
       "engine": "v2",
       "transferred_bytes": 368376,
       "errors": [],
       "runs": 3,
       "runs_jank_pct": [
-        0.0,
-        0.0,
-        0.0
+        0.67,
+        1.52,
+        1.69
       ],
       "runs_p99_ms": [
         16.8,
-        16.8,
-        16.8
+        33.3,
+        33.3
       ],
-      "runs_min_jank_pct": 0.0
+      "runs_min_jank_pct": 0.67
     },
     {
       "art": "p2",
@@ -110,14 +110,14 @@
       "heap_delta_mb_after_scene": 0.85,
       "dom_nodes": 256,
       "animations_idle": 68,
-      "animations_peak_sampled": 81,
+      "animations_peak_sampled": 82,
       "animations_after_dispose": 0,
-      "frames": 601,
+      "frames": 571,
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.8,
-      "raf_p99_ms": 16.8,
-      "raf_max_ms": 16.8,
-      "cpu_throttle": 1.0,
+      "raf_p95_ms": 33.3,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 50,
+      "cpu_throttle": 4.0,
       "env": {
         "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
         "cores": 2,
@@ -128,25 +128,25 @@
           600
         ]
       },
-      "long_frames_over_33ms": 0,
-      "jank_frames_over_20ms": 0,
-      "jank_pct": 0.0,
+      "long_frames_over_33ms": 30,
+      "jank_frames_over_20ms": 30,
+      "jank_pct": 5.25,
       "engine_idle_loops_after_scene": 0,
       "engine": "v2",
       "transferred_bytes": 368376,
       "errors": [],
       "runs": 3,
       "runs_jank_pct": [
-        0.0,
-        0.0,
-        0.17
+        3.99,
+        5.25,
+        6.41
       ],
       "runs_p99_ms": [
-        16.8,
-        16.8,
-        16.8
+        33.4,
+        33.4,
+        33.4
       ],
-      "runs_min_jank_pct": 0.0
+      "runs_min_jank_pct": 3.99
     }
   ]
 }
