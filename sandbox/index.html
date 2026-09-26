@@ -17,8 +17,15 @@
   button:active { transform:translateY(1px); box-shadow:none }
   button.primary { background:var(--accent); color:#111 }
   button[aria-pressed="true"] { outline:3px solid var(--ok) }
-  #stage { display:grid; gap:12px; padding:10px 16px 24px; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); align-items:end; justify-items:center }
-  .slot { width:100%; max-width:220px; aspect-ratio:200/240; background:linear-gradient(180deg,#0000 60%, #0003); border-radius:20px; position:relative; overflow:visible }
+  #stage { display:grid; gap:12px; padding:10px 16px 24px; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); align-items:end; justify-items:center; min-height:52dvh; position:relative; overflow:hidden }
+  #stage.sky { background:linear-gradient(180deg,#0000 0%, #0002 100%); border-radius:24px; margin:0 12px }
+  #stage.sky::before { content:""; position:absolute; inset:auto 0 0 0; height:14%; background:linear-gradient(180deg,#0000,#0b1224); }
+  .slot { width:100%; max-width:220px; aspect-ratio:200/240; background:linear-gradient(180deg,#0000 60%, #0003); border-radius:20px; position:relative; overflow:visible; will-change:transform; transform-origin:50% 60% }
+  .slot.flying { z-index:5 }
+  #stage.sky .slot { background:none }
+  .star { position:absolute; width:3px; height:3px; border-radius:50%; background:#fff; opacity:.5; animation:tw 3s ease-in-out infinite alternate }
+  @keyframes tw { from { opacity:.15 } to { opacity:.7 } }
+  @media (prefers-reduced-motion: reduce) { .star { animation:none } }
   .slot svg { width:100%; height:100%; display:block; overflow:visible }
   .slot .tag { position:absolute; inset:auto 0 -4px 0; text-align:center; font-size:13px; opacity:.75 }
   #hud { position:fixed; inset:auto 8px 8px auto; background:#000a; font:12px/1.4 ui-monospace, monospace; padding:8px 10px; border-radius:10px; direction:ltr; white-space:pre; min-width:180px }
@@ -41,16 +48,18 @@
   <button data-art="p2">P2 طبقات مجسمة (AI)</button>
 </div>
 <div class="bar" id="actions" role="group" aria-label="الحركات">
-  <button class="primary" data-act="talk">يتكلم</button>
+  <button class="primary" data-act="fly">تطير في الشاشة</button>
+  <button data-act="talk">يتكلم</button>
   <button data-act="celebrate">إجابة صحيحة</button>
   <button data-act="nod">إيماءة</button>
   <button data-act="think">يفكر</button>
   <button data-act="sad">إجابة خطأ</button>
   <button data-act="blink">رمشة</button>
+  <button data-act="auto" id="autoBtn" aria-pressed="true">حياة تلقائية: تعمل</button>
 </div>
 
 <main id="stage" aria-live="polite"></main>
-<p id="note">الرسم هنا هندسي مؤقت (P1) لإثبات المفاصل والقياس؛ الفن النهائي يأتي من مسار الطبقات (P2) على نفس الهيكل. اضغط على أي رفيق ليتفاعل.</p>
+<p id="note">التركيز الحالي: «حكيمة» البومة (P2 طبقات مجسمة). اضغط عليها لتفاعل مختلف كل مرة؛ تطير وتدور وتحط من تلقاء نفسها كل بضع ثوان. P1 الهندسي يبقى كمرجع اختبار فقط.</p>
 <div id="hud" aria-hidden="true">fps --</div>
 
 <script type="module">
@@ -58,7 +67,7 @@
 
   const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
   const params = new URLSearchParams(location.search);
-  let art = params.get('art') === 'p2' ? 'p2' : 'p1';
+  let art = params.get('art') === 'p1' ? 'p1' : 'p2';
   let FILES = ART[art];
   let count = Number(params.get('n')) || 1;
   const NAMES = { owl: 'حكيمة', bee: 'نونة' };
@@ -81,11 +90,13 @@
         tag.className = 'tag';
         tag.textContent = NAMES[rig.svg.dataset.companion] || '';
         slot.appendChild(tag);
-        slot.addEventListener('pointerdown', () => rig.celebrate());
+        slot.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); tapReact(rig, slot); });
         return rig;
       }));
     }
     rigs = await Promise.all(jobs);
+    stage.classList.toggle('sky', art === 'p2');
+    if (art === 'p2') sprinkleStars();
     window.__rigs = rigs;
     document.dispatchEvent(new CustomEvent('rigs-ready', { detail: { n } }));
   }
@@ -108,14 +119,79 @@
     act(b.dataset.act);
   });
 
+  // Tap: a different reaction each time (never the same twice in a row), including flight.
+  const TAP_POOL = ['celebrate', 'fly', 'think', 'nod', 'sad', 'talk', 'fly', 'celebrate'];
+  let lastTap = '';
+  function tapReact(rig, slot) {
+    if (rig.busy) return;
+    let pick; do { pick = TAP_POOL[Math.floor(Math.random() * TAP_POOL.length)]; } while (pick === lastTap);
+    lastTap = pick;
+    runAct(rig, slot, pick);
+  }
+
+  function runAct(rig, slot, name) {
+    if (name === 'fly') return flyOne(rig, slot);
+    if (name === 'talk') return rig.talk(rig.constructor.syntheticEnvelope(), 3200);
+    if (name === 'blink') return rig.blink(true);
+    return rig[name] && rig[name]();
+  }
+
+  // Flight across the visible stage: pick a plan, scale it to the free space around the slot.
+  async function flyOne(rig, slot) {
+    if (rig.busy) return;
+    const sr = stage.getBoundingClientRect(), r = slot.getBoundingClientRect();
+    const plans = rig.constructor.flightPlans(sr.width, sr.height);
+    const plan = plans[Math.floor(Math.random() * plans.length)];
+    // keep inside the stage: clamp horizontal amplitude to the free room on each side
+    const roomL = r.left - sr.left - 8, roomR = sr.right - r.right - 8, roomUp = r.top - sr.top - 8;
+    const pts = plan.pts.map((p) => ({
+      x: Math.max(-roomL, Math.min(roomR, p.x)),
+      y: Math.max(-roomUp, Math.min(0, p.y)), t: p.t
+    }));
+    slot.classList.add('flying');
+    await rig.fly(pts, { roll: plan.roll ?? null, flipAt: plan.flipAt ?? null });
+    slot.classList.remove('flying');
+    slot.style.transform = ''; // path ends at the origin by design
+  }
+
+  // Autonomous life: every few seconds the owl does something on her own (flight is frequent).
+  let autoOn = params.get('auto') !== '0', autoTimer = 0;
+  const LIFE_POOL = ['fly', 'look', 'nod', 'fly', 'think', 'talk', 'blink', 'fly'];
+  function lifeTick() {
+    clearTimeout(autoTimer);
+    if (!autoOn) return;
+    autoTimer = setTimeout(() => {
+      const idle = rigs.filter((r) => !r.busy);
+      if (idle.length) {
+        const rig = idle[Math.floor(Math.random() * idle.length)];
+        const slot = rig.svg.parentElement;
+        const pick = LIFE_POOL[Math.floor(Math.random() * LIFE_POOL.length)];
+        if (pick === 'look') rig.look(); else runAct(rig, slot, pick);
+      }
+      lifeTick();
+    }, 3500 + Math.random() * 4000);
+  }
+  document.getElementById('autoBtn').addEventListener('click', (e) => {
+    autoOn = !autoOn; e.currentTarget.setAttribute('aria-pressed', String(autoOn));
+    e.currentTarget.textContent = autoOn ? 'حياة تلقائية: تعمل' : 'حياة تلقائية: متوقفة';
+    lifeTick();
+  });
+  document.addEventListener('rigs-ready', lifeTick);
+
+  function sprinkleStars() {
+    stage.querySelectorAll('.star').forEach((s) => s.remove());
+    for (let i = 0; i < 18; i++) {
+      const st = document.createElement('i'); st.className = 'star';
+      st.style.left = (Math.random() * 100) + '%'; st.style.top = (Math.random() * 70) + '%';
+      st.style.animationDelay = (Math.random() * 3) + 's'; stage.prepend(st);
+    }
+  }
+
   function act(name) {
+    if (name === 'auto') return;
     rigs.forEach((r, i) => {
       const delay = i * 90; // stagger so the group reads as a crowd, not a copy
-      setTimeout(() => {
-        if (name === 'talk') r.talk(r.constructor.syntheticEnvelope(), 3200);
-        else if (name === 'blink') r.blink(true);
-        else r[name]();
-      }, delay);
+      setTimeout(() => runAct(r, r.svg.parentElement, name), delay);
     });
   }
   window.__act = act;
