@@ -36,7 +36,7 @@ async def heap_mb(cdp):
     d = {x['name']: x['value'] for x in m['metrics']}
     return d.get('JSHeapUsedSize', 0) / 1e6, d.get('Nodes', 0)
 
-async def measure(n, seconds, video_dir):
+async def measure(n, seconds, video_dir, art='p1'):
     async with async_playwright() as p:
         b = await p.chromium.launch(args=['--enable-precise-memory-info'])
         ctx_kw = {'viewport': {'width': 900, 'height': 600}}
@@ -58,12 +58,12 @@ async def measure(n, seconds, video_dir):
         cdp = await ctx.new_cdp_session(pg)
         await cdp.send('Performance.enable')
         # blank baseline heap in the same renderer
-        await pg.goto(BASE + 'index.html?n=0&sw=0')
+        await pg.goto(BASE + f'index.html?n=0&sw=0&art={art}')
         await pg.wait_for_timeout(500)
         await cdp.send('HeapProfiler.collectGarbage')
         h0, _ = await heap_mb(cdp)
 
-        await pg.goto(BASE + f'index.html?n={n}&sw=0')
+        await pg.goto(BASE + f'index.html?n={n}&sw=0&art={art}')
         await pg.wait_for_function(f'window.__rigs && window.__rigs.length==={n}')
         await pg.wait_for_timeout(800)
         await cdp.send('HeapProfiler.collectGarbage')
@@ -90,6 +90,7 @@ async def measure(n, seconds, video_dir):
         await pg.wait_for_timeout(300)
         await ctx.close(); await b.close()
         return {
+            'art': art,
             'companions': n,
             'heap_delta_mb_after_mount': round(h1 - h0, 2),
             'heap_delta_mb_after_scene': round(h2 - h0, 2),
@@ -111,16 +112,17 @@ async def main():
     ap.add_argument('--seconds', type=float, default=10)
     ap.add_argument('--video', action='store_true')
     ap.add_argument('--counts', default='1,3,5')
+    ap.add_argument('--art', default='p1', help='p1 geometric | p2 layered parts')
     a = ap.parse_args()
     out = []
     for n in [int(x) for x in a.counts.split(',')]:
-        vdir = os.path.join(ROOT, 'samples', f'video_{n}') if (a.video and n == 3) else None
-        r = await measure(n, a.seconds, vdir)
+        vdir = os.path.join(ROOT, 'samples', f'video_{a.art}_{n}') if (a.video and n == 3) else None
+        r = await measure(n, a.seconds, vdir, a.art)
         out.append(r)
         print(json.dumps(r, ensure_ascii=False))
     res = {'measured_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'base': BASE,
            'machine': 'sandbox CI proxy (not a 2-3 GB Android)', 'results': out}
-    with open(os.path.join(ROOT, 'samples', 'measure.json'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(ROOT, 'samples', 'measure.json' if a.art == 'p1' else f'measure_{a.art}.json'), 'w', encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, indent=2)
     print('\n| companions | heap delta mount MB | heap delta scene MB | DOM nodes | anims idle | anims after dispose | rAF p50 ms | rAF p95 ms | max ms | frames >33ms | bytes |')
     print('|---|---|---|---|---|---|---|---|---|---|---|')
