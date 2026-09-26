@@ -808,3 +808,74 @@ Principles frozen: local-first, no backend / e-mail / notifications, archive hol
 - M5 GATE (fresh, batch on ff33480, servers 8080+8090, 33 suites, 2 skipped by constitution): 32 rc=0 in batch incl. cachebust (7.25, 60 modules), phase20_report 37/37, phase15_2 + phase16 (last run's flakes) PASS; phase19_family rc=1 only in batch (reduced-motion second-context wait timeout) -> alone 41/41 rc=0; behaviour.py rc=1 = legacy (16 C5a). sha256 of 5 protected files = origin/main; family links PASS; emoji 0; unit 27/27 + 31/31. External preview verified https://8090-i4zva5ptdqjg1ptcvn047-c81df28e.sandbox.novita.ai/app/index.html (version 7.25; nav dot 1; PIN -> report improved / morning / weak جدول ٧ / strong جدول ٢ / starters recovered,strong,bestday; family line; 0 errors 0 4xx). -> single PR.
 - resume-check (reset #15): remote @ 7a433bd = Phase 20 complete incl. gate record; PR creation had been interrupted -> created now.
 - 20 DONE: single PR #4 https://github.com/just-SsSsSsSsSsSsSsSs/RESEARCH-md-Duolingo-Rive/pull/4 (branch 7a433bd, v7.25); external preview verified https://8090-ilo2wx6oquw8hruyw80oi-ea026bf9.sandbox.novita.ai/app/index.html (version.json 7.25; nav dot 1; PIN -> report improved / morning / weak جدول ٧ / strong جدول ٢ / starters recovered,strong,bestday; 0 page errors, 0 4xx). Screenshot https://www.genspark.ai/api/files/s/LRhugn6C. NEXT: wait for the owner to merge PR #4; then Phase 21 R0 (research appendix -> frozen plan) - do not start until merged or the owner says so.
+
+- resume-check (reset #16, planning session): remote genspark_ai_developer @ 928d3d9 = Phase 20 closed; origin/main @ 47080d3 = PR #4 merged (2026-09-26T01:16:48Z); app/version.json 7.25; roadmap 21 current (placeholder). Owner gists 2e5c85db (three axes) + 9e3c5eb6 (plan on GitHub only, zero implementation code) read from raw and verified. GitLab sync claim not verifiable from the sandbox. This session writes DOCS ONLY on branch `genspark_plan_phase21` (from main) and opens a planning PR. No app code, content, audio or test file is created or modified.
+
+## Phase 21 / 22 / 23 - ROADMAP PLAN (frozen for review; NOT STARTED; owner gists 2e5c85db + 9e3c5eb6; R0 appendix in RESEARCH.md)
+
+Planning rules in force (owner, 2026-09-26): understand -> plan -> discuss -> execute; no execution before a written plan approved by the owner; silence is not approval; one task at a time; stop and ask on anything unexpected; Zero Regression is the top priority. The owner announced further architecture changes, additions and removals to be discussed BEFORE any code; every task below is therefore a proposal and may be reordered, removed or replaced at that discussion.
+
+### Goal
+Deliver the three owner axes as three shippable phases, lowest risk first: (21) curriculum expansion on the existing engines, (22) a dependency-free vector motion engine beside the current mask rig, (23) the turtle and the robot «بيبو» as the first vector-native companions. Each phase ends with the full gate, one PR and a verified external preview.
+
+### Current state and what is affected
+- Engines that will carry Phase 21 unchanged: mult generator (`activities/*.json` kinds mult/grid/missing/pickProducts), `story.js` (plant_story format), `quranReader.js` (quran_qadr format), `companion.pick(subject)`.
+- Files that Phase 21 would ADD only: `activities/mult_6..9.json`, `activities/story_mult_6..9.json` + `content/audio/stories/mult_N/*.mp3`, `activities/quran_alaq.json`, `quran_tin.json`, `quran_sharh.json` + `content/audio/quran/{husary,minshawi}/{096,095,094}_NNN.mp3`, `app/tests/phase21_curriculum.py`, `app/tests/unit/catalog_schema.test.mjs`.
+- Files that Phase 21 would APPEND to: `catalog.json` (11 new items), README, PROGRESS, RESUME, RESEARCH, `family.json` + `FAMILY_CHARTER.md` roadmap, `AGENTS.md` (new planning rules section), version files via `bump_version.py` only.
+- Never touched: the 5 protected files, `companion.js`, `store.js`, `app.js`, Phase 19/20 engines, K3.
+- Known conflicts to resolve with the owner before Phase 22/23: AGENTS.md section 5 forbids Rive/Lottie; the owl is already «حكيمة».
+
+### Phase 21 - «توسيع المنهج» Curriculum expansion - target v7.26 (data-only)
+- [ ] M0 docs: append owner planning rules to AGENTS.md (new section, nothing removed); resume line; roadmap titles for 21/22/23 (this PR does the roadmap titles only).
+- [ ] M1 tables 6-9: `mult_6.json .. mult_9.json` (intro baladi + generator mult/grid/missing, range 1-10) + 4 catalog items (`math`, `numpad`, xp 25, tags ضرب/جدول) + `catalog_schema.test.mjs` (every `src` exists, ids unique, known types, no emoji). DoD: 4 activities playable end-to-end with K3; unit + `phase21_curriculum.py` part M1 on 8080 + 8090. Push.
+- [ ] M2 table stories: `story_mult_6..9.json` in the plant_story format, each built on the table's trick (6 = double 3, 7 = 5 + 2, 8 = double 4, 9 = 10 - 1 / digit sum), fusha + baladi tracks (Fish Audio, same pipeline as `tools/build_explain_audio.py`), phases true-false -> comprehension -> order -> table map; monkey companion. Budget <= 600 KB audio per story. If Fish credits run out: document and stop, no improvisation. DoD: 4 stories complete; suite part S. Push.
+- [ ] M3 surahs 96 / 95 / 94: download per-ayah mp3 for both reciters (35 x 2 files), Uthmani text from the same source as 97/98 with ayah-count check (19 / 8 / 8) and sha256 recorded; `quran_alaq.json`, `quran_tin.json`, `quran_sharh.json` with baladi meaning + word glossary per ayah, `order` groups of 5-7 ayat for al-Alaq, `fill` 3-5 items per surah, badges quran_reader_2..4. Show the owner the al-Alaq sample BEFORE writing at-Tin and ash-Sharh. First step: confirm `quranReader.js` has no per-surah hardcode; if it does, propose the <= 5-line change to the owner before touching it. DoD: highlighting follows audio, order/fill work, 0 404; suite part Q. Push.
+- [ ] M4 companion routing check: monkey picked for math stories, owl for the surahs, with zero change to `companion.js` (suite part C).
+- [ ] M5 gate: all suites both servers (skip emoji_sweep, shots_calmjoy; behaviour legacy), unit, Zero-Emoji, sha256 protected = main, family links, `bump_version.py 7.26` + cachebust, README append, roadmap 21 done / 22 current, PROGRESS, one PR, verified external preview.
+Out of scope unless the owner asks: widening `mult_mix` to 2-9; any engine change; any new UI.
+
+### Phase 22 - «محرك الحركة الشعاعي» Vector motion engine - target v7.27 (engine beside engine)
+Decision required first: keep constitution section 5 (SVG + WAAPI, no runtime - recommended) or amend it to allow the Rive runtime (WASM ~1 MB + .riv authored in an external tool).
+- [ ] M1 spec: `companions.json` v2 schema - `rig.kind: "mask"` (default, unchanged) | `"svg"` (inline SVG with `<g id>` parts, `poses{}`, `actions{fly,run,jump,wave}` as WAAPI keyframe arrays, `offset-path` for flight); written in RESEARCH + PROGRESS, reviewed by the owner.
+- [ ] M2 `app/js/engines/companion_svg.js` (new module): mount/pose/action/lookAt/mouth on SVG parts using existing `spring()` and `easing()`; `prefers-reduced-motion` respected; `pointer-events` rules per constitution.
+- [ ] M3 one-line delegation in `companion.js`: `if (c.rig?.kind === 'svg') return svgRig.mount(...)`; all 5 raster companions keep the mask path bit-for-bit (phase17/18/18.5 suites must stay green).
+- [ ] M4 memory budget test: Playwright measures `performance.memory.usedJSHeapSize` delta + DOM node count + transferred bytes when mounting an SVG companion; fails above 20 MB heap delta or above an agreed asset cap. Honest note: JS heap does not include GPU textures; asset bytes are measured separately.
+- [ ] M5 demo companion in SVG (a placeholder or the first Phase 23 character) exercising fly / run / jump in a lesson; suite `phase22_vector.py`.
+- [ ] M6 gate, bump 7.27, README, roadmap, one PR, preview.
+
+### Phase 23 - «استكمال الطاقم» Turtle + robot «بيبو» - target v7.28
+Decision required first: turtle name (owl is already «حكيمة»): rename the turtle, rename the owl (check whether owl voice clips speak the name), or accept the duplicate (not recommended).
+- [ ] M1 identity sheets: turtle = slow, deliberate mentor («راجع قبل ما تجاوب»), subjects quran/deen or arabic per owner; robot «بيبو» = mechanical, hopping, science/logic mentor; motion vocabulary per character (turtle: shell tuck, slow walk, peek; robot: hop, antenna blink, arm servo).
+- [ ] M2 SVG art authored as data (no image-generation credits needed), consistent with the existing palette; two JSON entries in `companions.json` with `rig.kind: "svg"`.
+- [ ] M3 voices: laugh + cheer clips via Fish Audio (same pipeline as the 5 existing companions); if credits run out: document and stop.
+- [ ] M4 tests `phase23_cast.py`: both appear via `pick(subject)`, actions run, reduced-motion, pointer rules, memory budget from Phase 22, no regression on the 5 raster companions.
+- [ ] M5 gate, bump 7.28, README, roadmap, one PR, preview.
+
+### Safety strategy (Zero Regression) - binding for all three phases
+1. Additions over modifications: Phase 21 is JSON + audio only; Phase 22 adds a module behind a per-companion data switch; Phase 23 is data + art + voice.
+2. Gate before every push: unit + all suites on 8080 + 8090, sha256 of the 5 protected files, `check_family_links.py`, Zero-Emoji. Undocumented failure = stop and ask.
+3. New `catalog_schema.test.mjs` guards the catalog contract for all future content.
+4. Written budgets: Phase 21 <= +20 MB on disk, all lazy-loaded (no preload); Phase 22 <= 20 MB heap delta per SVG companion.
+5. Push after every completed M task (+10-15 min rule); no force-push; one PR per phase.
+6. Stop rules: any need to edit an existing engine, exhausted Fish/image credits, any text mismatch in Quran sources -> document in PROGRESS and ask the owner before continuing.
+
+### Risks and mitigation
+| Risk | Mitigation |
+|---|---|
+| Quran text error | same source as 97/98, sha256 + ayah-count check, owner reviews the al-Alaq sample first |
+| Fish Audio credits | run M3 (free audio) before M2 if needed; document and stop |
+| audio size | 64 kbps Husary, per-ayah files, measure after download; return to owner above 20 MB |
+| hidden surah hardcode in quranReader.js | check first; propose the minimal diff before editing |
+| suite flakes under batch load | rerun the suite alone (documented Phase 19/20 pattern) |
+| sandbox resets | push per completed M; PROGRESS updated with each push |
+| constitution vs Rive; turtle name | explicit owner decisions before Phase 22 / 23; Phase 21 unaffected |
+
+### Open questions for the owner (answers change the plan, not the code)
+1. Approve the order 21 curriculum -> 22 engine -> 23 cast?
+2. Rive runtime or constitution-compliant SVG + WAAPI engine (recommended)?
+3. Turtle name given the owl «حكيمة»?
+4. Widen `mult_mix` to 2-9 inside Phase 21? (default: no)
+5. Levels: tables 6-7 level 2 and 8-9 level 3, or all level 2?
+6. The owner's announced architecture changes: which of the tasks above are removed, replaced or reprioritised?
+
+- PLAN-ONLY: branch `genspark_plan_phase21` (from main 47080d3) carries this plan + RESEARCH appendix + roadmap titles + AGENTS.md planning rules; zero implementation code. NEXT: owner reviews the planning PR, states the architecture changes, and answers the 6 open questions; only then M0 of the approved phase starts on `genspark_ai_developer`.

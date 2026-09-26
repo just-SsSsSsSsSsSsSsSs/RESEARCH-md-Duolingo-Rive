@@ -759,3 +759,29 @@ Docker + CI/CD
 - `app/js/engines/report.js` (store-bound): gathers profile daily + events + `insights.analyze` + `family.board()`; `isFresh()` (week changed and `meta.reportSeenWeek !== weekStart`); `markSeen()`; archive in `meta.parentReports`.
 - `app/js/ui/views/parentReport.js`: section inside PIN-gated dashboard (per active child tab) + family summary card; print CSS; share/copy; nav dot.
 - Tests: `app/tests/unit/report_core.test.mjs` + `app/tests/phase20_report.py` (Playwright 8090).
+
+## Appendix - Phase 21+ planning-only R0 (2026-09-26): curriculum expansion, vector motion engine, cast completion
+
+Status: PLANNING ONLY. No implementation code exists for any item below. The owner asked (gist 2e5c85db + gist 9e3c5eb6) for a frozen chunked plan on GitHub, then a pause for an architecture discussion before the first line of code.
+
+### Verified facts (evidence first, read-only inspection of main @ 47080d3)
+- Multiplication content is generator-driven JSON: `app/content/activities/mult_3.json` = `{intro, count, generator:[{kind:'mult', tables:[3], range:[1,10], count, types:['numpad','quiz']}]}`; `mult_mix.json` also uses kinds `grid`, `missing`, `pickProducts` over tables 2..6. Adding tables 6..9 is data only.
+- Interactive stories run on `app/js/ui/views/story.js` (323 lines) from `plant_story.json` = `{audioBase, tracks, clips, story, phases, personal, rewards}`; a math story needs no engine change unless a new phase kind is wanted.
+- Quran runs on `app/js/ui/views/quranReader.js` (149 lines) from `quran_qadr.json` = `{surah{n,name,ayat,makki,theme}, audioBase, tracks{husary,minshawi}, basmala, classic, ayat[{n,t,file,baladi,words}], phases[order,fill], rewards}`. Audio: one mp3 per ayah (everyayah.com; recorded in PROGRESS I1). Probe 2026-09-26: `Husary_64kbps` and `Minshawy_Murattal_128kbps` return HTTP 200 for 094001, 095001, 096001. Current quran audio = 7.4 MB for 13 ayat; al-Alaq (19) + at-Tin (8) + ash-Sharh (8) = 35 ayat, estimated 12-15 MB, loaded on demand only.
+- Companions: 5 raster (webp) characters with the CSS-mask rig in `companions.json` (`rig.limbs`, `rig.mouth`, `voice`). The owl is already named «حكيمة» - the requested turtle name collides. Turtle + robot were deferred since Phase 17 because image-generation credits ran out.
+- Constitution AGENTS.md section 5: «لا تبعيات ثقيلة (لا Rive/Lottie/frameworks)؛ pure-web، ES modules، WAAPI/CSS للحركة». The owner's axis 1 literally says «Rive / Vector Engine» - a decision is required before Phase 22 (keep constitution -> SVG + WAAPI engine, or amend section 5 to allow the Rive runtime).
+
+### What the market does (checked 2026-09-26)
+- Duolingo Math (blog.duolingo.com/duolingo-launches-math-app, duolingo.com/math): times tables + commutative/associative properties in bite-sized lessons with characters; no story per table, no dialectal Arabic, no per-table "trick" narrative.
+- Times Tables Rock Stars (ttrockstars.com; intercom help "Game Types"): heatmap of fluency per fact, "Gig" sequencing 10,2,5,3,4,6,7,8,9,11,12, 5-minute timed sessions; pure drill, no meaning story.
+- Kids Quran apps (kidsquran.net, myquranjourney.app, Osratouna "Memorize Quran word by word for kids"): word-by-word audio + translation to English/French, repetition/echo. None offers an Egyptian-baladi meaning per ayah for a child, nor order/fill games tied to a companion.
+
+### Gap / novelty we can own
+1. One interactive story per table built on the table's own trick (6 = double 3, 7 = 5 + 2, 8 = double 4, 9 = 10 - 1 and digit-sum 9), narrated fusha + baladi by the monkey companion, with K3 kept by the existing story engine.
+2. Quran reader in baladi meaning per ayah + per-word glossary, two reciters, exact ayah highlighting from per-ayah files, order/fill games - now for 96, 95, 94.
+3. A dependency-free SVG + WAAPI vector motion engine (fly / run / jump) living next to the mask rig, selected per companion by `rig.kind`, with an automated memory budget test (<= 20 MB JS heap delta) - no Rive runtime, no WASM.
+
+### Engineering decisions proposed (to be confirmed by the owner)
+- Order: Phase 21 curriculum (data only) -> Phase 22 vector engine (new module beside the old one) -> Phase 23 turtle + robot as the first SVG-native companions (no image-generation credits needed).
+- Zero Regression: additions only; existing engines untouched in Phase 21; new engine behind a data switch, not a global flag; full gate + sha256 of protected files before every push; catalog schema unit test added.
+- Open decisions for the owner: (a) Rive vs constitution section 5; (b) turtle name vs owl «حكيمة»; (c) whether `mult_mix` widens to 2..9 (default: no); (d) levels for tables 6-7 vs 8-9.
