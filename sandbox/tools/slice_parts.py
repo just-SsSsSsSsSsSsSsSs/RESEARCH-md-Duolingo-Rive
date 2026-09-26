@@ -202,6 +202,7 @@ def main():
     ap.add_argument('--render', action='store_true', help='also run the DPR1/DPR2 rendered proof')
     ap.add_argument('--ref', default='d75e792', help='git ref holding the original owl_p2.svg')
     ap.add_argument('--url', default='http://127.0.0.1:8080/sandbox/')
+    ap.add_argument('--runs', type=int, default=3, help='rendered proof repetitions (renderer noise is intermittent)')
     args = ap.parse_args()
 
     eyes = load('eyes.webp')
@@ -350,11 +351,27 @@ def main():
     sheet.save(os.path.join(PROOFS, 'g11b_slice_sheet.png'))
 
     if args.render:
-        report['rendered'] = asyncio.run(render_proof(args.ref, args.url))
-        report['pass_rendered_lr_split_exact'] = all(v['max_abs_diff_lr_only'] == 0 for v in report['rendered'].values())
+        runs = [asyncio.run(render_proof(args.ref, args.url)) for _ in range(args.runs)]
+        report['rendered'] = runs[-1]
+        report['rendered_runs'] = [{k: dict(max_abs_diff_full=v['max_abs_diff_full'], pixels_differing_full=v['pixels_differing_full'],
+                                            diff_bbox_px=v['diff_bbox_px'], diff_touches_eye_region=v['diff_touches_eye_region'],
+                                            control_same_doc_pixels_differing=v['control_same_doc_pixels_differing'],
+                                            pixels_differing_net_of_control=v['pixels_differing_net_of_control']) for k, v in r.items()} for r in runs]
+        allv = [v for r in runs for v in r.values()]
+        report['pass_rendered_lr_split_exact'] = all(v['max_abs_diff_lr_only'] == 0 for v in allv)
+        report['pass_rendered_eye_region_exact'] = all(not v['diff_touches_eye_region'] for v in allv)
+        report['rendered_runs_all_exact'] = all(v['max_abs_diff_full'] == 0 for v in allv)
+        report['pass_rendered_pixel_diff_0_net_of_control'] = all(v['max_abs_diff_net_of_control'] == 0 for v in allv)
+        report['rendered_note'] = ('Chromium headless shows an intermittent 1-column resampling jitter on an untouched raster part '
+                                   '(css x=97 = wingL edge, DPR1 only, 46 px, max 13). The same-document control (original rendered twice) '
+                                   'flags exactly the same 46 px in the same run, so it is renderer noise, not the slice. Acceptance = '
+                                   'pixel diff 0 net of control in every run at DPR1 and DPR2, and no differing pixel inside the eye/lid region.')
     json.dump(report, open(os.path.join(PROOFS, 'g11b_slice_diff.json'), 'w'), indent=2)
-    print(json.dumps({k: report[k] for k in report if k in ('cut_col', 'iris_fit', 'plate_recomposite', 'bytes', 'rendered', 'pass_rendered_lr_split_exact')}, indent=1))
-    return 0 if report['plate_recomposite']['pass_pixel_diff_0'] else 1
+    print(json.dumps({k: report[k] for k in report if k in ('cut_col', 'iris_fit', 'plate_recomposite', 'bytes', 'rendered_runs', 'pass_rendered_lr_split_exact', 'pass_rendered_eye_region_exact', 'rendered_runs_all_exact', 'pass_rendered_pixel_diff_0_net_of_control')}, indent=1))
+    ok = report['plate_recomposite']['pass_pixel_diff_0']
+    if args.render:
+        ok = ok and report['pass_rendered_pixel_diff_0_net_of_control'] and report['pass_rendered_eye_region_exact']
+    return 0 if ok else 1
 
 
 async def render_proof(ref, url):
@@ -381,7 +398,7 @@ async def render_proof(ref, url):
         b = await p.chromium.launch()
         for dpr in (1, 2):
             shots = {}
-            for tag, doc in (('orig', orig), ('new', new)):
+            for tag, doc in (('orig', orig), ('new', new), ('orig2', orig)):  # orig2 = renderer-noise control
                 ctx = await b.new_context(viewport=dict(width=420, height=500), device_scale_factor=dpr)
                 page = await ctx.new_page()
                 await page.set_content(page_html % (url, doc), wait_until='networkidle')
@@ -390,6 +407,12 @@ async def render_proof(ref, url):
                 shots[tag] = np.array(Image.open(io.BytesIO(png)).convert('RGBA')).astype(int)
                 await ctx.close()
             d = np.abs(shots['orig'] - shots['new']).max(-1)
+            ctrl = np.abs(shots['orig'] - shots['orig2']).max(-1)  # same document twice: any diff here is renderer noise
+            ys, xs = np.nonzero(d > 0)
+            bbox = [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())] if len(xs) else None
+            eye_px = dict(x0=rr['x'] * CSS_PX_PER_UNIT * dpr, x1=(rr['x'] + rr['w']) * CSS_PX_PER_UNIT * dpr,
+                          y0=rr['y'] * CSS_PX_PER_UNIT * dpr, y1=(rr['y'] + rr['h']) * CSS_PX_PER_UNIT * dpr)
+            in_eye = bool(len(xs)) and bool(((xs >= eye_px['x0']) & (xs <= eye_px['x1']) & (ys >= eye_px['y0']) & (ys <= eye_px['y1'])).any())
             # mask the iris discs (+3 px) to isolate the L/R split
             mask = np.zeros(d.shape, bool)
             for side in ('L', 'R'):
@@ -403,11 +426,16 @@ async def render_proof(ref, url):
                 mask[int(ry - pad):int(ry + rh + pad) + 1, int(rx - pad):int(rx + rw + pad) + 1] = True
             d_lr = d.copy()
             d_lr[mask] = 0
+            d_net = d.copy()
+            d_net[ctrl > 0] = 0  # subtract pixels the same-document control also flags (renderer jitter, not our change)
             Image.fromarray(np.clip(d * 40, 0, 255).astype(np.uint8)).save(os.path.join(PROOFS, 'g11b_render_diff_dpr%d.png' % dpr))
             Image.fromarray(shots['new'].astype(np.uint8)).save(os.path.join(PROOFS, 'g11b_render_new_dpr%d.png' % dpr))
             out['dpr%d' % dpr] = dict(shape=list(d.shape), max_abs_diff_lr_only=int(d_lr.max()), pixels_differing_lr_only=int((d_lr > 0).sum()),
                                      max_abs_diff_full=int(d.max()), pixels_differing_full=int((d > 0).sum()),
-                                     pixels_total=int(d.size), iris_edge_residual_note='full includes the iris/white partition edge under resampling')
+                                     pixels_total=int(d.size), diff_bbox_px=bbox, diff_touches_eye_region=in_eye, eye_region_px={k: round(v, 1) for k, v in eye_px.items()},
+                                     control_same_doc_max_abs_diff=int(ctrl.max()), control_same_doc_pixels_differing=int((ctrl > 0).sum()),
+                                     max_abs_diff_net_of_control=int(d_net.max()), pixels_differing_net_of_control=int((d_net > 0).sum()),
+                                     iris_edge_residual_note='full includes the iris/white partition edge under resampling; control = original rendered twice in fresh contexts')
         await b.close()
     return out
 
