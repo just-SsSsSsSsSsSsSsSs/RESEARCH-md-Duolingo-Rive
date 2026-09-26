@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-09-26T19:07:49Z",
+  "captured_at": "2026-09-26T20:08:09Z",
   "slow_rate": 0.25,
   "gates": {
     "G3_anticipation": [
@@ -31,7 +31,7 @@
         },
         "host": "",
         "state": "fly",
-        "t_real_ms": 401
+        "t_real_ms": 398
       },
       {
         "busy": true,
@@ -46,7 +46,7 @@
         },
         "host": "",
         "state": "fly",
-        "t_real_ms": 583
+        "t_real_ms": 630
       },
       {
         "busy": true,
@@ -61,22 +61,22 @@
         },
         "host": "",
         "state": "fly",
-        "t_real_ms": 806
+        "t_real_ms": 873
       },
       {
         "busy": true,
         "flying": true,
         "squash": "scale(0.893, 1.12)",
         "springs": {
-          "armL": 0.26,
-          "armR": -0.26,
-          "head": -0.03,
-          "legL": -0.06,
-          "legR": -0.06
+          "armL": 0,
+          "armR": 0,
+          "head": 0,
+          "legL": 0,
+          "legR": 0
         },
         "host": "",
         "state": "fly",
-        "t_real_ms": 1040
+        "t_real_ms": 1120
       }
     ],
     "G2_landing_squash": [
@@ -85,90 +85,90 @@
         "flying": true,
         "squash": "scale(1.25, 0.8)",
         "springs": {
-          "armL": -1.12,
-          "armR": 1.12,
+          "armL": -1.08,
+          "armR": 1.08,
           "head": -0.15,
-          "legL": 0.28,
-          "legR": 0.28
+          "legL": 0.24,
+          "legR": 0.24
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "fly",
-        "t_real_ms": 8
+        "t_real_ms": 4
       },
       {
         "busy": true,
         "flying": true,
-        "squash": "scale(1.03, 0.971)",
+        "squash": "scale(1.048, 0.955)",
         "springs": {
-          "armL": -8.62,
-          "armR": 8.62,
-          "head": -0.96,
-          "legL": 0.28,
-          "legR": 0.28
+          "armL": -8.74,
+          "armR": 8.74,
+          "head": -1.01,
+          "legL": 0.26,
+          "legR": 0.26
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "fly",
-        "t_real_ms": 400
+        "t_real_ms": 366
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": -3.79,
-          "armR": 3.79,
-          "head": -0.23,
-          "legL": 0.1,
-          "legR": 0.1
+          "armL": -4.5,
+          "armR": 4.5,
+          "head": -0.31,
+          "legL": 0.11,
+          "legR": 0.11
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "fly",
-        "t_real_ms": 773
+        "t_real_ms": 726
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.05,
-          "armR": -0.05,
+          "armL": -0.15,
+          "armR": 0.15,
           "head": 0.07,
-          "legL": -0.04,
-          "legR": -0.04
+          "legL": -0.02,
+          "legR": -0.02
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "idle",
-        "t_real_ms": 1154
+        "t_real_ms": 1123
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.78,
-          "armR": -0.78,
+          "armL": 0.79,
+          "armR": -0.79,
           "head": 0.05,
-          "legL": -0.06,
-          "legR": -0.06
+          "legL": -0.05,
+          "legR": -0.05
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "idle",
-        "t_real_ms": 1554
+        "t_real_ms": 1516
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.33,
-          "armR": -0.33,
+          "armL": 0.37,
+          "armR": -0.37,
           "head": 0,
           "legL": -0.03,
           "legR": -0.03
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "idle",
-        "t_real_ms": 1943
+        "t_real_ms": 1901
       }
     ],
     "G5_settle": [
@@ -177,11 +177,11 @@
         "flying": true,
         "squash": "scale(1.25, 0.8)",
         "springs": {
-          "armL": -1.65,
-          "armR": 1.65,
-          "head": -0.32,
-          "legL": -0.17,
-          "legR": -0.17
+          "armL": -1.69,
+          "armR": 1.69,
+          "head": -0.31,
+          "legL": -0.12,
+          "legR": -0.12
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "fly",
@@ -190,77 +190,77 @@
       {
         "busy": true,
         "flying": true,
-        "squash": "scale(0.987, 1.013)",
+        "squash": "scale(1, 1)",
         "springs": {
-          "armL": -7.53,
-          "armR": 7.53,
-          "head": -0.76,
+          "armL": -7.97,
+          "armR": 7.97,
+          "head": -0.84,
           "legL": -0.15,
           "legR": -0.15
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "fly",
-        "t_real_ms": 496
+        "t_real_ms": 449
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": -1.19,
-          "armR": 1.19,
+          "armL": -1.87,
+          "armR": 1.87,
+          "head": -0.04,
+          "legL": -0.04,
+          "legR": -0.04
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 904
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.75,
+          "armR": -0.75,
+          "head": 0.07,
+          "legL": 0.03,
+          "legR": 0.03
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 1368
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.41,
+          "armR": -0.41,
           "head": 0.01,
-          "legL": -0.01,
-          "legR": -0.01
-        },
-        "host": "translate(0px) rotate(0deg) scaleX(-1)",
-        "state": "idle",
-        "t_real_ms": 970
-      },
-      {
-        "busy": false,
-        "flying": false,
-        "squash": "scale(1, 1)",
-        "springs": {
-          "armL": 0.78,
-          "armR": -0.78,
-          "head": 0.06,
-          "legL": 0.04,
-          "legR": 0.04
-        },
-        "host": "translate(0px) rotate(0deg) scaleX(-1)",
-        "state": "idle",
-        "t_real_ms": 1454
-      },
-      {
-        "busy": false,
-        "flying": false,
-        "squash": "scale(1, 1)",
-        "springs": {
-          "armL": 0.33,
-          "armR": -0.33,
-          "head": 0,
           "legL": 0.02,
           "legR": 0.02
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 1927
+        "t_real_ms": 1852
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": -0.04,
-          "armR": 0.04,
-          "head": -0.0,
-          "legL": -0.0,
-          "legR": -0.0
+          "armL": -0.03,
+          "armR": 0.03,
+          "head": -0.01,
+          "legL": 0,
+          "legR": 0
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 2396
+        "t_real_ms": 2350
       }
     ],
     "G3_cue_sequence_first_flight": [
@@ -274,27 +274,27 @@
       },
       {
         "phase": "takeoff",
-        "t_engine_ms": 155.0
+        "t_engine_ms": 215.2
       },
       {
         "phase": "flap",
-        "t_engine_ms": 216.4
+        "t_engine_ms": 276.9
       },
       {
         "phase": "blink",
-        "t_engine_ms": 312.0
+        "t_engine_ms": 428.8
       },
       {
         "phase": "flap",
-        "t_engine_ms": 556.4
+        "t_engine_ms": 616.9
       },
       {
         "phase": "cruise",
-        "t_engine_ms": 645.5
+        "t_engine_ms": 706.4
       },
       {
         "phase": "flap",
-        "t_engine_ms": 896.5
+        "t_engine_ms": 957.0
       }
     ],
     "G3_anticipation_ms": {
@@ -303,11 +303,11 @@
         250
       ],
       "drawn_hold_ms": [
-        153.76346071588577,
-        234.74774662791475
+        214.34015251022493,
+        235.95703571198214
       ],
-      "measured_anticipate_to_takeoff_ms": 154.5,
-      "measured_land_to_settle_ms": 166.2,
+      "measured_anticipate_to_takeoff_ms": 214.8,
+      "measured_land_to_settle_ms": 166.5,
       "method": "engine cue timestamps (performance.now at cue) multiplied by the slow-motion rate; the earlier strip-based reading (crouch visible 93-568 ms real) was real time at x0.25 = 24-142 ms engine plus the 140 ms takeoff stretch, not a longer hold",
       "pass": true
     },
@@ -318,8 +318,8 @@
       "zeta": 0.6,
       "damped_half_period_ms": 292,
       "theory_overshoot_ratio": 0.097,
-      "observed_first_swing_deg": -8.62,
-      "observed_second_swing_deg": 0.78,
+      "observed_first_swing_deg": -8.74,
+      "observed_second_swing_deg": 0.79,
       "rule": "named: follow-through rebound; acceptance cap = second swing <= 0.15 x first swing (|ratio| <= 0.15) and <= 2 deg absolute",
       "observed_ratio": 0.09,
       "pass": true
@@ -330,42 +330,42 @@
         "from": "idle",
         "to": "fly",
         "state": null,
-        "t": 1199
+        "t": 1220
       },
       {
         "type": "enter",
         "from": "fly",
         "to": "idle",
         "state": null,
-        "t": 8369
+        "t": 8666
       },
       {
         "type": "settled",
         "from": null,
         "to": null,
         "state": "idle",
-        "t": 8613
+        "t": 8910
       },
       {
         "type": "enter",
         "from": "idle",
         "to": "fly",
         "state": null,
-        "t": 10779
+        "t": 10888
       },
       {
         "type": "enter",
         "from": "fly",
         "to": "idle",
         "state": null,
-        "t": 18278
+        "t": 18420
       },
       {
         "type": "settled",
         "from": null,
         "to": null,
         "state": "idle",
-        "t": 18524
+        "t": 18664
       }
     ],
     "G4_path_trace": {
@@ -380,18 +380,18 @@
       {
         "points": 41,
         "chord_px": 344.8,
-        "sagitta_px": 61.7,
-        "sagitta_pct_of_chord": 17.9,
-        "min_curvature_radius_px": 64,
+        "sagitta_px": 42.1,
+        "sagitta_pct_of_chord": 12.2,
+        "min_curvature_radius_px": 39,
         "points_within_half_px_of_chord": 2,
         "pass_not_straight": true
       },
       {
         "points": 41,
         "chord_px": 344.8,
-        "sagitta_px": 80.1,
-        "sagitta_pct_of_chord": 23.2,
-        "min_curvature_radius_px": 75,
+        "sagitta_px": 75.6,
+        "sagitta_pct_of_chord": 21.9,
+        "min_curvature_radius_px": 74,
         "points_within_half_px_of_chord": 2,
         "pass_not_straight": true
       }
@@ -400,13 +400,13 @@
       "dpr1_rest": {
         "rows_sampled": 23,
         "edge_width_device_px_median": 3,
-        "edge_width_device_px_max": 8,
+        "edge_width_device_px_max": 7,
         "edge_width_css_px_median": 3.0
       },
       "dpr1_flight": {
-        "rows_sampled": 25,
+        "rows_sampled": 23,
         "edge_width_device_px_median": 2,
-        "edge_width_device_px_max": 14,
+        "edge_width_device_px_max": 10,
         "edge_width_css_px_median": 2.0
       },
       "dpr2_rest": {
@@ -417,9 +417,9 @@
       },
       "dpr2_flight": {
         "rows_sampled": 21,
-        "edge_width_device_px_median": 4,
-        "edge_width_device_px_max": 18,
-        "edge_width_css_px_median": 2.0
+        "edge_width_device_px_median": 3,
+        "edge_width_device_px_max": 7,
+        "edge_width_css_px_median": 1.5
       },
       "pass_soft_edge": true,
       "pass_no_temporal_aliasing": true,

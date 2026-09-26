@@ -60,6 +60,7 @@
     "pass_pixel_diff_0": true
   },
   "bytes": {
+    "note": "slices are LOSSLESS webp so the recomposite is exact (pixel_diff = 0 is the owner acceptance); this costs bytes versus the lossy originals. A lossy re-encode of the 6 slices is possible later but would break pixel_diff = 0 by construction (lossy over lossy) and must be a separate, disclosed decision.",
     "total_all": 219064,
     "total_active": 190046,
     "new": {
@@ -96,109 +97,260 @@
         480,
         400
       ],
-      "max_abs_diff_lr_only": 0,
-      "pixels_differing_lr_only": 0,
-      "max_abs_diff_full": 0,
-      "pixels_differing_full": 0,
       "pixels_total": 192000,
-      "diff_bbox_px": null,
-      "diff_touches_eye_region": false,
+      "renders_per_doc": 3,
+      "median_diff": {
+        "max_abs_diff": 0,
+        "pixels_differing": 0,
+        "diff_bbox_px": null,
+        "diff_touches_eye_region": false
+      },
+      "raw_pairs": [
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 13,
+          "pixels_differing": 46,
+          "diff_bbox_px": [
+            97,
+            257,
+            97,
+            331
+          ],
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 13,
+          "pixels_differing": 46,
+          "diff_bbox_px": [
+            97,
+            257,
+            97,
+            331
+          ],
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 13,
+          "pixels_differing": 46,
+          "diff_bbox_px": [
+            97,
+            257,
+            97,
+            331
+          ],
+          "diff_touches_eye_region": false
+        }
+      ],
+      "control_same_doc_pairs": [
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 13,
+          "pixels_differing": 46,
+          "diff_bbox_px": [
+            97,
+            257,
+            97,
+            331
+          ],
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 13,
+          "pixels_differing": 46,
+          "diff_bbox_px": [
+            97,
+            257,
+            97,
+            331
+          ],
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        }
+      ],
       "eye_region_px": {
         "x0": 122.3,
         "x1": 277.7,
         "y0": 132.0,
         "y1": 208.8
       },
-      "control_same_doc_max_abs_diff": 0,
-      "control_same_doc_pixels_differing": 0,
-      "max_abs_diff_net_of_control": 0,
-      "pixels_differing_net_of_control": 0,
-      "iris_edge_residual_note": "full includes the iris/white partition edge under resampling; control = original rendered twice in fresh contexts"
+      "pass_median_pixel_diff_0": true,
+      "pass_eye_region_exact_every_raw_pair": true
     },
     "dpr2": {
       "shape": [
         960,
         800
       ],
-      "max_abs_diff_lr_only": 0,
-      "pixels_differing_lr_only": 0,
-      "max_abs_diff_full": 0,
-      "pixels_differing_full": 0,
       "pixels_total": 768000,
-      "diff_bbox_px": null,
-      "diff_touches_eye_region": false,
+      "renders_per_doc": 3,
+      "median_diff": {
+        "max_abs_diff": 0,
+        "pixels_differing": 0,
+        "diff_bbox_px": null,
+        "diff_touches_eye_region": false
+      },
+      "raw_pairs": [
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        }
+      ],
+      "control_same_doc_pairs": [
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        },
+        {
+          "max_abs_diff": 0,
+          "pixels_differing": 0,
+          "diff_bbox_px": null,
+          "diff_touches_eye_region": false
+        }
+      ],
       "eye_region_px": {
         "x0": 244.5,
         "x1": 555.5,
         "y0": 264.0,
         "y1": 417.6
       },
-      "control_same_doc_max_abs_diff": 0,
-      "control_same_doc_pixels_differing": 0,
-      "max_abs_diff_net_of_control": 0,
-      "pixels_differing_net_of_control": 0,
-      "iris_edge_residual_note": "full includes the iris/white partition edge under resampling; control = original rendered twice in fresh contexts"
+      "pass_median_pixel_diff_0": true,
+      "pass_eye_region_exact_every_raw_pair": true
     }
   },
-  "rendered_runs": [
-    {
-      "dpr1": {
-        "max_abs_diff_full": 0,
-        "pixels_differing_full": 0,
-        "diff_bbox_px": null,
-        "diff_touches_eye_region": false,
-        "control_same_doc_pixels_differing": 0,
-        "pixels_differing_net_of_control": 0
-      },
-      "dpr2": {
-        "max_abs_diff_full": 0,
-        "pixels_differing_full": 0,
-        "diff_bbox_px": null,
-        "diff_touches_eye_region": false,
-        "control_same_doc_pixels_differing": 0,
-        "pixels_differing_net_of_control": 0
-      }
-    },
-    {
-      "dpr1": {
-        "max_abs_diff_full": 0,
-        "pixels_differing_full": 0,
-        "diff_bbox_px": null,
-        "diff_touches_eye_region": false,
-        "control_same_doc_pixels_differing": 0,
-        "pixels_differing_net_of_control": 0
-      },
-      "dpr2": {
-        "max_abs_diff_full": 0,
-        "pixels_differing_full": 0,
-        "diff_bbox_px": null,
-        "diff_touches_eye_region": false,
-        "control_same_doc_pixels_differing": 0,
-        "pixels_differing_net_of_control": 0
-      }
-    },
-    {
-      "dpr1": {
-        "max_abs_diff_full": 0,
-        "pixels_differing_full": 0,
-        "diff_bbox_px": null,
-        "diff_touches_eye_region": false,
-        "control_same_doc_pixels_differing": 0,
-        "pixels_differing_net_of_control": 0
-      },
-      "dpr2": {
-        "max_abs_diff_full": 0,
-        "pixels_differing_full": 0,
-        "diff_bbox_px": null,
-        "diff_touches_eye_region": false,
-        "control_same_doc_pixels_differing": 0,
-        "pixels_differing_net_of_control": 0
-      }
-    }
-  ],
-  "pass_rendered_lr_split_exact": true,
+  "pass_rendered_pixel_diff_0": true,
   "pass_rendered_eye_region_exact": true,
-  "rendered_runs_all_exact": true,
-  "pass_rendered_pixel_diff_0_net_of_control": true,
-  "rendered_note": "Chromium headless shows an intermittent 1-column resampling jitter on an untouched raster part (css x=97 = wingL edge, DPR1 only, 46 px, max 13). The same-document control (original rendered twice) flags exactly the same 46 px in the same run, so it is renderer noise, not the slice. Acceptance = pixel diff 0 net of control in every run at DPR1 and DPR2, and no differing pixel inside the eye/lid region."
+  "rendered_note": "Each document rendered 3 times in fresh contexts; per-pixel median compared. Raw pairwise and same-document control diffs are listed unfiltered: Chromium headless shows an intermittent one-column flicker inside untouched raster parts (css x=97, wingL, DPR1) that also appears original-vs-original. Acceptance: median diff 0 at DPR1 and DPR2, and no differing pixel inside the eye/lid region in any raw pair."
 }
