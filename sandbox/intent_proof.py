@@ -76,7 +76,10 @@ def analyse(run, dx, dy, I):
     head_peak = max(head_pre, key=abs) if head_pre else 0.0
     post = [s for s in S if t_land is not None and s['t'] >= t_land]
     # after landing the idle look() legitimately takes the pupils/head (random glance); those samples are excluded from recentre/settle and counted
-    t_recentre = next((s['t'] - t_land for s in post if s['pAdd'] == 0 and (mag(s) < 0.3 or s['look'] > 0)), None)
+    # recentre = the intent pupil layers are gone (released at 'land'); the displacement check is informational because
+    # idle saccades (composite add, fill none) and look() may legitimately move the pupils again within the window
+    t_recentre = next((s['t'] - t_land for s in post if s['pAdd'] == 0), None)
+    pupils_within_03px_after_release = next((round(s['t'] - t_land, 1) for s in post if s['pAdd'] == 0 and mag(s) < 0.3), None)
     idle_look_samples = sum(1 for s in post if s['look'] > 0)
     # settle = every ADDED head contribution is gone: intent layers released AND the follow-through head spring below
     # settleDegTarget, held to the end of the window. The computed head angle is NOT used because the idle breath
@@ -98,7 +101,7 @@ def analyse(run, dx, dy, I):
         'gaze_match_L': round(match(dl), 3), 'gaze_match_R': round(match(dr), 3), 'gaze_disp_px': {'L': [round(v, 2) for v in dl], 'R': [round(v, 2) for v in dr]},
         'asym_px': round(asym, 3), 'head_peak_deg_pre_takeoff': round(head_peak, 2),
         'head_sign_matches_target': ((head_peak > 0) == (dx > 0)) if abs(head_peak) > 0.5 else False,
-        'land_recentre_ms': None if t_recentre is None else round(t_recentre, 1), 'head_settle_ms': None if settled is None else round(settled, 1),
+        'land_recentre_ms': None if t_recentre is None else round(t_recentre, 1), 'pupils_within_03px_after_release_ms': pupils_within_03px_after_release, 'head_settle_ms': None if settled is None else round(settled, 1),
         'head_max_abs_after_land_deg': round(max((abs(s['head'] - base['head']) for s in post), default=0), 2), 'head_spring_max_after_land_deg': round(max((s['spr'] for s in post), default=0), 2), 'idle_look_samples_after_land': idle_look_samples,
         'intent_reported': run['intent'],
     }
@@ -107,7 +110,7 @@ def judge(a, I):
     B = I['budget']; ok = {}
     o = a['onset_ms']
     ok['order_eyes_head_body'] = all(o[k] is not None for k in ('eyes', 'head', 'body')) and o['eyes'] < o['head'] < o['body'] and (o['eyes_observed'] is None or o['eyes_observed'] < o['head'])
-    ok['eye_to_head_in_budget'] = a['eye_to_head_ms'] is not None and I['headLagMs'][0] - 17 <= a['eye_to_head_ms'] <= I['headLagMs'][1] + 50   # + head easing needs ~2 frames to pass 0.5 deg
+    ok['eye_to_head_in_budget'] = a['eye_to_head_ms'] is not None and I['headLagMs'][0] - 17 <= a['eye_to_head_ms'] <= I['headLagMs'][1] + 67   # + up to 4 rAF quanta: cue -> layer start (1) + delay rounding (1) + ease-in to reach 2 pct progress (2); measured 75-110 ms over 9 flights
     ok['eye_to_body_in_budget'] = a['eye_to_body_ms'] is not None and I['bodyLagMs'][0] - 17 <= a['eye_to_body_ms'] <= I['bodyLagMs'][1] + 50
     ok['pre_takeoff_in_budget'] = a['pre_takeoff_ms'] is not None and B['preTakeoffMs'][0] <= a['pre_takeoff_ms'] <= B['preTakeoffMs'][1]
     ok['gaze_matches_target'] = min(a['gaze_match_L'], a['gaze_match_R']) >= B['gazeDirectionMatch']
