@@ -15,6 +15,7 @@ import { ico3d } from '../icons3d.js';
 import { renderSettings } from './parentSettings.js';
 import { renderInsights } from './parentInsights.js';
 import { renderFamilySection } from './parentFamily.js'; // Phase 19: family card + guests (PIN-gated)
+import { renderReportCard, renderFamilySummary } from './parentReport.js'; // Phase 20: weekly report (PIN-gated)
 
 async function hash(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('abtal:' + s)); return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join(''); }
 let unlockedAt = 0;
@@ -119,6 +120,7 @@ function renderDash(root) {
     body.appendChild(el(`<div class="card" style="overflow:auto">${played.length ? `<table class="table"><thead><tr><th>النشاط</th><th>مرات</th><th>أفضل</th><th>دقة</th><th>إتقان</th><th>آخر لعب</th></tr></thead><tbody>
       ${played.map(({ it, st }) => `<tr><td>${ico3d(it.icon, 18)} ${esc(it.title)}</td><td>${fmt(st.plays)}</td><td>${fmt(st.best)}٪</td><td>${st.total ? fmt(Math.round((st.correct / st.total) * 100)) : '—'}٪</td><td>${ico3d('crown').repeat(st.mastery)}${'·'.repeat(5 - st.mastery)}</td><td class="small muted">${new Date(st.lastPlayed).toLocaleDateString('ar-EG')}</td></tr>`).join('')}</tbody></table>` : '<p class="muted center">لم يلعب أي نشاط بعد</p>'}</div>`));
 
+    renderReportCard(body, { hero }); // Phase 20: weekly report card (this week vs last, starters, next focus)
     renderInsights(body, { hero, p }); // Phase 10: weakness & behaviour report (parent-only)
 
     // badges & certificates
@@ -163,6 +165,7 @@ function renderDash(root) {
   g.querySelector('[data-act="sound"]').onclick = (e) => { const on = sound.toggle(); e.currentTarget.classList.toggle('on', on); };
   g.querySelector('[data-act="wipe"]').onclick = async () => { if (await confirm('مسح كل البيانات؟', '<p class="muted">سيتم حذف كل الأبطال والتقدم والرقم السري. صدّر نسخة أولاً!</p>', 'نعم، امسح الكل', 'إلغاء')) store.wipeAll(); };
   root.appendChild(g);
+  renderFamilySummary(root); // Phase 20: the family together this week
   renderFamilySection(root); // Phase 19 M3
   root.appendChild(nav('parent'));
 }

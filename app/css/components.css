@@ -569,3 +569,32 @@ html:not(.no-3d) .gb-cube b { margin-top: -4%; font-size: calc(var(--gb-cube) * 
 .fam-guest{display:flex;align-items:center;gap:8px}
 .fam-guest input{flex:1;min-width:0}
 @media (prefers-reduced-motion:reduce){.fam-tile,.fam-quest.done,.fam-hero .float{animation:none!important}.fam-ring{transition:none}}
+
+/* ---- Phase 20: parent weekly report ---- */
+.rp-card{border-color:color-mix(in srgb,var(--hero) 45%,transparent)}
+.rp-headline{font-weight:800;line-height:1.7;font-size:15px;margin:0;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--hero,#a78bfa) 10%,transparent);border-inline-start:4px solid var(--hero,#a78bfa)}
+.rp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.rp-stat{display:grid;place-items:center;gap:2px;padding:8px 2px;border-radius:12px;background:rgba(255,255,255,.05);text-align:center}
+.rp-stat b{font-size:17px}
+.rp-stat span{font-size:11px;opacity:.75}
+.rp-d{font-size:11px;font-weight:800;display:inline-flex;align-items:center;gap:2px}
+.rp-d.up{color:var(--neon-green,#22e39b)}.rp-d.down{color:var(--neon-orange,#ff9f43)}.rp-d.same{opacity:.55}
+.rp-facts{display:grid;gap:6px}
+.rp-facts .row{align-items:flex-start;gap:8px;line-height:1.6}
+.rp-weak{padding:6px 8px;border-radius:10px;background:rgba(255,194,51,.1)}
+.rp-starters h3{font-size:14px;display:flex;align-items:center;gap:6px}
+.rp-starters ol{margin:6px 0 0;padding-inline-start:20px;display:grid;gap:6px;font-size:14px;line-height:1.7}
+.rp-hist{display:grid;gap:4px}
+.rp-trend{display:flex;align-items:flex-end;gap:4px;height:44px;padding:4px 6px;border-radius:10px;background:rgba(255,255,255,.04)}
+.rp-trend i{flex:1;border-radius:4px 4px 0 0;min-height:4px;opacity:.85}
+.rp-members{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rp-member{display:grid;gap:3px;place-items:center;padding:8px 4px;border-radius:12px;background:color-mix(in srgb,var(--hero) 12%,transparent);border:1px solid color-mix(in srgb,var(--hero) 40%,transparent);text-align:center}
+.nav a{position:relative}
+.nav a .nav-dot{position:absolute;top:6px;inset-inline-end:18%;width:9px;height:9px;border-radius:50%;background:var(--neon-rose,#ff5c8a);box-shadow:0 0 0 2px var(--surface,#fff)}
+@media print{
+  /* hide everything that is not the printing card or one of its ancestors */
+  body[data-print="report"] #app :not(.rp-printing):not(:has(.rp-printing)):not(.rp-printing *){display:none!important}
+  body[data-print="report"] .rp-card.rp-printing{display:block!important;break-inside:avoid;border:1px solid #999;color:#000;background:#fff}
+  body[data-print="report"] .rp-card.rp-printing .no-print{display:none!important}
+  .rp-card .rp-stat,.rp-card .rp-headline,.rp-card .rp-trend,.rp-member{background:#f2f2f2!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

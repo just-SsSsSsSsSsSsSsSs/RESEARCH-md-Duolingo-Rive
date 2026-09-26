@@ -110,6 +110,8 @@ export function nav(active) {
   const items = [['home', 'الرئيسية', 'home'], ['quests', 'المهام', 'target'], ['badges', 'الشارات', 'trophy'], ['profile', 'بطلي', 'user'], ['parent', 'الأهل', 'shield']];
   const n = el(`<nav class="nav no-print">${items.map(([r, l, i]) => `<a href="#/${r}" class="${active === r ? 'active' : ''}">${ico(i)}<span>${l}</span></a>`).join('')}</nav>`);
   n.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => sound.play('swipe')));
+  // Phase 20: quiet «new weekly report» dot on the parent item (local check, no notifications)
+  import('../engines/report.js').then((m) => { try { if (m.isFresh()) { const a = n.querySelector('a[href="#/parent"]'); if (a && !a.querySelector('.nav-dot')) a.appendChild(el('<i class="nav-dot" aria-label="تقرير اسبوعي جديد" title="تقرير اسبوعي جديد"></i>')); } } catch { /* never block the nav */ } }).catch(() => {});
   return n;
 }
 

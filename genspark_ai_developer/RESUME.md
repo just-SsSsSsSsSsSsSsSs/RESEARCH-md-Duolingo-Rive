@@ -29,3 +29,8 @@
 - Phase 19 مكتملة (v7.24): لوحة شرف العيلة `#/family` بلا ترتيب رقمي، تيجان متناوبة، تحدي تعاوني، كارت عيلة local-first، ضيوف خلف PIN. الاختبار: `python3 app/tests/phase19_family.py` (خادم 8090) + `node app/tests/unit/family_core.test.mjs`.
 - المرحلة الحالية: Phase 20 (placeholder) - مرحلة جديدة: ابحث أولاً ثم خطة مجمّدة.
 - درس: عند حقن بيانات في localStorage للاختبار، أعد تحميل الصفحة قبل القراءة (المتجر يحفظ debounced ويطغى على الحقن)؛ ثبّت التواريخ على سبت بداية الأسبوع.
+
+## آخر نقطة (2026-09-26، Phase 20)
+- Phase 20 مكتملة (v7.25): تقرير الأهل الأسبوعي داخل لوحة الأهل (خلف PIN) مرتبط بلوحة العيلة. الاختبار: `python3 app/tests/phase20_report.py` (خادم 8090) + `node app/tests/unit/report_core.test.mjs`.
+- المرحلة الحالية: Phase 21 (placeholder) - مرحلة جديدة: ابحث أولاً ثم خطة مجمّدة.
+- درس: `pg.evaluate("window.print = () => ...")` يستدعي الدالة نفسها؛ استخدم `() => { window.print = function(){} }`. ادفع كل ملف اختبار ووثيقة فور كتابتهما.
