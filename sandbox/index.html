@@ -76,6 +76,7 @@
   <button data-actx="wink">غمزة</button>
   <button data-actx="dart">نظرة خاطفة</button>
   <button data-actx="roll">لفة هوائية</button>
+  <button data-actx="intent">نية: تنظر ثم تقفز</button>
   <button data-actx="brows" id="browsBtn" aria-pressed="true">الحواجب: ظاهرة</button>
   <button data-actx="poses" id="posesBtn" aria-pressed="false">الأوضاع 1-6</button>
   <span id="poseBtns" hidden>
@@ -418,17 +419,27 @@
     if (x === 'wink') return rigs.forEach((r, i) => r.wink && setTimeout(() => r.wink(), i * 120));
     if (x === 'dart') return rigs.forEach((r) => r.dart && r.dart());
     if (x === 'roll') return rigs.forEach((r) => { if (r.busy || !r.states) return; r._forcedRoll = 'medium'; r.states.fire('move:to', { room: roomOf(r.svg.parentElement), trace: traceOn }); });
+    if (x === 'intent') return intentToAnswer();
     if (x === 'reel') return reel();
   });
   if (!BROWS) setBrows(false);
   if (POSES) showPoses(true);
+
+  // ---- K9.3 intent: eyes -> head -> body -> flight, toward the answer card (solo owl); the flight itself is the existing move:to ----
+  function intentToAnswer() {
+    const r = rigs[0]; if (!r || r.busy || !r.states) return;
+    const target = document.getElementById('perch-answer');
+    say('نية: العينان أولاً ثم الرأس ثم الجسم ثم القفزة', 2600);
+    const away = r._perch && Math.hypot(r._perch.x, r._perch.y) > 30;   // second press brings her home (intent again, toward home)
+    return r.states.fire('move:to', away ? { home: true, target: null, trace: traceOn } : { target, trace: traceOn });
+  }
 
   // ---- K9.2c-7 reel: <= 30 s, one owl, every capability in order; each beat is logged to window.__reel ----
   const REEL_BEATS = [
     { t: 0,     name: 'alert',    cap: 'يقظة: الحواجب والعينان تسبقان الرأس',      run: (r) => r.poses.apply('alert', { holdMs: 900 }) },
     { t: 1600,  name: 'dart',     cap: 'نظرة خاطفة: الحدقتان تتحركان داخل العين',   run: (r) => r.dart() },
     { t: 3200,  name: 'charged',  cap: 'تحفز: انحناء قبل الانطلاق',                 run: (r) => r.poses.apply('charged', { holdMs: 700 }) },
-    { t: 4600,  name: 'roll',     cap: 'انطلاق بلفة هوائية كاملة',                   run: (r) => { r._forcedRoll = 'large'; return r.states.fire('move:to', { by: { dx: 240, dy: -140 }, trace: traceOn }); } },
+    { t: 4600,  name: 'roll',     cap: 'تنظر ثم تقفز: العينان ثم الرأس ثم الجسم، وانطلاق بلفة هوائية كاملة', run: (r) => { r._forcedRoll = 'large'; return r.states.fire('move:to', { by: { dx: 240, dy: -140 }, trace: traceOn }); } },
     { t: 10500, name: 'puzzled',  cap: 'حيرة: ميل رأس وحاجب مرفوع وحده',            run: (r) => r.states.fire('answer:pending') },
     { t: 14500, name: 'triumph',  cap: 'انتصار: غمزة ونجوم',                          run: (r) => { r.states.fire('answer:correct'); r.later(() => r.wink('R'), 500); } },
     { t: 18500, name: 'oops',     cap: 'خطأ: تراجع وحواجب منكسرة',                    run: (r) => r.states.fire('answer:wrong') },

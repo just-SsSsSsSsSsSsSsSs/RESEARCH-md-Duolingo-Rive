@@ -10,6 +10,9 @@ K9.2c proof: the owner's 60-second closure checklist (gist 44e55e13), automated.
   5 poses          -> ?poses=1 shows buttons; each of 6 freezes >= 3 joints away from neutral; release sets every pose layer back to identity (breath keeps running, so DOM transforms are not compared)
   6 reel           -> ?reel=1 runs all 9 beats, total <= 30000 ms, 0 errors
   7 sfx=0          -> no SoundBus created, a wink still animates
+  8 intent (K9.3)  -> acting bar has the 'intent' button; pressing it fires the 'intent' cue BEFORE 'takeoff' with eyes -> head -> body
+                      lags inside the declared budgets (spec acting.intent), the owl reaches the answer card, and ?intent=0 fires 0 intent cues
+                      (full timing proof with engine-truth onsets lives in intent_proof.py -> g12_intent.json)
   + dart           -> both pupils move >= 2 px mid-dart with L/R asymmetry, and return
   + saccades       -> stats.saccades increments while idle
 Output: samples/proofs/g11c_ship_visible.json + g11c_wink.png
@@ -142,6 +145,48 @@ async def main():
         sfx = await pg.evaluate("async () => {" + JS_HELPERS + """
           const ok = r.wink('R'); await sleep(60); return { winkRan: ok, lidR_sy: SY('lidR'), bus: !!window.__bus, foley: !!window.__foley }; }""")
         R['7_sfx0'] = dict(**sfx, errors=errs[:], pass_=bool(sfx['winkRan']) and (sfx['lidR_sy'] or 0) > 0.3 and not sfx['bus'] and len(errs) == 0)
+        await ctx.close()
+
+        # ---- 8 intent (K9.3): button present, cue order intent -> anticipate -> takeoff, lags inside spec budget, arrives at the answer card ----
+        pg, ctx, errs = await page(b, '&sfx=0')
+        intent = await pg.evaluate("async () => {" + JS_HELPERS + """
+          const btn = document.querySelector('#acting button[data-actx="intent"]');
+          const I = r.spec.acting && r.spec.acting.intent;
+          const cues = []; const prev = r.onCue; r.onCue = (phase, ctx) => { cues.push({ phase, t: performance.now(), ctx: phase === 'intent' ? ctx : undefined }); if (prev) prev(phase, ctx); };
+          const before = r.svg.parentElement.getBoundingClientRect();
+          if (btn) btn.click();
+          const t0 = performance.now();
+          while (!r.busy && performance.now() - t0 < 1500) await sleep(16);
+          while (r.busy && performance.now() - t0 < 8000) await sleep(16);
+          r.onCue = prev;
+          const ans = document.getElementById('perch-answer').getBoundingClientRect();
+          const perch = r._perch || { x: 0, y: 0 };
+          const owlCx = before.left + before.width / 2 + perch.x;
+          const names = cues.map(c => c.phase);
+          const at = n => { const c = cues.find(x => x.phase === n); return c ? c.t : null; };
+          const ic = cues.find(c => c.phase === 'intent');
+          return { buttonPresent: !!btn, cues: names, intentCtx: ic ? ic.ctx : null, budget: I ? { headLagMs: I.headLagMs, bodyLagMs: I.bodyLagMs, preTakeoffMs: I.budget && I.budget.preTakeoffMs } : null,
+                   intent_to_takeoff_ms: at('intent') != null && at('takeoff') != null ? Math.round(at('takeoff') - at('intent')) : null,
+                   owl_cx_vs_answer_cx_px: Math.round(owlCx - (ans.left + ans.width / 2)), intents: r.stats.intents || 0 }; }""")
+        # 'enter' (state-machine cue on move:to) legitimately precedes; the motion order that matters is intent < anticipate < takeoff
+        c = intent['cues']
+        ok_order = all(n in c for n in ('intent', 'anticipate', 'takeoff', 'land')) and c.index('intent') < c.index('anticipate') < c.index('takeoff') and c.count('intent') == 1
+        ic = intent['intentCtx'] or {}; B = intent['budget'] or {}
+        ok_lags = bool(ic) and B and B['headLagMs'][0] <= ic['headLagMs'] <= B['headLagMs'][1] and B['bodyLagMs'][0] <= ic['bodyLagMs'] <= B['bodyLagMs'][1]
+        ok_pre = intent['intent_to_takeoff_ms'] is not None and B.get('preTakeoffMs') and B['preTakeoffMs'][0] <= intent['intent_to_takeoff_ms'] <= B['preTakeoffMs'][1] + 100
+        R['8_intent'] = dict(**intent, errors=errs[:], pass_=intent['buttonPresent'] and ok_order and bool(ok_lags) and bool(ok_pre) and abs(intent['owl_cx_vs_answer_cx_px']) <= 12 and intent['intents'] == 1 and len(errs) == 0)
+        await ctx.close()
+
+        # ---- 8b intent=0: the same press fires no intent cue and still flies ----
+        pg, ctx, errs = await page(b, '&sfx=0&intent=0')
+        off = await pg.evaluate("async () => {" + JS_HELPERS + """
+          const cues = []; const prev = r.onCue; r.onCue = (phase, ctx) => { cues.push(phase); if (prev) prev(phase, ctx); };
+          document.querySelector('#acting button[data-actx="intent"]').click();
+          const t0 = performance.now();
+          while (!r.busy && performance.now() - t0 < 1500) await sleep(16);
+          while (r.busy && performance.now() - t0 < 8000) await sleep(16);
+          r.onCue = prev; return { cues, intents: r.stats.intents || 0 }; }""")
+        R['8b_intent_off'] = dict(**off, errors=errs[:], pass_='intent' not in off['cues'] and 'takeoff' in off['cues'] and 'land' in off['cues'] and off['intents'] == 0 and len(errs) == 0)
         await ctx.close()
         await b.close()
 

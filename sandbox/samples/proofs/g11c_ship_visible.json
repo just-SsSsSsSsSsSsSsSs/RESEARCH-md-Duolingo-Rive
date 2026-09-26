@@ -19,7 +19,7 @@
   },
   "2_wink": {
     "peakL": 1,
-    "peakR": 0.169374,
+    "peakR": 0.168578,
     "after": {
       "L": 0,
       "R": 0
@@ -33,12 +33,12 @@
   "dart": {
     "mid": {
       "L": [
-        3.63,
-        -0.18
+        -3.71,
+        -0.3
       ],
       "R": [
-        3.87,
-        -0.51
+        -4.4,
+        -0.82
       ]
     },
     "end": {
@@ -52,9 +52,9 @@
       ]
     },
     "darts": 1,
-    "dispL": 3.634460069941614,
-    "dispR": 3.9034600036377984,
-    "asym": 0.40804411526206347,
+    "dispL": 3.7221096168705188,
+    "dispR": 4.4757569192260656,
+    "asym": 0.8640023148117143,
     "pass_": true
   },
   "saccades": {
@@ -71,7 +71,7 @@
     "pass_": true
   },
   "4_roll": {
-    "samples": 53,
+    "samples": 63,
     "maxAbsAccumulatedDeg": 360,
     "landingDeg": 0,
     "lastRoll": {
@@ -79,7 +79,7 @@
       "mode": "roll",
       "dist": 286
     },
-    "ms": 2637,
+    "ms": 2968,
     "pass_": true
   },
   "4_escalation": {
@@ -110,86 +110,86 @@
     "pass_": true
   },
   "6_reel": {
-    "total_ms": 26746,
+    "total_ms": 26748,
     "beats": [
       {
         "name": "alert",
         "t": 0,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 967,
+        "tEnd": 966,
         "pose": null,
         "roll": null
       },
       {
         "name": "dart",
-        "t": 1600,
+        "t": 1602,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 2252,
+        "tEnd": 2327,
         "pose": null,
         "roll": null
       },
       {
         "name": "charged",
-        "t": 3200,
+        "t": 3203,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 3995,
+        "tEnd": 3996,
         "pose": null,
         "roll": null
       },
       {
         "name": "roll",
-        "t": 4600,
+        "t": 4603,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 6862,
+        "tEnd": 7169,
         "pose": null,
         "roll": "rollFlip"
       },
       {
         "name": "puzzled",
-        "t": 10500,
+        "t": 10502,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 14299,
+        "tEnd": 14306,
         "pose": null,
         "roll": "rollFlip"
       },
       {
         "name": "triumph",
-        "t": 14500,
+        "t": 14503,
         "stateBefore": "idle",
         "stateAfter": "celebrate",
-        "tEnd": 14504,
+        "tEnd": 14506,
         "pose": null,
         "roll": "rollFlip"
       },
       {
         "name": "oops",
-        "t": 18500,
+        "t": 18503,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 21298,
+        "tEnd": 21306,
         "pose": null,
         "roll": "rollFlip"
       },
       {
         "name": "home",
-        "t": 22500,
+        "t": 22501,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 24811,
+        "tEnd": 25139,
         "pose": null,
         "roll": "roll"
       },
       {
         "name": "rest",
-        "t": 26500,
+        "t": 26502,
         "stateBefore": "idle",
         "stateAfter": "rest",
-        "tEnd": 26746,
+        "tEnd": 26748,
         "pose": null,
         "roll": "roll"
       }
@@ -199,9 +199,74 @@
   },
   "7_sfx0": {
     "winkRan": true,
-    "lidR_sy": 0.366648,
+    "lidR_sy": 0.370453,
     "bus": false,
     "foley": false,
+    "errors": [],
+    "pass_": true
+  },
+  "8_intent": {
+    "buttonPresent": true,
+    "cues": [
+      "enter",
+      "intent",
+      "anticipate",
+      "takeoff",
+      "flap",
+      "flap",
+      "cruise",
+      "roll",
+      "flap",
+      "flap",
+      "flap",
+      "land",
+      "settle"
+    ],
+    "intentCtx": {
+      "tVisual": 1307.2999999999302,
+      "dx": 349.921875,
+      "dy": -246.083125,
+      "snapMs": 66.14295064117402,
+      "headLagMs": 41.3903142664555,
+      "bodyLagMs": 206.49803572669504,
+      "headDeg": 6.0139774320864365
+    },
+    "budget": {
+      "headLagMs": [
+        40,
+        50
+      ],
+      "bodyLagMs": [
+        200,
+        280
+      ],
+      "preTakeoffMs": [
+        350,
+        600
+      ]
+    },
+    "intent_to_takeoff_ms": 445,
+    "owl_cx_vs_answer_cx_px": 0,
+    "intents": 1,
+    "errors": [],
+    "pass_": true
+  },
+  "8b_intent_off": {
+    "cues": [
+      "enter",
+      "anticipate",
+      "takeoff",
+      "flap",
+      "flap",
+      "cruise",
+      "roll",
+      "flap",
+      "flap",
+      "land",
+      "flap",
+      "settle"
+    ],
+    "intents": 0,
     "errors": [],
     "pass_": true
   },

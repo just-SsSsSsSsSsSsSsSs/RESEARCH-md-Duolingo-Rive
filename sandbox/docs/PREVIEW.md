@@ -32,6 +32,7 @@ sandbox URL of the current session is written at the end of each PROGRESS.md lin
 | 5 | `&poses=1` then buttons 1..6 | the owl freezes on each pose; compare with `samples/proofs/g11_pose_sheet.png` | `?poses=1` |
 | 6 | `&reel=1` or button "30 s" | 9 captioned beats in about 27 s | `?reel=1` |
 | 7 | `&sfx=0` | silence, visuals unchanged | `?sfx=0` |
+| 8 | button "intent" (K9.3) | before every flight: pupils snap toward the target first, the head turns 40-50 ms later, the body crouches 200-280 ms after the eyes, then take-off; press again to fly home the same way. Strip: `samples/proofs/g12_intent_strip.png` | `?intent=0` disables (flight unchanged) |
 
 Automated version of this table: `python3 sandbox/ship_visible_proof.py` -> `samples/proofs/g11c_ship_visible.json`.
 
