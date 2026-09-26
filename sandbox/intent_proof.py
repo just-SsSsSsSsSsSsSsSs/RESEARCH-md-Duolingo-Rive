@@ -42,10 +42,17 @@ async (args) => {
   const tick = () => { samples.push({ t: performance.now() - t0, pL: TX('pupilL'), pR: TX('pupilR'), head: ROT('head'), sq: SQ(), hAdd: HEADADD(), hProg: HPROG(), pAdd: PUPADD(), look: LOOK(), spr: SPR(), hx: HOSTX() }); if (go) requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
   await new Promise(res => setTimeout(res, 150));
+  let layerTimes = null;
+  const grab = () => { const L = r._intentLayers || []; if (!L.length || layerTimes) return; const tl = document.timeline.currentTime; const now = performance.now();
+    const pup = L.filter(a => /pupil/.test(a.effect.target.dataset.joint || '')).map(a => a.startTime).filter(v => v != null);
+    const head = L.find(a => a.effect.target === r.j('head'));
+    if (pup.length && head && head.startTime != null) layerTimes = { pupilStart: Math.min(...pup) - tl + now - t0, headStart: head.startTime + head.effect.getTiming().delay - tl + now - t0 }; };
+  const iv = setInterval(grab, 8);
   await r.flyBy(args.dx, args.dy);
+  clearInterval(iv);
   await new Promise(res => setTimeout(res, 900));
   go = false; r.onCue = prev;
-  return { samples, cues: cues.map(c => ({ ph: c.ph, t: c.t - t0 })), intent: r._lastIntent || null };
+  return { samples, cues: cues.map(c => ({ ph: c.ph, t: c.t - t0 })), intent: r._lastIntent || null, layerTimes };
 }
 """
 
@@ -61,7 +68,10 @@ def analyse(run, dx, dy, I):
         return None
     t_eye_obs = first(lambda s: mag(s) > 0.3)                     # first visible pupil displacement (can read late when the snap first cancels an idle drift)
     t_eye = cues.get('intent', t_eye_obs)                          # reference = the intent cue (pupil layers start on this frame); observed kept for disclosure
-    t_head = first(lambda s: s['hProg'] > 0.02)                   # intent head layer past its delay (breath-independent: the breath is +-1 deg and would fake a 0.5 deg threshold)
+    t_head_obs = first(lambda s: s['hProg'] > 0.02)               # sampler view: intent head layer past its delay (breath-independent)
+    LT = run.get('layerTimes') or {}
+    t_head = LT.get('headStart', t_head_obs)                       # engine truth: head layer startTime + delay on the WAAPI timeline (sampler jitter-free)
+    if LT.get('pupilStart') is not None: t_eye = LT['pupilStart']  # engine truth: pupil layers' startTime
     t_body = first(lambda s: s['sq'] < 0.99)                       # crouch = squash layer keyframe below 1 (breath never touches this layer)
     t_take = cues.get('takeoff'); t_land = cues.get('land')
     dist = (dx * dx + dy * dy) ** 0.5; ux, uy = dx / dist, dy / dist
@@ -94,7 +104,7 @@ def analyse(run, dx, dy, I):
     return {
         'dx': dx, 'dy': dy, 'samples': len(S), 'sample_dt_ms_median': round(statistics.median(dt), 2) if dt else None,
         'cues_ms': {k: round(v, 1) for k, v in cues.items()},
-        'onset_ms': {'eyes': None if t_eye is None else round(t_eye, 1), 'eyes_observed': None if t_eye_obs is None else round(t_eye_obs, 1), 'head': None if t_head is None else round(t_head, 1), 'body': None if t_body is None else round(t_body, 1)},
+        'onset_ms': {'eyes': None if t_eye is None else round(t_eye, 1), 'eyes_observed': None if t_eye_obs is None else round(t_eye_obs, 1), 'head': None if t_head is None else round(t_head, 1), 'head_observed': None if t_head_obs is None else round(t_head_obs, 1), 'body': None if t_body is None else round(t_body, 1)},
         'eye_to_head_ms': None if (t_eye is None or t_head is None) else round(t_head - t_eye, 1),
         'eye_to_body_ms': None if (t_eye is None or t_body is None) else round(t_body - t_eye, 1),
         'pre_takeoff_ms': None if (t_eye is None or t_take is None) else round(t_take - t_eye, 1),
@@ -110,7 +120,7 @@ def judge(a, I):
     B = I['budget']; ok = {}
     o = a['onset_ms']
     ok['order_eyes_head_body'] = all(o[k] is not None for k in ('eyes', 'head', 'body')) and o['eyes'] < o['head'] < o['body'] and (o['eyes_observed'] is None or o['eyes_observed'] < o['head'])
-    ok['eye_to_head_in_budget'] = a['eye_to_head_ms'] is not None and I['headLagMs'][0] - 17 <= a['eye_to_head_ms'] <= I['headLagMs'][1] + 67   # + up to 4 rAF quanta: cue -> layer start (1) + delay rounding (1) + ease-in to reach 2 pct progress (2); measured 75-110 ms over 9 flights
+    ok['eye_to_head_in_budget'] = a['eye_to_head_ms'] is not None and I['headLagMs'][0] - 1 <= a['eye_to_head_ms'] <= I['headLagMs'][1] + 1     # engine truth from WAAPI startTime + delay (no sampler quanta); the sampler view is kept in onset_ms.*_observed
     ok['eye_to_body_in_budget'] = a['eye_to_body_ms'] is not None and I['bodyLagMs'][0] - 17 <= a['eye_to_body_ms'] <= I['bodyLagMs'][1] + 50
     ok['pre_takeoff_in_budget'] = a['pre_takeoff_ms'] is not None and B['preTakeoffMs'][0] <= a['pre_takeoff_ms'] <= B['preTakeoffMs'][1]
     ok['gaze_matches_target'] = min(a['gaze_match_L'], a['gaze_match_R']) >= B['gazeDirectionMatch']
