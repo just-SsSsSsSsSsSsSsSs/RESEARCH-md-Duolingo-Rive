@@ -58,12 +58,12 @@ async def measure(n, seconds, video_dir, art='p1'):
         cdp = await ctx.new_cdp_session(pg)
         await cdp.send('Performance.enable')
         # blank baseline heap in the same renderer
-        await pg.goto(BASE + f'index.html?n=0&sw=0&art={art}')
+        await pg.goto(BASE + f'index.html?n=0&sw=0&auto=0&art={art}')
         await pg.wait_for_timeout(500)
         await cdp.send('HeapProfiler.collectGarbage')
         h0, _ = await heap_mb(cdp)
 
-        await pg.goto(BASE + f'index.html?n={n}&sw=0&art={art}')
+        await pg.goto(BASE + f'index.html?n={n}&sw=0&auto=0&art={art}')
         await pg.wait_for_function(f'window.__rigs && window.__rigs.length==={n}')
         await pg.wait_for_timeout(800)
         await cdp.send('HeapProfiler.collectGarbage')
@@ -73,9 +73,9 @@ async def measure(n, seconds, video_dir, art='p1'):
 
         # scripted scene: idle, celebrate at 2 s, talk at 4.5 s, idle to the end
         async def script():
-            await pg.wait_for_timeout(2000); await pg.evaluate("window.__act('celebrate')")
-            await pg.wait_for_timeout(2500); await pg.evaluate("window.__act('talk')")
-            await pg.wait_for_timeout(3500); await pg.evaluate("window.__act('nod')")
+            await pg.wait_for_timeout(500); await pg.evaluate("window.__act('fly')")
+            await pg.wait_for_timeout(4800); await pg.evaluate("window.__act('celebrate')")
+            await pg.wait_for_timeout(2000); await pg.evaluate("window.__act('talk')")
         task = asyncio.ensure_future(script())
         deltas = await pg.evaluate(SAMPLER % int(seconds * 1000))
         await task
@@ -85,7 +85,7 @@ async def measure(n, seconds, video_dir, art='p1'):
 
         # dispose check: animations must go to zero after dispose (leak guard)
         await pg.evaluate('window.__rigs.forEach(r => r.dispose())')
-        anims_after = await pg.evaluate("document.getAnimations({subtree:true}).length")
+        anims_after = await pg.evaluate("document.getAnimations().filter(a => a.effect.target.closest('svg') || a.effect.target.classList.contains('slot')).length")  # rig + stage host only; decorative CSS stars excluded
 
         await pg.wait_for_timeout(300)
         await ctx.close(); await b.close()

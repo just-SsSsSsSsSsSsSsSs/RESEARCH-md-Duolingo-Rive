@@ -346,7 +346,7 @@ export class SvgRig {
     this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: 'rotate(9deg) translate(3px,-2px)' }],
       { duration: 700, easing: EASE.soft, composite: 'add', fill: 'forwards' }, true);
     // wing to chin, then small taps
-    this.anim(this.j('armR'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-118deg) translate(6px,-4px)' }],
+    this.anim(this.j('armR'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-128deg) translate(2px,-14px)' }],
       { duration: 550, easing: EASE.pop, composite: 'add', fill: 'forwards', delay: 200 }, true);
     this.anim(this.j('armR'), [{ transform: 'translate(0,0)' }, { transform: 'translate(0,-3px)' }, { transform: 'translate(0,0)' }],
       { duration: 380, iterations: 4, easing: EASE.sine, composite: 'add', delay: 800 });
@@ -448,7 +448,7 @@ export class SvgRig {
 
   // Curated flight paths (relative). Stage picks one; each uses real turns.
   static flightPlans(w, h) {
-    const W = w * 0.42, H = h * 0.45;
+    const W = w * 0.5, H = h * 0.5;
     return [
       // loop: up-right, across, roll at the top, swoop back and land at start
       { pts: [{ x: 0, y: 0, t: 0 }, { x: W * 0.5, y: -H * 0.8, t: 900 }, { x: W, y: -H * 0.5, t: 1600 }, { x: W * 0.6, y: -H * 1.1, t: 2300 }, { x: -W * 0.2, y: -H * 0.6, t: 3200 }, { x: 0, y: 0, t: 4000 }], roll: 1600 },
