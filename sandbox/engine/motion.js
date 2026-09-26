@@ -25,7 +25,8 @@ export class CinematicRig extends SvgRig {
     this.spec = spec;
     this._perch = { x: 0, y: 0 };
     this.trace = null;   // optional path-trace sink (G4 proof): fn(points[])
-    this.stats = { flights: 0, physicsWrites: 0 };
+    this.stats = { flights: 0, physicsWrites: 0, physicsSkipped: 0 };
+    this._lastDeg = {}; this._lastSquash = null;
 
     // one persistent, paused, additive animation per secondary group; physics
     // writes rotate() into it via setKeyframes (compositor-only, no layout)
@@ -43,12 +44,23 @@ export class CinematicRig extends SvgRig {
     this.squash = new SquashSpring(spec.squash.landing);
   }
 
+  // Write coalescing: skip sub-visual deltas (0.05 deg / 0.002 scale) so settling springs
+  // stop touching the compositor long before they are numerically at rest (G9 jank budget).
   _writeSecondary(name, deg) {
     const a = this.secLayers[name]; if (!a) return;
+    const prev = this._lastDeg[name];
+    if (prev !== undefined && Math.abs(prev - deg) < 0.05 && deg !== 0) { this.stats.physicsSkipped++; return; }
+    this._lastDeg[name] = deg;
     a.effect.setKeyframes(KF2(`rotate(${deg.toFixed(2)}deg)`));
     this.stats.physicsWrites++;
   }
-  _writeSquash(sx, sy) { this.squashLayer.effect.setKeyframes(KF2(`scale(${sx.toFixed(3)},${sy.toFixed(3)})`)); }
+  _writeSquash(sx, sy) {
+    const p = this._lastSquash;
+    if (p && Math.abs(p.sy - sy) < 0.002 && sy !== 1) { this.stats.physicsSkipped++; return; }
+    this._lastSquash = { sx, sy };
+    this.squashLayer.effect.setKeyframes(KF2(`scale(${sx.toFixed(3)},${sy.toFixed(3)})`));
+    this.stats.physicsWrites++;
+  }
   later(fn, ms) { return super.later(fn, ms / clock.rate); }   // timers follow the engine clock (slow-mo proofs)
   _sleep(ms) { return new Promise((r) => this.later(r, ms)); }
 
