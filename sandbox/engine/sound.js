@@ -131,10 +131,19 @@ export class SoundBus {
     this.active.push(v); this.lastCueAt[name] = now; this.stats.played++;
     if (opts.tVisual !== undefined) {
       // one-clock comparison: map the scheduled audio time into performance.now() ms
+      // getOutputTimestamp pairs a context time with the performance.now() at which that audio
+      // reached the output; currentTime runs ahead of it by the render-ahead (base + output latency).
       const ts = this.ctx.getOutputTimestamp ? this.ctx.getOutputTimestamp() : null;
-      const perfAtCtx = ts && ts.performanceTime !== undefined ? ts.performanceTime + (t0 - ts.contextTime) * 1000 : performance.now() + (t0 - now) * 1000;
-      const baseLatency = (this.ctx.baseLatency || 0) * 1000;
-      this.log.push({ cue: name, tVisual: +opts.tVisual.toFixed(1), tAudio: +perfAtCtx.toFixed(1), offsetMs: +(perfAtCtx - opts.tVisual).toFixed(1), baseLatencyMs: +baseLatency.toFixed(1), rate });
+      const pn = performance.now();
+      const audible = ts && ts.performanceTime !== undefined ? ts.performanceTime + (t0 - ts.contextTime) * 1000 : pn + (t0 - now) * 1000;
+      const renderAheadMs = ts ? (now - ts.contextTime) * 1000 : 0;
+      const baseLatencyMs = (this.ctx.baseLatency || 0) * 1000, outputLatencyMs = (this.ctx.outputLatency || 0) * 1000;
+      this.log.push({ cue: name, tVisual: +opts.tVisual.toFixed(1), tCall: +pn.toFixed(1), tAudible: +audible.toFixed(1),
+        callDelayMs: +(pn - opts.tVisual).toFixed(1),                 // visual onset -> play() call (JS path)
+        scheduleErrMs: +((t0 - now) * 1000).toFixed(1),              // lookahead added on the audio clock (0)
+        deviceLatencyMs: +renderAheadMs.toFixed(1),                   // renderer + hardware, same for every cue
+        offsetMs: +(audible - opts.tVisual).toFixed(1),               // total: visual onset -> audible
+        baseLatencyMs: +baseLatencyMs.toFixed(1), outputLatencyMs: +outputLatencyMs.toFixed(1), rate });
       if (this.log.length > 400) this.log.shift();
     }
     return t0;

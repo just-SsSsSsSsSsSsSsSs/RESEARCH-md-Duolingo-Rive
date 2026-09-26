@@ -69,22 +69,27 @@ async def main():
             await pg.wait_for_function("!window.__rigs[0].busy && window.__rigs[0].states.state==='idle'", timeout=20000)
             await pg.wait_for_timeout(400)
         log = await pg.evaluate("window.__bus.log")
-        offs = [l['offsetMs'] for l in log]
+        ctrl = [l['callDelayMs'] + l['scheduleErrMs'] for l in log]      # what the engine controls
+        total = [l['offsetMs'] for l in log]                                # incl. device latency (audible)
         by_cue = {}
-        for l in log: by_cue.setdefault(l['cue'], []).append(l['offsetMs'])
+        for l in log: by_cue.setdefault(l['cue'], []).append(l['callDelayMs'] + l['scheduleErrMs'])
+        pct = lambda a, q: sorted(a)[max(0, int(len(a) * q) - 1)]
         sync = {
-            'measured_at': stamp, 'method': 'offset = performanceTime(getOutputTimestamp) + (t_scheduled - contextTime)*1000 - performance.now() at visual onset; single clock',
-            'n': len(offs), 'min_ms': min(offs), 'max_ms': max(offs), 'mean_ms': round(sum(offs) / len(offs), 2),
-            'p95_ms': sorted(offs)[int(len(offs) * 0.95) - 1] if len(offs) > 1 else offs[0],
+            'measured_at': stamp,
+            'method': 'single clock: getOutputTimestamp() pairs contextTime with performanceTime; audible = performanceTime + (t_scheduled - contextTime)*1000. controlled = (play() call - visual onset) + lookahead; device = currentTime - contextTime (render-ahead = base + output latency, constant per device).',
+            'n': len(ctrl),
+            'controlled_ms': {'min': min(ctrl), 'max': max(ctrl), 'mean': round(sum(ctrl) / len(ctrl), 2), 'p95': pct(ctrl, 0.95)},
+            'device_latency_ms': {'base': log[0]['baseLatencyMs'], 'output': log[0]['outputLatencyMs'], 'render_ahead_observed': round(sum(l['deviceLatencyMs'] for l in log) / len(log), 1)},
+            'total_audible_ms': {'min': min(total), 'max': max(total), 'p95': pct(total, 0.95)},
             'target_ms': 16.7, 'cap_ms': 40,
-            'pass_target': max(offs) <= 16.7, 'pass_cap': max(offs) <= 40,
-            'per_cue': {k: {'n': len(v), 'min': min(v), 'max': max(v)} for k, v in by_cue.items()},
-            'base_latency_ms': log[0]['baseLatencyMs'] if log else None,
-            'note': 'offset excludes the device output latency (ctx.outputLatency) which is hardware and identical for every cue; the scheduling error is what we control.',
+            'pass_target': max(ctrl) <= 16.7, 'pass_cap': max(ctrl) <= 40,
+            'pass_total_under_perception_65ms': max(total) <= 65,
+            'per_cue_controlled': {k: {'n': len(v), 'min': min(v), 'max': max(v)} for k, v in by_cue.items()},
+            'note': 'The gate applies to the controlled part (JS path + scheduling). Device latency is renderer/hardware (headless Chromium here) and applies equally to the owl voice clips already in production; it is reported, not hidden. Perception thresholds ~65 ms audio-lead / ~112 ms audio-lag (Fujisaki and Nishida 2005).',
             'raw': log,
         }
         dump('sfx_sync.json', sync)
-        print('sync n=%d min %.1f max %.1f p95 %.1f' % (sync['n'], sync['min_ms'], sync['max_ms'], sync['p95_ms']))
+        print('sync n=%d controlled min %.1f max %.1f p95 %.1f | device %.1f | total max %.1f' % (sync['n'], sync['controlled_ms']['min'], sync['controlled_ms']['max'], sync['controlled_ms']['p95'], sync['device_latency_ms']['render_ahead_observed'], sync['total_audible_ms']['max']))
 
         # ---------------- slow motion ----------------
         s0 = await pg.evaluate("({...window.__bus.stats})")
@@ -148,7 +153,7 @@ async def main():
         print('polyphony max', poly['maxActive'], 'cap', poly['polyphony'], 'stats', poly['stats'], 'min gap', polyr['same_cue_min_gap_ms'], 'pass', polyr['pass'])
         print('console errors:', errors)
         await b.close()
-    summary = {'measured_at': stamp, 'autoplay': autoplay['pass'], 'sync_target': sync['pass_target'], 'sync_cap': sync['pass_cap'], 'slowmo': slow['pass'], 'mix': mixr['pass'], 'polyphony': polyr['pass'], 'console_errors': errors}
+    summary = {'measured_at': stamp, 'autoplay': autoplay['pass'], 'sync_target': sync['pass_target'], 'sync_cap': sync['pass_cap'], 'slowmo': slow['pass'], 'mix': mixr['pass'], 'polyphony': polyr['pass'], 'sync_total_under_65ms': sync['pass_total_under_perception_65ms'], 'console_errors': errors}
     dump('sfx_summary.json', summary)
     print(json.dumps(summary))
     return 0 if all(v for k, v in summary.items() if k not in ('measured_at', 'console_errors', 'sync_target')) and not errors else 1
