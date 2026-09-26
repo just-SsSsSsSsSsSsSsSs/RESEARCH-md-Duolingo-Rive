@@ -14,7 +14,7 @@
  *   gaze/head  <- audio envelope (secondary action while talking)
  */
 import { SvgRig, EASE, REDUCED, loadSvg } from '../rig.js?v=g4';
-import { SecondaryRig, SquashSpring, bezier, randIn } from './physics.js';
+import { SecondaryRig, SquashSpring, bezier, randIn, clock } from './physics.js';
 
 const KF2 = (t) => [{ transform: t }, { transform: t }];
 
@@ -49,6 +49,7 @@ export class CinematicRig extends SvgRig {
     this.stats.physicsWrites++;
   }
   _writeSquash(sx, sy) { this.squashLayer.effect.setKeyframes(KF2(`scale(${sx.toFixed(3)},${sy.toFixed(3)})`)); }
+  later(fn, ms) { return super.later(fn, ms / clock.rate); }   // timers follow the engine clock (slow-mo proofs)
   _sleep(ms) { return new Promise((r) => this.later(r, ms)); }
 
   // ---- idle from spec ranges (never identical twice) -------------------------
@@ -82,12 +83,13 @@ export class CinematicRig extends SvgRig {
   // ---- talk: secondary action driven by the envelope (G6) --------------------
   talk(envelope, durationMs) {
     const G = this.spec.gaze, M = this.spec.mouth.levels;
-    const start = performance.now();
+    const start = clock.now();
     let last = 'closed', prevE = 0, quietMs = 0, lastT = start, tilt = 0, tiltV = 0;
     const headLayer = this.j('head').animate(KF2('rotate(0)'), { duration: 1000, fill: 'both', composite: 'add' });
     headLayer.pause(); this.live.add(headLayer);
-    const step = (now) => {
+    const step = () => {
       if (this.disposed) return;
+      const now = clock.now();
       const t = now - start, dt = Math.min(50, now - lastT) / 1000; lastT = now;
       if (t >= durationMs) {
         this.setMouth('closed'); headLayer.cancel(); this.live.delete(headLayer); this._talkRaf = 0;
@@ -119,8 +121,9 @@ export class CinematicRig extends SvgRig {
   // ---- landing squash runner (G2): volume-preserving spring to rest ----------
   _runSquash() {
     return new Promise((res) => {
-      let last = performance.now();
-      const tick = (now) => {
+      let last = clock.now();
+      const tick = () => {
+        const now = clock.now();
         const dt = Math.min(0.05, (now - last) / 1000); last = now;
         const { sx, sy } = this.squash.step(dt);
         this._writeSquash(sx, sy);
@@ -157,4 +160,4 @@ export async function mountCinematic(host, spec, instanceId) {
   return new CinematicRig(host.lastElementChild, spec).idle();
 }
 
-export { bezier, randIn };
+export { bezier, randIn, clock };

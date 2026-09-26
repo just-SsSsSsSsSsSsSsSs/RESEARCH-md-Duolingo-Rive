@@ -31,6 +31,9 @@
   @keyframes tw { from { opacity:.15 } to { opacity:.7 } }
   @media (prefers-reduced-motion: reduce) { .star { animation:none } }
   .slot svg { width:100%; height:100%; display:block; overflow:visible }
+  #trace { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:9; overflow:visible }
+  #trace polyline { fill:none; stroke:#ffd166; stroke-width:2; stroke-dasharray:6 5; opacity:.9 }
+  #trace circle { fill:#ffd166; opacity:.9 }
   .slot .tag { position:absolute; inset:auto 0 -4px 0; text-align:center; font-size:13px; opacity:.75 }
   #hud { position:fixed; inset:auto 8px 8px auto; background:#000a; font:12px/1.4 ui-monospace, monospace; padding:8px 10px; border-radius:10px; direction:ltr; white-space:pre; min-width:180px }
   #note { padding:0 16px 16px; font-size:13px; opacity:.75 }
@@ -39,7 +42,7 @@
 <body>
 <header>
   <h1>عينة Gate 4: هيكل SVG بمفاصل حيّة (بدون أي مكتبة)</h1>
-  <small>فرع sandbox/a1-vector-rig فقط - لا يمس التطبيق</small>
+  <small>فرع sandbox/a1-gate5-art-sw فقط - لا يمس التطبيق - محرك v2 (ADR-001) مع v1 كمرجع</small>
 </header>
 
 <div class="bar" id="count" role="group" aria-label="عدد الرفقاء">
@@ -67,6 +70,12 @@
   <button data-act="blink">رمشة</button>
   <button data-act="auto" id="autoBtn" aria-pressed="true">حياة تلقائية: تعمل</button>
 </div>
+<div class="bar" id="engine" role="group" aria-label="محرك الحركة">
+  <button data-engine="v2" aria-pressed="true">محرك v2 (فيزياء + مواصفة)</button>
+  <button data-engine="v1">محرك v1 (مرجع)</button>
+  <button data-tool="trace" id="traceBtn" aria-pressed="false">مسار الطيران: مخفي</button>
+  <button data-tool="slow" id="slowBtn" aria-pressed="false">حركة بطيئة x0.25: متوقفة</button>
+</div>
 
 <main id="stage" aria-live="polite"></main>
 <p id="note">التركيز الحالي: «حكيمة» البومة (P2 طبقات مجسمة). اضغط عليها لتفاعل مختلف كل مرة؛ تطير وتدور وتحط من تلقاء نفسها كل بضع ثوان. P1 الهندسي يبقى كمرجع اختبار فقط.</p>
@@ -74,6 +83,9 @@
 
 <script type="module">
   import { mount } from './rig.js?v=g4';
+  import { mountCinematic, clock } from './engine/motion.js';
+  import './engine/flight.js';
+  import { CharacterStates, validateSpec } from './engine/states.js';
 
   const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
   const params = new URLSearchParams(location.search);
@@ -84,32 +96,117 @@
   const stage = document.getElementById('stage');
   let rigs = [];
 
+  // Engine flag (ADR-001): v2 = spec + physics (default); v1 = frozen reference for rollback / side-by-side.
+  let engine = params.get('engine') === 'v1' ? 'v1' : 'v2';
+  let SPEC = null;
+  async function loadSpec() {
+    if (SPEC) return SPEC;
+    const res = await fetch('companions/owl.motion.json?v=k5');
+    SPEC = await res.json();
+    const v = validateSpec(SPEC);
+    if (!v.ok) console.warn('spec problems', v.problems);
+    window.__specCheck = v;
+    return SPEC;
+  }
+  // Trace overlay (G4 proof): one <svg> over the stage, one polyline per flight.
+  let traceOn = params.get('trace') === '1';
+  let traceSvg = null;
+  function traceLayer() {
+    if (traceSvg && traceSvg.isConnected) return traceSvg;
+    traceSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    traceSvg.id = 'trace'; traceSvg.setAttribute('aria-hidden', 'true');
+    stage.appendChild(traceSvg); return traceSvg;
+  }
+  function makeTracer(slot) {
+    return (pts) => {
+      if (!traceOn) return;
+      const sr = stage.getBoundingClientRect(), r = slot.getBoundingClientRect();
+      const t = slot.style.transform; // pts are relative to the slot home, so undo the current perch offset
+      const m = new DOMMatrixReadOnly(getComputedStyle(slot).transform === 'none' ? '' : getComputedStyle(slot).transform);
+      const ox = r.left - sr.left + r.width / 2 - m.e, oy = r.top - sr.top + r.height / 2 - m.f;
+      const layer = traceLayer();
+      layer.setAttribute('viewBox', `0 0 ${sr.width} ${sr.height}`);
+      const pl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      pl.setAttribute('points', pts.map((p) => `${(ox + p.x).toFixed(1)},${(oy + p.y).toFixed(1)}`).join(' '));
+      layer.appendChild(pl);
+      for (const i of [0, Math.floor(pts.length / 2), pts.length - 1]) {
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', (ox + pts[i].x).toFixed(1)); c.setAttribute('cy', (oy + pts[i].y).toFixed(1)); c.setAttribute('r', '4');
+        layer.appendChild(c);
+      }
+      while (layer.childElementCount > 24) layer.firstElementChild.remove();
+      void t;
+    };
+  }
+
   async function build(n) {
     count = n; FILES = ART[art];
-    rigs.forEach((r) => r.dispose());
+    rigs.forEach((r) => { if (r.states) r.states.dispose(); r.dispose(); });
     rigs = [];
-    stage.replaceChildren();
+    stage.replaceChildren(); traceSvg = null;
+    const useV2 = engine === 'v2' && art === 'p2';   // v2 spec names the P2 owl art; P1 stays on v1 as the reference
+    const spec = useV2 ? await loadSpec() : null;
     const jobs = [];
     for (let i = 0; i < n; i++) {
       const slot = document.createElement('div');
       slot.className = 'slot';
       stage.appendChild(slot);
       const file = FILES[i % FILES.length];
-      jobs.push(mount(slot, file, `i${i}`).then((rig) => {
+      const job = useV2 ? mountCinematic(slot, spec, `i${i}`) : mount(slot, file, `i${i}`);
+      jobs.push(job.then((rig) => {
         const tag = document.createElement('div');
         tag.className = 'tag';
         tag.textContent = NAMES[rig.svg.dataset.companion] || '';
         slot.appendChild(tag);
         slot.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); tapReact(rig, slot); });
+        if (useV2) { rig.trace = makeTracer(slot); rig.states = new CharacterStates(rig, spec); rig.states.on((ev) => { if (ev.type === 'enter') slot.dataset.state = ev.to; }); }
         return rig;
       }));
     }
     rigs = await Promise.all(jobs);
     stage.classList.toggle('sky', art === 'p2');
+    stage.dataset.engine = useV2 ? 'v2' : 'v1';
     if (art === 'p2') { sprinkleStars(); addPerches(); }
     window.__rigs = rigs;
-    document.dispatchEvent(new CustomEvent('rigs-ready', { detail: { n } }));
+    document.dispatchEvent(new CustomEvent('rigs-ready', { detail: { n, engine: stage.dataset.engine } }));
   }
+
+  document.getElementById('engine').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.engine) {
+      engine = b.dataset.engine;
+      document.querySelectorAll('#engine button[data-engine]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.engine === engine)));
+      build(count);
+    } else if (b.dataset.tool === 'trace') {
+      traceOn = !traceOn; b.setAttribute('aria-pressed', String(traceOn));
+      b.textContent = traceOn ? 'مسار الطيران: ظاهر' : 'مسار الطيران: مخفي';
+      if (!traceOn && traceSvg) traceSvg.replaceChildren();
+    } else if (b.dataset.tool === 'slow') {
+      setSlow(!slowOn);
+    }
+  });
+  document.querySelectorAll('#engine button[data-engine]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.engine === engine)));
+  document.getElementById('traceBtn').setAttribute('aria-pressed', String(traceOn));
+  if (traceOn) document.getElementById('traceBtn').textContent = 'مسار الطيران: ظاهر';
+
+  // Slow-motion capture helper (G2/G3/G5 proofs): slows every WAAPI animation AND the physics clock.
+  // Uses Animation.playbackRate on all live animations (document.timeline.playbackRate is not in Baseline).
+  let slowOn = false;
+  const SLOW = Number(params.get('slow')) || 0.25;
+  function setSlow(on) {
+    slowOn = on;
+    const rate = on ? SLOW : 1;
+    clock.setRate(rate);
+    document.getAnimations().forEach((a) => { a.playbackRate = rate; });
+    window.__slowRate = rate;
+    const b = document.getElementById('slowBtn');
+    b.setAttribute('aria-pressed', String(on)); b.textContent = on ? `حركة بطيئة x${SLOW}: تعمل` : `حركة بطيئة x${SLOW}: متوقفة`;
+  }
+  // Keep new animations slowed while slow-mo is on (monkey-patch is local to the demo page only).
+  const _animate = Element.prototype.animate;
+  Element.prototype.animate = function (...a) { const an = _animate.apply(this, a); if (slowOn) an.playbackRate = SLOW; return an; };
+  window.__setSlow = setSlow;
+  if (params.get('slowmo') === '1') document.addEventListener('rigs-ready', () => setSlow(true), { once: true });
 
   document.getElementById('count').addEventListener('click', (e) => {
     const b = e.target.closest('button[data-n]'); if (!b) return;
@@ -134,12 +231,27 @@
   let lastTap = '';
   function tapReact(rig, slot) {
     if (rig.busy) return;
+    if (rig.states) return rig.states.fire('user:tap', { room: roomOf(slot), trace: traceOn });
     let pick; do { pick = TAP_POOL[Math.floor(Math.random() * TAP_POOL.length)]; } while (pick === lastTap);
     lastTap = pick;
     runAct(rig, slot, pick);
   }
 
+  // v2: app-style events go through the data-driven state machine (states.js); v1 keeps direct calls.
+  const EVENT_OF = { celebrate: 'answer:correct', sad: 'answer:wrong', think: 'answer:pending', nod: 'lesson:start', talk: 'explain:start' };
   function runAct(rig, slot, name) {
+    if (rig.states) {
+      if (name === 'fly') return rig.states.fire('move:to', { room: roomOf(slot), trace: traceOn });
+      if (name.startsWith('perch:')) {
+        const where = name.slice(6);
+        return rig.states.fire('move:to', where === 'home' ? { home: true, target: null, trace: traceOn } : { target: document.getElementById('perch-' + where), trace: traceOn });
+      }
+      if (name.startsWith('say:')) return rig.states.fire('explain:start', { url: name.slice(4) });
+      if (name === 'talk') return rig.states.fire('explain:start', { ms: 3200 });
+      if (EVENT_OF[name]) return rig.states.fire(EVENT_OF[name]);
+      if (name === 'blink') return rig.blink(true);
+      return rig[name] && rig[name]();
+    }
     if (name === 'fly') return flyOne(rig, slot);
     if (name.startsWith('say:')) return rig.say(name.slice(4));
     if (name.startsWith('perch:')) {
@@ -150,6 +262,12 @@
     if (name === 'talk') return rig.talk(rig.constructor.syntheticEnvelope(), 3200);
     if (name === 'blink') return rig.blink(true);
     return rig[name] && rig[name]();
+  }
+
+  // Free room around a slot inside the stage (px) - the v2 roam() keeps its arcs inside it.
+  function roomOf(slot) {
+    const sr = stage.getBoundingClientRect(), r = slot.getBoundingClientRect();
+    return { left: Math.max(40, r.left - sr.left - 8), right: Math.max(40, sr.right - r.right - 8), up: Math.max(60, r.top - sr.top - 8) };
   }
 
   // Flight across the visible stage: pick a plan, scale it to the free space around the slot.

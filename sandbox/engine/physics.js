@@ -12,6 +12,16 @@
 
 const SUB_DT = 1 / 120; // seconds
 
+/**
+ * Shared engine clock. rate=1 is real time; the demo's slow-motion helper sets
+ * rate<1 so physics, drives and timers stay in sync with slowed WAAPI animations.
+ */
+export const clock = {
+  rate: 1, _vt: 0, _rt: 0,
+  now() { const r = performance.now(); if (!this._rt) this._rt = r; this._vt += (r - this._rt) * this.rate; this._rt = r; return this._vt; },
+  setRate(r) { this.now(); this.rate = Math.max(0.01, r); },
+};
+
 export class Spring {
   /** @param {{k:number,c:number,limit?:number}} p */
   constructor(p) {
@@ -65,7 +75,7 @@ export class SecondaryRig {
     this.driving = false;
     this.velocity.x = 0; this.velocity.y = 0;
     const maxSettle = Math.max(...Object.values(this.spec).map((s) => s.settleMs || 600));
-    this.settleUntil = performance.now() + maxSettle;
+    this.settleUntil = clock.now() + maxSettle;
     this._ensureLoop();
   }
 
@@ -74,8 +84,9 @@ export class SecondaryRig {
 
   _ensureLoop() {
     if (this.raf) return;
-    this.last = performance.now();
-    const tick = (now) => {
+    this.last = clock.now();
+    const tick = () => {
+      const now = clock.now();
       const dt = Math.min(0.05, (now - this.last) / 1000); this.last = now;
       const ax = (this.velocity.x - this.prevV.x) / Math.max(1e-3, dt * 1000);   // px/ms^2
       const ay = (this.velocity.y - this.prevV.y) / Math.max(1e-3, dt * 1000);

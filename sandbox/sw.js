@@ -10,9 +10,9 @@
  *     deploy is picked up on the next online visit while offline still works
  */
 
-const VERSION = 'g5-3';
+const VERSION = 'g5-4';
 const CACHE = `sandbox-a1-${VERSION}`;
-const SHELL = ['./', './index.html', './rig.js?v=g4', './companions/owl.svg', './companions/bee.svg', './companions/owl_p2.svg',
+const SHELL = ['./', './index.html', './rig.js?v=g4', './engine/physics.js', './engine/motion.js', './engine/flight.js', './engine/states.js', './companions/owl.motion.json?v=k5', './companions/owl.svg', './companions/bee.svg', './companions/owl_p2.svg',
   './art/parts/owl/head.webp', './art/parts/owl/body.webp', './art/parts/owl/wingL.webp', './art/parts/owl/wingR.webp',
   './art/parts/owl/eyes.webp', './art/parts/owl/lids.webp', './art/parts/owl/beak_closed.webp', './art/parts/owl/beak_open.webp', './art/parts/owl/legs.webp',
   './audio/owl_cheer.mp3', './audio/owl_laugh.mp3', './audio/explain_sample.mp3'];

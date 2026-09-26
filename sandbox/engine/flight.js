@@ -10,7 +10,7 @@
  * G5 follow-through: wings/legs/head springs receive the landing impulse and the
  *          flight velocity; the solver keeps running until every group is at rest.
  */
-import { CinematicRig, cssEase, bezier, randIn } from './motion.js';
+import { CinematicRig, cssEase, bezier, randIn, clock } from './motion.js';
 import { EASE, REDUCED } from '../rig.js?v=g4';
 
 const P = CinematicRig.prototype;
@@ -61,9 +61,9 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
   if (dist > F.rollIfDistOver) this.later(() => this.anim(this.j('root'), [{ transform: 'rotate(0)' }, { transform: `rotate(${360 * facing}deg)` }], { duration: F.rollMs, easing: EASE.soft, composite: 'add' }), total * 0.45);
 
   // 3) physics driven by the analytic velocity of the path (no layout reads)
-  const t0 = performance.now(), ease = cssEase(F.easing), N = points.length - 1;
-  const driveTick = (now) => {
-    const u = Math.min(1, (now - t0) / total);
+  const t0 = clock.now(), ease = cssEase(F.easing), N = points.length - 1;
+  const driveTick = () => {
+    const u = Math.min(1, (clock.now() - t0) / total);
     const s = ease(u), s2 = ease(Math.min(1, u + 0.01));
     const i = Math.min(N - 1, Math.floor(s * N)), j = Math.min(N, Math.floor(s2 * N));
     const dtMs = 0.01 * total;
