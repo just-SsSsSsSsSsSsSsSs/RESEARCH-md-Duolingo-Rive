@@ -1,0 +1,196 @@
+#!/usr/bin/env python3
+"""
+Visual proofs for the owl cinematic engine (ADR-001, gates G2-G8).
+
+Deterministic capture: the engine clock and every WAAPI animation run at a
+slow rate (default x0.25) while Playwright takes screenshots at fixed real-time
+intervals, so each frame strip shows the same phase in every run.
+
+Outputs (sandbox/samples/proofs/):
+  g2_landing_strip.png     landing squash: impact -> volume-preserving rebound -> rest
+  g3_anticipation_strip.png crouch + head dip + wing lift before take-off
+  g4_path_trace.png        Bezier arc overlays (two flights) with apex marks
+  g5_settle_strip.png      wings / legs / head overshoot and settle after landing
+  g7_edge_zoom.png         4x zoom of the feather edge (P2 parts) at rest and mid-flight
+  g8_side_by_side.png      v1 vs v2 same moment after a flight (residual tilt, squash)
+  g2..g5 frame metadata in proofs.json (timestamps, squash scale, spring angles)
+Videos (when --video): video_v2_showcase/*.webm  squash -> anticipation -> arc -> settle -> talk.
+
+Usage: python3 sandbox/proofs.py [--video] [--rate 0.25]
+Requires: python3 tools/serve.py 8080 running; pip install playwright + chromium.
+"""
+import argparse, asyncio, json, os, time
+from playwright.async_api import async_playwright
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(ROOT, 'samples', 'proofs')
+BASE = 'http://localhost:8080/sandbox/'
+VIEW = {'width': 900, 'height': 640}
+
+
+def strip(paths, out, labels=None):
+    """Horizontal contact strip from a list of PNG paths (no external deps beyond Pillow)."""
+    if not Image or not paths: return
+    ims = [Image.open(p) for p in paths]
+    w, h = ims[0].size
+    sheet = Image.new('RGB', (w * len(ims), h), (14, 16, 32))
+    for i, im in enumerate(ims): sheet.paste(im, (i * w, 0))
+    sheet.save(out, optimize=True)
+    for p in paths: os.remove(p)
+
+
+async def shot_slot(pg, path, pad=70):
+    """Screenshot the stage area around the (first) owl slot including flight room."""
+    box = await pg.evaluate("(() => { const r = document.getElementById('stage').getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height}; })()")
+    await pg.screenshot(path=path, clip={'x': box['x'], 'y': box['y'], 'width': box['w'], 'height': box['h']})
+
+
+async def open_page(ctx, engine='v2', extra=''):
+    pg = await ctx.new_page()
+    await pg.goto(BASE + f'index.html?engine={engine}&auto=0&sw=0&n=1{extra}', wait_until='networkidle')
+    await pg.wait_for_function('window.__rigs && window.__rigs.length===1')
+    await pg.wait_for_timeout(400)
+    return pg
+
+
+async def frames_during(pg, trigger_js, times_ms, prefix, meta_js):
+    """Fire trigger, then screenshot the stage at each real-time offset; collect numeric metadata."""
+    paths, meta = [], []
+    t0 = time.perf_counter()
+    await pg.evaluate(trigger_js)
+    for i, t in enumerate(times_ms):
+        wait = t / 1000 - (time.perf_counter() - t0)
+        if wait > 0: await asyncio.sleep(wait)
+        p = os.path.join(OUT, f'{prefix}_{i:02d}.png')
+        m = await pg.evaluate(meta_js)
+        m['t_real_ms'] = round((time.perf_counter() - t0) * 1000)
+        await shot_slot(pg, p)
+        paths.append(p); meta.append(m)
+    return paths, meta
+
+
+META = """(() => { const r = window.__rigs[0]; const sq = r.squashLayer ? r.squashLayer.effect.getKeyframes()[0].transform : null;
+  const sec = r.secondary ? Object.fromEntries(Object.entries(r.secondary.springs).map(([k,s]) => [k, +s.x.toFixed(2)])) : null;
+  return { busy: r.busy, flying: r.flying, squash: sq, springs: sec, host: r.svg.parentElement.style.transform, state: r.states ? r.states.state : null }; })()"""
+
+
+async def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--video', action='store_true')
+    ap.add_argument('--rate', type=float, default=0.25)
+    a = ap.parse_args()
+    os.makedirs(OUT, exist_ok=True)
+    R = a.rate
+    report = {'captured_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'slow_rate': R, 'gates': {}}
+
+    async with async_playwright() as p:
+        b = await p.chromium.launch()
+        ctx = await b.new_context(viewport=VIEW, device_scale_factor=2)
+
+        # ---- G3 anticipation + G2 landing + G5 settle from one flight, slowed x R ----
+        pg = await open_page(ctx)
+        await pg.evaluate(f'window.__setSlow(true)')
+        await pg.evaluate("window.__slowRate === undefined")
+        # anticipation: hold is 150-250 ms engine time -> 600-1000 ms real at x0.25
+        paths, meta = await frames_during(pg, "window.__rigs[0].flyBy(260, -150)", [80, 300, 550, 800, 1000], 'g3', META)
+        strip(paths, os.path.join(OUT, 'g3_anticipation_strip.png'))
+        report['gates']['G3_anticipation'] = meta
+        # wait for landing: total flight 1400-3800 ms engine -> up to 15 s real
+        await pg.wait_for_function("window.__rigs[0].squash && !window.__rigs[0].squash.atRest", timeout=30000)
+        t0 = time.perf_counter(); paths, meta = [], []
+        for i in range(6):
+            m = await pg.evaluate(META); m['t_real_ms'] = round((time.perf_counter() - t0) * 1000)
+            pth = os.path.join(OUT, f'g2_{i:02d}.png'); await shot_slot(pg, pth); paths.append(pth); meta.append(m)
+            await asyncio.sleep(0.16)
+        strip(paths, os.path.join(OUT, 'g2_landing_strip.png'))
+        report['gates']['G2_landing_squash'] = meta
+        # settle: secondary springs after touchdown
+        paths, meta = [], []
+        for i in range(6):
+            m = await pg.evaluate(META); m['t_real_ms'] = round((time.perf_counter() - t0) * 1000)
+            pth = os.path.join(OUT, f'g5_{i:02d}.png'); await shot_slot(pg, pth); paths.append(pth); meta.append(m)
+            await asyncio.sleep(0.4)
+        strip(paths, os.path.join(OUT, 'g5_settle_strip.png'))
+        report['gates']['G5_settle'] = meta
+        await pg.evaluate('window.__setSlow(false)')
+        await pg.wait_for_function('!window.__rigs[0].busy', timeout=30000)
+        await pg.close()
+
+        # ---- G4 path trace: two flights with the overlay on ----
+        pg = await open_page(ctx, extra='&trace=1')
+        await pg.evaluate("window.__rigs[0].flyBy(300, -170, {trace: true})")
+        await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
+        await pg.evaluate("window.__rigs[0].flyTo(null, {home: true, trace: true})")
+        await pg.wait_for_timeout(700)
+        await shot_slot(pg, os.path.join(OUT, 'g4_path_trace_midflight.png'))
+        await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
+        await pg.wait_for_timeout(300)
+        await shot_slot(pg, os.path.join(OUT, 'g4_path_trace.png'))
+        report['gates']['G4_path_trace'] = await pg.evaluate("({polylines: document.querySelectorAll('#trace polyline').length, points_per_arc: document.querySelector('#trace polyline').getAttribute('points').split(' ').length, perch: window.__rigs[0]._perch})")
+        await pg.close()
+
+        # ---- G7 edge zoom: P2 feather edge at rest and mid-flight (DPR 2, 4x crop) ----
+        pg = await open_page(ctx)
+        box = await pg.evaluate("(() => { const r = window.__rigs[0].j('armL').getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height}; })()")
+        await pg.screenshot(path=os.path.join(OUT, 'g7_edge_rest.png'), clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
+        await pg.evaluate("window.__rigs[0].flyBy(200, -120)")
+        await pg.wait_for_timeout(900)
+        box = await pg.evaluate("(() => { const r = window.__rigs[0].j('armL').getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height}; })()")
+        await pg.screenshot(path=os.path.join(OUT, 'g7_edge_flight.png'), clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
+        if Image:
+            for n in ('rest', 'flight'):
+                im = Image.open(os.path.join(OUT, f'g7_edge_{n}.png')); im = im.resize((im.width * 2, im.height * 2), Image.NEAREST); im.save(os.path.join(OUT, f'g7_edge_{n}.png'))
+            strip([os.path.join(OUT, 'g7_edge_rest.png'), os.path.join(OUT, 'g7_edge_flight.png')], os.path.join(OUT, 'g7_edge_zoom.png'))
+        await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
+        await pg.close()
+
+        # ---- G8 v1 vs v2: same flight vector, snapshot 60 ms after landing + at rest ----
+        shots = []
+        for eng in ('v1', 'v2'):
+            pg = await open_page(ctx, engine=eng)
+            if eng == 'v1':
+                await pg.evaluate("window.__rigs[0].fly([{x:0,y:0,t:0},{x:120,y:-140,t:.5},{x:240,y:-60,t:1}], {}, {base:{x:0,y:0}})")
+            else:
+                await pg.evaluate("window.__rigs[0].flyBy(240, -60)")
+            await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
+            await pg.wait_for_timeout(60)
+            pth = os.path.join(OUT, f'g8_{eng}.png'); await shot_slot(pg, pth); shots.append(pth)
+            report['gates'][f'G8_{eng}_after_landing'] = await pg.evaluate("({host: window.__rigs[0].svg.parentElement.style.transform, anims: document.getAnimations().length})")
+            await pg.close()
+        strip(shots, os.path.join(OUT, 'g8_side_by_side.png'))
+
+        # ---- G6 + showcase video: squash -> anticipation -> arc -> settle -> talk (real voice) ----
+        if a.video:
+            vdir = os.path.join(OUT, 'video_v2_showcase')
+            vctx = await b.new_context(viewport=VIEW, record_video_dir=vdir, record_video_size=VIEW)
+            pg = await vctx.new_page()
+            await pg.goto(BASE + 'index.html?engine=v2&auto=0&sw=0&n=1&trace=1', wait_until='networkidle')
+            await pg.wait_for_function('window.__rigs && window.__rigs.length===1')
+            await pg.wait_for_timeout(1200)
+            await pg.evaluate("window.__rigs[0].states.fire('move:to', {target: document.getElementById('perch-card'), trace: true})")
+            await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(700)
+            await pg.evaluate("window.__rigs[0].states.fire('answer:correct')")
+            await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(500)
+            await pg.evaluate("window.__rigs[0].states.fire('answer:pending')")
+            await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(500)
+            await pg.evaluate("window.__rigs[0].states.fire('explain:start', {ms: 3200})")
+            await pg.wait_for_timeout(3600)
+            await pg.evaluate("window.__rigs[0].states.fire('move:to', {home: true, trace: true})")
+            await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(1200)
+            await pg.evaluate('window.__setSlow(true)')
+            await pg.evaluate("window.__rigs[0].flyBy(220, -140)")
+            await pg.wait_for_function("!window.__rigs[0].busy", timeout=60000); await pg.wait_for_timeout(1500)
+            await vctx.close()
+            report['video'] = sorted(os.listdir(vdir))
+
+        await b.close()
+    with open(os.path.join(OUT, 'proofs.json'), 'w', encoding='utf-8') as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
+    print(json.dumps(report, ensure_ascii=False, indent=1)[:4000])
+
+if __name__ == '__main__':
+    asyncio.run(main())
