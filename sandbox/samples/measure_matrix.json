@@ -1,6 +1,6 @@
 {
-  "measured_at": "2026-09-26T22:05:15Z",
-  "base": "http://localhost:8080/sandbox/",
+  "measured_at": "2026-09-26T23:55:50Z",
+  "base": "http://127.0.0.1:8080/sandbox/",
   "companions": 5,
   "seconds_per_run": 10.0,
   "rounds": 3,
@@ -19,18 +19,48 @@
       "engine": "v2",
       "extra": "",
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.8,
+      "raf_p95_ms": 16.7,
       "raf_p99_ms": 16.8,
-      "raf_max_ms": 16.8,
-      "jank_pct": 0.0,
-      "heap_delta_mb_after_scene": 0.86,
+      "raf_max_ms": 33.4,
+      "jank_pct": 0.84,
+      "heap_delta_mb_after_scene": 0.88,
       "animations_idle": 73,
-      "dom_nodes": 327,
+      "dom_nodes": 328,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        0.84,
+        0.84,
+        0.0
+      ],
+      "runs_p95_ms": [
+        16.8,
+        16.7,
+        16.7
+      ],
+      "errors": 0,
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": true
+    },
+    {
+      "cell": "v2 no-intent",
+      "cpu_throttle": 1.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v2",
+      "extra": "&intent=0",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.8,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 50,
+      "jank_pct": 2.76,
+      "heap_delta_mb_after_scene": 0.88,
+      "animations_idle": 73,
+      "dom_nodes": 328,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
         0.0,
-        1.69,
-        0.0
+        4.36,
+        2.76
       ],
       "runs_p95_ms": [
         16.8,
@@ -38,8 +68,8 @@
         16.8
       ],
       "errors": 0,
-      "budget_jank_lt_1pct": true,
-      "budget_p95_le_20": true
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": false
     },
     {
       "cell": "v2 no-Foley",
@@ -49,27 +79,27 @@
       "engine": "v2",
       "extra": "&sfx=0",
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.7,
-      "raf_p99_ms": 16.8,
-      "raf_max_ms": 16.8,
-      "jank_pct": 0.0,
-      "heap_delta_mb_after_scene": 0.8,
+      "raf_p95_ms": 16.8,
+      "raf_p99_ms": 50,
+      "raf_max_ms": 66.6,
+      "jank_pct": 3.69,
+      "heap_delta_mb_after_scene": 0.82,
       "animations_idle": 73,
-      "dom_nodes": 326,
+      "dom_nodes": 327,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        0.0,
-        1.18,
+        5.54,
+        3.69,
         0.0
       ],
       "runs_p95_ms": [
-        16.7,
+        33.3,
         16.8,
-        16.7
+        16.8
       ],
       "errors": 0,
-      "budget_jank_lt_1pct": true,
-      "budget_p95_le_20": true
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": false
     },
     {
       "cell": "v1 reference",
@@ -80,17 +110,17 @@
       "extra": "",
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 16.8,
-      "raf_p99_ms": 33.4,
-      "raf_max_ms": 50,
-      "jank_pct": 2.76,
+      "raf_p99_ms": 50,
+      "raf_max_ms": 50.1,
+      "jank_pct": 2.77,
       "heap_delta_mb_after_scene": 0.65,
       "animations_idle": 38,
-      "dom_nodes": 326,
+      "dom_nodes": 327,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        3.68,
-        0.84,
-        2.76
+        2.77,
+        1.02,
+        3.87
       ],
       "runs_p95_ms": [
         16.8,
@@ -98,8 +128,8 @@
         16.8
       ],
       "errors": 0,
-      "budget_jank_lt_1pct": false,
-      "budget_p95_le_20": true
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": false
     },
     {
       "cell": "v2 + Foley",
@@ -112,15 +142,15 @@
       "raf_p95_ms": 33.3,
       "raf_p99_ms": 33.4,
       "raf_max_ms": 50,
-      "jank_pct": 5.84,
-      "heap_delta_mb_after_scene": 0.86,
+      "jank_pct": 6.24,
+      "heap_delta_mb_after_scene": 0.88,
       "animations_idle": 73,
-      "dom_nodes": 327,
+      "dom_nodes": 328,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        5.83,
-        5.84,
-        7.17
+        5.81,
+        6.24,
+        6.98
       ],
       "runs_p95_ms": [
         33.3,
@@ -128,8 +158,38 @@
         33.3
       ],
       "errors": 0,
-      "budget_jank_lt_1pct": false,
-      "budget_p95_le_20": false
+      "budget_p95_le_20": false,
+      "budget_jank_lt_1pct": false
+    },
+    {
+      "cell": "v2 no-intent",
+      "cpu_throttle": 4.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v2",
+      "extra": "&intent=0",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 33.3,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 50,
+      "jank_pct": 6.19,
+      "heap_delta_mb_after_scene": 0.88,
+      "animations_idle": 73,
+      "dom_nodes": 328,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        4.18,
+        6.19,
+        8.36
+      ],
+      "runs_p95_ms": [
+        16.8,
+        33.3,
+        33.3
+      ],
+      "errors": 0,
+      "budget_p95_le_20": false,
+      "budget_jank_lt_1pct": false
     },
     {
       "cell": "v2 no-Foley",
@@ -141,25 +201,25 @@
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 16.8,
       "raf_p99_ms": 33.4,
-      "raf_max_ms": 50,
-      "jank_pct": 4.53,
-      "heap_delta_mb_after_scene": 0.8,
+      "raf_max_ms": 50.1,
+      "jank_pct": 4.37,
+      "heap_delta_mb_after_scene": 0.82,
       "animations_idle": 73,
-      "dom_nodes": 326,
+      "dom_nodes": 327,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        2.21,
-        4.53,
-        5.48
+        2.56,
+        4.37,
+        4.96
       ],
       "runs_p95_ms": [
         16.8,
         16.8,
-        33.3
+        16.8
       ],
       "errors": 0,
-      "budget_jank_lt_1pct": false,
-      "budget_p95_le_20": true
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": false
     },
     {
       "cell": "v1 reference",
@@ -171,16 +231,16 @@
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 16.8,
       "raf_p99_ms": 33.4,
-      "raf_max_ms": 50,
-      "jank_pct": 2.92,
+      "raf_max_ms": 50.1,
+      "jank_pct": 3.47,
       "heap_delta_mb_after_scene": 0.65,
       "animations_idle": 38,
-      "dom_nodes": 326,
+      "dom_nodes": 327,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        2.23,
-        2.92,
-        3.81
+        2.04,
+        4.03,
+        3.47
       ],
       "runs_p95_ms": [
         16.8,
@@ -188,9 +248,8 @@
         16.8
       ],
       "errors": 0,
-      "budget_jank_lt_1pct": false,
-      "budget_p95_le_20": true
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": false
     }
-  ],
-  "note": "budget flags: p95 <= 20 ms (measure.py threshold; rAF quantum 16.7 +- 0.1 ms) and jank < 1 pct; flags re-derived from the same cells after the first collation used 16.7 literally"
+  ]
 }

@@ -17,7 +17,8 @@ N = int(os.environ.get('MATRIX_N', '5'))
 ROUNDS = int(os.environ.get('MATRIX_ROUNDS', '3'))
 SECONDS = float(os.environ.get('MATRIX_SECONDS', '10'))   # 10 s like measure.py default: talk (3.2 s, fired at 7.3 s) must END inside the window or the idle-loop guard reads a live, legitimate talk loop as 5 (seen with 6 s)
 CELLS = [
-    ('v2 + Foley',  'p2', 'v2', ''),
+    ('v2 + Foley',  'p2', 'v2', ''),               # shipped defaults (K9.3: intent ON)
+    ('v2 no-intent', 'p2', 'v2', '&intent=0'),     # K9.3 control: same page, intent phase off -> isolates the cost of the look-then-leap layers
     ('v2 no-Foley', 'p2', 'v2', '&sfx=0'),
     ('v1 reference', 'p2', 'v1', ''),
 ]
@@ -39,7 +40,8 @@ async def main():
             cell[k] = round(statistics.median([r[k] for r in rs]), 2)
         cell['runs_jank_pct'] = [r['jank_pct'] for r in rs]; cell['runs_p95_ms'] = [r['raf_p95_ms'] for r in rs]
         cell['errors'] = sum(len(r['errors']) for r in rs)
-        cell['budget_p95_le_20'] = cell['raf_p95_ms'] <= 20.0;   # same threshold as measure.py (p95_at_3_le_20ms): one rAF quantum is 16.7 +- 0.1, so 16.8 is not a miss cell['budget_jank_lt_1pct'] = cell['jank_pct'] < 1.0
+        cell['budget_p95_le_20'] = cell['raf_p95_ms'] <= 20.0   # same threshold as measure.py (p95_at_3_le_20ms): one rAF quantum is 16.7 +- 0.1, so 16.8 is not a miss
+        cell['budget_jank_lt_1pct'] = cell['jank_pct'] < 1.0
         cells.append(cell)
     out = {'measured_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'base': M.BASE, 'companions': N, 'seconds_per_run': SECONDS, 'rounds': ROUNDS,
            'schedule': 'interleaved round-robin over all cells per round (identical host conditions)',
