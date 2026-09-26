@@ -1,52 +1,60 @@
 {
-  "captured_at": "2026-09-26T19:14:34Z",
+  "captured_at": "2026-09-26T20:22:39Z",
   "dpr": 2,
   "poses": {
     "alert": {
       "joints_applied": {
         "pupilL": "translate(3px, -2px)",
-        "pupilR": "translate(2.59005px, -2px)",
+        "browL": "translate(0px, -2.5px)",
+        "pupilR": "translate(3.32656px, -2px)",
+        "browR": "translate(0px, -2.5px)",
         "head": "translate(0px, -3px) rotate(-6deg)",
         "body": "scale(0.985, 1.03)",
         "armL": "rotate(6deg)",
-        "armR": "rotate(-3.4534deg)"
+        "armR": "rotate(-4.43542deg)"
       },
       "mouth": "closed"
     },
     "charged": {
       "joints_applied": {
         "pupilL": "translate(0px, -3px)",
+        "browL": "translate(0px, 1.5px) rotate(10deg)",
         "pupilR": "translate(0px, -3px)",
+        "browR": "translate(0px, 1.5px) rotate(-8.27416deg)",
         "head": "translate(0px, 6px) rotate(4deg)",
         "body": "translate(0px, 8px) scale(1.12, 0.86)",
         "armL": "rotate(26deg)",
-        "armR": "rotate(-23.0845deg)",
+        "armR": "rotate(-18.2031deg)",
         "legL": "rotate(-8deg)",
-        "legR": "rotate(10.493deg)"
+        "legR": "rotate(8.27416deg)"
       },
       "mouth": "closed"
     },
     "launch": {
       "joints_applied": {
         "pupilL": "translate(0px, -4px)",
+        "browL": "translate(0px, -3px) rotate(-6deg)",
         "pupilR": "translate(0px, -4px)",
+        "browR": "translate(0px, -3px) rotate(6.17132deg)",
         "head": "translate(0px, -10px) rotate(-12deg)",
         "body": "translate(0px, -14px) scale(0.9, 1.16)",
         "armL": "translate(0px, -6px) rotate(-58deg)",
-        "armR": "translate(0px, -6px) rotate(48.7921deg)",
+        "armR": "translate(0px, -6px) rotate(53.4848deg)",
         "legL": "rotate(22deg)",
-        "legR": "rotate(13.1363deg)"
+        "legR": "rotate(14.3998deg)"
       },
       "mouth": "smile"
     },
     "puzzled": {
       "joints_applied": {
         "pupilL": "translate(-5px, -5px)",
-        "pupilR": "translate(-5.25102px, -5px)",
+        "browL": "translate(0px, -4px) rotate(-9deg)",
+        "pupilR": "translate(-5.5514px, -5px)",
+        "browR": "translate(0px, 1px) rotate(7.77196deg)",
         "head": "translate(-3px, 2px) rotate(-19deg)",
         "body": "rotate(3deg) scale(0.98, 1)",
         "armL": "rotate(-14deg)",
-        "armR": "translate(0px, -16px) rotate(35.7069deg)",
+        "armR": "translate(0px, -16px) rotate(37.7495deg)",
         "legL": "translate(0px, 0px)",
         "legR": "translate(0px, 0px)",
         "lidL": "translate(0px, 3px)"
@@ -56,13 +64,15 @@
     "triumph": {
       "joints_applied": {
         "pupilL": "translate(0px, -4px)",
+        "browL": "translate(0px, -3.5px) rotate(-5deg)",
         "pupilR": "translate(0px, -4px)",
+        "browR": "translate(0px, -3.5px) rotate(5.78091deg)",
         "head": "translate(0px, -8px) rotate(8deg)",
         "body": "translate(0px, -6px) scale(0.95, 1.1)",
         "armL": "translate(0px, -10px) rotate(-74deg)",
-        "armR": "translate(0px, -10px) rotate(71.4792deg)",
+        "armR": "translate(0px, -10px) rotate(80.9327deg)",
         "legL": "rotate(-12deg)",
-        "legR": "rotate(12.2536deg)",
+        "legR": "rotate(13.8742deg)",
         "lidL": "translate(0px, 0px)"
       },
       "mouth": "open"
@@ -70,11 +80,13 @@
     "oops": {
       "joints_applied": {
         "pupilL": "translate(6px, 2px)",
-        "pupilR": "translate(6.84305px, 2px)",
+        "browL": "translate(0px, -1px) rotate(12deg)",
+        "pupilR": "translate(4.98776px, 2px)",
+        "browR": "translate(0px, -1px) rotate(-9.97553deg)",
         "head": "translate(6px, 4px) rotate(14deg)",
         "body": "translate(5px, 0px) rotate(-6deg) scale(1.05, 0.94)",
         "armL": "rotate(40deg)",
-        "armR": "rotate(13.6861deg)",
+        "armR": "rotate(9.97553deg)",
         "legL": "rotate(6deg)",
         "legR": "translate(0px, 0px)",
         "lidL": "translate(0px, 0px)"
