@@ -190,8 +190,8 @@ async def main():
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(500)
             await pg.evaluate("void window.__rigs[0].states.fire('answer:pending')")
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(500)
-            await pg.evaluate("void window.__rigs[0].states.fire('explain:start', {ms: 3200})")
-            await pg.wait_for_timeout(3600)
+            await pg.evaluate("void window.__rigs[0].states.fire('explain:start', {url: 'audio/explain_sample.mp3'})")   # G6: real voice envelope
+            await pg.wait_for_timeout(400); await pg.wait_for_function("!window.__rigs[0].busy", timeout=30000); await pg.wait_for_timeout(400)
             await pg.evaluate("void window.__rigs[0].states.fire('move:to', {home: true, trace: true})")
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(1200)
             await pg.evaluate('window.__setSlow(true)')
