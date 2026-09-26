@@ -1,0 +1,29 @@
+{
+  "measured_at": "2026-09-26T16:05:05Z",
+  "launch_flags": "playwright default (policy not bypassed)",
+  "before_gesture": {
+    "status": "locked",
+    "hasCtx": false,
+    "userActive": true
+  },
+  "cues_without_gesture": {
+    "played": 0,
+    "dropped": 0,
+    "stolen": 0,
+    "muted": 0,
+    "status": "locked",
+    "cuesRequested": 3,
+    "vfxSpawned": 2
+  },
+  "after_one_click": {
+    "status": "running",
+    "ctxState": "running",
+    "baseLatencyMs": 10,
+    "outputLatencyMs": 32,
+    "sampleRate": 44100,
+    "userActive": true
+  },
+  "unlock_call_site": "document pointerdown/keydown listener, capture phase, synchronous (index.html unlockAudio -> SoundBus.unlock)",
+  "pass": true,
+  "note": "headless Chromium honours the gesture requirement here (status stayed locked until the click); a real-device iPhone mute-switch check remains owner-side."
+}

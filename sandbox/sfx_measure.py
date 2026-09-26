@@ -136,7 +136,7 @@ async def main():
         await pg.wait_for_timeout(300)
         await pg.wait_for_function("window.__rigs.every(r => !r.busy)", timeout=30000)
         await pg.wait_for_timeout(800)
-        poly = await pg.evaluate("({...window.__poly, stats: window.__bus.stats, polyphony: window.__bus.spec.polyphony, gapMs: window.__bus.spec.sameCueGapMs, log: window.__bus.log.map(l => ({cue: l.cue, t: l.tAudio}))})")
+        poly = await pg.evaluate("({...window.__poly, stats: window.__bus.stats, polyphony: window.__bus.spec.polyphony, gapMs: window.__bus.spec.sameCueGapMs, log: window.__bus.log.map(l => ({cue: l.cue, t: l.tAudible}))})")
         # same-cue gap check from the scheduled times
         gaps_ok, min_gap = True, None
         by = {}
