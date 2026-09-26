@@ -92,10 +92,14 @@ export class CharacterStates {
     const st = this.spec.list[name];
     if (!st) { this._emit({ type: 'unknown', state: name }); return false; }
     if (this.rig.busy && name !== 'idle') { this._emit({ type: 'rejected', state: name, reason: 'busy' }); return false; }
+    if (this.state === 'rest' && name !== 'idle') { this.state = 'idle'; if (this.rig.cue) this.rig.cue('wake', {}); }
     const seq = ++this._seq;
     const from = this.state;
     this.state = name;
     this._emit({ type: 'enter', from, to: name, t: performance.now() });
+    if (this.rig.cue) this.rig.cue('enter', { state: name, from });
+    this._armRestTimer(name);
+    this._armBeat(name, st);
 
     const runs = [];
     for (const layer of this.spec.layers) {
@@ -113,6 +117,28 @@ export class CharacterStates {
     return true;
   }
 
+  /** idle for spec.idleToRestMs -> `idle:long` (rest state with Zzz); any other state cancels. */
+  _armRestTimer(name) {
+    clearTimeout(this._restTimer);
+    const ms = this.spec.idleToRestMs;
+    if (name === 'idle' && ms > 0 && this.spec.events['idle:long']) {
+      this._restTimer = setTimeout(() => { if (this.state === 'idle' && !this.rig.busy) this.fire('idle:long'); }, ms);
+    }
+  }
+  /** periodic cue while in a state (think ticks, rest snores) - cleared on the next transition. */
+  _armBeat(name, st) {
+    clearInterval(this._beatTimer);
+    const sfx = st.sfx || {}, vfx = st.vfx || {};
+    const ms = sfx.beatMs || sfx.loopMs || vfx.loopMs;
+    if (!ms) return;
+    this._beatTimer = setInterval(() => {
+      if (this.state !== name) { clearInterval(this._beatTimer); return; }
+      if (this.rig.cue) this.rig.cue(sfx.beatMs ? 'beat' : 'loop', { state: name });
+    }, ms);
+  }
+  /** leave rest on any interaction */
+  wake() { if (this.state === 'rest') return this.enter('idle'); return Promise.resolve(false); }
+
   _untilFree(minMs) {
     return new Promise((resolve) => {
       const t0 = performance.now();
@@ -124,7 +150,7 @@ export class CharacterStates {
     });
   }
 
-  dispose() { this.listeners.clear(); this._seq++; }
+  dispose() { this.listeners.clear(); this._seq++; clearTimeout(this._restTimer); clearInterval(this._beatTimer); }
 }
 
 /**
