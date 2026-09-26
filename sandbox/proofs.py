@@ -133,15 +133,17 @@ async def main():
         await pg.evaluate('window.__setSlow(false)')
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=30000)
         cues = await pg.evaluate("window.__cues")
+        # first flight only; pair each phase with the next occurrence of the other
         def _ms(a_, b_):
             ta = [c['t'] for c in cues if c['phase'] == a_]; tb = [c['t'] for c in cues if c['phase'] == b_ and c['t'] > (ta[0] if ta else 0)]
-            return round((tb[0] - ta[0]) / R, 1) if ta and tb else None     # real ms / slow rate = engine ms
+            return round((tb[0] - ta[0]) * R, 1) if ta and tb else None     # engine ms = real ms x rate (slow-mo stretches real time by 1/R)
         ant = [c for c in cues if c['phase'] == 'anticipate']
+        report['gates']['G3_cue_sequence_first_flight'] = [{'phase': c['phase'], 't_engine_ms': round((c['t'] - cues[0]['t']) * R, 1)} for c in cues[:8]]
         report['gates']['G3_anticipation_ms'] = {
             'declared_hold_range_ms': [150, 250], 'drawn_hold_ms': [c['holdMs'] for c in ant],
             'measured_anticipate_to_takeoff_ms': _ms('anticipate', 'takeoff'),
             'measured_land_to_settle_ms': _ms('land', 'settle'),
-            'method': 'engine cue timestamps (performance.now at cue) divided by the slow-motion rate; the earlier strip-based reading (crouch visible 93-568 ms real) was real time at x0.25 = 24-142 ms engine plus the 140 ms takeoff stretch, not a longer hold',
+            'method': 'engine cue timestamps (performance.now at cue) multiplied by the slow-motion rate; the earlier strip-based reading (crouch visible 93-568 ms real) was real time at x0.25 = 24-142 ms engine plus the 140 ms takeoff stretch, not a longer hold',
             'pass': (lambda v: v is not None and 150 - 20 <= v <= 250 + 40)(_ms('anticipate', 'takeoff')),
         }
         # G2/G5 secondary: named behaviour. armL after touchdown is an underdamped spring (k 180, c 16 -> zeta 0.60, damped half-period 292 ms,
