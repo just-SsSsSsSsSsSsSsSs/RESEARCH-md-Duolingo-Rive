@@ -38,3 +38,9 @@ Format: `#NN | date (UTC) | source | status | summary` then indented detail and 
     GitHub Pages at branch sandbox/a1-gate5-art-sw (repository setting the agent cannot change) - OPEN on the owner side.
     Structural rule adopted now: this file + ack commit on every resume (AGENTS.md section 12).
     Owner's closure table (7 checks) = sandbox/ship_visible_proof.py; latest run pass_all true.
+
+#03-d update | 2026-09-26 21:50 | ref #03 (gist rev b5d111c1 item d) | done
+    ADR-002 addendum (d) written: sandbox/docs/ADR-002-engine-choice-poses-vs-rive.md "Addendum (d)".
+    Evidence: proto sandbox/proto/meshwarp.html + sandbox/meshwarp_measure.py; samples/proofs/g11d_meshwarp_cost.json,
+    g11d_meshwarp.png; SVG baseline re-measured same host (samples/measure_p2_v2_nosfx.json, measure_p2_v2_cpu4x_nosfx.json).
+    Result: mesh-warp rAF p50 76 ms at 5 owls/CPU 4x vs SVG engine 16.7 ms; recommendation = stay A, vector re-author only if G11 v2 fails.
