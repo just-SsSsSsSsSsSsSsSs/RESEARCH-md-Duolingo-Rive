@@ -17,7 +17,7 @@ What it does (deterministic, no guessing):
      largest component, then fits a circle to its boundary with a least-squares
      (Kasa) fit plus residual-based outlier rejection, so the specular highlight
      that bites into the right iris cannot distort the fit.
-  3. Writes pupilL/pupilR plates = the disc pixels (radius + 1.5 px to keep the
+  3. Writes pupilL/pupilR plates = the disc pixels (radius + 2.5 px to keep the
      anti-aliased rim), and eyesL/eyesR = the half plate with the disc region
      inpainted from the sclera ring just outside the disc (radial nearest
      sample), so the white stays intact when the pupil moves.
@@ -149,16 +149,34 @@ def disc_mask(shape, cx, cy, r):
     return np.hypot(xx - cx, yy - cy) <= r
 
 
-def inpaint_radial(rgba, cx, cy, r, ring=2.0):
-    """Fill the disc from the sclera just outside it (nearest sample along the radius)."""
+def inpaint_radial(rgba, cx, cy, r, ring=(3.0, 7.0), sigma_deg=12.0):
+    """Fill the iris disc with a smooth sclera field so the white looks intact
+    when the pupil is moved off-centre.  Method: sample the sclera ring just
+    outside the disc at 720 angles, smooth the samples circularly (gaussian,
+    sigma_deg) to remove pixel streaks, then blend radially from the ring
+    colour at the rim toward the ring mean at the centre (quadratic falloff).
+    Alpha is kept from the source (all disc pixels are opaque, asserted by caller)."""
     out = rgba.copy()
     h, w = rgba.shape[:2]
+    n = 720
+    ang = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    ringc = np.zeros((n, 3))
+    offs = np.arange(ring[0], ring[1] + 0.5, 1.0)
+    for o in offs:  # band mean: skips the anti-aliased iris rim, averages sclera texture
+        sx = np.clip(np.rint(cx + np.cos(ang) * (r + o)), 0, w - 1).astype(int)
+        sy = np.clip(np.rint(cy + np.sin(ang) * (r + o)), 0, h - 1).astype(int)
+        ringc += rgba[sy, sx, :3].astype(np.float64)
+    ringc /= len(offs)
+    k = int(round(sigma_deg / 360 * n))
+    ringc = ndi.gaussian_filter1d(ringc, k, axis=0, mode='wrap')
+    mean = ringc.mean(0)
     yy, xx = np.nonzero(disc_mask(rgba.shape, cx, cy, r))
     dx, dy = xx - cx, yy - cy
-    d = np.maximum(np.hypot(dx, dy), 1e-6)
-    sx = np.clip(np.rint(cx + dx / d * (r + ring)), 0, w - 1).astype(int)
-    sy = np.clip(np.rint(cy + dy / d * (r + ring)), 0, h - 1).astype(int)
-    out[yy, xx] = rgba[sy, sx]
+    d = np.hypot(dx, dy)
+    a_idx = (np.rint((np.arctan2(dy, dx) % (2 * np.pi)) / (2 * np.pi) * n).astype(int)) % n
+    t = np.clip(d / max(r, 1e-6), 0, 1)[:, None] ** 2
+    col = mean[None, :] * (1 - t) + ringc[a_idx] * t
+    out[yy, xx, :3] = np.clip(np.rint(col), 0, 255).astype(np.uint8)
     return out
 
 
@@ -217,7 +235,7 @@ def main():
     plates = {}
     for side, (a, b) in (('L', (0, cut)), ('R', (cut, W))):
         st = fits[side]
-        r_cut = st['r'] + 1.5
+        r_cut = st['r'] + 2.5  # measured: anti-aliased iris rim reaches r+2 (sat 0.19 at r+1, 0.12 at r+2, sclera 0.09)
         disc = disc_mask(eyes.shape, st['cx'], st['cy'], r_cut)
         white = inpaint_radial(eyes, st['cx'], st['cy'], r_cut)
         half = white[:, a:b].copy()
@@ -270,7 +288,7 @@ def main():
     diff_l = np.abs(canvas_lids.astype(int) - lids.astype(int))
     report['plate_recomposite'] = dict(eyes_max_abs_diff=int(diff_e.max()), eyes_pixels_differing=int((diff_e.max(-1) > 0).sum()),
                                        lids_max_abs_diff=int(diff_l.max()), lids_pixels_differing=int((diff_l.max(-1) > 0).sum()))
-    report['plate_recomposite']['pass_pixel_diff_0'] = diff_e.max() == 0 and diff_l.max() == 0
+    report['plate_recomposite']['pass_pixel_diff_0'] = bool(diff_e.max() == 0 and diff_l.max() == 0)
 
     # ---- parts.json ----
     pj_path = os.path.join(PARTS, 'parts.json')
@@ -312,7 +330,7 @@ def main():
         lid_top_u = rr['y']
         lid_new = ('<g data-joint="lid%s" data-pivot="%s %s" style="transform: scaleY(0)">%s</g>'
                    % (side, f(cx_u), f(lid_top_u), img('lids%s.webp' % side, white_r)))
-        svg, n1 = re.subn(r'<g data-joint="eye%s"[^>]*>.*?</g></g>' % side, eye_new, svg, count=1, flags=re.S)
+        svg, n1 = re.subn(r'<g data-joint="eye%s"[^>]*>.*?<g data-joint="pupil%s"[^>]*>.*?</g></g>' % (side, side), eye_new, svg, count=1, flags=re.S)
         svg, n2 = re.subn(r'<g data-joint="lid%s"[^>]*>.*?</g>' % side, lid_new, svg, count=1, flags=re.S)
         assert n1 == 1 and n2 == 1, 'svg groups for side %s not found' % side
     open(SVG, 'w', encoding='utf-8').write(svg)

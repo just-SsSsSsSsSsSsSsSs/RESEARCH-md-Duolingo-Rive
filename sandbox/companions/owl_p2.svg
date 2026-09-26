@@ -9,10 +9,10 @@
     <g data-joint="body" data-pivot="100 210"><image href="art/parts/owl/body.webp" x="56.0" y="118.0" width="88.0" height="86.9" /></g>
     <g data-joint="head" data-pivot="100 128">
       <image href="art/parts/owl/head.webp" x="44.0" y="26.0" width="112.0" height="91.9" />
-      <g data-joint="eyeL" data-pivot="100 85"><g data-joint="pupilL" data-pivot="100 85"><image href="art/parts/owl/eyes.webp" x="61.0" y="66.0" width="78.0" height="38.4" /></g></g>
-      <g data-joint="eyeR" data-pivot="100 85"><g data-joint="pupilR" data-pivot="100 85"></g></g>
-      <g data-joint="lidL" data-pivot="100 68" style="transform: scaleY(0)"><image href="art/parts/owl/lids.webp" x="61.0" y="66.0" width="78.0" height="38.4" /></g>
-      <g data-joint="lidR" data-pivot="100 68" style="transform: scaleY(0)"></g>
+      <g data-joint="eyeL" data-pivot="81.2872 85.1917"><image href="art/parts/owl/eyesL.webp" x="61.1373" y="66" width="38.8627" height="38.4" preserveAspectRatio="none" /><g data-joint="pupilL" data-pivot="81.2872 85.1917"><image href="art/parts/owl/pupilL.webp" x="69.0024" y="72.9398" width="24.7518" height="24.7518" preserveAspectRatio="none" /></g></g>
+      <g data-joint="eyeR" data-pivot="118.2701 85.1868"><image href="art/parts/owl/eyesR.webp" x="100" y="66" width="38.8627" height="38.4" preserveAspectRatio="none" /><g data-joint="pupilR" data-pivot="118.2701 85.1868"><image href="art/parts/owl/pupilR.webp" x="106.0145" y="72.9398" width="24.7518" height="24.7518" preserveAspectRatio="none" /></g></g>
+      <g data-joint="lidL" data-pivot="81.2872 66" style="transform: scaleY(0)"><image href="art/parts/owl/lidsL.webp" x="61.1373" y="66" width="38.8627" height="38.4" preserveAspectRatio="none" /></g>
+      <g data-joint="lidR" data-pivot="118.2701 66" style="transform: scaleY(0)"><image href="art/parts/owl/lidsR.webp" x="100" y="66" width="38.8627" height="38.4" preserveAspectRatio="none" /></g>
       <g data-joint="mouth" data-pivot="100 104">
         <g data-mouth="closed"><image href="art/parts/owl/beak_closed.webp" x="89.0" y="101.0" width="22.0" height="20.3" /></g>
         <g data-mouth="mid"><image href="art/parts/owl/beak_open.webp" x="89.0" y="101.0" width="22.1" height="25.5" /></g>

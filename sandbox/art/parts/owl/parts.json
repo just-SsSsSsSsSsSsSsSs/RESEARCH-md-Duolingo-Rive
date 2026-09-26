@@ -58,7 +58,14 @@
         193
       ],
       "scale": 0.6,
-      "bytes": 16350
+      "bytes": 16350,
+      "superseded_by": [
+        "eyesL",
+        "eyesR",
+        "pupilL",
+        "pupilR"
+      ],
+      "kept_for": "recomposite proof reference (samples/proofs/g11b_slice_diff.json)"
     },
     "lids": {
       "file": "lids.webp",
@@ -69,7 +76,12 @@
         193
       ],
       "scale": 0.6,
-      "bytes": 12668
+      "bytes": 12668,
+      "superseded_by": [
+        "lidsL",
+        "lidsR"
+      ],
+      "kept_for": "recomposite proof reference (samples/proofs/g11b_slice_diff.json)"
     },
     "beak_closed": {
       "file": "beak_closed.webp",
@@ -103,7 +115,102 @@
       ],
       "scale": 0.6,
       "bytes": 13708
+    },
+    "eyesL": {
+      "file": "eyesL.webp",
+      "w": 168,
+      "h": 166,
+      "plate_offset": [
+        0,
+        0
+      ],
+      "derived_from": "eyes.webp",
+      "lossless": true,
+      "bytes": 21006,
+      "note": "iris disc inpainted from sclera ring"
+    },
+    "pupilL": {
+      "file": "pupilL.webp",
+      "w": 107,
+      "h": 107,
+      "plate_offset": [
+        34,
+        30
+      ],
+      "derived_from": "eyes.webp",
+      "lossless": true,
+      "bytes": 10548,
+      "iris": {
+        "cx": 87.11,
+        "cy": 82.96,
+        "r": 50.29,
+        "cut_r": 52.79
+      }
+    },
+    "lidsL": {
+      "file": "lidsL.webp",
+      "w": 168,
+      "h": 166,
+      "plate_offset": [
+        0,
+        0
+      ],
+      "derived_from": "lids.webp",
+      "lossless": true,
+      "bytes": 21558
+    },
+    "eyesR": {
+      "file": "eyesR.webp",
+      "w": 168,
+      "h": 166,
+      "plate_offset": [
+        168,
+        0
+      ],
+      "derived_from": "eyes.webp",
+      "lossless": true,
+      "bytes": 20626,
+      "note": "iris disc inpainted from sclera ring"
+    },
+    "pupilR": {
+      "file": "pupilR.webp",
+      "w": 107,
+      "h": 107,
+      "plate_offset": [
+        194,
+        30
+      ],
+      "derived_from": "eyes.webp",
+      "lossless": true,
+      "bytes": 10542,
+      "iris": {
+        "cx": 246.98,
+        "cy": 82.94,
+        "r": 50.39,
+        "cut_r": 52.89
+      }
+    },
+    "lidsR": {
+      "file": "lidsR.webp",
+      "w": 168,
+      "h": 166,
+      "plate_offset": [
+        168,
+        0
+      ],
+      "derived_from": "lids.webp",
+      "lossless": true,
+      "bytes": 21564
     }
   },
-  "total_bytes": 113220
+  "total_bytes": 219064,
+  "slice": {
+    "tool": "tools/slice_parts.py",
+    "cut_col": 168,
+    "transparent_gap_cols": [
+      161,
+      174
+    ]
+  },
+  "total_bytes_active": 190046
 }

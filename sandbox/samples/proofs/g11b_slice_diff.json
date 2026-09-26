@@ -1,0 +1,93 @@
+{
+  "tool": "sandbox/tools/slice_parts.py",
+  "plate": {
+    "w": 336,
+    "h": 166
+  },
+  "transparent_gap_cols": {
+    "eyes": [
+      161,
+      174
+    ],
+    "lids": [
+      160,
+      174
+    ]
+  },
+  "cut_col": 168,
+  "halves": {
+    "L": [
+      0,
+      168
+    ],
+    "R": [
+      168,
+      336
+    ]
+  },
+  "iris_fit": {
+    "L": {
+      "iter": 3,
+      "inliers": 272,
+      "boundary_points": 329,
+      "rms_residual_px": 0.3634071686644728,
+      "cx": 87.10627927419286,
+      "cy": 82.9642737866001,
+      "r": 50.2879021927697
+    },
+    "R": {
+      "iter": 3,
+      "inliers": 274,
+      "boundary_points": 331,
+      "rms_residual_px": 0.37849655155754763,
+      "cx": 246.98032771590684,
+      "cy": 82.94305594919948,
+      "r": 50.38791823323395
+    }
+  },
+  "original_rendered_rect": {
+    "x": 61.13734939759036,
+    "y": 66.0,
+    "w": 77.72530120481927,
+    "h": 38.4,
+    "s": 0.23132530120481926
+  },
+  "plate_recomposite": {
+    "eyes_max_abs_diff": 0,
+    "eyes_pixels_differing": 0,
+    "lids_max_abs_diff": 0,
+    "lids_pixels_differing": 0,
+    "pass_pixel_diff_0": true
+  },
+  "bytes": {
+    "total_all": 219064,
+    "total_active": 190046,
+    "new": {
+      "eyesL": 21006,
+      "pupilL": 10548,
+      "lidsL": 21558,
+      "eyesR": 20626,
+      "pupilR": 10542,
+      "lidsR": 21564
+    },
+    "superseded": {
+      "eyes": 16350,
+      "lids": 12668
+    }
+  },
+  "svg": {
+    "path": "sandbox/companions/owl_p2.svg",
+    "pivots_units": {
+      "L": [
+        81.287,
+        85.192
+      ],
+      "R": [
+        118.27,
+        85.187
+      ]
+    },
+    "image_rects_preserveAspectRatio": "none",
+    "scale_units_per_px": 0.23132530120481926
+  }
+}
