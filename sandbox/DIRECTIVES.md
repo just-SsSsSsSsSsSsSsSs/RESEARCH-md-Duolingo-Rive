@@ -54,3 +54,16 @@ Format: `#NN | date (UTC) | source | status | summary` then indented detail and 
     sandbox/measure_matrix.py + samples/measure_matrix.json (v2+Foley / v2 no-Foley / v1 x CPU 1x/4x, n=5, 3 interleaved rounds, 10 s).
     Result: CPU 1x v2 holds budget (p95 16.8, jank 0), v1 janks 2.8 pct; CPU 4x no cell holds jank < 1 pct, v2+Foley worst (p95 33.3, 5.8 pct).
     All #03 items now done; next = K9.3 (beats + intent), K9.4-K9.6.
+
+#06 | 2026-09-26 22:13 | gist a402871d rev 97041677 | received | Owner decision: K9.2c accepted "with distinction"; 3 notes recorded; 5 small items; next-cycle plan approved; new constitution rules (annex L)
+    Verified on receipt against the branch (5e5c3d0):
+      item 1 ?sfx=0 measured -> ALREADY DONE: g11c_ship_visible.json check "7_sfx0" {bus:false, foley:false, winkRan:true, lidR_sy 0.367} (added 1892e03, before this review was written).
+      item 2 bankLimit 24 "dead number" -> NOT dead: flight.js reads it (1 use) as the clamp of the velocity-driven bank in small flights only; the 360 roll is a separate layer. Action: scope documented in the spec (flight.bankLimitScope), value kept.
+      item 3 DIRECTIVES.md -> DONE (1c278aa).
+      item 4 stable URL -> owner-side (Pages source), unchanged.
+      item 5 NEXT line said G11 v2 remaining -> at the time of the review it WAS remaining (the silhouette metric landed later in fd262dc); line now reads K9.2b-5 DONE. No misleading line remains.
+    Approved plan (ADR-002 addendum -> perf matrix -> K9.3) already executed for the first two (c5af00b, 5e5c3d0); the ADR extra requirements were met:
+      measured trade-off table (time, perf, who) - yes; one recommendation with evidence - yes (stay A); explicit link to the perf matrix (p95/p99, 5 owls, CPU x4) - yes;
+      third option "vector re-author of the wing only" -> to be added as an explicit row (this cycle).
+    New rules adopted into AGENTS.md section 13: "commit message is not evidence" (result file is), stale-constraint rule (every review greps numeric constraints for readers), visible-cycle rule already in section 11.
+    Three notes recorded with thanks; the honesty incident (9ffc0fd/f6730aa) stays documented in PROGRESS.md as the model to follow.

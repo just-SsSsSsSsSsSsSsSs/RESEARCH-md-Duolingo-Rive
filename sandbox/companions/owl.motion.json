@@ -134,6 +134,7 @@
     ],
     "bankPerVx": 55,
     "bankLimit": 24,
+    "bankLimitScope": "bank ONLY: clamps the velocity-driven tilt (bankPerVx) during a plain \"small\" flight (flight.js line with Math.max(-F.bankLimit ...)). It does NOT cap the aerial roll: medium/large tiers add a separate 360 deg roll layer (see flight.roll). Kept because the code reads it (grep 1 use); documented per the stale-constraint rule (DIRECTIVES #06 item 2).",
     "rollIfDistOver": 260,
     "rollMs": 620,
     "glidePhase": [
