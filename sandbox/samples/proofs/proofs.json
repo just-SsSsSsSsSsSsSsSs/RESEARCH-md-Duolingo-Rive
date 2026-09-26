@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-09-26T18:54:42Z",
+  "captured_at": "2026-09-26T19:07:49Z",
   "slow_rate": 0.25,
   "gates": {
     "G3_anticipation": [
@@ -16,7 +16,7 @@
         },
         "host": "",
         "state": "fly",
-        "t_real_ms": 87
+        "t_real_ms": 89
       },
       {
         "busy": true,
@@ -31,7 +31,22 @@
         },
         "host": "",
         "state": "fly",
-        "t_real_ms": 604
+        "t_real_ms": 401
+      },
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(1.163, 0.86)",
+        "springs": {
+          "armL": 0,
+          "armR": 0,
+          "head": 0,
+          "legL": 0,
+          "legR": 0
+        },
+        "host": "",
+        "state": "fly",
+        "t_real_ms": 583
       },
       {
         "busy": true,
@@ -46,37 +61,22 @@
         },
         "host": "",
         "state": "fly",
-        "t_real_ms": 1023
+        "t_real_ms": 806
       },
       {
         "busy": true,
         "flying": true,
-        "squash": "scale(1, 1)",
+        "squash": "scale(0.893, 1.12)",
         "springs": {
-          "armL": 1.97,
-          "armR": -1.97,
-          "head": -0.29,
-          "legL": -0.64,
-          "legR": -0.64
+          "armL": 0.26,
+          "armR": -0.26,
+          "head": -0.03,
+          "legL": -0.06,
+          "legR": -0.06
         },
         "host": "",
         "state": "fly",
-        "t_real_ms": 1391
-      },
-      {
-        "busy": true,
-        "flying": true,
-        "squash": "scale(1, 1)",
-        "springs": {
-          "armL": 4.21,
-          "armR": -4.21,
-          "head": -0.59,
-          "legL": -1.51,
-          "legR": -1.51
-        },
-        "host": "",
-        "state": "fly",
-        "t_real_ms": 1603
+        "t_real_ms": 1040
       }
     ],
     "G2_landing_squash": [
@@ -85,167 +85,167 @@
         "flying": true,
         "squash": "scale(1.25, 0.8)",
         "springs": {
-          "armL": -1.25,
-          "armR": 1.25,
-          "head": -0.18,
-          "legL": 0.2,
-          "legR": 0.2
+          "armL": -1.12,
+          "armR": 1.12,
+          "head": -0.15,
+          "legL": 0.28,
+          "legR": 0.28
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "fly",
-        "t_real_ms": 4
+        "t_real_ms": 8
       },
       {
         "busy": true,
         "flying": true,
-        "squash": "scale(0.993, 1.007)",
+        "squash": "scale(1.03, 0.971)",
         "springs": {
-          "armL": -7.65,
-          "armR": 7.65,
-          "head": -0.77,
-          "legL": 0.03,
-          "legR": 0.03
+          "armL": -8.62,
+          "armR": 8.62,
+          "head": -0.96,
+          "legL": 0.28,
+          "legR": 0.28
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "fly",
-        "t_real_ms": 487
+        "t_real_ms": 400
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": -0.92,
-          "armR": 0.92,
-          "head": 0.02,
-          "legL": -0.05,
-          "legR": -0.05
+          "armL": -3.79,
+          "armR": 3.79,
+          "head": -0.23,
+          "legL": 0.1,
+          "legR": 0.1
+        },
+        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
+        "state": "fly",
+        "t_real_ms": 773
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.05,
+          "armR": -0.05,
+          "head": 0.07,
+          "legL": -0.04,
+          "legR": -0.04
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "idle",
-        "t_real_ms": 1000
+        "t_real_ms": 1154
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.68,
-          "armR": -0.68,
-          "head": 0.07,
+          "armL": 0.78,
+          "armR": -0.78,
+          "head": 0.05,
+          "legL": -0.06,
+          "legR": -0.06
+        },
+        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
+        "state": "idle",
+        "t_real_ms": 1554
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.33,
+          "armR": -0.33,
+          "head": 0,
           "legL": -0.03,
           "legR": -0.03
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "idle",
-        "t_real_ms": 1667
-      },
-      {
-        "busy": false,
-        "flying": false,
-        "squash": "scale(1, 1)",
-        "springs": {
-          "armL": 0.37,
-          "armR": -0.37,
-          "head": 0,
-          "legL": 0,
-          "legR": 0
-        },
-        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
-        "state": "idle",
-        "t_real_ms": 2164
-      },
-      {
-        "busy": false,
-        "flying": false,
-        "squash": "scale(1, 1)",
-        "springs": {
-          "armL": -0.0,
-          "armR": 0,
-          "head": 0,
-          "legL": -0.0,
-          "legR": -0.0
-        },
-        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
-        "state": "idle",
-        "t_real_ms": 4081
+        "t_real_ms": 1943
       }
     ],
     "G5_settle": [
       {
         "busy": true,
         "flying": true,
-        "squash": "scale(1.243, 0.805)",
+        "squash": "scale(1.25, 0.8)",
         "springs": {
-          "armL": -2.97,
-          "armR": 2.97,
-          "head": -0.48,
-          "legL": 0.12,
-          "legR": 0.12
+          "armL": -1.65,
+          "armR": 1.65,
+          "head": -0.32,
+          "legL": -0.17,
+          "legR": -0.17
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "fly",
-        "t_real_ms": 20
+        "t_real_ms": 5
+      },
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(0.987, 1.013)",
+        "springs": {
+          "armL": -7.53,
+          "armR": 7.53,
+          "head": -0.76,
+          "legL": -0.15,
+          "legR": -0.15
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "fly",
+        "t_real_ms": 496
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": -4.59,
-          "armR": 4.59,
-          "head": -0.33,
-          "legL": -0.13,
-          "legR": -0.13
-        },
-        "host": "translate(0px) rotate(0deg) scaleX(-1)",
-        "state": "fly",
-        "t_real_ms": 698
-      },
-      {
-        "busy": false,
-        "flying": false,
-        "squash": "scale(1, 1)",
-        "springs": {
-          "armL": 0.38,
-          "armR": -0.38,
-          "head": 0.08,
-          "legL": -0.04,
-          "legR": -0.04
+          "armL": -1.19,
+          "armR": 1.19,
+          "head": 0.01,
+          "legL": -0.01,
+          "legR": -0.01
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 1222
+        "t_real_ms": 970
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.59,
-          "armR": -0.59,
-          "head": 0.02,
+          "armL": 0.78,
+          "armR": -0.78,
+          "head": 0.06,
+          "legL": 0.04,
+          "legR": 0.04
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 1454
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.33,
+          "armR": -0.33,
+          "head": 0,
           "legL": 0.02,
           "legR": 0.02
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 1703
-      },
-      {
-        "busy": false,
-        "flying": false,
-        "squash": "scale(1, 1)",
-        "springs": {
-          "armL": -0.03,
-          "armR": 0.03,
-          "head": -0.0,
-          "legL": 0.01,
-          "legR": 0.01
-        },
-        "host": "translate(0px) rotate(0deg) scaleX(-1)",
-        "state": "idle",
-        "t_real_ms": 2364
+        "t_real_ms": 1927
       },
       {
         "busy": false,
@@ -254,13 +254,13 @@
         "springs": {
           "armL": -0.04,
           "armR": 0.04,
-          "head": 0,
+          "head": -0.0,
           "legL": -0.0,
           "legR": -0.0
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 2964
+        "t_real_ms": 2396
       }
     ],
     "G3_cue_sequence_first_flight": [
@@ -270,31 +270,31 @@
       },
       {
         "phase": "anticipate",
-        "t_engine_ms": 0.2
+        "t_engine_ms": 0.5
       },
       {
         "phase": "takeoff",
-        "t_engine_ms": 206.3
+        "t_engine_ms": 155.0
       },
       {
         "phase": "flap",
-        "t_engine_ms": 275.8
+        "t_engine_ms": 216.4
       },
       {
         "phase": "blink",
-        "t_engine_ms": 533.1
+        "t_engine_ms": 312.0
       },
       {
         "phase": "flap",
-        "t_engine_ms": 629.1
+        "t_engine_ms": 556.4
       },
       {
         "phase": "cruise",
-        "t_engine_ms": 714.5
+        "t_engine_ms": 645.5
       },
       {
         "phase": "flap",
-        "t_engine_ms": 988.5
+        "t_engine_ms": 896.5
       }
     ],
     "G3_anticipation_ms": {
@@ -303,11 +303,11 @@
         250
       ],
       "drawn_hold_ms": [
-        205.58009443414062,
-        201.87115035554496
+        153.76346071588577,
+        234.74774662791475
       ],
-      "measured_anticipate_to_takeoff_ms": 206.1,
-      "measured_land_to_settle_ms": 169.1,
+      "measured_anticipate_to_takeoff_ms": 154.5,
+      "measured_land_to_settle_ms": 166.2,
       "method": "engine cue timestamps (performance.now at cue) multiplied by the slow-motion rate; the earlier strip-based reading (crouch visible 93-568 ms real) was real time at x0.25 = 24-142 ms engine plus the 140 ms takeoff stretch, not a longer hold",
       "pass": true
     },
@@ -318,10 +318,10 @@
       "zeta": 0.6,
       "damped_half_period_ms": 292,
       "theory_overshoot_ratio": 0.097,
-      "observed_first_swing_deg": -7.65,
-      "observed_second_swing_deg": 0.68,
+      "observed_first_swing_deg": -8.62,
+      "observed_second_swing_deg": 0.78,
       "rule": "named: follow-through rebound; acceptance cap = second swing <= 0.15 x first swing (|ratio| <= 0.15) and <= 2 deg absolute",
-      "observed_ratio": 0.089,
+      "observed_ratio": 0.09,
       "pass": true
     },
     "K4_state_history": [
@@ -330,42 +330,42 @@
         "from": "idle",
         "to": "fly",
         "state": null,
-        "t": 1616
+        "t": 1199
       },
       {
         "type": "enter",
         "from": "fly",
         "to": "idle",
         "state": null,
-        "t": 9015
+        "t": 8369
       },
       {
         "type": "settled",
         "from": null,
         "to": null,
         "state": "idle",
-        "t": 9291
+        "t": 8613
       },
       {
         "type": "enter",
         "from": "idle",
         "to": "fly",
         "state": null,
-        "t": 13917
+        "t": 10779
       },
       {
         "type": "enter",
         "from": "fly",
         "to": "idle",
         "state": null,
-        "t": 21308
+        "t": 18278
       },
       {
         "type": "settled",
         "from": null,
         "to": null,
         "state": "idle",
-        "t": 21561
+        "t": 18524
       }
     ],
     "G4_path_trace": {
@@ -380,29 +380,58 @@
       {
         "points": 41,
         "chord_px": 344.8,
-        "sagitta_px": 58.9,
-        "sagitta_pct_of_chord": 17.1,
-        "min_curvature_radius_px": 70,
+        "sagitta_px": 61.7,
+        "sagitta_pct_of_chord": 17.9,
+        "min_curvature_radius_px": 64,
         "points_within_half_px_of_chord": 2,
         "pass_not_straight": true
       },
       {
         "points": 41,
         "chord_px": 344.8,
-        "sagitta_px": 83.8,
-        "sagitta_pct_of_chord": 24.3,
-        "min_curvature_radius_px": 74,
+        "sagitta_px": 80.1,
+        "sagitta_pct_of_chord": 23.2,
+        "min_curvature_radius_px": 75,
         "points_within_half_px_of_chord": 2,
         "pass_not_straight": true
       }
     ],
+    "G7_edge_width": {
+      "dpr1_rest": {
+        "rows_sampled": 23,
+        "edge_width_device_px_median": 3,
+        "edge_width_device_px_max": 8,
+        "edge_width_css_px_median": 3.0
+      },
+      "dpr1_flight": {
+        "rows_sampled": 25,
+        "edge_width_device_px_median": 2,
+        "edge_width_device_px_max": 14,
+        "edge_width_css_px_median": 2.0
+      },
+      "dpr2_rest": {
+        "rows_sampled": 23,
+        "edge_width_device_px_median": 3,
+        "edge_width_device_px_max": 8,
+        "edge_width_css_px_median": 1.5
+      },
+      "dpr2_flight": {
+        "rows_sampled": 21,
+        "edge_width_device_px_median": 4,
+        "edge_width_device_px_max": 18,
+        "edge_width_css_px_median": 2.0
+      },
+      "pass_soft_edge": true,
+      "pass_no_temporal_aliasing": true,
+      "method": "row scan of the wingL screenshot: ramp length between background and stable part colour, median over ~20 rows; raster webp parts drawn through SVG <image> are resampled by the compositor"
+    },
     "G8_v1_after_landing": {
       "host": "translate(240px, -60px) scaleX(1)",
       "anims": 28
     },
     "G8_v2_after_landing": {
       "host": "translate(240px, -60px) rotate(0deg) scaleX(1)",
-      "anims": 31
+      "anims": 30
     }
   }
 }
