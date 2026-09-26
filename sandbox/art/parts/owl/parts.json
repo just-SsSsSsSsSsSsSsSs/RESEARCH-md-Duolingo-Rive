@@ -1,0 +1,109 @@
+{
+  "source": "src/owl_sheet.png",
+  "cell": [
+    662,
+    662
+  ],
+  "parts": {
+    "head": {
+      "file": "head.webp",
+      "w": 284,
+      "h": 233,
+      "cell_offset": [
+        44,
+        105
+      ],
+      "scale": 0.5,
+      "bytes": 14942
+    },
+    "body": {
+      "file": "body.webp",
+      "w": 241,
+      "h": 238,
+      "cell_offset": [
+        91,
+        90
+      ],
+      "scale": 0.5,
+      "bytes": 10524
+    },
+    "wingL": {
+      "file": "wingL.webp",
+      "w": 192,
+      "h": 275,
+      "cell_offset": [
+        141,
+        57
+      ],
+      "scale": 0.5,
+      "bytes": 10378
+    },
+    "wingR": {
+      "file": "wingR.webp",
+      "w": 193,
+      "h": 274,
+      "cell_offset": [
+        138,
+        57
+      ],
+      "scale": 0.5,
+      "bytes": 10794
+    },
+    "eyes": {
+      "file": "eyes.webp",
+      "w": 280,
+      "h": 138,
+      "cell_offset": [
+        52,
+        194
+      ],
+      "scale": 0.5,
+      "bytes": 13084
+    },
+    "lids": {
+      "file": "lids.webp",
+      "w": 280,
+      "h": 138,
+      "cell_offset": [
+        53,
+        194
+      ],
+      "scale": 0.5,
+      "bytes": 10190
+    },
+    "beak_closed": {
+      "file": "beak_closed.webp",
+      "w": 114,
+      "h": 105,
+      "cell_offset": [
+        215,
+        227
+      ],
+      "scale": 0.5,
+      "bytes": 3692
+    },
+    "beak_open": {
+      "file": "beak_open.webp",
+      "w": 117,
+      "h": 135,
+      "cell_offset": [
+        215,
+        198
+      ],
+      "scale": 0.5,
+      "bytes": 5072
+    },
+    "legs": {
+      "file": "legs.webp",
+      "w": 283,
+      "h": 144,
+      "cell_offset": [
+        49,
+        188
+      ],
+      "scale": 0.5,
+      "bytes": 10586
+    }
+  },
+  "total_bytes": 89262
+}
