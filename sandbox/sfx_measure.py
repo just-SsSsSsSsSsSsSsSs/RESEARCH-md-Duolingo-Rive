@@ -34,7 +34,8 @@ async def main():
     stamp = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     async with async_playwright() as p:
         b = await p.chromium.launch()            # default flags: no --autoplay-policy override
-        pg = await b.new_page(viewport={'width': 1000, 'height': 800})
+        ctx0 = await b.new_context(viewport={'width': 1000, 'height': 800})   # pristine incognito context: no prior activation
+        pg = await ctx0.new_page()
         errors = []
         pg.on('pageerror', lambda e: errors.append(str(e)))
         pg.on('console', lambda m: errors.append(m.text) if m.type == 'error' else None)
@@ -42,19 +43,20 @@ async def main():
         await pg.wait_for_function('window.__rigs && window.__rigs.length===1 && window.__foley')
 
         # ---------------- autoplay gate ----------------
-        before = await pg.evaluate("({status: window.__bus.status, hasCtx: !!window.__bus.ctx, userActive: navigator.userActivation ? navigator.userActivation.hasBeenActive : null})")
+        before = await pg.evaluate("({status: window.__bus.status, hasCtx: !!window.__bus.ctx, userActivation: navigator.userActivation ? {isActive: navigator.userActivation.isActive, hasBeenActive: navigator.userActivation.hasBeenActive} : null})")
         await pg.evaluate("void window.__rigs[0].states.fire('answer:correct')")
         await pg.wait_for_function("!window.__rigs[0].busy && window.__rigs[0].states.state==='idle'", timeout=15000)
-        no_gesture = await pg.evaluate("({...window.__bus.stats, status: window.__bus.status, cuesRequested: window.__foley.trace.filter(t => t.sfx).length, vfxSpawned: window.__foley.vfx.stats.spawned})")
+        no_gesture = await pg.evaluate("({...window.__bus.stats, status: window.__bus.status, cuesRequested: window.__foley.trace.filter(t => t.sfx).length, vfxSpawned: window.__foley.vfx.stats.spawned, userActivation: navigator.userActivation ? {isActive: navigator.userActivation.isActive, hasBeenActive: navigator.userActivation.hasBeenActive} : null})")
         await pg.mouse.click(500, 620)           # the one real gesture
         await pg.wait_for_timeout(250)
-        after = await pg.evaluate("({status: window.__bus.status, ctxState: window.__bus.ctx && window.__bus.ctx.state, baseLatencyMs: window.__bus.ctx ? +(window.__bus.ctx.baseLatency*1000).toFixed(1) : null, outputLatencyMs: window.__bus.ctx && window.__bus.ctx.outputLatency !== undefined ? +(window.__bus.ctx.outputLatency*1000).toFixed(1) : null, sampleRate: window.__bus.ctx && window.__bus.ctx.sampleRate, userActive: navigator.userActivation ? navigator.userActivation.hasBeenActive : null})")
+        after = await pg.evaluate("({status: window.__bus.status, ctxState: window.__bus.ctx && window.__bus.ctx.state, baseLatencyMs: window.__bus.ctx ? +(window.__bus.ctx.baseLatency*1000).toFixed(1) : null, outputLatencyMs: window.__bus.ctx && window.__bus.ctx.outputLatency !== undefined ? +(window.__bus.ctx.outputLatency*1000).toFixed(1) : null, sampleRate: window.__bus.ctx && window.__bus.ctx.sampleRate, userActivation: navigator.userActivation ? {isActive: navigator.userActivation.isActive, hasBeenActive: navigator.userActivation.hasBeenActive} : null})")
         autoplay = {
             'measured_at': stamp, 'launch_flags': 'playwright default (policy not bypassed)',
             'before_gesture': before, 'cues_without_gesture': no_gesture, 'after_one_click': after,
             'unlock_call_site': 'document pointerdown/keydown listener, capture phase, synchronous (index.html unlockAudio -> SoundBus.unlock)',
             'pass': before['status'] == 'locked' and no_gesture['played'] == 0 and no_gesture['vfxSpawned'] > 0 and after['ctxState'] == 'running',
-            'note': 'headless Chromium honours the gesture requirement here (status stayed locked until the click); a real-device iPhone mute-switch check remains owner-side.'
+            'context': 'fresh incognito BrowserContext, first navigation, zero prior input events; userActivation logged at each step (isActive = transient, hasBeenActive = sticky)',
+            'note': 'headless Chromium honours the gesture requirement here (status stayed locked until the click); a real-device iPhone mute-switch check remains owner-side. If hasBeenActive reads true before the click, the automation runtime granted activation and the flag is reported as-is; the gate is the AudioContext state, not the flag.'
         }
         dump('sfx_autoplay.json', autoplay)
         print('autoplay', autoplay['pass'], before['status'], '->', after['ctxState'])
@@ -68,7 +70,10 @@ async def main():
             await pg.wait_for_timeout(300)
             await pg.wait_for_function("!window.__rigs[0].busy && window.__rigs[0].states.state==='idle'", timeout=20000)
             await pg.wait_for_timeout(400)
+        await pg.wait_for_timeout(100)                                       # let the last rAF fill tVisualEffective
         log = await pg.evaluate("window.__bus.log")
+        eff = [l['offsetEffectiveMs'] for l in log if l.get('offsetEffectiveMs') is not None]
+        present = [l['presentDelayMs'] for l in log if l.get('presentDelayMs') is not None]
         ctrl = [l['callDelayMs'] + l['scheduleErrMs'] for l in log]      # what the engine controls
         total = [l['offsetMs'] for l in log]                                # incl. device latency (audible)
         by_cue = {}
@@ -84,6 +89,10 @@ async def main():
             'target_ms': 16.7, 'cap_ms': 40,
             'pass_target': max(ctrl) <= 16.7, 'pass_cap': max(ctrl) <= 40,
             'pass_total_under_perception_65ms': max(total) <= 65,
+            'present_delay_ms': {'n': len(present), 'min': min(present), 'max': max(present), 'mean': round(sum(present) / len(present), 1)} if present else None,
+            'offset_effective_ms': {'note': 'audible - first rAF timestamp after the visual write (measured present time, not +16.7 assumed); negative = audio leads the presented frame', 'min': min(eff), 'max': max(eff), 'p95': pct(eff, 0.95)} if eff else None,
+            'pass_effective_under_perception': (max(eff) <= 65 and min(eff) >= -112) if eff else None,
+            'output_latency_compensation': 'DECISION (see ADR-002 consequences): not applied. Delaying visuals by outputLatency would trade a sub-frame audio lag on wired/internal speakers for a 100-200 ms visual lag on Bluetooth for every action, including silent ones. Reported here; owner may opt in later via a spec flag sound.compensateOutputLatency.',
             'per_cue_controlled': {k: {'n': len(v), 'min': min(v), 'max': max(v)} for k, v in by_cue.items()},
             'note': 'The gate applies to the controlled part (JS path + scheduling). Device latency is renderer/hardware (headless Chromium here) and applies equally to the owl voice clips already in production; it is reported, not hidden. Perception thresholds ~65 ms audio-lead / ~112 ms audio-lag (Fujisaki and Nishida 2005).',
             'raw': log,
@@ -136,7 +145,12 @@ async def main():
         await pg.wait_for_timeout(300)
         await pg.wait_for_function("window.__rigs.every(r => !r.busy)", timeout=30000)
         await pg.wait_for_timeout(800)
-        poly = await pg.evaluate("({...window.__poly, stats: window.__bus.stats, polyphony: window.__bus.spec.polyphony, gapMs: window.__bus.spec.sameCueGapMs, log: window.__bus.log.map(l => ({cue: l.cue, t: l.tAudible}))})")
+        poly = await pg.evaluate("({...window.__poly, stats: window.__bus.stats, polyphony: window.__bus.spec.polyphony, gapMs: window.__bus.spec.sameCueGapMs, log: window.__bus.log.map(l => ({cue: l.cue, t: l.tAudible})), priorities: Object.fromEntries(Object.entries(window.__bus.spec.cues).map(([k, c]) => [k, c.priority || 0]))})")
+        top = max(poly['priorities'].values())
+        top_cues = [k for k, v in poly['priorities'].items() if v == top]
+        dbc = poly['stats'].get('droppedByCue', {})
+        top_dropped_poly = {k: dbc[k]['polyphony'] for k in top_cues if k in dbc and dbc[k]['polyphony']}
+        top_dropped_gap = {k: dbc[k]['gap'] for k in top_cues if k in dbc and dbc[k]['gap']}
         # same-cue gap check from the scheduled times
         gaps_ok, min_gap = True, None
         by = {}
@@ -148,12 +162,16 @@ async def main():
                 if g < poly['gapMs'] - 1: gaps_ok = False
         polyr = {'measured_at': stamp, 'owls': 5, 'scene': 'celebrate x5 staggered 90 ms, then fly x5', 'max_concurrent_voices': poly['maxActive'], 'polyphony_cap': poly['polyphony'],
                  'stats': poly['stats'], 'same_cue_min_gap_ms': round(min_gap, 1) if min_gap is not None else None, 'same_cue_gap_rule_ms': poly['gapMs'],
-                 'pass': poly['maxActive'] <= poly['polyphony'] and gaps_ok}
+                 'dropped_by_cue': dbc, 'played_by_cue': poly['stats'].get('playedByCue', {}), 'priorities': poly['priorities'],
+                 'top_priority_cues': top_cues, 'top_priority_dropped_by_polyphony': top_dropped_poly, 'top_priority_dropped_by_same_cue_gap': top_dropped_gap,
+                 'pass_top_priority_never_dropped_by_polyphony': not top_dropped_poly,
+                 'note': 'same-cue gap drops of a top-priority cue are by design (5 owls landing within 120 ms share one land sound); polyphony drops of a top-priority cue would be a defect.',
+                 'pass': poly['maxActive'] <= poly['polyphony'] and gaps_ok and not top_dropped_poly}
         dump('sfx_polyphony.json', polyr)
         print('polyphony max', poly['maxActive'], 'cap', poly['polyphony'], 'stats', poly['stats'], 'min gap', polyr['same_cue_min_gap_ms'], 'pass', polyr['pass'])
         print('console errors:', errors)
         await b.close()
-    summary = {'measured_at': stamp, 'autoplay': autoplay['pass'], 'sync_target': sync['pass_target'], 'sync_cap': sync['pass_cap'], 'slowmo': slow['pass'], 'mix': mixr['pass'], 'polyphony': polyr['pass'], 'sync_total_under_65ms': sync['pass_total_under_perception_65ms'], 'console_errors': errors}
+    summary = {'measured_at': stamp, 'autoplay': autoplay['pass'], 'sync_target': sync['pass_target'], 'sync_cap': sync['pass_cap'], 'slowmo': slow['pass'], 'mix': mixr['pass'], 'polyphony': polyr['pass'], 'sync_total_under_65ms': sync['pass_total_under_perception_65ms'], 'sync_effective_under_perception': sync['pass_effective_under_perception'], 'top_priority_never_dropped': polyr['pass_top_priority_never_dropped_by_polyphony'], 'console_errors': errors}
     dump('sfx_summary.json', summary)
     print(json.dumps(summary))
     return 0 if all(v for k, v in summary.items() if k not in ('measured_at', 'console_errors', 'sync_target')) and not errors else 1

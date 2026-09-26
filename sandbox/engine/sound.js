@@ -56,7 +56,7 @@ export class SoundBus {
     this.active = [];                  // { end, priority, cue, nodes }
     this.lastCueAt = {};               // cue -> ctx time
     this.log = [];                     // sync telemetry: { cue, tVisual, tAudio, offsetMs }
-    this.stats = { played: 0, dropped: 0, stolen: 0, muted: 0 };
+    this.stats = { played: 0, dropped: 0, stolen: 0, muted: 0, droppedByCue: {}, playedByCue: {} };
     this._kick = null;
   }
 
@@ -110,12 +110,12 @@ export class SoundBus {
     if (rate < 0.5 && !opts.ignoreSlow) { this.stats.muted++; return null; }   // slow-motion: Foley would read as detached
     const now = this.ctx.currentTime;
     const gap = (this.spec.sameCueGapMs || 120) / 1000;
-    if (this.lastCueAt[name] !== undefined && now - this.lastCueAt[name] < gap) { this.stats.dropped++; return null; }
+    if (this.lastCueAt[name] !== undefined && now - this.lastCueAt[name] < gap) { this._drop(name, 'gap'); return null; }
     this.active = this.active.filter((v) => v.end > now);
     if (this.active.length >= (this.spec.polyphony || 3)) {
       const weakest = this.active.reduce((m, v) => (v.priority < m.priority ? v : m), this.active[0]);
       if (weakest.priority < (c.priority || 0)) { this._stop(weakest); this.stats.stolen++; }
-      else { this.stats.dropped++; return null; }
+      else { this._drop(name, 'polyphony'); return null; }
     }
     const t0 = now;                                // head of the audio clock; the render quantum (128 frames ~2.7 ms) is the only wait
     const stretch = 1 / rate;                      // slow-motion between 0.5x and 1x stretches the envelope
@@ -128,7 +128,7 @@ export class SoundBus {
       end = Math.max(end, e);
     }
     const v = { end, priority: c.priority || 0, cue: name, nodes };
-    this.active.push(v); this.lastCueAt[name] = now; this.stats.played++;
+    this.active.push(v); this.lastCueAt[name] = now; this.stats.played++; this.stats.playedByCue[name] = (this.stats.playedByCue[name] || 0) + 1;
     if (opts.tVisual !== undefined) {
       // one-clock comparison: map the scheduled audio time into performance.now() ms
       // getOutputTimestamp pairs a context time with the performance.now() at which that audio
@@ -143,11 +143,23 @@ export class SoundBus {
         scheduleErrMs: +((t0 - now) * 1000).toFixed(1),              // lookahead added on the audio clock (0)
         deviceLatencyMs: +renderAheadMs.toFixed(1),                   // renderer + hardware, same for every cue
         offsetMs: +(audible - opts.tVisual).toFixed(1),               // total: visual onset -> audible
-        baseLatencyMs: +baseLatencyMs.toFixed(1), outputLatencyMs: +outputLatencyMs.toFixed(1), rate });
+        baseLatencyMs: +baseLatencyMs.toFixed(1), outputLatencyMs: +outputLatencyMs.toFixed(1), rate,
+        tVisualEffective: null, presentDelayMs: null, offsetEffectiveMs: null });
+      const entry = this.log[this.log.length - 1];
       if (this.log.length > 400) this.log.shift();
+      // The JS write is not yet on screen: the compositor presents it at the next vsync. The first rAF
+      // timestamp after the write is the earliest present time observable from JS (measured, not assumed).
+      if (typeof requestAnimationFrame === 'function') requestAnimationFrame((tFrame) => {
+        entry.tVisualEffective = +tFrame.toFixed(1);
+        entry.presentDelayMs = +(tFrame - opts.tVisual).toFixed(1);
+        entry.offsetEffectiveMs = +(entry.tAudible - tFrame).toFixed(1);   // negative = audio leads the presented frame
+      });
     }
     return t0;
   }
+
+  /** Drop accounting per cue and reason (gap = same cue within sameCueGapMs, polyphony = no lower-priority victim). */
+  _drop(name, reason) { this.stats.dropped++; const d = this.stats.droppedByCue[name] || (this.stats.droppedByCue[name] = { gap: 0, polyphony: 0 }); d[reason]++; }
 
   _stop(v) { for (const n of v.nodes) { try { n.stop(); } catch (e) { /* already ended */ } } this.active = this.active.filter((x) => x !== v); }
 
