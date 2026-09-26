@@ -125,7 +125,7 @@ async def main():
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(json.dumps({k: v['mouth'] for k, v in report['poses'].items()}), 'sheet ok' if Image else 'no PIL')
     if Image:
-        print('| pose | silhouette delta % (sharp) | after blur 6 px % | gate >= %.0f |' % SIL_GATE_PCT); print('|---|---|---|---|')
+        print(f'| pose | silhouette delta pct (sharp) | after blur {BLUR_PX} px pct | gate >= {SIL_GATE_PCT:.0f} |'); print('|---|---|---|---|')
         for n in POSES:
             sm = report['poses'][n]['silhouette']; print(f"| {n} | {sm['silhouette_delta_pct']} | {sm['silhouette_delta_blur_pct']} | {'PASS' if sm['pass_gate'] else 'FAIL'} |")
         print('silhouette pass_all', report['silhouette']['pass_all'], 'failing', report['silhouette']['failing'])

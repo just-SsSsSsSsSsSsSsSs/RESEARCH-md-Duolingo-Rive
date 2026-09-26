@@ -677,18 +677,18 @@
     "alert": {
       "joints": {
         "head": {
-          "rot": -6,
-          "y": -3
+          "rot": -8,
+          "y": -7
         },
         "body": {
-          "sy": 1.03,
-          "sx": 0.985
+          "sy": 1.09,
+          "sx": 0.95
         },
         "armL": {
-          "rot": 6
+          "rot": -14
         },
         "armR": {
-          "rot": -4
+          "rot": 14
         },
         "pupilL": {
           "x": 3,
@@ -707,7 +707,8 @@
       },
       "lids": 0.0,
       "mouth": "closed",
-      "snapMs": 60
+      "snapMs": 60,
+      "note": "G11 v2 silhouette-first: neck up, body tall and narrow (scale from the feet pivot, no lift), wings tucked; face beat unchanged. Was 7.9 pct silhouette (face-only) before."
     },
     "charged": {
       "joints": {
