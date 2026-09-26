@@ -29,6 +29,9 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
     this.busy = false; this.flying = false; return;
   }
 
+  // 0) intent (K9.3): eyes -> head toward the target, body last (spec.acting.intent; ?intent=0 for A/B)
+  if (this.intent) this._lastIntent = await this.intent(dx, dy);
+
   // 1) anticipation (G3)
   const crouchSy = S.takeoffCrouch.scaleY, hold = randIn(S.takeoffCrouch.holdMs);
   this._writeSquash(1 / crouchSy, crouchSy);
@@ -39,6 +42,7 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
   if (headDip) { headDip.cancel(); this.live.delete(headDip); }
   this._writeSquash(1 / S.takeoffStretch.scaleY, S.takeoffStretch.scaleY);
   this.later(() => this._writeSquash(1, 1), S.takeoffStretch.ms);
+  if (this.releaseIntent) this.releaseIntent();               // the flight owns head + pupils from here
   this.cue('takeoff', { dir: dx < -10 ? -1 : 1, dist });
 
   // 2) arc (G4)
@@ -107,6 +111,7 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
   this.secondary.impulse('armL', -260); this.secondary.impulse('armR', 260); this.secondary.impulse('head', -40);
   this.squash.impact(S.landing.scaleY);
   this.cue('land', { dist });
+  if (this.releaseIntent) this.releaseIntent();               // eyes lead the settle: pupils re-centre first (spec.acting.intent.landRecentreMs is the budget measured by intent_proof.py)
   await this._runSquash();
   this.cue('settle');
   this.setMouth('closed');

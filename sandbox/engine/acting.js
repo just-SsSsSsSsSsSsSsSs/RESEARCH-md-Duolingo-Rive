@@ -83,6 +83,47 @@ P.dart = function (to) {
   return new Promise((res) => this.later(() => { this.release(/pupil/); res(true); }, snap + hold));
 };
 
+/**
+ * K9.3 intent - "look before you leap". Runs BEFORE the take-off crouch:
+ *   t0            pupils snap toward the target direction (spec.acting.intent.gazeSnapMs), L/R jitter from gaze.dart.asymPx
+ *   t0 + headLag  head turns toward the target (headDeg, headMs) - eye-head latency 40-50 ms [Zangemeister & Stark 1982]
+ *   t0 + bodyLag  resolves -> the caller starts the crouch (body last)
+ * Layers are fill:forwards and released by releaseIntent() at take-off so the flight owns the head again.
+ * Data only: nothing here is a constant; all numbers come from spec.acting.intent. Disabled by ?intent=0 or enabled:false.
+ */
+P.intent = async function (dx, dy) {
+  const I = this.spec.acting && this.spec.acting.intent;
+  if (!I || I.enabled === false || REDUCED || this.disposed) return { ran: false };
+  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('intent') === '0') return { ran: false };
+  const D = (this.spec.gaze && this.spec.gaze.dart) || {};
+  const dist = Math.hypot(dx, dy) || 1, ux = dx / dist, uy = dy / dist;
+  const amp = (D.ampPx ? D.ampPx[1] : 5) * (I.gazeFractionOfDart ?? 0.85), asym = D.asymPx ?? 0.8;
+  const snap = randIn(I.gazeSnapMs) / clock.rate, headLag = randIn(I.headLagMs) / clock.rate, bodyLag = randIn(I.bodyLagMs) / clock.rate;
+  const t0 = performance.now();
+  this.release(/pupil/);
+  this._intentLayers = [];
+  for (const p of ['pupilL', 'pupilR']) {
+    const jx = rand(-asym, asym), jy = rand(-asym, asym) * 0.5;
+    const a = this.anim(this.j(p), [{ transform: 'translate(0,0)' }, { transform: `translate(${(ux * amp + jx).toFixed(2)}px, ${(uy * amp * 0.6 + jy).toFixed(2)}px)` }],
+      { duration: snap, easing: 'cubic-bezier(.2,.9,.3,1.05)', fill: 'forwards' }, true);
+    if (a) this._intentLayers.push(a);
+  }
+  const headDeg = (ux >= 0 ? 1 : -1) * I.headDeg * (0.85 + Math.abs(ux) * 0.15) - uy * I.headDeg * 0.4;   // turn toward the side, dip a little toward a low target
+  const head = this.anim(this.j('head'), [{ transform: 'rotate(0deg)' }, { transform: `rotate(${headDeg.toFixed(2)}deg)` }],
+    { duration: I.headMs / clock.rate, delay: headLag, easing: EASE.soft, composite: 'add', fill: 'forwards' }, true);
+  if (head) this._intentLayers.push(head);
+  this.cue('intent', { dx, dy, snapMs: snap * clock.rate, headLagMs: headLag * clock.rate, bodyLagMs: bodyLag * clock.rate, headDeg });
+  this.stats.intents = (this.stats.intents || 0) + 1;
+  await this._sleep(bodyLag * clock.rate);
+  return { ran: true, t0, snapMs: snap * clock.rate, headLagMs: headLag * clock.rate, bodyLagMs: bodyLag * clock.rate, headDeg };
+};
+
+/** Drop the intent layers (pupils + head) - called at take-off and after landing (eyes lead the settle). */
+P.releaseIntent = function () {
+  for (const a of this._intentLayers || []) { try { a.cancel(); } catch (e) { /* already gone */ } this.live.delete(a); }
+  this._intentLayers = [];
+};
+
 /** Idle micro-saccades: tiny pupil jumps, only when idle. Returns a stop function. */
 P.startSaccades = function () {
   const S = this.spec.gaze && this.spec.gaze.saccade;
