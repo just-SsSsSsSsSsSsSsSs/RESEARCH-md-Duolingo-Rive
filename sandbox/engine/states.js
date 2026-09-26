@@ -25,7 +25,9 @@ const CLIPS = {
     recoil: (rig) => rig.sad(),
     flight: (rig, ctx) => {
       const trace = !!(ctx && ctx.trace);
-      if (ctx && ctx.target) return rig.flyTo(ctx.target, { trace, home: !!ctx.home });
+      if (ctx && ctx.home) return rig.flyTo(null, { trace, home: true });
+      if (ctx && ctx.by) return rig.flyBy(ctx.by.dx, ctx.by.dy, { trace });          // deterministic vector (proofs, tests)
+      if (ctx && ctx.target) return rig.flyTo(ctx.target, { trace, home: false });
       return rig.roam((ctx && ctx.room) || { left: 200, right: 200, up: 220 }, { trace });
     },
   },

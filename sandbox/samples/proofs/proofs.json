@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-09-26T15:21:42Z",
+  "captured_at": "2026-09-26T15:45:50Z",
   "slow_rate": 0.25,
   "gates": {
     "G3_anticipation": [
@@ -15,8 +15,8 @@
           "legR": 0
         },
         "host": "",
-        "state": "idle",
-        "t_real_ms": 90
+        "state": "fly",
+        "t_real_ms": 93
       },
       {
         "busy": true,
@@ -30,8 +30,8 @@
           "legR": 0
         },
         "host": "",
-        "state": "idle",
-        "t_real_ms": 401
+        "state": "fly",
+        "t_real_ms": 398
       },
       {
         "busy": true,
@@ -45,8 +45,8 @@
           "legR": 0
         },
         "host": "",
-        "state": "idle",
-        "t_real_ms": 601
+        "state": "fly",
+        "t_real_ms": 568
       },
       {
         "busy": true,
@@ -60,8 +60,8 @@
           "legR": 0
         },
         "host": "",
-        "state": "idle",
-        "t_real_ms": 807
+        "state": "fly",
+        "t_real_ms": 806
       },
       {
         "busy": true,
@@ -75,8 +75,8 @@
           "legR": 0
         },
         "host": "",
-        "state": "idle",
-        "t_real_ms": 1006
+        "state": "fly",
+        "t_real_ms": 1039
       }
     ],
     "G2_landing_squash": [
@@ -85,30 +85,30 @@
         "flying": true,
         "squash": "scale(1.25, 0.8)",
         "springs": {
-          "armL": -0.99,
-          "armR": 0.99,
-          "head": -0.13,
-          "legL": 0.21,
-          "legR": 0.21
+          "armL": -1.12,
+          "armR": 1.12,
+          "head": -0.14,
+          "legL": 0.35,
+          "legR": 0.35
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
-        "state": "idle",
+        "state": "fly",
         "t_real_ms": 7
       },
       {
         "busy": true,
         "flying": true,
-        "squash": "scale(1.029, 0.971)",
+        "squash": "scale(1.037, 0.964)",
         "springs": {
-          "armL": -8.59,
-          "armR": 8.59,
-          "head": -0.96,
-          "legL": 0.27,
-          "legR": 0.27
+          "armL": -8.74,
+          "armR": 8.74,
+          "head": -0.98,
+          "legL": 0.33,
+          "legR": 0.33
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
-        "state": "idle",
-        "t_real_ms": 402
+        "state": "fly",
+        "t_real_ms": 396
       },
       {
         "busy": false,
@@ -118,57 +118,57 @@
           "armL": -3.78,
           "armR": 3.78,
           "head": -0.23,
-          "legL": 0.12,
-          "legR": 0.12
+          "legL": 0.11,
+          "legR": 0.11
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
-        "state": "idle",
-        "t_real_ms": 770
+        "state": "fly",
+        "t_real_ms": 768
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": -0.05,
-          "armR": 0.05,
+          "armL": -0.02,
+          "armR": 0.02,
           "head": 0.07,
-          "legL": -0.01,
-          "legR": -0.01
+          "legL": -0.04,
+          "legR": -0.04
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "idle",
-        "t_real_ms": 1139
+        "t_real_ms": 1137
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.78,
-          "armR": -0.78,
+          "armL": 0.79,
+          "armR": -0.79,
           "head": 0.05,
-          "legL": -0.06,
-          "legR": -0.06
+          "legL": -0.07,
+          "legR": -0.07
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "idle",
-        "t_real_ms": 1535
+        "t_real_ms": 1520
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.35,
-          "armR": -0.35,
+          "armL": 0.39,
+          "armR": -0.39,
           "head": 0,
           "legL": -0.04,
           "legR": -0.04
         },
         "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
         "state": "idle",
-        "t_real_ms": 1919
+        "t_real_ms": 1884
       }
     ],
     "G5_settle": [
@@ -177,90 +177,134 @@
         "flying": true,
         "squash": "scale(1.25, 0.8)",
         "springs": {
-          "armL": -0.84,
-          "armR": 0.84,
-          "head": -0.18,
-          "legL": -0.11,
-          "legR": -0.11
+          "armL": -1.68,
+          "armR": 1.68,
+          "head": -0.31,
+          "legL": -0.15,
+          "legR": -0.15
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
-        "state": "idle",
-        "t_real_ms": 7
+        "state": "fly",
+        "t_real_ms": 5
       },
       {
         "busy": true,
         "flying": true,
-        "squash": "scale(0.993, 1.007)",
+        "squash": "scale(0.994, 1.006)",
         "springs": {
           "armL": -7.83,
           "armR": 7.83,
           "head": -0.81,
-          "legL": -0.12,
-          "legR": -0.12
+          "legL": -0.14,
+          "legR": -0.14
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
-        "state": "idle",
-        "t_real_ms": 485
+        "state": "fly",
+        "t_real_ms": 471
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": -1.35,
-          "armR": 1.35,
-          "head": 0,
+          "armL": -1.52,
+          "armR": 1.52,
+          "head": -0.01,
           "legL": -0.02,
           "legR": -0.02
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 973
+        "t_real_ms": 937
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.78,
-          "armR": -0.78,
+          "armL": 0.77,
+          "armR": -0.77,
           "head": 0.07,
           "legL": 0.03,
           "legR": 0.03
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 1419
+        "t_real_ms": 1398
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0.49,
-          "armR": -0.49,
+          "armL": 0.42,
+          "armR": -0.42,
           "head": 0.01,
           "legL": 0.02,
           "legR": 0.02
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 1820
+        "t_real_ms": 1865
       },
       {
         "busy": false,
         "flying": false,
         "squash": "scale(1, 1)",
         "springs": {
-          "armL": 0,
-          "armR": -0.0,
+          "armL": -0.03,
+          "armR": 0.03,
           "head": -0.01,
-          "legL": 0,
-          "legR": 0
+          "legL": -0.0,
+          "legR": -0.0
         },
         "host": "translate(0px) rotate(0deg) scaleX(-1)",
         "state": "idle",
-        "t_real_ms": 2293
+        "t_real_ms": 2359
+      }
+    ],
+    "K4_state_history": [
+      {
+        "type": "enter",
+        "from": "idle",
+        "to": "fly",
+        "state": null,
+        "t": 1275
+      },
+      {
+        "type": "enter",
+        "from": "fly",
+        "to": "idle",
+        "state": null,
+        "t": 8517
+      },
+      {
+        "type": "settled",
+        "from": null,
+        "to": null,
+        "state": "idle",
+        "t": 8764
+      },
+      {
+        "type": "enter",
+        "from": "idle",
+        "to": "fly",
+        "state": null,
+        "t": 10849
+      },
+      {
+        "type": "enter",
+        "from": "fly",
+        "to": "idle",
+        "state": null,
+        "t": 18134
+      },
+      {
+        "type": "settled",
+        "from": null,
+        "to": null,
+        "state": "idle",
+        "t": 18383
       }
     ],
     "G4_path_trace": {
@@ -279,8 +323,5 @@
       "host": "translate(240px, -60px) rotate(0deg) scaleX(1)",
       "anims": 30
     }
-  },
-  "video": [
-    "page@f953e25cc637ab9bc65e82be091fe73b.webm"
-  ]
+  }
 }

@@ -100,7 +100,7 @@ async def main():
         await pg.evaluate(f'window.__setSlow(true)')
         await pg.evaluate("window.__slowRate === undefined")
         # anticipation: hold is 150-250 ms engine time -> 600-1000 ms real at x0.25
-        paths, meta = await frames_during(pg, "window.__rigs[0].flyBy(260, -150)", [80, 300, 550, 800, 1000], 'g3', META)
+        paths, meta = await frames_during(pg, "window.__rigs[0].states.fire('move:to', {by:{dx:260,dy:-150}})", [80, 300, 550, 800, 1000], 'g3', META)
         strip(paths, os.path.join(OUT, 'g3_anticipation_strip.png'))
         report['gates']['G3_anticipation'] = meta
         # wait for landing: total flight 1400-3800 ms engine -> up to 15 s real
@@ -117,7 +117,7 @@ async def main():
         # -> capture overlaps the landing (same flight) at a finer cadence: 6 frames x 0.25 s real = 0.4 s engine at x0.25
         await pg.evaluate('window.__setSlow(false)'); await pg.wait_for_function('!window.__rigs[0].busy', timeout=30000)
         await pg.evaluate('window.__setSlow(true)')
-        await pg.evaluate("void window.__rigs[0].flyBy(-260, 150)")
+        await pg.evaluate("void window.__rigs[0].states.fire('move:to', {by:{dx:-260,dy:150}})")
         # touchdown = squash spring leaves rest (impact) - poll fast enough at x0.25 to catch it
         await pg.wait_for_function("window.__rigs[0].squash && !window.__rigs[0].squash.atRest", timeout=60000, polling=30)
         t0 = time.perf_counter(); paths, meta = [], []
@@ -129,13 +129,14 @@ async def main():
         report['gates']['G5_settle'] = meta
         await pg.evaluate('window.__setSlow(false)')
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=30000)
+        report['gates']['K4_state_history'] = await pg.evaluate("window.__rigs[0].states.history.map(h => ({type: h.type, from: h.from, to: h.to, state: h.state, t: h.t ? Math.round(h.t) : undefined}))")
         await pg.close()
 
         # ---- G4 path trace: two flights with the overlay on ----
         pg = await open_page(ctx, extra='&trace=1')
-        await pg.evaluate("void window.__rigs[0].flyBy(300, -170, {trace: true})")
+        await pg.evaluate("void window.__rigs[0].states.fire('move:to', {by:{dx:300,dy:-170}, trace: true})")
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
-        await pg.evaluate("void window.__rigs[0].flyTo(null, {home: true, trace: true})")
+        await pg.evaluate("void window.__rigs[0].states.fire('move:to', {home: true, trace: true})")
         await pg.wait_for_timeout(700)
         await shot_slot(pg, os.path.join(OUT, 'g4_path_trace_midflight.png'), whole_stage=True)
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
@@ -149,7 +150,7 @@ async def main():
         JOINT = "(() => { const r = window.__rigs[0].j('armL').getBoundingClientRect(); return {x: r.left, y: r.top + scrollY, w: r.width, h: r.height}; })()"
         box = await pg.evaluate(JOINT)
         await pg.screenshot(path=os.path.join(OUT, 'g7_edge_rest.png'), full_page=True, clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
-        await pg.evaluate("void window.__rigs[0].flyBy(200, -120)")
+        await pg.evaluate("void window.__rigs[0].states.fire('move:to', {by:{dx:200,dy:-120}})")
         await pg.wait_for_timeout(900)
         box = await pg.evaluate(JOINT)
         await pg.screenshot(path=os.path.join(OUT, 'g7_edge_flight.png'), full_page=True, clip={'x': box['x'] - 6, 'y': box['y'] - 6, 'width': box['w'] + 12, 'height': box['h'] + 12})
@@ -167,7 +168,7 @@ async def main():
             if eng == 'v1':
                 await pg.evaluate("void window.__rigs[0].fly([{x:0,y:0,t:0},{x:120,y:-140,t:.5},{x:240,y:-60,t:1}], {}, {base:{x:0,y:0}})")
             else:
-                await pg.evaluate("void window.__rigs[0].flyBy(240, -60)")
+                await pg.evaluate("void window.__rigs[0].states.fire('move:to', {by:{dx:240,dy:-60}})")
             await pg.wait_for_timeout(300)
             await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
             await pg.wait_for_timeout(60)
@@ -195,7 +196,7 @@ async def main():
             await pg.evaluate("void window.__rigs[0].states.fire('move:to', {home: true, trace: true})")
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=20000); await pg.wait_for_timeout(1200)
             await pg.evaluate('window.__setSlow(true)')
-            await pg.evaluate("void window.__rigs[0].flyBy(220, -140)")
+            await pg.evaluate("void window.__rigs[0].states.fire('move:to', {by:{dx:220,dy:-140}})")
             await pg.wait_for_timeout(300)
             await pg.wait_for_function("!window.__rigs[0].busy", timeout=60000); await pg.wait_for_timeout(1500)
             await vctx.close()
