@@ -342,6 +342,7 @@
 
   // FPS HUD (rAF delta sampling; cheap)
   const hud = document.getElementById('hud');
+  if (params.get('hud') === '0') hud.style.display = 'none';   // proofs capture without the overlay
   let frames = [], last = performance.now();
   function loop(now) {
     frames.push(now - last); last = now;

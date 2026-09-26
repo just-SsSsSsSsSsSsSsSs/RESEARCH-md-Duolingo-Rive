@@ -1,0 +1,283 @@
+{
+  "captured_at": "2026-09-26T15:20:36Z",
+  "slow_rate": 0.25,
+  "gates": {
+    "G3_anticipation": [
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(1.163, 0.86)",
+        "springs": {
+          "armL": 0,
+          "armR": 0,
+          "head": 0,
+          "legL": 0,
+          "legR": 0
+        },
+        "host": "",
+        "state": "idle",
+        "t_real_ms": 91
+      },
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(1.163, 0.86)",
+        "springs": {
+          "armL": 0,
+          "armR": 0,
+          "head": 0,
+          "legL": 0,
+          "legR": 0
+        },
+        "host": "",
+        "state": "idle",
+        "t_real_ms": 374
+      },
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(1.163, 0.86)",
+        "springs": {
+          "armL": 0,
+          "armR": 0,
+          "head": 0,
+          "legL": 0,
+          "legR": 0
+        },
+        "host": "",
+        "state": "idle",
+        "t_real_ms": 575
+      },
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(1.163, 0.86)",
+        "springs": {
+          "armL": 0,
+          "armR": 0,
+          "head": 0,
+          "legL": 0,
+          "legR": 0
+        },
+        "host": "",
+        "state": "idle",
+        "t_real_ms": 806
+      },
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(0.893, 1.12)",
+        "springs": {
+          "armL": 0,
+          "armR": 0,
+          "head": 0,
+          "legL": 0,
+          "legR": 0
+        },
+        "host": "",
+        "state": "idle",
+        "t_real_ms": 1008
+      }
+    ],
+    "G2_landing_squash": [
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(1.25, 0.8)",
+        "springs": {
+          "armL": -1.11,
+          "armR": 1.11,
+          "head": -0.14,
+          "legL": 0.19,
+          "legR": 0.19
+        },
+        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
+        "state": "idle",
+        "t_real_ms": 8
+      },
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(1.03, 0.971)",
+        "springs": {
+          "armL": -8.62,
+          "armR": 8.62,
+          "head": -0.95,
+          "legL": 0.26,
+          "legR": 0.26
+        },
+        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
+        "state": "idle",
+        "t_real_ms": 408
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": -3.31,
+          "armR": 3.31,
+          "head": -0.18,
+          "legL": 0.1,
+          "legR": 0.1
+        },
+        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
+        "state": "idle",
+        "t_real_ms": 798
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.21,
+          "armR": -0.21,
+          "head": 0.08,
+          "legL": -0.02,
+          "legR": -0.02
+        },
+        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
+        "state": "idle",
+        "t_real_ms": 1193
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.77,
+          "armR": -0.77,
+          "head": 0.04,
+          "legL": -0.05,
+          "legR": -0.05
+        },
+        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
+        "state": "idle",
+        "t_real_ms": 1574
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.31,
+          "armR": -0.31,
+          "head": 0,
+          "legL": -0.03,
+          "legR": -0.03
+        },
+        "host": "translate(260px, -150px) rotate(0deg) scaleX(1)",
+        "state": "idle",
+        "t_real_ms": 1959
+      }
+    ],
+    "G5_settle": [
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(1.25, 0.8)",
+        "springs": {
+          "armL": -1.67,
+          "armR": 1.67,
+          "head": -0.31,
+          "legL": -0.11,
+          "legR": -0.11
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 5
+      },
+      {
+        "busy": true,
+        "flying": true,
+        "squash": "scale(0.992, 1.008)",
+        "springs": {
+          "armL": -7.71,
+          "armR": 7.71,
+          "head": -0.8,
+          "legL": -0.16,
+          "legR": -0.16
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 461
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": -1.5,
+          "armR": 1.5,
+          "head": -0.01,
+          "legL": -0.04,
+          "legR": -0.04
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 933
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.75,
+          "armR": -0.75,
+          "head": 0.07,
+          "legL": 0.03,
+          "legR": 0.03
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 1387
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": 0.37,
+          "armR": -0.37,
+          "head": 0,
+          "legL": 0.03,
+          "legR": 0.03
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 1885
+      },
+      {
+        "busy": false,
+        "flying": false,
+        "squash": "scale(1, 1)",
+        "springs": {
+          "armL": -0.03,
+          "armR": 0.03,
+          "head": -0.01,
+          "legL": 0,
+          "legR": 0
+        },
+        "host": "translate(0px) rotate(0deg) scaleX(-1)",
+        "state": "idle",
+        "t_real_ms": 2365
+      }
+    ],
+    "G4_path_trace": {
+      "polylines": 2,
+      "points_per_arc": 41,
+      "perch": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "G8_v1_after_landing": {
+      "host": "translate(240px, -60px) scaleX(1)",
+      "anims": 28
+    },
+    "G8_v2_after_landing": {
+      "host": "translate(240px, -60px) rotate(0deg) scaleX(1)",
+      "anims": 30
+    }
+  }
+}

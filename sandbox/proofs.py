@@ -36,22 +36,26 @@ def strip(paths, out, labels=None):
     """Horizontal contact strip from a list of PNG paths (no external deps beyond Pillow)."""
     if not Image or not paths: return
     ims = [Image.open(p) for p in paths]
-    w, h = ims[0].size
+    w, h = max(i.width for i in ims), max(i.height for i in ims)
     sheet = Image.new('RGB', (w * len(ims), h), (14, 16, 32))
-    for i, im in enumerate(ims): sheet.paste(im, (i * w, 0))
+    for i, im in enumerate(ims): sheet.paste(im, (i * w + (w - im.width) // 2, (h - im.height) // 2))
     sheet.save(out, optimize=True)
     for p in paths: os.remove(p)
 
 
-async def shot_slot(pg, path, pad=70):
-    """Screenshot the stage area around the (first) owl slot including flight room."""
-    box = await pg.evaluate("(() => { const r = document.getElementById('stage').getBoundingClientRect(); return {x: r.left, y: r.top + scrollY, w: r.width, h: r.height}; })()")
+async def shot_slot(pg, path, pad=70, whole_stage=False):
+    """Screenshot around the (first) owl at its current position (pad px), or the whole stage."""
+    if whole_stage:
+        box = await pg.evaluate("(() => { const r = document.getElementById('stage').getBoundingClientRect(); return {x: r.left, y: r.top + scrollY, w: r.width, h: r.height}; })()")
+    else:
+        box = await pg.evaluate("(() => { const r = window.__rigs[0].svg.getBoundingClientRect(); return {x: r.left, y: r.top + scrollY, w: r.width, h: r.height}; })()")
+        box = {'x': box['x'] - pad, 'y': box['y'] - pad, 'w': box['w'] + 2 * pad, 'h': box['h'] + 2 * pad}
     await pg.screenshot(path=path, full_page=True, clip={'x': box['x'], 'y': box['y'], 'width': box['w'], 'height': box['h']})
 
 
 async def open_page(ctx, engine='v2', extra=''):
     pg = await ctx.new_page()
-    await pg.goto(BASE + f'index.html?engine={engine}&auto=0&sw=0&n=1{extra}', wait_until='networkidle')
+    await pg.goto(BASE + f'index.html?engine={engine}&auto=0&sw=0&n=1&hud=0{extra}', wait_until='networkidle')
     await pg.wait_for_function('window.__rigs && window.__rigs.length===1')
     await pg.wait_for_timeout(400)
     return pg
@@ -109,12 +113,18 @@ async def main():
             await asyncio.sleep(0.16)
         strip(paths, os.path.join(OUT, 'g2_landing_strip.png'))
         report['gates']['G2_landing_squash'] = meta
-        # settle: secondary springs after touchdown
-        paths, meta = [], []
+        # settle (G5): secondary springs (wings/head/legs) overshoot and damp over the settle window
+        # -> capture overlaps the landing (same flight) at a finer cadence: 6 frames x 0.25 s real = 0.4 s engine at x0.25
+        await pg.evaluate('window.__setSlow(false)'); await pg.wait_for_function('!window.__rigs[0].busy', timeout=30000)
+        await pg.evaluate('window.__setSlow(true)')
+        await pg.evaluate("void window.__rigs[0].flyBy(-260, 150)")
+        # touchdown = squash spring leaves rest (impact) - poll fast enough at x0.25 to catch it
+        await pg.wait_for_function("window.__rigs[0].squash && !window.__rigs[0].squash.atRest", timeout=60000, polling=30)
+        t0 = time.perf_counter(); paths, meta = [], []
         for i in range(6):
             m = await pg.evaluate(META); m['t_real_ms'] = round((time.perf_counter() - t0) * 1000)
             pth = os.path.join(OUT, f'g5_{i:02d}.png'); await shot_slot(pg, pth); paths.append(pth); meta.append(m)
-            await asyncio.sleep(0.4)
+            await asyncio.sleep(0.25)
         strip(paths, os.path.join(OUT, 'g5_settle_strip.png'))
         report['gates']['G5_settle'] = meta
         await pg.evaluate('window.__setSlow(false)')
@@ -127,10 +137,10 @@ async def main():
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
         await pg.evaluate("void window.__rigs[0].flyTo(null, {home: true, trace: true})")
         await pg.wait_for_timeout(700)
-        await shot_slot(pg, os.path.join(OUT, 'g4_path_trace_midflight.png'))
+        await shot_slot(pg, os.path.join(OUT, 'g4_path_trace_midflight.png'), whole_stage=True)
         await pg.wait_for_function('!window.__rigs[0].busy', timeout=15000)
         await pg.wait_for_timeout(300)
-        await shot_slot(pg, os.path.join(OUT, 'g4_path_trace.png'))
+        await shot_slot(pg, os.path.join(OUT, 'g4_path_trace.png'), whole_stage=True)
         report['gates']['G4_path_trace'] = await pg.evaluate("({polylines: document.querySelectorAll('#trace polyline').length, points_per_arc: document.querySelector('#trace polyline').getAttribute('points').split(' ').length, perch: window.__rigs[0]._perch})")
         await pg.close()
 
@@ -171,7 +181,7 @@ async def main():
             vdir = os.path.join(OUT, 'video_v2_showcase')
             vctx = await b.new_context(viewport=VIEW, record_video_dir=vdir, record_video_size=VIEW)
             pg = await vctx.new_page()
-            await pg.goto(BASE + 'index.html?engine=v2&auto=0&sw=0&n=1&trace=1', wait_until='networkidle')
+            await pg.goto(BASE + 'index.html?engine=v2&auto=0&sw=0&n=1&hud=0&trace=1', wait_until='networkidle')
             await pg.wait_for_function('window.__rigs && window.__rigs.length===1')
             await pg.wait_for_timeout(1200)
             await pg.evaluate("void window.__rigs[0].states.fire('move:to', {target: document.getElementById('perch-card'), trace: true})")
