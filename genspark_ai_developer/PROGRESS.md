@@ -919,3 +919,4 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
   - K5 demo: `?engine=v2` default with `v1` flag for side-by-side; path-trace overlay toggle; slow-motion capture helper.
   - K6 proofs: slow-motion landing frames (G2), crouch frames (G3), path trace (G4), settle frames (G5), voice video (G6), edge zooms (G7), v1/v2 side-by-side (G8), measure.py with jank = frames over 20 ms (G9), "add a fake character by data only" test (G10).
   - K7 10-point report in RESEARCH.md + principles matrix + risk log; review PR.
+- resume-check (reset #21, 2026-09-26): remote branch @ 961b72f = K1 (owl.motion.json) + K2 (engine/physics.js) present. K3 `sandbox/engine/motion.js` was being written at the reset and is NOT on the branch -> rewritten now, committed as soon as it parses. K4-K7 pending per the frozen plan. Gists unchanged (5b0800c3 / 555a2147). Owl only; `app/` untouched.
