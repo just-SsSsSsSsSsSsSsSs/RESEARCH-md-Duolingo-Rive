@@ -15,7 +15,7 @@ import measure as M                       # sandbox/measure.py
 ROOT = os.path.dirname(os.path.abspath(__file__))
 N = int(os.environ.get('MATRIX_N', '5'))
 ROUNDS = int(os.environ.get('MATRIX_ROUNDS', '3'))
-SECONDS = float(os.environ.get('MATRIX_SECONDS', '6'))
+SECONDS = float(os.environ.get('MATRIX_SECONDS', '10'))   # 10 s like measure.py default: talk (3.2 s, fired at 7.3 s) must END inside the window or the idle-loop guard reads a live, legitimate talk loop as 5 (seen with 6 s)
 CELLS = [
     ('v2 + Foley',  'p2', 'v2', ''),
     ('v2 no-Foley', 'p2', 'v2', '&sfx=0'),
