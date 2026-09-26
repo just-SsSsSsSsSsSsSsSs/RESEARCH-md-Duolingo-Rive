@@ -58,3 +58,54 @@ Pose Library is additive data; removing it returns to K8 state.
 
 ## Visual proof
 To be attached: sandbox/samples/proofs/g11_pose_sheet.png (K9.0).
+
+## Addendum (d) - raster flex ceiling, measured (2026-09-26, K9.2b-4, directive #03)
+Question from the owner: how far can the raster parts flex before we need Option B (custom mesh warp)
+or a vector re-author? Answered by building and measuring, not by estimating.
+
+Prototype: `sandbox/proto/meshwarp.html` (80 lines, 0 deps). wingL.webp is cut into a GRID x GRID mesh,
+vertices displaced by a quadratic bend + tip flutter, each cell drawn as two affine-textured triangles
+(setTransform + clip + drawImage, the standard Canvas2D technique). Harness: `sandbox/meshwarp_measure.py`,
+same host, same headless Chromium, same rAF-delta metric and CDP CPU throttle as `sandbox/measure.py`;
+3 runs x 240 frames per cell, median of medians. Raw: `samples/proofs/g11d_meshwarp_cost.json`,
+frame: `samples/proofs/g11d_meshwarp.png`.
+
+| renderer | cpu | owls | parts/owl | tris/frame | JS draw ms p50 | rAF p50 ms | rAF p95 ms | jank >20 ms |
+|---|---|---|---|---|---|---|---|---|
+| mesh-warp Canvas2D | 1x | 1 | 2 wings only | 64 | 1.0 | 16.7 | 16.9 | 0.8 % |
+| mesh-warp Canvas2D | 1x | 5 | 2 wings only | 320 | 1.1 | 18.2 | 28.0 | 14.2 % |
+| mesh-warp Canvas2D | 1x | 5 | 2 wings only, grid 6 | 720 | 2.5 | 27.7 | 59.7 | 100 % |
+| mesh-warp Canvas2D | 4x | 1 | 2 wings only | 64 | 1.6 | 20.6 | 28.8 | 65.7 % |
+| mesh-warp Canvas2D | 4x | 5 | 2 wings only | 320 | 1.2 | 76.2 | 86.0 | 100 % |
+| mesh-warp Canvas2D | 4x | 5 | 2 wings only, grid 6 | 720 | 3.5 | 117.8 | 129.3 | 100 % |
+| SVG engine v2 (current, sfx=0) | 1x | 1 | 12 parts, full acting | - | - | 16.7 | 16.7 | 0.0 % |
+| SVG engine v2 (current, sfx=0) | 1x | 5 | 12 parts, full acting | - | - | 16.7 | 16.7 | 0.0 % |
+| SVG engine v2 (current, sfx=0) | 4x | 1 | 12 parts, full acting | - | - | 16.7 | 16.7 | 0.3 % |
+| SVG engine v2 (current, sfx=0) | 4x | 5 | 12 parts, full acting | - | - | 16.7 | 33.3 | 6.2 % |
+
+All rows [measured] on the sandbox host (2 cores, headless Chromium; `host` block in each JSON).
+SVG rows: `samples/measure_p2_v2_nosfx.json`, `samples/measure_p2_v2_cpu4x_nosfx.json`.
+
+Findings:
+1. The JS-side `draw_ms` (1-3.5 ms) hides the real cost: per-triangle clip + drawImage is rasterised by
+   Skia after the script returns, so only the frame delta shows it [measured: rAF p50 76 ms while draw_ms 1.2].
+   Any "it only takes 1 ms" claim for Canvas2D texture triangles is therefore untrustworthy without rAF data.
+2. With 1 owl and only 2 warped parts at CPU 4x the mesh warp already misses the budget (jank 66 % vs 0.3 %
+   for the whole 12-part SVG owl). The full owl (12 parts) would be at least 6x that triangle count.
+3. Visible seams appear at cell edges (screenshot); the standard fix (overlapping clips, edge padding) adds
+   more fill per triangle, i.e. more cost, not less.
+4. Wire cost of B is small (proto 80 lines; engine estimate 15-30 KB) - the cost is CPU, not bytes.
+   C (Rive canvas-lite) stays at 457-1012 KB gz vs the current 22 KB gz engine + spec [measured earlier].
+
+Trade-off (time, perf, who):
+| route | time | perf on mid-tier proxy (CPU 4x) | who | what it unlocks |
+|---|---|---|---|---|
+| (1) B: custom Canvas2D mesh warp, 0 deps | 2-4 weeks engineering + a WebGL rewrite to recover perf [inference] | fails at 1 owl / 2 parts [measured] | engineer only | true bend of raster parts |
+| (2) vector re-author of the 12 parts as `<path>` | art work per part; slicing tool already exists for pivots [inference: hours per part] | joint transforms unchanged; path `d` morphs are cheap for a few paths (to be measured per part) | artist or agent-authored paths + owner review (pose sheet) | wing-tip / feather morph, soft silhouettes, smaller bytes than webp |
+| (3) stay A: raster slices + joints (proven) | 0 | 16.7 ms p50, 6.2 % jank at 5 owls [measured] | agent | 2-3 segment wing via `tools/slice_parts.py` (same technique as the eye slice, pixel_diff 0), holds, asymmetry, eye-lead, roll |
+
+Recommendation (owner decides): keep A; do not pursue B - the measured frame cost rules it out on this host
+before any engineering. The only route to real soft deformation is (2), a vector re-author, and that is an
+art decision, not an engine decision: open it only if G11 v2 (silhouette-first poses + blur test) shows the
+silhouettes do not read at 8 %+ delta with slicing alone.
+Rollback: the prototype lives only under `sandbox/proto/`; nothing in the engine references it.
