@@ -70,11 +70,11 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
     const i = Math.min(N - 1, Math.floor(s * N)), j = Math.min(N, Math.floor(s2 * N));
     const dtMs = 0.01 * total;
     this.secondary.drive((points[j].x - points[i].x) / dtMs, (points[j].y - points[i].y) / dtMs);
-    if (u < 1 && !this.disposed) this._driveRaf = requestAnimationFrame(driveTick);
+    if (u < 1 && !this.disposed) this._driveRaf = requestAnimationFrame(driveTick); else this._driveRaf = 0;
   };
   this._driveRaf = requestAnimationFrame(driveTick);
   await path.finished.catch(() => {});
-  cancelAnimationFrame(this._driveRaf);
+  cancelAnimationFrame(this._driveRaf); this._driveRaf = 0;
 
   // 4) landing (G2 + G5)
   path.commitStyles(); path.cancel(); this.live.delete(path);

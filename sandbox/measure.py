@@ -36,7 +36,7 @@ async def heap_mb(cdp):
     d = {x['name']: x['value'] for x in m['metrics']}
     return d.get('JSHeapUsedSize', 0) / 1e6, d.get('Nodes', 0)
 
-async def measure(n, seconds, video_dir, art='p1'):
+async def measure(n, seconds, video_dir, art='p1', engine='v1'):
     async with async_playwright() as p:
         b = await p.chromium.launch(args=['--enable-precise-memory-info'])
         ctx_kw = {'viewport': {'width': 900, 'height': 600}}
@@ -58,12 +58,12 @@ async def measure(n, seconds, video_dir, art='p1'):
         cdp = await ctx.new_cdp_session(pg)
         await cdp.send('Performance.enable')
         # blank baseline heap in the same renderer
-        await pg.goto(BASE + f'index.html?n=0&sw=0&auto=0&art={art}')
+        await pg.goto(BASE + f'index.html?n=0&sw=0&auto=0&art={art}&engine={engine}')
         await pg.wait_for_timeout(500)
         await cdp.send('HeapProfiler.collectGarbage')
         h0, _ = await heap_mb(cdp)
 
-        await pg.goto(BASE + f'index.html?n={n}&sw=0&auto=0&art={art}')
+        await pg.goto(BASE + f'index.html?n={n}&sw=0&auto=0&art={art}&engine={engine}')
         await pg.wait_for_function(f'window.__rigs && window.__rigs.length==={n}')
         await pg.wait_for_timeout(800)
         await cdp.send('HeapProfiler.collectGarbage')
@@ -82,6 +82,10 @@ async def measure(n, seconds, video_dir, art='p1'):
         anims_peak = await pg.evaluate('document.getAnimations().length')
         await cdp.send('HeapProfiler.collectGarbage')
         h2, _ = await heap_mb(cdp)
+        # idle-loop guard (G9): after the scene settles, no engine rAF loop may still be running
+        await pg.wait_for_function('window.__rigs.every(r => !r.busy)', timeout=15000)
+        await pg.wait_for_timeout(1500)
+        idle_loops = await pg.evaluate("window.__rigs.filter(r => (r.secondary && r.secondary.running) || r._driveRaf || r._talkRaf).length")
 
         # dispose check: animations must go to zero after dispose (leak guard)
         await pg.evaluate('window.__rigs.forEach(r => r.dispose())')
@@ -103,6 +107,10 @@ async def measure(n, seconds, video_dir, art='p1'):
             'raf_p95_ms': round(pct(deltas, 0.95), 2),
             'raf_max_ms': round(max(deltas), 2),
             'long_frames_over_33ms': sum(1 for d in deltas if d > 33),
+            'jank_frames_over_20ms': sum(1 for d in deltas if d > 20),
+            'jank_pct': round(100 * sum(1 for d in deltas if d > 20) / max(1, len(deltas)), 2),
+            'engine_idle_loops_after_scene': idle_loops,
+            'engine': engine,
             'transferred_bytes': transferred,
             'errors': errors,
         }
@@ -113,22 +121,24 @@ async def main():
     ap.add_argument('--video', action='store_true')
     ap.add_argument('--counts', default='1,3,5')
     ap.add_argument('--art', default='p1', help='p1 geometric | p2 layered parts')
+    ap.add_argument('--engine', default='v1', help='v1 reference rig | v2 spec + physics (ADR-001)')
     a = ap.parse_args()
     out = []
     for n in [int(x) for x in a.counts.split(',')]:
-        vdir = os.path.join(ROOT, 'samples', f'video_{a.art}_{n}') if (a.video and n == 3) else None
-        r = await measure(n, a.seconds, vdir, a.art)
+        vdir = os.path.join(ROOT, 'samples', f'video_{a.art}_{a.engine}_{n}') if (a.video and n == 3) else None
+        r = await measure(n, a.seconds, vdir, a.art, a.engine)
         out.append(r)
         print(json.dumps(r, ensure_ascii=False))
     res = {'measured_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'base': BASE,
            'machine': 'sandbox CI proxy (not a 2-3 GB Android)', 'results': out}
-    with open(os.path.join(ROOT, 'samples', 'measure.json' if a.art == 'p1' else f'measure_{a.art}.json'), 'w', encoding='utf-8') as f:
+    name = 'measure.json' if (a.art == 'p1' and a.engine == 'v1') else f'measure_{a.art}_{a.engine}.json'
+    with open(os.path.join(ROOT, 'samples', name), 'w', encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, indent=2)
-    print('\n| companions | heap delta mount MB | heap delta scene MB | DOM nodes | anims idle | anims after dispose | rAF p50 ms | rAF p95 ms | max ms | frames >33ms | bytes |')
-    print('|---|---|---|---|---|---|---|---|---|---|---|')
+    print(f'\n| engine {a.engine} art {a.art} | heap delta mount MB | heap delta scene MB | DOM nodes | anims idle | anims after dispose | rAF p50 ms | rAF p95 ms | max ms | jank >20ms (%) | idle loops | bytes |')
+    print('|---|---|---|---|---|---|---|---|---|---|---|---|')
     for r in out:
-        print(f"| {r['companions']} | {r['heap_delta_mb_after_mount']} | {r['heap_delta_mb_after_scene']} | {r['dom_nodes']} | {r['animations_idle']} | {r['animations_after_dispose']} | {r['raf_p50_ms']} | {r['raf_p95_ms']} | {r['raf_max_ms']} | {r['long_frames_over_33ms']} | {r['transferred_bytes']} |")
-    thresholds = {'p95_at_3_le_20ms': None, 'heap_at_5_le_20mb': None}
+        print(f"| {r['companions']} | {r['heap_delta_mb_after_mount']} | {r['heap_delta_mb_after_scene']} | {r['dom_nodes']} | {r['animations_idle']} | {r['animations_after_dispose']} | {r['raf_p50_ms']} | {r['raf_p95_ms']} | {r['raf_max_ms']} | {r['jank_frames_over_20ms']} ({r['jank_pct']}%) | {r['engine_idle_loops_after_scene']} | {r['transferred_bytes']} |")
+    thresholds = {'p95_at_3_le_20ms': None, 'heap_at_5_le_20mb': None, 'jank_lt_1pct_all': all(r['jank_pct'] < 1 for r in out), 'no_idle_loops_all': all(r['engine_idle_loops_after_scene'] == 0 for r in out)}
     for r in out:
         if r['companions'] == 3: thresholds['p95_at_3_le_20ms'] = r['raf_p95_ms'] <= 20
         if r['companions'] == 5: thresholds['heap_at_5_le_20mb'] = r['heap_delta_mb_after_scene'] <= 20
