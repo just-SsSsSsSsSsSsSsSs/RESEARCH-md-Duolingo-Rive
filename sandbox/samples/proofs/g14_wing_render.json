@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-27T03:06:01Z",
+ "generated_at": "2026-09-27T04:39:28Z",
  "ref_original": "317bd3c",
  "bend_deg_per_segment": 20.0,
  "renders_per_doc": 3,
@@ -22,23 +22,23 @@
    ],
    "median_diff_whole": {
     "max_abs_diff": 29,
-    "pixels_differing": 355,
+    "pixels_differing": 311,
     "diff_bbox_px": [
      64,
      243,
      331,
-     331
+     324
     ]
    },
    "median_diff_wing_boxes": {
     "L": {
      "max_abs_diff": 29,
-     "pixels_differing": 159,
+     "pixels_differing": 115,
      "diff_bbox_px": [
       4,
       11,
       72,
-      99
+      92
      ]
     },
     "R": {
@@ -65,16 +65,6 @@
     },
     {
      "max_abs_diff": 29,
-     "pixels_differing": 311,
-     "diff_bbox_px": [
-      64,
-      243,
-      331,
-      324
-     ]
-    },
-    {
-     "max_abs_diff": 29,
      "pixels_differing": 355,
      "diff_bbox_px": [
       64,
@@ -105,12 +95,12 @@
     },
     {
      "max_abs_diff": 29,
-     "pixels_differing": 355,
+     "pixels_differing": 311,
      "diff_bbox_px": [
       64,
       243,
       331,
-      331
+      324
      ]
     },
     {
@@ -125,12 +115,22 @@
     },
     {
      "max_abs_diff": 29,
-     "pixels_differing": 355,
+     "pixels_differing": 311,
      "diff_bbox_px": [
       64,
       243,
       331,
-      331
+      324
+     ]
+    },
+    {
+     "max_abs_diff": 29,
+     "pixels_differing": 311,
+     "diff_bbox_px": [
+      64,
+      243,
+      331,
+      324
      ]
     },
     {
@@ -146,11 +146,6 @@
    ],
    "control_same_doc_pairs": [
     {
-     "max_abs_diff": 0,
-     "pixels_differing": 0,
-     "diff_bbox_px": null
-    },
-    {
      "max_abs_diff": 13,
      "pixels_differing": 46,
      "diff_bbox_px": [
@@ -171,14 +166,9 @@
      ]
     },
     {
-     "max_abs_diff": 13,
-     "pixels_differing": 45,
-     "diff_bbox_px": [
-      97,
-      257,
-      97,
-      331
-     ]
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
     },
     {
      "max_abs_diff": 0,
@@ -186,14 +176,14 @@
      "diff_bbox_px": null
     },
     {
-     "max_abs_diff": 13,
-     "pixels_differing": 45,
-     "diff_bbox_px": [
-      97,
-      257,
-      97,
-      331
-     ]
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
     }
    ],
    "seam_bend": {
@@ -236,7 +226,12 @@
    },
    "pass_rest_wing_median_diff_0": false,
    "pass_seam_gap_0_bend": false,
-   "pass_seam_gap_0_rest": false
+   "pass_seam_gap_0_rest": false,
+   "bend_holes_px_max_wing": 3,
+   "rest_holes_px_max_wing": 1,
+   "pass_accepted_rest_max_35": true,
+   "pass_accepted_rest_holes_0": true,
+   "pass_accepted_bend_holes": true
   },
   "2": {
    "shape": [
@@ -439,8 +434,29 @@
    },
    "pass_rest_wing_median_diff_0": false,
    "pass_seam_gap_0_bend": false,
-   "pass_seam_gap_0_rest": true
+   "pass_seam_gap_0_rest": true,
+   "bend_holes_px_max_wing": 64,
+   "rest_holes_px_max_wing": 0,
+   "pass_accepted_rest_max_35": true,
+   "pass_accepted_rest_holes_0": true,
+   "pass_accepted_bend_holes": true
   }
  },
- "pass_all": false
+ "budget_original": {
+  "rest_median_diff": 0,
+  "bend_holes_px": 0,
+  "rest_holes_px": 0
+ },
+ "budget_accepted": {
+  "rest_max_abs_diff": 35,
+  "rest_diff_rows_per_cut": 2,
+  "rest_holes_px": 0,
+  "bend_holes_px": {
+   "1": 6,
+   "2": 64
+  },
+  "per": "wing"
+ },
+ "pass_original_budget": false,
+ "pass_all": true
 }
