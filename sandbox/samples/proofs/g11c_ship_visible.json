@@ -19,7 +19,7 @@
   },
   "2_wink": {
     "peakL": 1,
-    "peakR": 0.168838,
+    "peakR": 0.169122,
     "after": {
       "L": 0,
       "R": 0
@@ -33,12 +33,12 @@
   "dart": {
     "mid": {
       "L": [
-        3.89,
-        0.19
+        3.64,
+        -0.12
       ],
       "R": [
-        4.52,
-        -0.25
+        4.32,
+        0.15
       ]
     },
     "end": {
@@ -54,14 +54,14 @@
     "keptMid": 2,
     "keptEnd": 0,
     "darts": 1,
-    "dispL": 3.8946373387004853,
-    "dispR": 4.526908437333364,
-    "asym": 0.7684399781375246,
+    "dispL": 3.641977484828812,
+    "dispR": 4.322603382222339,
+    "asym": 0.731641988953614,
     "pass_": true
   },
   "saccades": {
-    "before": 1,
-    "after_7s": 4,
+    "before": 0,
+    "after_7s": 3,
     "pass_": true
   },
   "3_brows_flag": {
@@ -73,7 +73,7 @@
     "pass_": true
   },
   "4_roll": {
-    "samples": 64,
+    "samples": 65,
     "maxAbsAccumulatedDeg": 360,
     "landingDeg": 0,
     "lastRoll": {
@@ -81,7 +81,7 @@
       "mode": "roll",
       "dist": 286
     },
-    "ms": 3024,
+    "ms": 3045,
     "pass_": true
   },
   "4_escalation": {
@@ -112,7 +112,7 @@
     "pass_": true
   },
   "6_reel": {
-    "total_ms": 26743,
+    "total_ms": 26752,
     "beats": [
       {
         "name": "alert",
@@ -125,73 +125,73 @@
       },
       {
         "name": "dart",
-        "t": 1600,
+        "t": 1603,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 2050,
+        "tEnd": 2462,
         "pose": null,
         "roll": null
       },
       {
         "name": "charged",
-        "t": 3200,
+        "t": 3202,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 3994,
+        "tEnd": 3995,
         "pose": null,
         "roll": null
       },
       {
         "name": "roll",
-        "t": 4600,
+        "t": 4602,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 7142,
+        "tEnd": 7156,
         "pose": null,
         "roll": "rollFlip"
       },
       {
         "name": "puzzled",
-        "t": 10500,
+        "t": 10503,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 12641,
+        "tEnd": 12590,
         "pose": null,
         "roll": "rollFlip"
       },
       {
         "name": "triumph",
-        "t": 14500,
+        "t": 14501,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 15623,
+        "tEnd": 15654,
         "pose": null,
         "roll": "rollFlip"
       },
       {
         "name": "oops",
-        "t": 18500,
+        "t": 18502,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 20600,
+        "tEnd": 20792,
         "pose": null,
         "roll": "rollFlip"
       },
       {
         "name": "home",
-        "t": 22500,
+        "t": 22504,
         "stateBefore": "rest",
         "stateAfter": "idle",
-        "tEnd": 25041,
+        "tEnd": 25105,
         "pose": null,
         "roll": "roll"
       },
       {
         "name": "rest",
-        "t": 26499,
+        "t": 26501,
         "stateBefore": "idle",
         "stateAfter": "rest",
-        "tEnd": 26743,
+        "tEnd": 26752,
         "pose": null,
         "roll": "roll"
       }
@@ -201,10 +201,10 @@
   },
   "7_sfx0": {
     "winkRan": true,
-    "lidR_sy": 1,
+    "lidR_sy": 0.368767,
     "bus": false,
     "foley": false,
-    "cues_fired": 16,
+    "cues_fired": 15,
     "sounds_played": 0,
     "sounds_muted": 0,
     "active_voices": 0,
@@ -214,8 +214,8 @@
     "with_sound_page": {
       "bus": true,
       "foley": true,
-      "cues_fired": 17,
-      "sounds_played": 3,
+      "cues_fired": 16,
+      "sounds_played": 2,
       "sounds_muted": 0,
       "audio_context_state": "running"
     },
@@ -232,6 +232,7 @@
       "flex",
       "takeoff",
       "flap",
+      "blink",
       "flap",
       "cruise",
       "roll",
@@ -244,12 +245,12 @@
       "settle"
     ],
     "intentCtx": {
-      "tVisual": 1312.8000000000466,
+      "tVisual": 1314.7000000000116,
       "dx": 349.921875,
       "dy": -246.083125,
-      "snapMs": 65.6905688848757,
-      "headLagMs": 47.085520105564555,
-      "bodyLagMs": 246.00969004312316,
+      "snapMs": 59.79199660616365,
+      "headLagMs": 43.39733303894248,
+      "bodyLagMs": 244.26209085654693,
       "headDeg": 6.0139774320864365
     },
     "budget": {
@@ -266,7 +267,7 @@
         600
       ]
     },
-    "intent_to_takeoff_ms": 501,
+    "intent_to_takeoff_ms": 464,
     "owl_cx_vs_answer_cx_px": 0,
     "intents": 1,
     "errors": [],
@@ -283,6 +284,7 @@
       "flap",
       "cruise",
       "roll",
+      "blink",
       "flap",
       "flap",
       "flap",

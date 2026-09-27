@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-27T04:23:36Z",
+ "generated_at": "2026-09-27T05:34:42Z",
  "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0",
  "q_ms": 16.7,
  "spec_flex": {
@@ -54,11 +54,11 @@
      "tip": 90
     },
     "lag_observed_peak_ms": {
-     "mid": 50.1,
-     "tip": 99.9
+     "mid": 49.8,
+     "tip": 100.0
     },
     "tail": {
-     "return_seen_at_ms": 1163.3,
+     "return_seen_at_ms": 1139.3,
      "return_followers": {
       "mid": 1,
       "tip": 1
@@ -81,18 +81,18 @@
      "expected_start_ms": 710,
      "cues": [
       {
-       "t": 1149.1,
+       "t": 1126.3,
        "c": {
-        "tVisual": 2550.4000000000233,
+        "tVisual": 2537.6999999999534,
         "joint": "armL",
         "tailMs": 260,
         "overshootDeg": -5.04
        }
       },
       {
-       "t": 1149.6,
+       "t": 1127.3,
        "c": {
-        "tVisual": 2550.9000000000233,
+        "tVisual": 2538.6999999999534,
         "joint": "armR",
         "tailMs": 260,
         "overshootDeg": 5.04
@@ -118,9 +118,9 @@
      },
      "peakMidOwn": 0,
      "peakTipOwn": 0,
-     "parentPeakDeg": 153.96559224870015,
+     "parentPeakDeg": 153.94417007571417,
      "cues": 0,
-     "flapSeenAtMs": 167.6
+     "flapSeenAtMs": 179.7
     },
     "reduced": {
      "flexOn": false,
@@ -132,20 +132,20 @@
     },
     "a_peaks": {
      "arm": {
-      "t": 262.19999999995343,
-      "arm": 153.72257324937905,
+      "t": 255.5,
+      "arm": 153.70366287073105,
       "mid": 7.076996572350119,
       "tip": 0
      },
      "mid_own": {
-      "t": 312.29999999993015,
-      "arm": 120.48572892811274,
+      "t": 305.30000000004657,
+      "arm": 120.46672435375937,
       "mid": 33.50760697116996,
       "tip": 7.076996572350119
      },
      "tip_own": {
-      "t": 362.0999999999767,
-      "arm": 127.49983169769638,
+      "t": 355.5,
+      "arm": 127.48091150406249,
       "mid": 26.66582828741212,
       "tip": 33.50760697116996
      },
@@ -154,7 +154,144 @@
       "flexFollowers": 8,
       "flexTails": 2
      },
-     "flapSeenAtMs": 213.2
+     "flapSeenAtMs": 206.8
+    },
+    "page_errors": {
+     "A": [],
+     "B": [],
+     "reduced": []
+    }
+   }
+  },
+  {
+   "checks": {
+    "followers_present": true,
+    "ratio_and_clamp": true,
+    "lag_from_timing": true,
+    "tail_after_stop": true,
+    "min_parent_deg": true,
+    "release_clears": true,
+    "b_control": true,
+    "reduced_motion": true,
+    "no_page_errors": true
+   },
+   "pass_all": true,
+   "notes": {
+    "keyframes_deg": {
+     "parent_last": 125.0,
+     "mid_last": 28.0,
+     "tip_last": 28.0,
+     "expected": {
+      "mid": 28,
+      "tip": 28
+     }
+    },
+    "lag_timing_ms": {
+     "mid": 40,
+     "tip": 90
+    },
+    "lag_observed_peak_ms": {
+     "mid": 49.9,
+     "tip": 100.1
+    },
+    "tail": {
+     "return_seen_at_ms": 1206,
+     "return_followers": {
+      "mid": 1,
+      "tip": 1
+     },
+     "layers": [
+      {
+       "kf": [
+        "rotate(0deg)",
+        "rotate(-5.04deg)",
+        "rotate(0deg)"
+       ],
+       "delay": 710,
+       "duration": 260,
+       "iterations": 1,
+       "fill": "auto",
+       "composite": "add",
+       "kept": false
+      }
+     ],
+     "expected_start_ms": 710,
+     "cues": [
+      {
+       "t": 1191.2,
+       "c": {
+        "tVisual": 2603,
+        "joint": "armL",
+        "tailMs": 260,
+        "overshootDeg": -5.04
+       }
+      },
+      {
+       "t": 1191.7,
+       "c": {
+        "tVisual": 2603.5,
+        "joint": "armR",
+        "tailMs": 260,
+        "overshootDeg": 5.04
+       }
+      }
+     ],
+     "flap_tail_layers_on_fill_forwards": 0
+    },
+    "idle": {
+     "armLayers": 2,
+     "armMaxDeg": 3,
+     "childLayers": 0
+    },
+    "release": {
+     "keptBefore": 2,
+     "keptAfter": 0
+    },
+    "b": {
+     "flexOn": false,
+     "stats": {
+      "flexFollowers": 0,
+      "flexTails": 0
+     },
+     "peakMidOwn": 0,
+     "peakTipOwn": 0,
+     "parentPeakDeg": 153.5809000774975,
+     "cues": 0,
+     "flapSeenAtMs": 203.7
+    },
+    "reduced": {
+     "flexOn": false,
+     "stats": {
+      "flexFollowers": 0,
+      "flexTails": 0
+     },
+     "cues": 0
+    },
+    "a_peaks": {
+     "arm": {
+      "t": 288,
+      "arm": 153.9288984123289,
+      "mid": 7.147778992299879,
+      "tip": 0
+     },
+     "mid_own": {
+      "t": 337.9000000000233,
+      "arm": 120.73166234739348,
+      "mid": 33.50760697116996,
+      "tip": 7.076996572350119
+     },
+     "tip_own": {
+      "t": 388.10000000009313,
+      "arm": 127.75503776538454,
+      "mid": 26.66582828741212,
+      "tip": 33.50760697116996
+     },
+     "samples": 130,
+     "stats": {
+      "flexFollowers": 8,
+      "flexTails": 2
+     },
+     "flapSeenAtMs": 239.4
     },
     "page_errors": {
      "A": [],
@@ -195,7 +332,7 @@
      "tip": 100.0
     },
     "tail": {
-     "return_seen_at_ms": 1146.6,
+     "return_seen_at_ms": 1114,
      "return_followers": {
       "mid": 1,
       "tip": 1
@@ -218,18 +355,18 @@
      "expected_start_ms": 710,
      "cues": [
       {
-       "t": 1132.2,
+       "t": 1098.8,
        "c": {
-        "tVisual": 2568.8000000000466,
+        "tVisual": 2525.100000000093,
         "joint": "armL",
         "tailMs": 260,
         "overshootDeg": -5.04
        }
       },
       {
-       "t": 1132.6,
+       "t": 1099.5,
        "c": {
-        "tVisual": 2569.20000000007,
+        "tVisual": 2525.70000000007,
         "joint": "armR",
         "tailMs": 260,
         "overshootDeg": 5.04
@@ -255,9 +392,9 @@
      },
      "peakMidOwn": 0,
      "peakTipOwn": 0,
-     "parentPeakDeg": 153.60826609401036,
+     "parentPeakDeg": 153.72710867160512,
      "cues": 0,
-     "flapSeenAtMs": 226.2
+     "flapSeenAtMs": 184.4
     },
     "reduced": {
      "flexOn": false,
@@ -269,166 +406,29 @@
     },
     "a_peaks": {
      "arm": {
-      "t": 261.60000000009313,
-      "arm": 153.9635939417861,
+      "t": 228.59999999997672,
+      "arm": 153.71875514842444,
       "mid": 7.006214123384375,
       "tip": 0
      },
      "mid_own": {
-      "t": 311.5,
-      "arm": 120.71686405587585,
+      "t": 278.5,
+      "arm": 120.46140818417676,
       "mid": 33.51421758823849,
       "tip": 7.006214123384375
      },
      "tip_own": {
-      "t": 361.60000000009313,
-      "arm": 127.73012287030589,
+      "t": 328.5999999999767,
+      "arm": 127.46530306882026,
       "mid": 26.661523509505376,
       "tip": 33.51421758823849
-     },
-     "samples": 132,
-     "stats": {
-      "flexFollowers": 8,
-      "flexTails": 2
-     },
-     "flapSeenAtMs": 212.7
-    },
-    "page_errors": {
-     "A": [],
-     "B": [],
-     "reduced": []
-    }
-   }
-  },
-  {
-   "checks": {
-    "followers_present": true,
-    "ratio_and_clamp": true,
-    "lag_from_timing": true,
-    "tail_after_stop": true,
-    "min_parent_deg": true,
-    "release_clears": true,
-    "b_control": true,
-    "reduced_motion": true,
-    "no_page_errors": true
-   },
-   "pass_all": true,
-   "notes": {
-    "keyframes_deg": {
-     "parent_last": 125.0,
-     "mid_last": 28.0,
-     "tip_last": 28.0,
-     "expected": {
-      "mid": 28,
-      "tip": 28
-     }
-    },
-    "lag_timing_ms": {
-     "mid": 40,
-     "tip": 90
-    },
-    "lag_observed_peak_ms": {
-     "mid": 50.1,
-     "tip": 99.8
-    },
-    "tail": {
-     "return_seen_at_ms": 1111.7,
-     "return_followers": {
-      "mid": 1,
-      "tip": 1
-     },
-     "layers": [
-      {
-       "kf": [
-        "rotate(0deg)",
-        "rotate(-5.04deg)",
-        "rotate(0deg)"
-       ],
-       "delay": 710,
-       "duration": 260,
-       "iterations": 1,
-       "fill": "auto",
-       "composite": "add",
-       "kept": false
-      }
-     ],
-     "expected_start_ms": 710,
-     "cues": [
-      {
-       "t": 1097.1,
-       "c": {
-        "tVisual": 2488.79999999993,
-        "joint": "armL",
-        "tailMs": 260,
-        "overshootDeg": -5.04
-       }
-      },
-      {
-       "t": 1097.7,
-       "c": {
-        "tVisual": 2489.5,
-        "joint": "armR",
-        "tailMs": 260,
-        "overshootDeg": 5.04
-       }
-      }
-     ],
-     "flap_tail_layers_on_fill_forwards": 0
-    },
-    "idle": {
-     "armLayers": 2,
-     "armMaxDeg": 3,
-     "childLayers": 0
-    },
-    "release": {
-     "keptBefore": 2,
-     "keptAfter": 0
-    },
-    "b": {
-     "flexOn": false,
-     "stats": {
-      "flexFollowers": 0,
-      "flexTails": 0
-     },
-     "peakMidOwn": 0,
-     "peakTipOwn": 0,
-     "parentPeakDeg": 153.75081071011644,
-     "cues": 0,
-     "flapSeenAtMs": 162.8
-    },
-    "reduced": {
-     "flexOn": false,
-     "stats": {
-      "flexFollowers": 0,
-      "flexTails": 0
-     },
-     "cues": 0
-    },
-    "a_peaks": {
-     "arm": {
-      "t": 227.10000000009313,
-      "arm": 153.92692525849736,
-      "mid": 7.147778992299879,
-      "tip": 0
-     },
-     "mid_own": {
-      "t": 277.20000000006985,
-      "arm": 120.73626102513916,
-      "mid": 33.50760697116996,
-      "tip": 7.076996572350119
-     },
-     "tip_own": {
-      "t": 326.9000000000233,
-      "arm": 127.76622375607857,
-      "mid": 26.66582828741212,
-      "tip": 33.50760697116996
      },
      "samples": 134,
      "stats": {
       "flexFollowers": 8,
       "flexTails": 2
      },
-     "flapSeenAtMs": 178.7
+     "flapSeenAtMs": 180
     },
     "page_errors": {
      "A": [],
@@ -447,19 +447,19 @@
    },
    {
     "label": "parent leads",
-    "captured_ms": 162.7
+    "captured_ms": 174.4
    },
    {
     "label": "mid follows",
-    "captured_ms": 285.3
+    "captured_ms": 277.2
    },
    {
     "label": "tip drags",
-    "captured_ms": 482.6
+    "captured_ms": 482.2
    },
    {
     "label": "tail settles",
-    "captured_ms": 762.0
+    "captured_ms": 761.9
    }
   ]
  },
@@ -469,28 +469,28 @@
    "flex on 1x": {
     "rounds": [
      {
-      "p95": 16.8,
-      "jank": 0.17,
+      "p95": 16.7,
+      "jank": 0.0,
       "heap": 0.93,
       "anims_idle": 73,
       "idle_loops": 0
      },
      {
       "p95": 16.8,
-      "jank": 3.49,
-      "heap": 0.93,
+      "jank": 2.74,
+      "heap": 0.94,
       "anims_idle": 73,
       "idle_loops": 0
      },
      {
       "p95": 16.7,
       "jank": 0.17,
-      "heap": 0.94,
+      "heap": 0.93,
       "anims_idle": 73,
       "idle_loops": 0
      }
     ],
-    "p95_median": 16.8,
+    "p95_median": 16.7,
     "jank_median": 0.17,
     "p95_spread": 0.1,
     "anims_idle": 73,
@@ -499,29 +499,29 @@
    "flex off 1x": {
     "rounds": [
      {
+      "p95": 16.7,
+      "jank": 0.0,
+      "heap": 0.93,
+      "anims_idle": 73,
+      "idle_loops": 0
+     },
+     {
       "p95": 16.8,
-      "jank": 4.1,
+      "jank": 3.63,
       "heap": 0.92,
       "anims_idle": 73,
       "idle_loops": 0
      },
      {
       "p95": 16.8,
-      "jank": 4.8,
-      "heap": 0.91,
-      "anims_idle": 73,
-      "idle_loops": 0
-     },
-     {
-      "p95": 16.7,
-      "jank": 0.0,
+      "jank": 4.78,
       "heap": 0.91,
       "anims_idle": 73,
       "idle_loops": 0
      }
     ],
     "p95_median": 16.8,
-    "jank_median": 4.1,
+    "jank_median": 3.63,
     "p95_spread": 0.1,
     "anims_idle": 73,
     "idle_loops_max": 0
@@ -530,29 +530,29 @@
     "rounds": [
      {
       "p95": 33.4,
-      "jank": 13.79,
+      "jank": 12.98,
       "heap": 0.92,
       "anims_idle": 73,
       "idle_loops": 0
      },
      {
-      "p95": 33.4,
-      "jank": 18.88,
-      "heap": 0.92,
+      "p95": 33.3,
+      "jank": 10.35,
+      "heap": 0.93,
       "anims_idle": 73,
       "idle_loops": 0
      },
      {
-      "p95": 33.4,
-      "jank": 13.22,
+      "p95": 33.3,
+      "jank": 8.36,
       "heap": 0.92,
       "anims_idle": 73,
       "idle_loops": 0
      }
     ],
-    "p95_median": 33.4,
-    "jank_median": 13.79,
-    "p95_spread": 0.0,
+    "p95_median": 33.3,
+    "jank_median": 10.35,
+    "p95_spread": 0.1,
     "anims_idle": 73,
     "idle_loops_max": 0
    },
@@ -560,39 +560,39 @@
     "rounds": [
      {
       "p95": 33.3,
-      "jank": 7.97,
-      "heap": 0.91,
-      "anims_idle": 73,
-      "idle_loops": 0
-     },
-     {
-      "p95": 33.4,
-      "jank": 13.87,
+      "jank": 6.61,
       "heap": 0.91,
       "anims_idle": 73,
       "idle_loops": 0
      },
      {
       "p95": 33.3,
-      "jank": 7.99,
-      "heap": 0.92,
+      "jank": 8.14,
+      "heap": 0.91,
+      "anims_idle": 73,
+      "idle_loops": 0
+     },
+     {
+      "p95": 33.3,
+      "jank": 5.45,
+      "heap": 0.91,
       "anims_idle": 73,
       "idle_loops": 0
      }
     ],
     "p95_median": 33.3,
-    "jank_median": 7.99,
-    "p95_spread": 0.1,
+    "jank_median": 6.61,
+    "p95_spread": 0.0,
     "anims_idle": 73,
     "idle_loops_max": 0
    },
    "decision 1x": {
-    "p95_rise_ms": 0.0,
+    "p95_rise_ms": -0.1,
     "in_cell_spread_ms": 0.1,
     "rise_beyond_spread": false
    },
    "decision 4x": {
-    "p95_rise_ms": 0.1,
+    "p95_rise_ms": 0.0,
     "in_cell_spread_ms": 0.1,
     "rise_beyond_spread": false
    }
