@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""K9.6-2 watch kit (gate G12, the human gate).
+"""K9.6-2 watch kit (gate G12, the human gate). `--readme-only` rewrites README.md from manifest.json (no recording).
 
 Records the SAME four beats on two arms and packs them into a self-contained offline 2AFC kit:
   arm v2  engine=v2 art=p2 (this branch: acting layer, flex; Foley off for the video)
   arm v1  engine=v1 art=p2 (frozen K7 reference engine, the only control that exists on the branch)
 Beats (clip 10 s, declared in PROGRESS K9.6 RESEARCH):
   celebrate  v2 triumph('large') / v1 celebrate()      flight  v2 states.fire('move:to') / v1 flyBy (same dx, dy)
-  think      v2 puzzled('large') / v1 think()          sad     v2 oops('large') / v1 sad()
+  think      v2 states.fire('answer:pending') -> state think / v1 think()      sad     v2 oops('large') / v1 sad()
+  (kit v1, seed 20260927, ran puzzled('large') in the think clip; kit v2 runs the real think state on both arms - gist rev b693458e.
+   `--only think` re-records that beat only and reuses the other clips byte-identical, sha256-checked against the previous manifest.)
 Protocol in the kit (samples/watch/index.html): per trial two videos side by side, left/right order randomised per
 trial with a seeded shuffle, one forced choice "which one is alive?" (2AFC, [P12]); BT.500 randomisation [P11];
 the key (which side was v2) is shown only after the last trial, and its sha256 is printed on the first screen so the
@@ -28,7 +30,8 @@ CLIP_MS = 10000
 IDLE_MS = 1200          # idle first: breathing, blink, saccades are part of "alive"
 SECOND_BEAT_MS = 5500   # a second beat so a 10 s clip is not 60 % idle
 BEATS = ['celebrate', 'flight', 'think', 'sad']
-SEED = int(os.environ.get('WATCH_SEED', '20260927'))
+KIT_VERSION = 2   # kit v1 (seed 20260927) ran puzzled('large') in the think clip; v2 runs the real think state (gist rev b693458e)
+SEED = int(os.environ.get('WATCH_SEED', '20260928'))
 MAX_KIT_MB = 12.0
 MAX_CLIP_S = 10.5   # declared in PROGRESS K9.6 RESEARCH before the first run
 
@@ -36,10 +39,17 @@ RUN = {
     'celebrate': "() => { const r = window.__rigs[0]; if (r.triumph && r.perfSpec && r.perfSpec('triumph')) r.triumph('large'); else r.celebrate(); }",
     'flight': "() => { const r = window.__rigs[0]; if (r.states) { r._forcedRoll = 'large'; r.states.fire('move:to', { by: { dx: 240, dy: -140 } }); } else if (r.flyBy) r.flyBy(240, -140); }",
     'flight_home': "() => { const r = window.__rigs[0]; if (r.states) r.states.fire('move:to', { home: true, target: null }); else if (r.flyBy) r.flyBy(-240, 140); }",
-    'think': "() => { const r = window.__rigs[0]; if (r.puzzled && r.perfSpec && r.perfSpec('puzzled')) r.puzzled('large'); else r.think(); }",
+    'think': "() => { const r = window.__rigs[0]; if (r.states) r.states.fire('answer:pending'); else r.think(); }",
     'sad': "() => { const r = window.__rigs[0]; if (r.oops && r.perfSpec && r.perfSpec('oops')) r.oops('large'); else r.sad(); }",
 }
 READY = "window.__rigs && window.__rigs[0] && !window.__rigs[0].busy"
+# Rule line (gist rev b693458e): every clip states exactly which state it runs; shown in the kit, manifest and README.
+STATES_PER_CLIP = {
+    'celebrate': {'v2': "triumph('large') performance (falls back to celebrate())", 'v1': 'celebrate()'},
+    'flight': {'v2': "states.fire('move:to', by dx 240 dy -140) then move:to home", 'v1': 'flyBy(240, -140) then flyBy back'},
+    'think': {'v2': "states.fire('answer:pending') -> state think (body ponder, gaze rollUp, mouth mid, vfx question, sfx hmm)", 'v1': 'think()'},
+    'sad': {'v2': "oops('large') performance (falls back to sad())", 'v1': 'sad()'},
+}
 
 
 def sha(path):
@@ -115,7 +125,8 @@ pre{white-space:pre-wrap;direction:ltr;text-align:left}
 <p>ستشاهد <b id="nTrials"></b> مقاطع، كل مقطع فيه بومتان تؤديان نفس الحركة. اختر البومة التي تبدو <b>حية</b> أكثر. لا توجد إجابة صحيحة؛ الإعادة مرتان كحد أقصى.</p>
 <p>ترتيب اليمين/اليسار مثبت مسبقا (بذرة <code id="seed"></code>)، بصمته sha256: <code id="keyHash"></code>. المفتاح يظهر بعد آخر مقطع فقط.</p>
 <p><small id="limits"></small></p>
-<label>اسم المقيّم (اختياري): <input id="rater"></label>
+<p><small>الإصدار <code id="kitVersion"></code>. ما يشغّله كل مقطع بالضبط:</small></p><ul id="states" style="font-size:.85em"></ul>
+<label>اسم المقيّم (مطلوب - بدون اسم، الجلسة لا تُحتسب مُقيّمًا): <input id="rater"></label>
 <p><button class="primary" id="start">ابدأ</button></p>
 </div>
 <div id="trial" hidden>
@@ -136,6 +147,8 @@ document.getElementById('nTrials').textContent = order.length;
 document.getElementById('seed').textContent = M.seed;
 document.getElementById('keyHash').textContent = M.order_sha256;
 document.getElementById('limits').textContent = M.limits;
+document.getElementById('kitVersion').textContent = 'kit v' + (M.kit_version || 1) + ' (' + M.generated_at + ')';
+Object.entries(M.states_per_clip || {}).forEach(([beat, s]) => { const li = document.createElement('li'); li.textContent = beat + ': v2 = ' + s.v2 + ' | v1 = ' + s.v1; document.getElementById('states').appendChild(li); });
 let i = 0, replays = 0; const answers = []; const t = [];
 const vR = document.getElementById('vR'), vL = document.getElementById('vL');
 const other = a => a === 'v2' ? 'v1' : 'v2';
@@ -165,15 +178,75 @@ function finish() {
 </script></html>"""
 
 
+def min_wins(n):
+    """smallest k > n/2 with two-sided p <= 0.05 (the upper-tail threshold); None for tiny n"""
+    for k in range(n // 2 + 1, n + 1):
+        if binom_two_sided(k, n) <= 0.05: return k
+    return None
+
+
+def write_readme(manifest):
+    order = manifest['order']
+    clips = '\n'.join(f'| {k} | {manifest["bytes"][k]} | {manifest["sha256"][k][:16]} | {manifest["duration_s"][k] if isinstance(manifest["duration_s"], dict) else "-"} |' for k in manifest['clips'])
+    thr = '\n'.join(f'| {n} | {min_wins(n)}/{n} | {binom_two_sided(min_wins(n), n):.4f} | {n - min_wins(n)}/{n} gives the SAME p and is a LOSS |' for n in (12, 16, 20))
+    readme = f"""# Watch kit G12 (K9.6-2) - generated {manifest['generated_at']} by sandbox/watch_kit.py
+
+Open `index.html` from a local copy of this folder (no server, no network, 0 external resources).
+{len(order)} trials per rater; each trial shows the same beat on two engines side by side in a pre-shuffled left/right
+order (seed {SEED}; sha256 of the order `{manifest['order_sha256']}`). One forced choice per trial: "which one is alive?"
+(2AFC). Replay at most 2. The key is revealed after the last trial. The rater copies the JSON result block back.
+
+Read-out: count for v2 out of n and the exact two-sided binomial p. Examples (k/n: p): {json.dumps(manifest['readout_examples_p'])}
+Claim rule declared here: v2 "reads alive" only if two-sided p <= 0.05 AND v2_chosen > n/2 (v2 in the UPPER tail),
+over >= 12 trials from >= 3 named raters; anything else is reported as no evidence (FAIL / INSUFFICIENT).
+Direction matters (owner audit, gist rev d33eaf03): the two-sided p is symmetric, so 10/12 and 2/12 both give
+0.0386 and 0/12 gives 0.0005 - a small p with v2 losing is a LOSS, never a pass. Score with `score.html`
+(offline, next to this file) or `node sandbox/tests/g12_score.mjs`; never by reading p alone.
+
+| trials n | v2 must win at least | two-sided p at that k | mirror |
+|---|---|---|---|
+{thr}
+
+What each clip runs (kit v{manifest.get('kit_version', 1)}): {json.dumps(manifest.get('states_per_clip', {}))}
+{('Previous kit: ' + json.dumps(manifest['previous_kit']) + '. Clips reused byte-identical from it: ' + ', '.join(manifest.get('reused_from_previous_kit', [])) + '.') if manifest.get('previous_kit') else ''}
+
+Results: one JSON file per rater session in `results/` (append-only), scored together. Blocks are valid only against the kit
+(generated_at, seed, order_sha256) they were rated on; sessions from an earlier kit are kept in `results/` and documented there.
+
+Limits: {manifest['limits']}
+
+| clip | bytes | sha256 (16) | duration s |
+|---|---|---|---|
+{clips}
+
+Total {manifest['kit_total_mb']} MB (budget {MAX_KIT_MB} MB): {'PASS' if manifest['pass_kit_size'] else 'FAIL'}; clip duration <= {MAX_CLIP_S} s: {'PASS' if manifest['pass_clip_duration'] else 'FAIL'}; page errors: {'none' if manifest['pass_no_page_errors'] else json.dumps(manifest['errors'])}.
+"""
+    with open(os.path.join(OUT, 'README.md'), 'w') as fh: fh.write(readme)
+
+
 async def main():
     from playwright.async_api import async_playwright
     os.makedirs(OUT, exist_ok=True)
-    manifest = {'generated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'seed': SEED, 'clip_ms': CLIP_MS, 'idle_ms': IDLE_MS, 'second_beat_ms': SECOND_BEAT_MS,
-                'beats': BEATS, 'arms': {'v2': 'engine=v2 art=p2 (this branch)', 'v1': 'engine=v1 art=p2 (frozen K7 reference)'}, 'clips': {}, 'errors': {}}
+    manifest = {'generated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'kit_version': KIT_VERSION, 'seed': SEED, 'clip_ms': CLIP_MS, 'idle_ms': IDLE_MS, 'second_beat_ms': SECOND_BEAT_MS,
+                'beats': BEATS, 'arms': {'v2': 'engine=v2 art=p2 (this branch)', 'v1': 'engine=v1 art=p2 (frozen K7 reference)'}, 'states_per_clip': STATES_PER_CLIP, 'clips': {}, 'errors': {}}
+    only = None; prev = None
+    if '--only' in sys.argv:
+        only = set(sys.argv[sys.argv.index('--only') + 1].split(','))
+        if not only <= set(BEATS): sys.exit(f'--only: unknown beat in {sorted(only)}')
+        with open(os.path.join(OUT, 'manifest.json')) as fh: prev = json.load(fh)
+        manifest['previous_kit'] = {'kit_version': prev.get('kit_version', 1), 'generated_at': prev['generated_at'], 'seed': prev['seed'], 'order_sha256': prev['order_sha256'],
+                                    'note': f'beats {sorted(only)} re-recorded; all other clips reused byte-identical (sha256 checked before reuse)'}
+        manifest['reused_from_previous_kit'] = []
     async with async_playwright() as p:
         b = await p.chromium.launch()
         for engine in ('v2', 'v1'):
             for beat in BEATS:
+                key = f'{engine}_{beat}'
+                if only is not None and beat not in only:
+                    f = prev['clips'][key]; have = sha(os.path.join(OUT, f))
+                    if have != prev['sha256'][key]: sys.exit(f'reused clip {f} changed on disk: {have[:16]} != manifest {prev["sha256"][key][:16]}')
+                    manifest['clips'][key] = f; manifest['errors'][key] = prev['errors'][key]; manifest.setdefault('owl_box_at_rest', {})[key] = prev.get('owl_box_at_rest', {}).get(key)
+                    manifest['reused_from_previous_kit'].append(f); print('reused  ', f, have[:16]); continue
                 path, errs, box = await record(b, engine, beat)
                 manifest['clips'][f'{engine}_{beat}'] = os.path.basename(path); manifest['errors'][f'{engine}_{beat}'] = errs; manifest.setdefault('owl_box_at_rest', {})[f'{engine}_{beat}'] = box
                 print('recorded', os.path.basename(path), f'{os.path.getsize(path) / 1024:.0f} KB', 'errors', len(errs))
@@ -203,29 +276,15 @@ async def main():
     manifest['pass_clip_duration'] = isinstance(manifest['duration_s'], dict) and all(v is not None and v <= MAX_CLIP_S for v in manifest['duration_s'].values())
     manifest['readout_examples_p'] = {f'{k}/{n}': round(binom_two_sided(k, n), 4) for n in (12, 16, 20) for k in (n, n - 1, n - 2, n - 3, n - 4, n - 5)}
     with open(os.path.join(OUT, 'manifest.json'), 'w') as fh: json.dump(manifest, fh, indent=1, ensure_ascii=False)
-    clips = '\n'.join(f'| {k} | {manifest["bytes"][k]} | {manifest["sha256"][k][:16]} | {manifest["duration_s"][k] if isinstance(manifest["duration_s"], dict) else "-"} |' for k in manifest['clips'])
-    readme = f"""# Watch kit G12 (K9.6-2) - generated {manifest['generated_at']} by sandbox/watch_kit.py
-
-Open `index.html` from a local copy of this folder (no server, no network, 0 external resources).
-{len(order)} trials per rater; each trial shows the same beat on two engines side by side in a pre-shuffled left/right
-order (seed {SEED}; sha256 of the order `{manifest['order_sha256']}`). One forced choice per trial: "which one is alive?"
-(2AFC). Replay at most 2. The key is revealed after the last trial. The rater copies the JSON result block back.
-
-Read-out: count for v2 out of n and the exact two-sided binomial p. Examples (k/n: p): {json.dumps(manifest['readout_examples_p'])}
-Claim rule declared here: v2 "reads alive" only if p <= 0.05 over >= 12 trials from >= 3 raters; anything else is reported as no evidence.
-
-Limits: {manifest['limits']}
-
-| clip | bytes | sha256 (16) | duration s |
-|---|---|---|---|
-{clips}
-
-Total {manifest['kit_total_mb']} MB (budget {MAX_KIT_MB} MB): {'PASS' if manifest['pass_kit_size'] else 'FAIL'}; clip duration <= {MAX_CLIP_S} s: {'PASS' if manifest['pass_clip_duration'] else 'FAIL'}; page errors: {'none' if manifest['pass_no_page_errors'] else json.dumps(manifest['errors'])}.
-"""
-    with open(os.path.join(OUT, 'README.md'), 'w') as fh: fh.write(readme)
+    write_readme(manifest)
     print('kit', manifest['kit_total_mb'], 'MB', 'size', 'PASS' if manifest['pass_kit_size'] else 'FAIL', '| errors', 'none' if manifest['pass_no_page_errors'] else 'YES', '| durations <=', MAX_CLIP_S, 'PASS' if manifest['pass_clip_duration'] else 'FAIL', manifest.get('duration_s'))
     sys.exit(0 if manifest['pass_kit_size'] and manifest['pass_no_page_errors'] and manifest['pass_clip_duration'] else 1)
 
 
 if __name__ == '__main__':
+    if '--readme-only' in sys.argv:
+        # Regenerate README.md from the committed manifest.json without re-recording anything (clips, index.html and
+        # manifest.json stay byte-identical). Used for the direction/threshold disclosure (gist rev d33eaf03).
+        with open(os.path.join(OUT, 'manifest.json')) as fh: m = json.load(fh)
+        write_readme(m); print('README.md regenerated from manifest.json', m['generated_at']); sys.exit(0)
     asyncio.run(main())

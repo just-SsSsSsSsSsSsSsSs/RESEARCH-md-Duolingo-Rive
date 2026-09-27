@@ -1,0 +1,70 @@
+{
+ "verdict": "REJECTED",
+ "reason": "no block belongs to this kit",
+ "n": 0,
+ "v2_chosen": 0,
+ "v1_chosen": 0,
+ "two_sided_p": null,
+ "min_v2_wins_for_pass": null,
+ "raters": [],
+ "unnamed_sessions": 0,
+ "blocks_accepted": 0,
+ "blocks_rejected": [
+  {
+   "index": 0,
+   "why": [
+    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
+    "seed 20260927 != 20260928",
+    "order_sha256 mismatch",
+    "trial 2 beat flight != celebrate",
+    "trial 3 beat sad != flight",
+    "trial 4 beat celebrate != sad"
+   ]
+  },
+  {
+   "index": 1,
+   "why": [
+    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
+    "seed 20260927 != 20260928",
+    "order_sha256 mismatch",
+    "trial 2 beat flight != celebrate",
+    "trial 3 beat sad != flight",
+    "trial 4 beat celebrate != sad"
+   ]
+  },
+  {
+   "index": 2,
+   "why": [
+    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
+    "seed 20260927 != 20260928",
+    "order_sha256 mismatch",
+    "trial 2 beat flight != celebrate",
+    "trial 3 beat sad != flight",
+    "trial 4 beat celebrate != sad"
+   ]
+  },
+  {
+   "index": 3,
+   "why": [
+    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
+    "seed 20260927 != 20260928",
+    "order_sha256 mismatch",
+    "trial 2 beat flight != celebrate",
+    "trial 3 beat sad != flight",
+    "trial 4 beat celebrate != sad"
+   ]
+  }
+ ],
+ "per_beat": {},
+ "rule": "PASS iff two-sided p <= 0.05 AND v2_chosen > n/2, over >= 12 trials from >= 3 named raters",
+ "kit": "2026-09-27T17:27:58Z",
+ "order_sha256": "8c83cf040514b75998cf5325a3aaabf1a22af979c996fe4e5a003d64fd26359b",
+ "scored_at": "2026-09-27T17:30:12Z",
+ "files": [
+  "2026-09-27_gist-6ed35984_rater-karma.json",
+  "2026-09-27_gist-6ed35984_rater-null-2.json",
+  "2026-09-27_gist-6ed35984_rater-salim.json",
+  "2026-09-27_gist-d33eaf03_rater-null.json"
+ ],
+ "note": "Scored against kit v2 (2026-09-27T17:27:58Z, seed 20260928). All files in results/ are kit-v1 sessions (kit 2026-09-27T05:05:59Z, seed 20260927) and are REJECTED here by design - kept untouched as kit-v1 record (see results/README.md). Kit-v2 sessions: none yet."
+}

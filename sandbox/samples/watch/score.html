@@ -1,0 +1,37 @@
+<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>G12 scorer - who is alive? (offline)</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:860px;margin:24px auto;padding:0 16px;line-height:1.6;color:#222}
+textarea{width:100%;min-height:220px;font:13px/1.4 ui-monospace,monospace;direction:ltr}
+button{font-size:16px;padding:8px 18px;margin:8px 0}
+pre{background:#f4f4f4;padding:12px;direction:ltr;text-align:left;overflow:auto;font-size:13px}
+.v{font-size:22px;font-weight:700;padding:10px 14px;border-radius:8px;display:inline-block}
+.PASS{background:#d8f5d8}.FAIL{background:#ffd9d9}.INSUFFICIENT{background:#fff2c6}.REJECTED{background:#e6e6e6}
+table{border-collapse:collapse;margin:8px 0}td,th{border:1px solid #ccc;padding:4px 10px}
+small{color:#555}
+</style>
+<h1>حاسب نتيجة G12 - «أنهي واحد حي؟»</h1>
+<p>الصق هنا كتل النتائج (JSON) من كل مقيّم، واحدة بعد الأخرى، ثم اضغط «احسب». لا شيء يخرج من المتصفح.</p>
+<p><small>القاعدة (معلنة قبل أي بيانات): PASS فقط إذا كان p ثنائي الجانب &le; 0.05 <b>و</b> اختيارات v2 أكثر من نصف المحاولات، على &ge; 12 محاولة من &ge; 3 مقيّمين مسمّين. p صغير مع خسارة v2 = FAIL (الـp متناظر: 10/12 و 2/12 يعطيان 0.0386 معاً).</small></p>
+<table><tr><th>عدد المحاولات</th><th>أقل عدد اختيارات لـ v2 للنجاح</th></tr><tbody id="thr"></tbody></table>
+<textarea id="in" placeholder='{"kit": "...", "rater": "...", ...} {"kit": ...}'></textarea>
+<br><button id="go" disabled>احسب النتيجة</button>
+<div id="out"></div>
+<script src="score_core.js"></script>
+<script>
+let M = null;
+fetch('manifest.json').then(r => r.json()).then(m => { M = m; document.getElementById('go').disabled = false;
+  const tb = document.getElementById('thr'); [12, 16, 20].forEach(n => { const tr = document.createElement('tr'); tr.innerHTML = '<td>' + n + '</td><td>' + G12.minWins(n) + '/' + n + '</td>'; tb.appendChild(tr); });
+}).catch(e => { document.getElementById('out').textContent = 'manifest.json is not next to this page (open it over http or from the kit folder): ' + e; });
+document.getElementById('go').onclick = () => {
+  const { blocks, errors } = G12.parseBlocks(document.getElementById('in').value);
+  const r = G12.score(blocks, M);
+  const out = document.getElementById('out');
+  const beats = Object.entries(r.per_beat).map(([b, e]) => '<tr><td>' + b + '</td><td>' + e.v2 + '/' + e.n + '</td></tr>').join('');
+  out.innerHTML = '<p><span class="v ' + r.verdict + '">' + r.verdict + '</span></p><p>' + r.reason + '</p>' +
+    (errors.length ? '<p>parse errors: ' + errors.join('; ') + '</p>' : '') +
+    (r.blocks_rejected.length ? '<p>rejected blocks (not from this kit): ' + JSON.stringify(r.blocks_rejected) + '</p>' : '') +
+    '<table><tr><th>المشهد</th><th>v2 / n</th></tr>' + beats + '</table>' +
+    '<p>انسخ الكتلة التالية كما هي وأرسلها (هي التي تُقفل G12، لا جملة):</p><pre>' + JSON.stringify(Object.assign({ scored_at: new Date().toISOString() }, r), null, 1) + '</pre>';
+};
+</script></html>
