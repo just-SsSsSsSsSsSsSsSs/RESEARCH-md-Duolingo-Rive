@@ -61,6 +61,13 @@ def main():
     wing_p = os.path.join(PROOFS, 'g14_wing_render.json'); wg = load(wing_p)
     ship_p = os.path.join(PROOFS, 'g11c_ship_visible.json'); sh = load(ship_p)
     matrix_p = os.path.join(SB, 'samples', 'measure_matrix.json'); mx = load(matrix_p)
+    # G12 human gate: the verdict is read from the scorer's output, never typed here (owner directive, gist rev 0c05fdfc).
+    g12_p = os.path.join(SB, 'samples', 'watch', 'results', 'SCORE.generated.json'); g12 = load(g12_p)
+    g12_verdict = get(g12, 'verdict', src='SCORE.generated'); g12_beats = get(g12, 'per_beat', src='SCORE.generated')
+    g12_kit = load(os.path.join(SB, 'samples', 'watch', 'manifest.json')).get('kit_version', 1)
+    g12_line = (f'watch kit v{g12_kit} ({get(g12, "kit", src="SCORE.generated")}): '
+                f'{g12_verdict} - v2 {g12["v2_chosen"]}/{g12["n"]} from {len(g12["raters"])} named raters, two-sided p {g12["two_sided_p"]:.4f} (PASS needed >= {g12["min_v2_wins_for_pass"]}/{g12["n"]}); '
+                'per beat v2 ' + ', '.join(f'{b} {v["v2"]}/{v["n"]}' for b, v in g12_beats.items()))
     sync_p = os.path.join(SFX, 'sfx_sync.json'); sy = load(sync_p)
     mix_p = os.path.join(SFX, 'sfx_mix.json'); mi = load(mix_p)
     poly_p = os.path.join(SFX, 'sfx_polyphony.json'); po = load(poly_p)
@@ -68,6 +75,7 @@ def main():
     ts = {
         'proofs': get(pr, 'captured_at', src='proofs.json'), 'intent': get(it, 'captured_at', src='g12'), 'perf': get(pf, 'captured_at', src='g13'),
         'flex': get(fx, 'generated_at', src='g14_flex'), 'wing': get(wg, 'generated_at', src='g14_wing_render'), 'matrix': get(mx, 'measured_at', src='matrix'),
+        'g12': get(g12, 'scored_at', src='SCORE.generated'),
         'sync': get(sy, 'measured_at', src='sfx_sync'), 'mix': get(mi, 'measured_at', src='sfx_mix'), 'poly': get(po, 'measured_at', src='sfx_poly'),
     }
     eye_ts = eye.get('captured_at') or 'no timestamp in file; commit history: git log -- ' + rel(eye_p)
@@ -145,8 +153,10 @@ def main():
          f'{rel(ship_p)}; samples/proofs/g11_pose_sheet.png', P(get(sh, '5_poses', 'pass_', src='ship'))),
         ('12', 'Appeal', 'owner judgement (G12 watch kit: 2AFC, randomised order); performance never below 60 fps at 1x',
          f'5 owls 1x: p95 <= 20 ms, jank < 1 %; watch kit majority for v2 with exact binomial p <= 0.05',
-         f'5 owls 1x p95 {v2_1["raf_p95_ms"]} ms, jank {v2_1["jank_pct"]} %, heap +{v2_1["heap_delta_mb_after_scene"]} MB; watch kit: OPEN (owner-side, see samples/watch/)',
-         f'{rel(matrix_p)} {ts["matrix"]}', 'OPEN (human gate)'),
+         f'5 owls 1x p95 {v2_1["raf_p95_ms"]} ms, jank {v2_1["jank_pct"]} %, heap +{v2_1["heap_delta_mb_after_scene"]} MB; {g12_line}',
+         f'{rel(matrix_p)} {ts["matrix"]}; {rel(g12_p)} {ts["g12"]}',
+         # perf half PASS + human half as the scorer says: FAIL / PASS close the row; INSUFFICIENT / REJECTED keep it OPEN
+         'FAIL' if g12_verdict == 'FAIL' else ('PASS' if g12_verdict == 'PASS' and v2_1['raf_p95_ms'] <= 20 and v2_1['jank_pct'] < 1 else 'OPEN (human gate)')),
     ]
     edge_line = f'edge width median {edge["dpr2_rest"]["edge_width_device_px_median"]} device px at DPR2 rest, soft edge {P(edge["pass_soft_edge"])} ({rel(proofs_p)} {ts["proofs"]})'
 

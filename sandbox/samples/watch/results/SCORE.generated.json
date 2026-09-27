@@ -1,29 +1,19 @@
 {
- "verdict": "INSUFFICIENT",
- "reason": "8 trials from 2 named raters (0 unnamed sessions); need >= 12 trials and >= 3 named raters",
- "n": 8,
- "v2_chosen": 4,
- "v1_chosen": 4,
+ "verdict": "FAIL",
+ "reason": "no evidence: v2 6/12, two-sided p 1.0000 > 0.05 (need >= 10/12)",
+ "n": 12,
+ "v2_chosen": 6,
+ "v1_chosen": 6,
  "two_sided_p": 1,
- "min_v2_wins_for_pass": 8,
+ "min_v2_wins_for_pass": 10,
  "raters": [
+  "كارما",
   "بابا",
   "سليم"
  ],
  "unnamed_sessions": 0,
- "blocks_accepted": 2,
+ "blocks_accepted": 3,
  "blocks_rejected": [
-  {
-   "index": 0,
-   "why": [
-    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
-    "seed 20260927 != 20260928",
-    "order_sha256 mismatch",
-    "trial 2 beat flight != celebrate",
-    "trial 3 beat sad != flight",
-    "trial 4 beat celebrate != sad"
-   ]
-  },
   {
    "index": 1,
    "why": [
@@ -56,31 +46,43 @@
     "trial 3 beat sad != flight",
     "trial 4 beat celebrate != sad"
    ]
+  },
+  {
+   "index": 4,
+   "why": [
+    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
+    "seed 20260927 != 20260928",
+    "order_sha256 mismatch",
+    "trial 2 beat flight != celebrate",
+    "trial 3 beat sad != flight",
+    "trial 4 beat celebrate != sad"
+   ]
   }
  ],
  "per_beat": {
   "think": {
-   "n": 2,
+   "n": 3,
    "v2": 0
   },
   "celebrate": {
-   "n": 2,
-   "v2": 2
+   "n": 3,
+   "v2": 3
   },
   "flight": {
-   "n": 2,
-   "v2": 2
+   "n": 3,
+   "v2": 3
   },
   "sad": {
-   "n": 2,
+   "n": 3,
    "v2": 0
   }
  },
  "rule": "PASS iff two-sided p <= 0.05 AND v2_chosen > n/2, over >= 12 trials from >= 3 named raters",
  "kit": "2026-09-27T17:27:58Z",
  "order_sha256": "8c83cf040514b75998cf5325a3aaabf1a22af979c996fe4e5a003d64fd26359b",
- "scored_at": "2026-09-27T20:42:31Z",
+ "scored_at": "2026-09-27T20:55:46Z",
  "files": [
+  "2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json",
   "2026-09-27_gist-6ed35984_rater-karma.json",
   "2026-09-27_gist-6ed35984_rater-null-2.json",
   "2026-09-27_gist-6ed35984_rater-salim.json",
@@ -88,5 +90,8 @@
   "2026-09-27_gist-df1b7d02_rater-baba-kitv2.json",
   "2026-09-27_gist-df1b7d02_rater-salim-kitv2.json"
  ],
- "note": "Scored against kit v2 (2026-09-27T17:27:58Z, seed 20260928). The 4 kit-v1 files (kit 2026-09-27T05:05:59Z) are REJECTED by design and kept as record. Kit-v2 sessions accepted: 2 (Salim, Baba; both 2/4: think -> v1, celebrate -> v2, flight -> v2, sad -> v1). A third NAMED rater is still needed before any verdict other than INSUFFICIENT; with the current pattern held by a third rater the pooled count would be 6/12 (p 1.0) = FAIL, not PASS."
+ "excluded": [
+  "2026-09-27_gist-0c05fdfc_rater-mama-kitv2.DUPLICATE-of-karma.json (identical answers and ms to the Karma block; not an independent session)"
+ ],
+ "note": "FINAL for kit v2 (owner directive, gist rev 0c05fdfc): 3 named raters (Salim, Baba, Karma), 12 trials, v2 6/12, two-sided p 1.0, PASS needed >= 10/12 -> FAIL as the tool outputs it. Per beat over kit v2: think 0/3, celebrate 3/3, flight 3/3, sad 0/3. Over both kits (kit-v1 sessions REJECTED here but on record): celebrate 7/7, flight 7/7, think 0/7 (4 on the puzzled clip + 3 on the real think state), sad 4/7 (4/4 kit v1 then 0/3 kit v2 on byte-identical clips - noise demonstrated). Kit-v1 files: 4 REJECTED by design. Extension to 20 trials to rescue the result is refused in advance by the owner (same rule as kit v1)."
 }
