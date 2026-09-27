@@ -31,6 +31,7 @@ BEND = float(os.environ.get('WING_BEND', '20'))   # deg per segment (PROGRESS K9
 SWEEP = [float(v) for v in os.environ.get('WING_SWEEP', '5,10,15,20').split(',')]   # gap columns per angle, reported
 CSS = 2.0                                     # css px per viewBox unit (400 px box for 200 units)
 REPS = 3
+SHRINK = 6                                    # device px erosion of the reference silhouette (interior-only test)
 BG = (255, 0, 255)                            # magenta background: any seam shows as pure BG
 H_SRC = 330                                   # wing plate rows
 BOXES = {'L': (30.0, 116.0, 50.0, 71.6), 'R': (120.0, 116.0, 50.0, 71.0)}   # from the SVG placement
@@ -72,23 +73,33 @@ def summarize(d):
                 diff_bbox_px=[int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())] if len(xs) else None)
 
 
-def seam_gaps(img, cut_rows, x0, x1, tol=4):
+def seam_gaps(img, ref, cut_rows, x0, x1, tol=4):
+    """A gap = a background pixel in the seam band [cut-3, cut+3] at a position where the REFERENCE
+    render (same document, unbent) is solid wing, after eroding that silhouette by SHRINK device px so the
+    test is strictly interior. Earlier version tested "solid 8 rows above and below" and was confounded
+    by the curved silhouette at DPR2 (non-monotonic sweep, PROGRESS K9.5-2 status). Under a bend the
+    silhouette moves outward only where the segment rotates away, so an interior hole between two bands is
+    the only thing that can register."""
     isbg = (np.abs(img - np.array(BG)).max(-1) <= tol)
+    solid = ~(np.abs(ref - np.array(BG)).max(-1) <= tol)
+    for _ in range(SHRINK):
+        n = solid.copy()
+        n[1:, :] &= solid[:-1, :]; n[:-1, :] &= solid[1:, :]; n[:, 1:] &= solid[:, :-1]; n[:, :-1] &= solid[:, 1:]
+        solid = n
     out = []
     for cy in cut_rows:
-        cy = int(round(cy)); band = isbg[cy - 3:cy + 4, x0:x1]
-        inside = (~isbg[cy - 8, x0:x1]) & (~isbg[cy + 8, x0:x1])
-        gap = inside & band.any(0)
-        out.append(dict(cut_css_y=cy, inside_cols=int(inside.sum()), gap_cols=int(gap.sum())))
+        cy = int(round(cy)); sl = (slice(cy - 3, cy + 4), slice(x0, x1))
+        inside = solid[sl]; gap = inside & isbg[sl]
+        out.append(dict(cut_css_y=cy, inside_px=int(inside.sum()), gap_px=int(gap.sum()), gap_cols=int(gap.any(0).sum())))
     return out
 
 
-def seams_for(img, cuts, dpr):
+def seams_for(img, ref, cuts, dpr):
     out = {}
     for side, (x, y, w, h) in BOXES.items():
         part = 'wingL' if side == 'L' else 'wingR'
         rows = [(y + c * h / H_SRC) * CSS * dpr for c in cuts[part]]
-        out[side] = seam_gaps(img, rows, int((x - 6) * CSS * dpr), int((x + w + 6) * CSS * dpr))
+        out[side] = seam_gaps(img, ref, rows, int((x - 6) * CSS * dpr), int((x + w + 6) * CSS * dpr))
     return out
 
 
@@ -116,12 +127,12 @@ async def main():
             raw = [summarize(np.abs(o - n).max(-1)) for o in so for n in sn]
             ctrl = [summarize(np.abs(so[i] - so[j]).max(-1)) for i in range(REPS) for j in range(i + 1, REPS)]
             ctrl += [summarize(np.abs(sn[i] - sn[j]).max(-1)) for i in range(REPS) for j in range(i + 1, REPS)]
-            seams_bend, seams_rest = seams_for(mb, cuts, dpr), seams_for(mn, cuts, dpr)
+            seams_bend, seams_rest = seams_for(mb, mn, cuts, dpr), seams_for(mn, mn, cuts, dpr)
             sweep = {}
             for ang in SWEEP:
                 css = BEND_CSS % (piv['armL_mid'], ang, piv['armL_tip'], ang, piv['armR_mid'], ang, piv['armR_tip'], ang)
                 ms = np.median(np.stack(await shots(b, new, dpr, css)), 0)
-                sweep[str(ang)] = {side: [c['gap_cols'] for c in v] for side, v in seams_for(ms, cuts, dpr).items()}
+                sweep[str(ang)] = {side: [c['gap_cols'] for c in v] for side, v in seams_for(ms, mn, cuts, dpr).items()}
             Image.fromarray(mn.astype(np.uint8)).save(os.path.join(PROOFS, f'g14_wing_rest_dpr{dpr}.png'))
             Image.fromarray(mb.astype(np.uint8)).save(os.path.join(PROOFS, f'g14_wing_bend_dpr{dpr}.png'))
             Image.fromarray(np.clip(d * 40, 0, 255).astype(np.uint8)).save(os.path.join(PROOFS, f'g14_wing_diff_dpr{dpr}.png'))
