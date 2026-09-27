@@ -52,7 +52,7 @@ HELPERS = """
   const PUP = () => { const v = M('pupilL'); return Math.hypot(v[4], v[5]); };
   const LAYERS = re => [...r.live].filter(a => a.effect && a.effect.target && re.test(a.effect.target.getAttribute('data-joint') || '')).length;
   // engine truth for the spiral: the outer radius the pupil layer was AUTHORED to reach (last keyframe), x component before the 0.7 y-squash
-  const SPIRALKF = () => { const a = r.j('pupilL').getAnimations().find(a => a.effect.getKeyframes().length > 10); if (!a) return null; const k = a.effect.getKeyframes(); const last = /translate\(([-\d.]+)px, ([-\d.]+)px\)/.exec(k[k.length - 1].transform); const n = k.length; let rmax = 0; for (const f of k) { const m = /translate\(([-\d.]+)px, ([-\d.]+)px\)/.exec(f.transform); if (m) rmax = Math.max(rmax, Math.hypot(+m[1], (+m[2] + 1.5) / 0.7)); } return { frames: n, authoredOuterRadius: rmax, progress: a.effect.getComputedTiming().progress }; };
+  const SPIRALKF = () => { const a = r.j('pupilL').getAnimations().find(a => a.effect.getKeyframes().length > 10); if (!a) return null; const k = a.effect.getKeyframes(); const last = /translate\\(([-\\d.]+)px, ([-\\d.]+)px\\)/.exec(k[k.length - 1].transform); const n = k.length; let rmax = 0; for (const f of k) { const m = /translate\\(([-\\d.]+)px, ([-\\d.]+)px\\)/.exec(f.transform); if (m) rmax = Math.max(rmax, Math.hypot(+m[1], (+m[2] + 1.5) / 0.7)); } return { frames: n, authoredOuterRadius: rmax, progress: a.effect.getComputedTiming().progress }; };
   const BODYKF = () => r.j('body').getAnimations().filter(a => a !== r.squashLayer).map(a => a.effect.getKeyframes().map(k => k.transform));   // element-level: fire-and-forget layers are not in rig.live
 """
 

@@ -151,7 +151,7 @@
    }
   }
  },
- "captured_at": "2026-09-27T01:21:37Z",
+ "captured_at": "2026-09-27T01:30:59Z",
  "env": "headless Chromium, DPR 1, CPU 1x, sfx=0, n=1; tolerance Q = one rAF quantum 16.7 ms unless stated; root rotation unwrapped",
  "runs": [
   {
@@ -187,12 +187,12 @@
    "triumph": {
     "small": {
      "tier": "small",
-     "total_ms": 1859,
+     "total_ms": 1132.5,
      "rot_max_deg_unwrapped": 0.0,
      "rot_max_deg_wrapped": 0,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 208.4,
-     "squash_tail_ms": 891.9,
+     "settle_ms_after_land": 185.1,
+     "squash_tail_ms": 885.1,
      "cue_order": [
       "perf",
       "anticipate",
@@ -211,12 +211,12 @@
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 1828.2,
+     "total_ms": 1109.5,
      "rot_max_deg_unwrapped": 0.0,
      "rot_max_deg_wrapped": 0,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 186.1,
-     "squash_tail_ms": 885.5,
+     "settle_ms_after_land": 209.4,
+     "squash_tail_ms": 893,
      "cue_order": [
       "perf",
       "anticipate",
@@ -237,12 +237,12 @@
     },
     "large": {
      "tier": "large",
-     "total_ms": 1877.4,
+     "total_ms": 1089,
      "rot_max_deg_unwrapped": 360.0,
-     "rot_max_deg_wrapped": 177.9,
+     "rot_max_deg_wrapped": 177.6,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 180.7,
-     "squash_tail_ms": 880.3,
+     "settle_ms_after_land": 177.2,
+     "squash_tail_ms": 861.0,
      "cue_order": [
       "perf",
       "anticipate",
@@ -266,21 +266,21 @@
    "oops": {
     "small": {
      "tier": "small",
-     "total_ms": 2652.4,
+     "total_ms": 1861.4,
      "plan": {
-      "anticipateMs": 249.92444703896123,
-      "stretch": 1.1445843149642267,
-      "holdMs": 171.20685655775068,
-      "extremeAt": 249.92444703896123,
-      "totalMs": 1921.1313035967119,
+      "anticipateMs": 146.45653296965153,
+      "stretch": 1.1064498020825444,
+      "holdMs": 213.87328351873634,
+      "extremeAt": 146.45653296965153,
+      "totalMs": 1860.329816488388,
       "takes": 1,
       "jiggle": 0
      },
      "anticipation_ms": [
-      233.9
+      150.5
      ],
-     "stretch_scaleY": 1.145,
-     "hold_ms": 172.2,
+     "stretch_scaleY": 1.106,
+     "hold_ms": 214.0,
      "anticipate_cues": 1,
      "jiggle_cycles": 0,
      "jiggle_amps": [],
@@ -290,27 +290,27 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 2957.8,
+     "total_ms": 2107.4,
      "plan": {
-      "anticipateMs": 200.84012601971497,
-      "stretch": 1.1259075504236404,
-      "holdMs": 205.83308549477712,
-      "extremeAt": 522.184327651259,
-      "totalMs": 2228.0174131460362,
+      "anticipateMs": 137.74985966193734,
+      "stretch": 1.1089706161729402,
+      "holdMs": 249.84296604036365,
+      "extremeAt": 358.149635121037,
+      "totalMs": 2107.9926011614007,
       "takes": 2,
       "jiggle": 0
      },
      "anticipation_ms": [
-      199.7,
-      199.7
+      133.1,
+      133.0
      ],
-     "stretch_scaleY": 1.126,
-     "hold_ms": 205.9,
+     "stretch_scaleY": 1.109,
+     "hold_ms": 248.8,
      "anticipate_cues": 2,
      "jiggle_cycles": 0,
      "jiggle_amps": [],
@@ -320,27 +320,27 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     },
     "large": {
      "tier": "large",
-     "total_ms": 3001.3,
+     "total_ms": 2164.5,
      "plan": {
-      "anticipateMs": 168.7446992869432,
-      "stretch": 1.1208759745154664,
-      "holdMs": 332.90262067866774,
-      "extremeAt": 438.73621814605224,
-      "totalMs": 2271.63883882472,
+      "anticipateMs": 154.4334802724257,
+      "stretch": 1.1578120936105105,
+      "holdMs": 263.1327133005551,
+      "extremeAt": 401.5270487083068,
+      "totalMs": 2164.659762008862,
       "takes": 2,
       "jiggle": 3
      },
      "anticipation_ms": [
-      167.4,
-      165.9
+      149.8,
+      166.3
      ],
-     "stretch_scaleY": 1.121,
-     "hold_ms": 332.9,
+     "stretch_scaleY": 1.158,
+     "hold_ms": 260.8,
      "anticipate_cues": 2,
      "jiggle_cycles": 3,
      "jiggle_amps": [
@@ -354,16 +354,18 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     }
    },
    "puzzled": {
     "small": {
      "tier": "small",
-     "total_ms": 2975.7,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 8.6,
+     "total_ms": 2285.4,
+     "pupil_radius_observed_at_spiral_end": 4.33,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 9.2,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [],
@@ -377,9 +379,11 @@
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 2995.6,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 13.0,
+     "total_ms": 2239.2,
+     "pupil_radius_observed_at_spiral_end": 4.33,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 12.7,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [
@@ -395,9 +399,11 @@
     },
     "large": {
      "tier": "large",
-     "total_ms": 3023.1,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 13.4,
+     "total_ms": 2418,
+     "pupil_radius_observed_at_spiral_end": 4.33,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 13.9,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [
@@ -408,25 +414,23 @@
       "head_tilt_by_tier": true,
       "recentre_within_budget": true,
       "vfx_match_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     }
    },
    "moving_hold": {
     "window_ms": 20000,
-    "count": 6,
+    "count": 5,
     "names": [
      "blinkDouble",
-     "footShift",
      "headMicroTurn",
      "wingSettle"
     ],
     "gaps_ms": [
-     3514,
-     3869,
-     3423,
-     2956,
-     3855
+     2976,
+     5020,
+     3979,
+     4004
     ],
     "while_busy": 0,
     "checks": {
@@ -445,7 +449,7 @@
       "head": 0,
       "arm": 0
      },
-     "ms": 1225
+     "ms": 1218
     },
     "oops": {
      "addedLayers": {
@@ -454,7 +458,7 @@
       "head": 0,
       "arm": 0
      },
-     "ms": 1416
+     "ms": 1415
     },
     "puzzled": {
      "addedLayers": {
@@ -506,19 +510,19 @@
     "oops.small.hold_in_budget": true,
     "oops.small.double_take_by_tier": true,
     "oops.small.jiggle_by_tier": true,
-    "oops.small.total_le_max": false,
+    "oops.small.total_le_max": true,
     "oops.medium.anticipation_in_budget": true,
     "oops.medium.stretch_in_budget": true,
     "oops.medium.hold_in_budget": true,
     "oops.medium.double_take_by_tier": true,
     "oops.medium.jiggle_by_tier": true,
-    "oops.medium.total_le_max": false,
+    "oops.medium.total_le_max": true,
     "oops.large.anticipation_in_budget": true,
     "oops.large.stretch_in_budget": true,
     "oops.large.hold_in_budget": true,
     "oops.large.double_take_by_tier": true,
     "oops.large.jiggle_by_tier": true,
-    "oops.large.total_le_max": false,
+    "oops.large.total_le_max": true,
     "puzzled.small.spiral_reaches_outer_radius": true,
     "puzzled.small.head_tilt_by_tier": true,
     "puzzled.small.recentre_within_budget": true,
@@ -533,7 +537,7 @@
     "puzzled.large.head_tilt_by_tier": true,
     "puzzled.large.recentre_within_budget": true,
     "puzzled.large.vfx_match_tier": true,
-    "puzzled.large.total_le_max": false,
+    "puzzled.large.total_le_max": true,
     "hold.ge_3_names": true,
     "hold.gaps_in_budget": true,
     "hold.none_while_busy": true,
@@ -542,7 +546,7 @@
     "reduced.zero_body_layers_all_performances": true,
     "reduced.legacy_zero_root_body": true
    },
-   "pass_all": false
+   "pass_all": true
   },
   {
    "escalation": {
@@ -577,12 +581,12 @@
    "triumph": {
     "small": {
      "tier": "small",
-     "total_ms": 1875.3,
+     "total_ms": 1171.2,
      "rot_max_deg_unwrapped": 0.0,
      "rot_max_deg_wrapped": 0,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 183.5,
-     "squash_tail_ms": 883.5,
+     "settle_ms_after_land": 209.4,
+     "squash_tail_ms": 893.3,
      "cue_order": [
       "perf",
       "anticipate",
@@ -601,12 +605,12 @@
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 1808.6,
+     "total_ms": 1130.5,
      "rot_max_deg_unwrapped": 0.0,
      "rot_max_deg_wrapped": 0,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 177.4,
-     "squash_tail_ms": 860.4,
+     "settle_ms_after_land": 190.2,
+     "squash_tail_ms": 889.9,
      "cue_order": [
       "perf",
       "anticipate",
@@ -627,12 +631,12 @@
     },
     "large": {
      "tier": "large",
-     "total_ms": 1872.9,
+     "total_ms": 1128.2,
      "rot_max_deg_unwrapped": 360.0,
      "rot_max_deg_wrapped": 177.6,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 186.1,
-     "squash_tail_ms": 886.1,
+     "settle_ms_after_land": 180.6,
+     "squash_tail_ms": 863.9,
      "cue_order": [
       "perf",
       "anticipate",
@@ -656,21 +660,21 @@
    "oops": {
     "small": {
      "tier": "small",
-     "total_ms": 2625.8,
+     "total_ms": 2054.1,
      "plan": {
-      "anticipateMs": 139.74999058669385,
-      "stretch": 1.1576772690660133,
-      "holdMs": 266.8592996287645,
-      "extremeAt": 139.74999058669385,
-      "totalMs": 1906.6092902154583,
+      "anticipateMs": 223.0624014552835,
+      "stretch": 1.1322938241055571,
+      "holdMs": 329.219862691704,
+      "extremeAt": 223.0624014552835,
+      "totalMs": 2052.2822641469875,
       "takes": 1,
       "jiggle": 0
      },
      "anticipation_ms": [
-      133.2
+      232.3
      ],
-     "stretch_scaleY": 1.158,
-     "hold_ms": 268.0,
+     "stretch_scaleY": 1.132,
+     "hold_ms": 330.8,
      "anticipate_cues": 1,
      "jiggle_cycles": 0,
      "jiggle_amps": [],
@@ -680,27 +684,27 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 2942.4,
+     "total_ms": 1993.3,
      "plan": {
-      "anticipateMs": 163.01874021005298,
-      "stretch": 1.1452701972751163,
-      "holdMs": 291.03337462259867,
-      "extremeAt": 423.84872454613776,
-      "totalMs": 2214.882099168736,
+      "anticipateMs": 141.17268193164003,
+      "stretch": 1.1659177300886634,
+      "holdMs": 126.42321519576184,
+      "extremeAt": 367.048973022264,
+      "totalMs": 1993.4721882180258,
       "takes": 2,
       "jiggle": 0
      },
      "anticipation_ms": [
-      166.8,
-      149.4
+      149.9,
+      132.7
      ],
-     "stretch_scaleY": 1.145,
-     "hold_ms": 290.9,
+     "stretch_scaleY": 1.166,
+     "hold_ms": 126.2,
      "anticipate_cues": 2,
      "jiggle_cycles": 0,
      "jiggle_amps": [],
@@ -710,27 +714,27 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     },
     "large": {
      "tier": "large",
-     "total_ms": 2794.1,
+     "total_ms": 2090.4,
      "plan": {
-      "anticipateMs": 153.98346035634228,
-      "stretch": 1.1449596059503366,
-      "holdMs": 172.80858076765213,
-      "extremeAt": 400.3569969264899,
-      "totalMs": 2073.165577694142,
+      "anticipateMs": 138.20013458689954,
+      "stretch": 1.1513126693517604,
+      "holdMs": 231.28713518509102,
+      "extremeAt": 359.3203499259388,
+      "totalMs": 2090.6074851110297,
       "takes": 2,
       "jiggle": 3
      },
      "anticipation_ms": [
-      150.0,
-      149.4
+      133.3,
+      132.5
      ],
-     "stretch_scaleY": 1.145,
-     "hold_ms": 173.0,
+     "stretch_scaleY": 1.151,
+     "hold_ms": 230.9,
      "anticipate_cues": 2,
      "jiggle_cycles": 3,
      "jiggle_amps": [
@@ -744,16 +748,18 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     }
    },
    "puzzled": {
     "small": {
      "tier": "small",
-     "total_ms": 3119.6,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 8.7,
+     "total_ms": 1904.7,
+     "pupil_radius_observed_at_spiral_end": 4.33,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 8.8,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [],
@@ -762,14 +768,16 @@
       "head_tilt_by_tier": true,
       "recentre_within_budget": true,
       "vfx_match_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 3131,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 13.0,
+     "total_ms": 1977,
+     "pupil_radius_observed_at_spiral_end": 4.33,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 12.5,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [
@@ -780,14 +788,16 @@
       "head_tilt_by_tier": true,
       "recentre_within_budget": true,
       "vfx_match_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     },
     "large": {
      "tier": "large",
-     "total_ms": 2972.7,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 13.1,
+     "total_ms": 2190.8,
+     "pupil_radius_observed_at_spiral_end": 4.33,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 14.2,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [
@@ -808,12 +818,12 @@
     "names": [
      "blinkDouble",
      "footShift",
-     "headMicroTurn"
+     "wingSettle"
     ],
     "gaps_ms": [
-     4121,
-     4945,
-     4433
+     3157,
+     2511,
+     5036
     ],
     "while_busy": 0,
     "checks": {
@@ -832,7 +842,7 @@
       "head": 0,
       "arm": 0
      },
-     "ms": 1221
+     "ms": 1211
     },
     "oops": {
      "addedLayers": {
@@ -850,7 +860,7 @@
       "head": 0,
       "arm": 0
      },
-     "ms": 1417
+     "ms": 1416
     },
     "legacy_celebrate": {
      "addedRootBodyLayers": 0
@@ -893,29 +903,29 @@
     "oops.small.hold_in_budget": true,
     "oops.small.double_take_by_tier": true,
     "oops.small.jiggle_by_tier": true,
-    "oops.small.total_le_max": false,
+    "oops.small.total_le_max": true,
     "oops.medium.anticipation_in_budget": true,
     "oops.medium.stretch_in_budget": true,
     "oops.medium.hold_in_budget": true,
     "oops.medium.double_take_by_tier": true,
     "oops.medium.jiggle_by_tier": true,
-    "oops.medium.total_le_max": false,
+    "oops.medium.total_le_max": true,
     "oops.large.anticipation_in_budget": true,
     "oops.large.stretch_in_budget": true,
     "oops.large.hold_in_budget": true,
     "oops.large.double_take_by_tier": true,
     "oops.large.jiggle_by_tier": true,
-    "oops.large.total_le_max": false,
+    "oops.large.total_le_max": true,
     "puzzled.small.spiral_reaches_outer_radius": true,
     "puzzled.small.head_tilt_by_tier": true,
     "puzzled.small.recentre_within_budget": true,
     "puzzled.small.vfx_match_tier": true,
-    "puzzled.small.total_le_max": false,
+    "puzzled.small.total_le_max": true,
     "puzzled.medium.spiral_reaches_outer_radius": true,
     "puzzled.medium.head_tilt_by_tier": true,
     "puzzled.medium.recentre_within_budget": true,
     "puzzled.medium.vfx_match_tier": true,
-    "puzzled.medium.total_le_max": false,
+    "puzzled.medium.total_le_max": true,
     "puzzled.large.spiral_reaches_outer_radius": true,
     "puzzled.large.head_tilt_by_tier": true,
     "puzzled.large.recentre_within_budget": true,
@@ -929,7 +939,7 @@
     "reduced.zero_body_layers_all_performances": true,
     "reduced.legacy_zero_root_body": true
    },
-   "pass_all": false
+   "pass_all": true
   },
   {
    "escalation": {
@@ -964,11 +974,11 @@
    "triumph": {
     "small": {
      "tier": "small",
-     "total_ms": 1827.2,
+     "total_ms": 1080.9,
      "rot_max_deg_unwrapped": 0.0,
      "rot_max_deg_wrapped": 0,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 179.2,
+     "settle_ms_after_land": 179.1,
      "squash_tail_ms": 879.0,
      "cue_order": [
       "perf",
@@ -988,12 +998,12 @@
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 1822.9,
+     "total_ms": 1188.9,
      "rot_max_deg_unwrapped": 0.0,
      "rot_max_deg_wrapped": 0,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 186.6,
-     "squash_tail_ms": 869.6,
+     "settle_ms_after_land": 209.6,
+     "squash_tail_ms": 909.6,
      "cue_order": [
       "perf",
       "anticipate",
@@ -1014,12 +1024,12 @@
     },
     "large": {
      "tier": "large",
-     "total_ms": 1889.7,
+     "total_ms": 1159.4,
      "rot_max_deg_unwrapped": 360.0,
-     "rot_max_deg_wrapped": 177.7,
+     "rot_max_deg_wrapped": 177.8,
      "rot_at_land_deg": 0,
-     "settle_ms_after_land": 177.4,
-     "squash_tail_ms": 877.4,
+     "settle_ms_after_land": 186.3,
+     "squash_tail_ms": 885.5,
      "cue_order": [
       "perf",
       "anticipate",
@@ -1043,21 +1053,21 @@
    "oops": {
     "small": {
      "tier": "small",
-     "total_ms": 2661,
+     "total_ms": 1905.4,
      "plan": {
-      "anticipateMs": 211.11134599793343,
-      "stretch": 1.1599268736804131,
-      "holdMs": 218.36142264322592,
-      "extremeAt": 211.11134599793343,
-      "totalMs": 1929.4727686411593,
+      "anticipateMs": 167.8787875255274,
+      "stretch": 1.1409838472524796,
+      "holdMs": 236.2240220367055,
+      "extremeAt": 167.8787875255274,
+      "totalMs": 1904.1028095622328,
       "takes": 1,
       "jiggle": 0
      },
      "anticipation_ms": [
-      215.8
+      166.5
      ],
-     "stretch_scaleY": 1.16,
-     "hold_ms": 216.5,
+     "stretch_scaleY": 1.141,
+     "hold_ms": 237.2,
      "anticipate_cues": 1,
      "jiggle_cycles": 0,
      "jiggle_amps": [],
@@ -1067,27 +1077,27 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 3026.1,
+     "total_ms": 2065.5,
      "plan": {
-      "anticipateMs": 229.72659772596995,
-      "stretch": 1.1155737717480323,
-      "holdMs": 201.67532771331213,
-      "extremeAt": 597.2891540875219,
-      "totalMs": 2298.9644818008337,
+      "anticipateMs": 167.147733105221,
+      "stretch": 1.1691155282974712,
+      "holdMs": 131.15210210411308,
+      "extremeAt": 434.58410607357456,
+      "totalMs": 2065.736208177688,
       "takes": 2,
       "jiggle": 0
      },
      "anticipation_ms": [
-      233.4,
-      233.3
+      166.4,
+      166.0
      ],
-     "stretch_scaleY": 1.116,
-     "hold_ms": 200.8,
+     "stretch_scaleY": 1.169,
+     "hold_ms": 131.6,
      "anticipate_cues": 2,
      "jiggle_cycles": 0,
      "jiggle_amps": [],
@@ -1097,27 +1107,27 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     },
     "large": {
      "tier": "large",
-     "total_ms": 2844.2,
+     "total_ms": 2283.4,
      "plan": {
-      "anticipateMs": 165.4162920835813,
-      "stretch": 1.1154031834494325,
-      "holdMs": 187.89990392654457,
-      "extremeAt": 430.0823594173114,
-      "totalMs": 2117.982263343856,
+      "anticipateMs": 219.4984703687989,
+      "stretch": 1.1139315579084987,
+      "holdMs": 212.79074697511413,
+      "extremeAt": 570.6960229588772,
+      "totalMs": 2283.486769933991,
       "takes": 2,
       "jiggle": 3
      },
      "anticipation_ms": [
-      166.9,
-      165.7
+      216.7,
+      216.7
      ],
-     "stretch_scaleY": 1.115,
-     "hold_ms": 186.8,
+     "stretch_scaleY": 1.114,
+     "hold_ms": 212.9,
      "anticipate_cues": 2,
      "jiggle_cycles": 3,
      "jiggle_amps": [
@@ -1131,16 +1141,18 @@
       "hold_in_budget": true,
       "double_take_by_tier": true,
       "jiggle_by_tier": true,
-      "total_le_max": false
+      "total_le_max": true
      }
     }
    },
    "puzzled": {
     "small": {
      "tier": "small",
-     "total_ms": 2856.7,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 9.8,
+     "total_ms": 1990.5,
+     "pupil_radius_observed_at_spiral_end": 4.33,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 8.2,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [],
@@ -1154,9 +1166,11 @@
     },
     "medium": {
      "tier": "medium",
-     "total_ms": 2912.8,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 11.4,
+     "total_ms": 2347.2,
+     "pupil_radius_observed_at_spiral_end": 4.33,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 13.0,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [
@@ -1172,9 +1186,11 @@
     },
     "large": {
      "tier": "large",
-     "total_ms": 2624.3,
-     "pupil_radius_at_spiral_end": 4.33,
-     "head_max_deg": 15.8,
+     "total_ms": 1955.7,
+     "pupil_radius_observed_at_spiral_end": 0,
+     "pupil_radius_at_spiral_end": 4,
+     "spiral_keyframes": 25,
+     "head_max_deg": 13.1,
      "pupil_px_after_recentre": 0,
      "pupil_layers_after_recentre": 0,
      "fx": [
@@ -1191,7 +1207,7 @@
    },
    "moving_hold": {
     "window_ms": 20000,
-    "count": 4,
+    "count": 6,
     "names": [
      "blinkDouble",
      "footShift",
@@ -1199,9 +1215,11 @@
      "wingSettle"
     ],
     "gaps_ms": [
-     4612,
-     3837,
-     2846
+     2563,
+     4011,
+     2974,
+     4052,
+     2710
     ],
     "while_busy": 0,
     "checks": {
@@ -1220,7 +1238,7 @@
       "head": 0,
       "arm": 0
      },
-     "ms": 1227
+     "ms": 1217
     },
     "oops": {
      "addedLayers": {
@@ -1238,7 +1256,7 @@
       "head": 0,
       "arm": 0
      },
-     "ms": 1417
+     "ms": 1416
     },
     "legacy_celebrate": {
      "addedRootBodyLayers": 0
@@ -1281,19 +1299,19 @@
     "oops.small.hold_in_budget": true,
     "oops.small.double_take_by_tier": true,
     "oops.small.jiggle_by_tier": true,
-    "oops.small.total_le_max": false,
+    "oops.small.total_le_max": true,
     "oops.medium.anticipation_in_budget": true,
     "oops.medium.stretch_in_budget": true,
     "oops.medium.hold_in_budget": true,
     "oops.medium.double_take_by_tier": true,
     "oops.medium.jiggle_by_tier": true,
-    "oops.medium.total_le_max": false,
+    "oops.medium.total_le_max": true,
     "oops.large.anticipation_in_budget": true,
     "oops.large.stretch_in_budget": true,
     "oops.large.hold_in_budget": true,
     "oops.large.double_take_by_tier": true,
     "oops.large.jiggle_by_tier": true,
-    "oops.large.total_le_max": false,
+    "oops.large.total_le_max": true,
     "puzzled.small.spiral_reaches_outer_radius": true,
     "puzzled.small.head_tilt_by_tier": true,
     "puzzled.small.recentre_within_budget": true,
@@ -1317,7 +1335,7 @@
     "reduced.zero_body_layers_all_performances": true,
     "reduced.legacy_zero_root_body": true
    },
-   "pass_all": false
+   "pass_all": true
   }
  ],
  "strip": {
@@ -1329,67 +1347,60 @@
    },
    {
     "label": "apex + roll",
-    "captured_ms": 642.1
+    "captured_ms": 641.6
    },
    {
     "label": "land",
-    "captured_ms": 1061.7
+    "captured_ms": 1062.6
    },
    {
     "label": "wink",
-    "captured_ms": 1441.9
+    "captured_ms": 1442.0
    }
   ]
  },
  "summary": {
-  "pass_all": false,
+  "pass_all": true,
   "runs": 3,
-  "failing_any_run": [
-   "oops.large.total_le_max",
-   "oops.medium.total_le_max",
-   "oops.small.total_le_max",
-   "puzzled.large.total_le_max",
-   "puzzled.medium.total_le_max",
-   "puzzled.small.total_le_max"
-  ],
+  "failing_any_run": [],
   "triumph_large_median": {
    "rot_max_deg_unwrapped": 360.0,
    "rot_at_land_deg": 0,
-   "settle_ms_after_land": 180.7,
-   "total_ms": 1877.4
+   "settle_ms_after_land": 180.6,
+   "total_ms": 1128.2
   },
   "oops_large_median": {
-   "stretch_scaleY": 1.121,
-   "hold_ms": 186.8,
-   "total_ms": 2844.2
+   "stretch_scaleY": 1.151,
+   "hold_ms": 230.9,
+   "total_ms": 2164.5
   },
   "oops_anticipation_ms_all": [
-   233.9,
-   199.7,
-   199.7,
-   167.4,
-   165.9,
-   133.2,
-   166.8,
-   149.4,
-   150.0,
-   149.4,
-   215.8,
-   233.4,
-   233.3,
-   166.9,
-   165.7
+   150.5,
+   133.1,
+   133.0,
+   149.8,
+   166.3,
+   232.3,
+   149.9,
+   132.7,
+   133.3,
+   132.5,
+   166.5,
+   166.4,
+   166.0,
+   216.7,
+   216.7
   ],
   "puzzled_large_median": {
-   "pupil_radius_at_spiral_end": 4.33,
-   "head_max_deg": 13.4,
+   "pupil_radius_at_spiral_end": 4,
+   "head_max_deg": 13.9,
    "pupil_px_after_recentre": 0,
-   "total_ms": 2972.7
+   "total_ms": 2190.8
   },
   "hold_counts": [
-   6,
+   5,
    4,
-   4
+   6
   ],
   "hold_names": [
    "blinkDouble",
