@@ -22,7 +22,7 @@ const CLIPS = {
     breathe: noop,                          // idle loop already runs in rig.idle()
     wave: (rig) => rig.nod(),
     bob: noop,                              // talk() drives the head spring itself
-    ponder: (rig) => rig.think(),
+    ponder: (rig) => (rig.puzzled && rig.perfSpec && rig.perfSpec('puzzled')) ? rig.puzzled(rig.escalate('puzzled')) : rig.think(),
     jumpJoy: (rig) => (rig.triumph && rig.perfSpec && rig.perfSpec('triumph')) ? rig.triumph(rig.escalate('triumph')) : rig.celebrate(),   // K9.4: escalating performance, ?perf=0 -> legacy clip
     recoil: (rig) => (rig.oops && rig.perfSpec && rig.perfSpec('oops')) ? rig.oops(rig.escalate('oops')) : rig.sad(),
     flight: (rig, ctx) => {

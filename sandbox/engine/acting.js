@@ -279,6 +279,75 @@ P.oops = function (tier = 'small') {
   return this._sleep(total).then(() => true);
 };
 
+/**
+ * Puzzled: spiral gaze (pupils trace an outward spiral, radius spiralRadiusPx[0] -> [1] over spiralMs), dramatic head tilt
+ * by tier, wing-to-chin, thought bubble (medium+), shrug (large); pupils re-centre within recentreMs at the end.
+ */
+P.puzzled = function (tier = 'small') {
+  const Z = this.perfSpec('puzzled'); if (!Z) return this.think();
+  if (this.busy) return Promise.resolve(false); this.busy = true;
+  const t = this._tierOf(Z, tier);
+  this._lastPerf = { name: 'puzzled', tier };
+  this.stats.performances = (this.stats.performances || 0) + 1;
+  this.cue('perf', { name: 'puzzled', tier });
+  if (REDUCED) { this._reducedFace('mid', 1400); return this._sleep(1400); }
+  const [r0, r1] = Z.spiralRadiusPx, turns = Z.spiralTurns, N = Math.max(12, Math.round(turns * 12));
+  const kf = []; for (let i = 0; i <= N; i++) { const u = i / N, a = u * turns * Math.PI * 2, r = r0 + (r1 - r0) * u; kf.push({ transform: `translate(${(Math.cos(a) * r).toFixed(2)}px, ${(Math.sin(a) * r * 0.7 - 1.5).toFixed(2)}px)`, offset: u }); }
+  const hold = randIn(Z.holdMs), spiralMs = Z.spiralMs, total = Math.min(Z.totalMaxMs, spiralMs + hold + 700);
+  this.setMouth('mid');
+  for (const p of ['pupilL', 'pupilR']) this.anim(this.j(p), kf, { duration: spiralMs, easing: 'linear', fill: 'forwards' }, true);   // spiral ends at the outer radius and holds there (thinking)
+  this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: `rotate(${t.headDeg}deg) translate(3px,-2px)` }], { duration: 700, easing: EASE.soft, composite: 'add', fill: 'forwards' }, true);
+  this.anim(this.j('armR'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-128deg) translate(2px,-14px)' }], { duration: 550, easing: EASE.pop, composite: 'add', fill: 'forwards', delay: 200 }, true);
+  this.anim(this.j('armR'), [{ transform: 'translate(0,0)' }, { transform: 'translate(0,-3px)' }, { transform: 'translate(0,0)' }], { duration: 380, iterations: 3, easing: EASE.sine, composite: 'add', delay: 800 });
+  this.cue('spiral', { tier, r0, r1, ms: spiralMs });
+  this.later(() => this._fx(t.vfx), spiralMs * 0.6);
+  this.later(() => this.setMouth('closed'), 900);
+  this.later(() => {                                                  // resolve: pupils snap back to centre (recentre), head pops, optional shrug
+    this.release(/^(pupilL|pupilR|head|armR)$/);
+    this.cue('recentre', { withinMs: Z.recentreMs });
+    this.anim(this.j('head'), [{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-6px) scale(1.06)' }, { transform: 'translateY(0) scale(1)' }], { duration: 450, easing: EASE.pop, composite: 'add' });
+    if (t.shrug) [['armL', 1], ['armR', -1]].forEach(([n, s]) => this.anim(this.j(n), [{ transform: 'rotate(0)' }, { transform: `rotate(${40 * s}deg) translateY(-4px)` }, { transform: 'rotate(0)' }], { duration: 520, easing: EASE.pop, composite: 'add' }));
+    this.setMouth('smile'); this.blink(true);
+  }, spiralMs + hold);
+  this.later(() => { this.setMouth('closed'); this.busy = false; this.cue('settle'); }, total);
+  this._lastPerf.plan = { spiralMs, holdMs: hold, totalMs: total, headDeg: t.headDeg };
+  return this._sleep(total).then(() => true);
+};
+
+/**
+ * Moving hold (P4/P5): named, distributed idle impulses from spec.acting.performances.movingHold. One impulse every
+ * intervalMs while idle (never busy/flying), never the same joint twice within minGapSameJointMs, each <= maxMs and
+ * within maxPx/maxDeg (validated). Emits cue('hold', {impulse, joints}). Returns a stop function.
+ */
+P.startMovingHold = function () {
+  const M = this.spec.acting && this.spec.acting.performances && this.spec.acting.performances.movingHold;
+  if (!M || M.enabled === false || REDUCED || PERF_OFF) return () => {};
+  const names = Object.keys(M.impulses); let on = true; const lastJoint = {};
+  this.stats.holdImpulses = this.stats.holdImpulses || {};
+  const fire = (name) => {
+    const im = M.impulses[name], now = performance.now();
+    if (im.joints.some((j) => lastJoint[j] && now - lastJoint[j] < M.minGapSameJointMs)) return false;
+    const ms = im.ms / clock.rate, sgn = Math.random() < 0.5 ? -1 : 1;
+    if (name === 'blinkDouble') { this.blink(true); }
+    else im.joints.forEach((j, k) => {
+      const el = this.j(j); if (!el) return;
+      const s = (k % 2 ? -1 : 1) * sgn, amp = im.px ? `translate(${(im.px * s).toFixed(2)}px, ${(-im.px * 0.4).toFixed(2)}px)` : `rotate(${(im.deg * s).toFixed(2)}deg)`;
+      this.anim(el, [{ transform: im.px ? 'translate(0,0)' : 'rotate(0)' }, { transform: amp, offset: 0.45 }, { transform: im.px ? 'translate(0,0)' : 'rotate(0)' }], { duration: ms, easing: EASE.soft, composite: 'add' });
+    });
+    im.joints.forEach((j) => { lastJoint[j] = now; });
+    this.stats.holdImpulses[name] = (this.stats.holdImpulses[name] || 0) + 1;
+    this.cue('hold', { impulse: name, joints: im.joints, ms: im.ms });
+    return true;
+  };
+  const tick = () => {
+    if (!on || this.disposed) return;
+    if (!this.busy && !this.flying) { const order = names.slice().sort(() => Math.random() - 0.5); for (const n of order) if (fire(n)) break; }
+    this.later(tick, randIn(M.intervalMs));
+  };
+  this.later(tick, randIn(M.intervalMs));
+  return () => { on = false; };
+};
+
 /** Spec validation for the acting extras (called from validateSpec consumers). */
 export function validateActing(spec) {
   const problems = [];

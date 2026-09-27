@@ -196,6 +196,7 @@
           const browsOn = ACTING && BROWS && spec.acting && spec.acting.brows === true;   // K9.2c: brows ship ON; ?brows=0 (or spec false) hides them
           rig.svg.querySelectorAll('[data-feature="brows"]').forEach((g) => { g.style.display = browsOn ? '' : 'none'; });
           if (ACTING) rig._stopSaccades = rig.startSaccades();   // K9.2c-2 idle micro-saccades (spec.gaze.saccade)
+          if (ACTING && rig.startMovingHold) rig._stopHold = rig.startMovingHold();   // K9.4 moving hold: named idle impulses (spec.acting.performances.movingHold), ?perf=0 off
           if (ACTING && WINK_AUTO && rig.states) rig.states.on((ev) => { if (ev.type === 'enter' && ev.to === 'celebrate') { const t = rig.escalate('celebrate'); if (t !== 'small') rig.later(() => rig.wink(), 420); } });   // wink on every 3rd celebration, not every one
         }   // K9 acting layer, flags ?acting=0 ?brows=0 ?wink=0
         return rig;
