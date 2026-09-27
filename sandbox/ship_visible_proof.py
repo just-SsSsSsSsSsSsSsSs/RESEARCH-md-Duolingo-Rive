@@ -207,6 +207,35 @@ async def main():
           r.onCue = prev; return { cues, intents: r.stats.intents || 0 }; }""")
         R['8b_intent_off'] = dict(**off, errors=errs[:], pass_='intent' not in off['cues'] and 'takeoff' in off['cues'] and 'land' in off['cues'] and off['intents'] == 0 and len(errs) == 0)
         await ctx.close()
+
+        # ---- 9 performances (K9.4): the three bar buttons exist; pressing each fires cue 'perf' with the escalated tier, the caption names the tier,
+        #      7 presses of one button escalate small small medium small small medium large (full timing proof lives in perf_proof.py -> g13_performances.json) ----
+        pg, ctx, errs = await page(b, '&sfx=0')
+        perf = await pg.evaluate("async () => {" + JS_HELPERS + """
+          const btn = n => document.querySelector('#acting button[data-actx="' + n + '"]');
+          const present = ['triumph', 'oops', 'puzzled'].every(n => !!btn(n));
+          const perfs = []; const prev = r.onCue; r.onCue = (p, c) => { if (p === 'perf') perfs.push({ name: c.name, tier: c.tier }); if (prev) prev(p, c); };
+          const captions = [];
+          for (const n of ['triumph', 'oops', 'puzzled']) { btn(n).click(); await sleep(60); captions.push(document.getElementById('caption').textContent); const t0 = performance.now(); while (r.busy && performance.now() - t0 < 6000) await sleep(16); await sleep(250); }
+          const tiers = []; for (let i = 0; i < 6; i++) { btn('puzzled').click(); const t0 = performance.now(); await sleep(60); while (r.busy && performance.now() - t0 < 6000) await sleep(16); await sleep(150); }
+          r.onCue = prev;
+          return { present, perfs, captions, puzzledTiers: perfs.filter(p => p.name === 'puzzled').map(p => p.tier), performances: r.stats.performances || 0 }; }""")
+        want = ['small', 'small', 'medium', 'small', 'small', 'medium', 'large']
+        R['9_performances'] = dict(**perf, errors=errs[:], pass_=perf['present'] and [p['name'] for p in perf['perfs'][:3]] == ['triumph', 'oops', 'puzzled'] and perf['puzzledTiers'] == want
+                                   and all(any(t in c for t in ('صغيرة', 'متوسطة', 'كبيرة')) for c in perf['captions']) and perf['performances'] == 9 and len(errs) == 0)
+        await ctx.close()
+
+        # ---- 9b reduced motion: same buttons under prefers-reduced-motion add no root/body layers (face only), vfx skipped ----
+        ctx = await b.new_context(viewport=dict(width=1000, height=900), reduced_motion='reduce'); pg = await ctx.new_page(); errs = []
+        pg.on('pageerror', lambda e: errs.append(str(e)))
+        await pg.goto(URL + BASE + '&sfx=0', wait_until='networkidle'); await pg.wait_for_function('window.__rigs && window.__rigs.length > 0'); await pg.wait_for_timeout(500)
+        red = await pg.evaluate("async () => {" + JS_HELPERS + """
+          const L = re => [...r.live].filter(a => a.effect && a.effect.target && re.test(a.effect.target.getAttribute('data-joint') || '')).length;
+          const base = L(/^(root|body)$/); let peak = 0;
+          for (const n of ['triumph', 'oops', 'puzzled']) { document.querySelector('#acting button[data-actx="' + n + '"]').click(); const t0 = performance.now(); await sleep(40); while (r.busy && performance.now() - t0 < 4000) { peak = Math.max(peak, L(/^(root|body)$/) - base); await sleep(16); } await sleep(150); }
+          return { matches: matchMedia('(prefers-reduced-motion: reduce)').matches, addedRootBodyLayers: peak, performances: r.stats.performances || 0, vfxSkipped: window.__foley ? window.__foley.vfx.stats.skippedReduced : null }; }""")
+        R['9b_reduced'] = dict(**red, errors=errs[:], pass_=red['matches'] and red['addedRootBodyLayers'] == 0 and red['performances'] == 3 and len(errs) == 0)
+        await ctx.close()
         await b.close()
 
     R['pass_all'] = all(v.get('pass_') for v in R.values() if isinstance(v, dict) and 'pass_' in v)
