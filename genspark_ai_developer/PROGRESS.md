@@ -1188,3 +1188,47 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
 - 2026-09-27 K9.5 DONE (this branch, head after this commit). Chunks: research + frozen plan (e00205f), K9.5-1 slice_wing.py + bands (9369e10), K9.5-2 nested SVG + render proof + 14 variants + enclosure detector (through 8c0cc68; owner option (a) budget, DIRECTIVES #08), K9.5-3 spec + engine/flex.js + validateFlex (f998d65), K9.5-4 flex_proof.py + g14_flex.json 3/3 (e60509c, ef87200), K9.5-5 bar A/B toggle + ship_visible 10_flex + sw g5-19 + PREVIEW row 10 + g11c 15/15 (0952098), wing_render_proof per-wing fix + rerun pass_all TRUE under the accepted budget (g14_wing_render.json 04:39:28Z: rest max diff 29/27 DPR1, 35/29 DPR2; rest holes 1/0; bend holes per wing 3 DPR1, 64 DPR2; original budget false, recorded). Tool defects disclosed this cycle: flex_proof snapshot timing, per-element rotation, tail on the return layer; ship_visible 10_flex expected 4 followers (correct: 8 = flap + return x 2 arms x 2 segments), dart check de-raced (deterministic target + kept layers); wing_render_proof summed L+R holes (fixed per wing). Visible change: NEW - g14_flex_strip.png md5 bc6fa2c4a1999e9f78ab4a57c5e5d456 (no such file before K9.5); g14_wing_diff_dpr1.png md5 changed by the rerun (1fd017cb -> 33718ec0, AA noise), the other 5 wing PNGs byte-identical. Suites: ship_visible 15/15, flex 3/3, wing render pass_all true, family links PASS. Pages: latest build b9be81c 04:39:57Z (serves this branch). Next: K9.6 research first (RESEARCH.md appendix), then frozen plan: G12 watch kit, G13 declared budgets table (candidate jank budget from the 4x observation), 12-principles matrix (annex b) + 10-item report (Article 12) as RESEARCH.md "Gate 5 cycle 6", sound identity doc, risk log; then phase-end PR.
 - 2026-09-27 resume-check #61 (after sandbox reset): branch at d7d7b0d == origin, clean; origin/main 120ce1a; app/ diff 0. Gist unchanged (10 revisions, newest 15953320 = #08). K9.5 DONE verified on the branch: flex.js, flex_proof.py, g14_flex.json + strip, PREVIEW row 10, sw g5-19, g11c 15/15, g14_wing_render pass_all true. Nothing lost in the reset (it hit before any K9.6 text was written). Next: K9.6 research first (RESEARCH.md appendix per AGENTS), then frozen plan in PROGRESS, then chunks.
   ack: DIRECTIVES #08 received.
+- 2026-09-27 K9.6 RESEARCH (closing sub-phase of K9; research first, no code yet; branch head 5d8f2ef):
+  Question: how to close K9 so that every claim is auditable from the branch alone - a human watch test (G12), a declared-budgets table (G13),
+  the 12-principles matrix (gist annex b) and the 10-item report (Article 12) filled ONLY from committed proof files, a sound identity doc, a risk log.
+  Facts read from the branch (not assumed):
+    G12 as written in the gist (line 6859 of rev 15953320): "10 s video: v2 vs a still from the reference video, random order, 3-5 people (starting with the owner): which one is alive?".
+    There is NO reference video or reference still in the repo (grep of sandbox/, docs, ART_INVENTORY: 0 hits; ART_INVENTORY line 57 marks the art references as L3 visual reading). So the
+    "reference still" half of G12 cannot be produced by the agent without inventing a reference -> disclosed; the kit ships the v2 clips and the protocol, the owner supplies the reference still
+    (or accepts v1 = frozen K7 engine as the control arm, which IS on the branch: ?engine=v1).
+    measure.py already records video (record_video_dir, 900x600 webm) -> the clip recorder is an extension, not a new dependency. p2_owl_scene_3_10s.webm etc. exist from K7/K8.
+    Every number needed by the matrix already exists in committed JSON: proofs.json (2026-09-26T20:08:09Z: G2 squash sx=1/sy, G3 anticipation 214.8 ms in [150,250], G4 sagitta 12.2 / 21.9 % of chord,
+    G5 rebound ratio 0.09 <= 0.15, G7 edge width median 3 device px), g11c_eyelead_ab.json (eyes lead head by median 34 ms; B 0), g12_intent.json (eye->head 46.7 ms, eye->body 231.7 ms,
+    pre-takeoff 400.1 ms in [350,600], asym 0.614 px, head settle 164.7 ms <= 400), g13_performances.json (roll 360.0 deg, rot at land 0, settle 180.6 ms; oops stretch 1.151, hold 230.9 ms;
+    puzzled head 13.9 deg; 7-step escalation), g14_flex.json (lag 40/90 ms, ratio .55/.85, clamp 28, tail overshoot 5.04 deg over 260 ms; perf on/off p95 16.8/16.8, 33.4/33.3),
+    g14_wing_render.json (rest seam max 35, bend holes per wing 3 / 64), measure_matrix.json (02:08:40Z: v2 5 owls 1x p95 16.7 ms jank 0.0 %, heap +0.9 MB, idle loops 0; 4x p95 33.3 jank 6.38 %;
+    v1 reference 1x jank 2.94 %), sfx JSONs (sync p95 2.0 ms, mix peak -12.9 dBFS, duck -9 dB).
+    Declared-before-measured pairs already exist for: anticipation hold [150,250] (spec squash.takeoffCrouch.holdMs), intent budgets (spec acting.intent.budget), performances (g13 budgets_declared),
+    flex seam budget (wing_render_proof budget_accepted), flex lag/ratio (spec acting.flex). NOT yet declared anywhere: a jank budget under 4x throttle (matrix shows 6.4 %, flex run 13.8 % on / 8.0 % off)
+    and a settle_ms budget for the landing (proofs.json G5 shows the spring numbers but no declared cap) -> G13 table must list them as OPEN with the measured value, not invent a cap after the fact.
+  Sources (read 2026-09-27):
+    [P11] ITU-R BT.500-15 (05/2023), itu.int R-REC-BT.500-15: material under test randomised to avoid bias; double-stimulus and stimulus-comparison (paired) methods; a session should stay short.
+          Applied: the watch kit is a paired comparison with randomised A/B order per trial and a hidden key.
+    [P12] Hodgins, Joerg, O'Sullivan, Park, Mahler 2010 (SIGGRAPH, "The saliency of anomalies in animated human characters") and Joerg 2011 dissertation (CMU): perceptual animation studies use
+          two-alternative forced choice (2AFC) - "which looks more natural" - because a forced binary answer is more reliable than a rating from untrained viewers.
+          Applied: the question is binary ("which one is alive?", the owner's wording), never a 1-10 score.
+    [P13] Exact binomial test (standard statistics, no citation needed beyond any textbook): with n trials of a fair coin, P(all n favour one side) = 2^-(n-1) two-sided. 5 raters x 4 clips = 20 trials;
+          16/20 gives p = 0.012, 15/20 p = 0.041. Applied: the kit's read-out states the count and the exact p; 3 raters (12 trials) need 11/12 (p = 0.006) or 10/12 (p = 0.039) to claim anything.
+          Disclosed limit: raters are not independent of the owner, so the p-value is indicative, not publishable.
+    [P3] ADR-002 addendum d and the branch's own rule (AGENTS section 13): numbers are copied from files with the file name and timestamp next to them.
+  Novelty claim (honest): the matrix and the report are generated by a script from the proof JSONs (tools/report_k9.py), so a stale number is impossible by construction; the human gate (G12) ships as a
+  self-contained offline HTML kit whose answer key is a sha256 of the shuffled order (the rater cannot see which clip is v2 until the key is opened). Scan-limited (L2): no character-animation
+  repo found that ships a randomised 2AFC watch kit next to its perf gates; ITU/2AFC methods themselves are decades old and are NOT claimed as new.
+  FROZEN PLAN K9.6 (commit + push after every chunk; tools committed before their first run):
+    K9.6-1 tools/report_k9.py: reads the proof JSONs listed above (fails loudly if a file or key is missing), writes sandbox/docs/K9_MATRIX.md (12-principles matrix, annex b columns: principle,
+           implementation, acceptance number, evidence file + timestamp, status) and sandbox/docs/K9_BUDGETS.md (G13 table: budget, declared where, declared value, measured value, file, PASS/OPEN).
+           Nothing typed by hand in those two files; the script is the only writer.
+    K9.6-2 sandbox/watch_kit.py: records 4 x 10 s webm clips (celebrate, flight with roll, puzzled, oops; one owl, art p2, engine v2, sfx=0) + the SAME beats on ?engine=v1 as the control arm,
+           writes sandbox/samples/watch/ (clips + index.html kit: per trial two videos side by side in random order, one forced choice, results as a JSON blob to copy, key = sha256 of the order,
+           shown only after the last trial) + a README with the protocol (BT.500 randomisation, 2AFC, exact binomial read-out). Reference still: slot left for the owner's file, disclosed.
+           Budget declared now: each clip <= 10.5 s, total kit <= 12 MB, 0 external resources.
+    K9.6-3 sandbox/docs/SOUND_IDENTITY.md (from owl.motion.json sound block: baseHz 330, detune .04, master .6, duck -9 dB, polyphony 3, gap 120 ms, 18 cues with generator + hz + envelope) and
+           sandbox/docs/RISK_LOG.md (every open risk with owner/agent, trigger, rollback flag) - both partly generated (the cue table by report_k9.py, prose by hand and marked as such).
+    K9.6-4 RESEARCH.md report "R1-A1 Gate 5 cycle 6 - K9 acting layer" (10 items, Article 12) + gate table G1-G14 with the proof file per gate; DIRECTIVES.md K9 close-out; PREVIEW.md row 11 (watch kit).
+    K9.6-5 phase end: run every suite (ship_visible, flex, intent, perf, wing render, eyelead, sfx smoke, family links, Zero-Emoji scan, sha256 of the protected files), version bump via
+           tools/bump_version.py, README append, family.json roadmap (K9 line), then ONE PR from sandbox/a1-gate5-art-sw to main with the report as description; merge is owner-only.
