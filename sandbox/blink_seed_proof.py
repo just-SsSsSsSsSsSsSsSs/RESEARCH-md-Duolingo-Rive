@@ -9,6 +9,13 @@ Method: load index.html?engine=<arm>&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0[&seed=N]
 relative to the hook, watch WINDOW_MS of idle, read the list. The hook is installed right after READY so page-load
 jitter enters only as a constant offset; setTimeout jitter is what the tolerance covers.
 Output: samples/proofs/k95_blink_seed.json (numbers + pass flags computed here). Exit 1 on any FAIL.
+
+Run 1 (2026-09-28, after commit d9a00fd) FAILED on v2 and passed on v1: v2 gaps run1 [3430, 1051, 201, 1297] vs run2
+[3430, 2548] - the first gap matched (scheduleBlink seeded), the rest did not. Cause found in code, not guessed:
+acting.startMovingHold (idle "moving hold" impulses) fires `blinkDouble` from its own unseeded scheduler (Math.random in
+the bag shuffle, the sign and randIn(intervalMs)). Fix: the moving-hold scheduler draws from blinkRng too (same source,
+Math.random when unseeded, so idle behaviour is unchanged without ?seed=). This is still "blink randomness at recording
+time" (owner scope) - the moving hold is the other producer of blinks. Recorded here so the disclosure travels with the tool.
 """
 import asyncio, json, os, sys, time
 

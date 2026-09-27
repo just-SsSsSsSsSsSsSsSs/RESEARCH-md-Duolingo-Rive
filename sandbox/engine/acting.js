@@ -20,6 +20,7 @@
  * Nothing here reads layout; only transform animations (compositor-only).
  */
 import { CinematicRig, randIn, clock } from './motion.js';
+import { blinkRng } from './rng.js';   // K9.5-1: the idle moving-hold scheduler also fires blinkDouble; when a recording is seeded it draws from the same source
 import { EASE, REDUCED } from '../rig.js?v=g4';
 
 const P = CinematicRig.prototype;
@@ -327,7 +328,7 @@ P.startMovingHold = function () {
   const fire = (name) => {
     const im = M.impulses[name], now = performance.now();
     if (im.joints.some((j) => lastJoint[j] && now - lastJoint[j] < M.minGapSameJointMs)) return false;
-    const ms = im.ms / clock.rate, sgn = Math.random() < 0.5 ? -1 : 1;
+    const ms = im.ms / clock.rate, sgn = blinkRng.random() < 0.5 ? -1 : 1;   // K9.5-1: blinkRng == Math.random unless ?seed=
     if (name === 'blinkDouble') { this.blink(true); }
     else im.joints.forEach((j, k) => {
       const el = this.j(j); if (!el) return;
@@ -344,12 +345,12 @@ P.startMovingHold = function () {
     if (!this.busy && !this.flying) {
       // shuffled bag: every impulse name is used once before any repeats (declared budget: >= 3 distinct names in 20 s),
       // then the bag is reshuffled - random order, guaranteed variety (P4: no favourite tic)
-      if (!bag.length) bag = names.slice().sort(() => Math.random() - 0.5);
+      if (!bag.length) bag = names.slice().sort(() => blinkRng.random() - 0.5);
       for (let i = 0; i < bag.length; i++) { if (fire(bag[i])) { bag.splice(i, 1); break; } }
     }
-    this.later(tick, randIn(M.intervalMs));
+    this.later(tick, blinkRng.between(M.intervalMs[0], M.intervalMs[1]));
   };
-  this.later(tick, randIn(M.intervalMs));
+  this.later(tick, blinkRng.between(M.intervalMs[0], M.intervalMs[1]));
   return () => { on = false; };
 };
 
