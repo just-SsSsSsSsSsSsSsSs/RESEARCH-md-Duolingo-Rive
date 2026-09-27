@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-27T02:49:12Z",
+ "generated_at": "2026-09-27T02:52:45Z",
  "ref_original": "317bd3c",
  "cuts": [
   67,
@@ -11,9 +11,8 @@
   "v1_current": {
    "dpr1": {
     "max_abs_diff": 60,
-    "pixels_differing": 131,
+    "pixels_differing": 130,
     "diff_rows_dev": [
-     257,
      261,
      323,
      324
@@ -68,9 +67,8 @@
   "v3_lip_full": {
    "dpr1": {
     "max_abs_diff": 53,
-    "pixels_differing": 255,
+    "pixels_differing": 254,
     "diff_rows_dev": [
-     257,
      261,
      262,
      263,
@@ -236,6 +234,101 @@
      533,
      534,
      535
+    ]
+   },
+   "pass_rest_0_both_dpr": false
+  },
+  "v9_overlap2": {
+   "dpr1": {
+    "max_abs_diff": 35,
+    "pixels_differing": 194,
+    "diff_rows_dev": [
+     261,
+     262,
+     323,
+     324,
+     325
+    ]
+   },
+   "dpr2": {
+    "max_abs_diff": 58,
+    "pixels_differing": 292,
+    "diff_rows_dev": [
+     522,
+     523,
+     524,
+     648,
+     649,
+     650
+    ]
+   },
+   "pass_rest_0_both_dpr": false
+  },
+  "v10_overlap4": {
+   "dpr1": {
+    "max_abs_diff": 48,
+    "pixels_differing": 216,
+    "diff_rows_dev": [
+     261,
+     262,
+     263,
+     323,
+     324,
+     325,
+     326
+    ]
+   },
+   "dpr2": {
+    "max_abs_diff": 58,
+    "pixels_differing": 354,
+    "diff_rows_dev": [
+     522,
+     523,
+     524,
+     525,
+     526,
+     648,
+     649,
+     650,
+     651
+    ]
+   },
+   "pass_rest_0_both_dpr": false
+  },
+  "v12_overlap8": {
+   "dpr1": {
+    "max_abs_diff": 59,
+    "pixels_differing": 266,
+    "diff_rows_dev": [
+     261,
+     262,
+     263,
+     264,
+     265,
+     323,
+     324,
+     325,
+     326,
+     327,
+     328
+    ]
+   },
+   "dpr2": {
+    "max_abs_diff": 58,
+    "pixels_differing": 464,
+    "diff_rows_dev": [
+     522,
+     523,
+     524,
+     525,
+     526,
+     527,
+     528,
+     529,
+     648,
+     649,
+     650,
+     651
     ]
    },
    "pass_rest_0_both_dpr": false

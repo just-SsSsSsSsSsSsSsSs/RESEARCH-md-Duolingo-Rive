@@ -89,6 +89,15 @@ def build_variants(plate, c1, c2):
     for K in (2, 4, 8):
         sh_k = band(0, c1 + K); mid_k = with_ext(band(c1, c2 + K), op & (rows < c1), c1 - S.EXT)
         V[f'v{9 + (K // 4) + (K == 8)}_overlap{K}'] = (sh_k, mid_k, base_tip, None)
+    # v13/v14: COLOUR BLEED. Overlap made it worse and the darkening (max about 60) follows the upper
+    # band's last row wherever it is -> the downscale filter averages RGB in non-premultiplied space, so an
+    # opaque row next to transparent BLACK darkens. The source plate itself carries colour in its alpha-0
+    # pixels (K9.5-1 disclosure: 5608 such pixels) - the artist's export already bled colour for this reason.
+    # Fix: every band keeps the plate's RGB in ALL pixels and only its alpha is cut to the band rows.
+    def bleed(b):
+        out = plate.copy(); out[..., 3] = b[..., 3]; return out
+    V['v13_bleed_partition'] = (bleed(base_sh), bleed(base_mid), bleed(base_tip), None)
+    V['v14_bleed_dup_row'] = (bleed(sh6), bleed(mid6), bleed(base_tip), None)
     return V
 
 
