@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""K9.6-2 watch kit (gate G12, the human gate).
+"""K9.6-2 watch kit (gate G12, the human gate). `--readme-only` rewrites README.md from manifest.json (no recording).
 
 Records the SAME four beats on two arms and packs them into a self-contained offline 2AFC kit:
   arm v2  engine=v2 art=p2 (this branch: acting layer, flex; Foley off for the video)
@@ -165,6 +165,48 @@ function finish() {
 </script></html>"""
 
 
+def min_wins(n):
+    """smallest k > n/2 with two-sided p <= 0.05 (the upper-tail threshold); None for tiny n"""
+    for k in range(n // 2 + 1, n + 1):
+        if binom_two_sided(k, n) <= 0.05: return k
+    return None
+
+
+def write_readme(manifest):
+    order = manifest['order']
+    clips = '\n'.join(f'| {k} | {manifest["bytes"][k]} | {manifest["sha256"][k][:16]} | {manifest["duration_s"][k] if isinstance(manifest["duration_s"], dict) else "-"} |' for k in manifest['clips'])
+    thr = '\n'.join(f'| {n} | {min_wins(n)}/{n} | {binom_two_sided(min_wins(n), n):.4f} | {n - min_wins(n)}/{n} gives the SAME p and is a LOSS |' for n in (12, 16, 20))
+    readme = f"""# Watch kit G12 (K9.6-2) - generated {manifest['generated_at']} by sandbox/watch_kit.py
+
+Open `index.html` from a local copy of this folder (no server, no network, 0 external resources).
+{len(order)} trials per rater; each trial shows the same beat on two engines side by side in a pre-shuffled left/right
+order (seed {SEED}; sha256 of the order `{manifest['order_sha256']}`). One forced choice per trial: "which one is alive?"
+(2AFC). Replay at most 2. The key is revealed after the last trial. The rater copies the JSON result block back.
+
+Read-out: count for v2 out of n and the exact two-sided binomial p. Examples (k/n: p): {json.dumps(manifest['readout_examples_p'])}
+Claim rule declared here: v2 "reads alive" only if two-sided p <= 0.05 AND v2_chosen > n/2 (v2 in the UPPER tail),
+over >= 12 trials from >= 3 named raters; anything else is reported as no evidence (FAIL / INSUFFICIENT).
+Direction matters (owner audit, gist rev d33eaf03): the two-sided p is symmetric, so 10/12 and 2/12 both give
+0.0386 and 0/12 gives 0.0005 - a small p with v2 losing is a LOSS, never a pass. Score with `score.html`
+(offline, next to this file) or `node sandbox/tests/g12_score.mjs`; never by reading p alone.
+
+| trials n | v2 must win at least | two-sided p at that k | mirror |
+|---|---|---|---|
+{thr}
+
+Results: one JSON file per rater session in `results/` (append-only), scored together.
+
+Limits: {manifest['limits']}
+
+| clip | bytes | sha256 (16) | duration s |
+|---|---|---|---|
+{clips}
+
+Total {manifest['kit_total_mb']} MB (budget {MAX_KIT_MB} MB): {'PASS' if manifest['pass_kit_size'] else 'FAIL'}; clip duration <= {MAX_CLIP_S} s: {'PASS' if manifest['pass_clip_duration'] else 'FAIL'}; page errors: {'none' if manifest['pass_no_page_errors'] else json.dumps(manifest['errors'])}.
+"""
+    with open(os.path.join(OUT, 'README.md'), 'w') as fh: fh.write(readme)
+
+
 async def main():
     from playwright.async_api import async_playwright
     os.makedirs(OUT, exist_ok=True)
@@ -203,29 +245,15 @@ async def main():
     manifest['pass_clip_duration'] = isinstance(manifest['duration_s'], dict) and all(v is not None and v <= MAX_CLIP_S for v in manifest['duration_s'].values())
     manifest['readout_examples_p'] = {f'{k}/{n}': round(binom_two_sided(k, n), 4) for n in (12, 16, 20) for k in (n, n - 1, n - 2, n - 3, n - 4, n - 5)}
     with open(os.path.join(OUT, 'manifest.json'), 'w') as fh: json.dump(manifest, fh, indent=1, ensure_ascii=False)
-    clips = '\n'.join(f'| {k} | {manifest["bytes"][k]} | {manifest["sha256"][k][:16]} | {manifest["duration_s"][k] if isinstance(manifest["duration_s"], dict) else "-"} |' for k in manifest['clips'])
-    readme = f"""# Watch kit G12 (K9.6-2) - generated {manifest['generated_at']} by sandbox/watch_kit.py
-
-Open `index.html` from a local copy of this folder (no server, no network, 0 external resources).
-{len(order)} trials per rater; each trial shows the same beat on two engines side by side in a pre-shuffled left/right
-order (seed {SEED}; sha256 of the order `{manifest['order_sha256']}`). One forced choice per trial: "which one is alive?"
-(2AFC). Replay at most 2. The key is revealed after the last trial. The rater copies the JSON result block back.
-
-Read-out: count for v2 out of n and the exact two-sided binomial p. Examples (k/n: p): {json.dumps(manifest['readout_examples_p'])}
-Claim rule declared here: v2 "reads alive" only if p <= 0.05 over >= 12 trials from >= 3 raters; anything else is reported as no evidence.
-
-Limits: {manifest['limits']}
-
-| clip | bytes | sha256 (16) | duration s |
-|---|---|---|---|
-{clips}
-
-Total {manifest['kit_total_mb']} MB (budget {MAX_KIT_MB} MB): {'PASS' if manifest['pass_kit_size'] else 'FAIL'}; clip duration <= {MAX_CLIP_S} s: {'PASS' if manifest['pass_clip_duration'] else 'FAIL'}; page errors: {'none' if manifest['pass_no_page_errors'] else json.dumps(manifest['errors'])}.
-"""
-    with open(os.path.join(OUT, 'README.md'), 'w') as fh: fh.write(readme)
+    write_readme(manifest)
     print('kit', manifest['kit_total_mb'], 'MB', 'size', 'PASS' if manifest['pass_kit_size'] else 'FAIL', '| errors', 'none' if manifest['pass_no_page_errors'] else 'YES', '| durations <=', MAX_CLIP_S, 'PASS' if manifest['pass_clip_duration'] else 'FAIL', manifest.get('duration_s'))
     sys.exit(0 if manifest['pass_kit_size'] and manifest['pass_no_page_errors'] and manifest['pass_clip_duration'] else 1)
 
 
 if __name__ == '__main__':
+    if '--readme-only' in sys.argv:
+        # Regenerate README.md from the committed manifest.json without re-recording anything (clips, index.html and
+        # manifest.json stay byte-identical). Used for the direction/threshold disclosure (gist rev d33eaf03).
+        with open(os.path.join(OUT, 'manifest.json')) as fh: m = json.load(fh)
+        write_readme(m); print('README.md regenerated from manifest.json', m['generated_at']); sys.exit(0)
     asyncio.run(main())

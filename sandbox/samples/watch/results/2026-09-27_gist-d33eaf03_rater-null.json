@@ -1,0 +1,45 @@
+{
+ "kit": "2026-09-27T05:05:59Z",
+ "rater": null,
+ "seed": 20260927,
+ "order_sha256": "bc00a361cefcc89ea4be4f7670fa27a7d585e108b91d0da955900bac0a0202e1",
+ "n": 4,
+ "v2_chosen": 3,
+ "v1_chosen": 1,
+ "binomial_two_sided_p": 0.625,
+ "answers": [
+  {
+   "trial": 1,
+   "beat": "think",
+   "chosen": "v1",
+   "ms": 23130,
+   "replays": 1
+  },
+  {
+   "trial": 2,
+   "beat": "flight",
+   "chosen": "v2",
+   "ms": 5541,
+   "replays": 0
+  },
+  {
+   "trial": 3,
+   "beat": "sad",
+   "chosen": "v2",
+   "ms": 40363,
+   "replays": 2
+  },
+  {
+   "trial": 4,
+   "beat": "celebrate",
+   "chosen": "v2",
+   "ms": 39379,
+   "replays": 2
+  }
+ ],
+ "_record": {
+  "source": "gist a402871de4d1a2438cdea66e07fc0761 revision d33eaf03 (2026-09-27T16:19:20Z), pasted verbatim by the owner; rater field was null (unnamed)",
+  "recorded_at_resume_check": "#71 (redo after reset)",
+  "verdict_alone": "INSUFFICIENT - 1 session, 4 trials, unnamed; >= 12 trials from >= 3 named raters required"
+ }
+}
