@@ -51,7 +51,7 @@ HELPERS = """
   const SQ = () => { const k = r.squashLayer.effect.getKeyframes(); const m = /scale\\(([^,]+),([^)]+)\\)/.exec(k[0].transform); return m ? +m[2] : 1; };
   const PUP = () => { const v = M('pupilL'); return Math.hypot(v[4], v[5]); };
   const LAYERS = re => [...r.live].filter(a => a.effect && a.effect.target && re.test(a.effect.target.getAttribute('data-joint') || '')).length;
-  const BODYKF = () => [...r.live].filter(a => a.effect && a.effect.target === r.j('body') && a !== r.squashLayer).map(a => a.effect.getKeyframes().map(k => k.transform));
+  const BODYKF = () => r.j('body').getAnimations().filter(a => a !== r.squashLayer).map(a => a.effect.getKeyframes().map(k => k.transform));   // element-level: fire-and-forget layers are not in rig.live
 """
 
 JS_ESCALATION = "() => {" + HELPERS + """
@@ -62,7 +62,10 @@ JS_PERF = "async (args) => {" + HELPERS + """
   const [name, tier] = args;
   const cues = []; const prev = r.onCue; r.onCue = (p, c) => { cues.push({ p, t: performance.now(), c }); if (prev) prev(p, c); };
   const s = []; const t0 = performance.now(); const pr = r[name](tier);
-  while (r.busy && performance.now() - t0 < 6000) { s.push({ t: performance.now() - t0, rot: ROT('root'), sq: SQ(), pup: PUP(), head: ROT('head'), pupLayers: LAYERS(/^pupil/), bodyKf: name === 'oops' ? BODYKF() : null }); await new Promise(requestAnimationFrame); }
+  // sample while busy AND for a 700 ms tail after busy clears: the landing squash spring keeps settling after the performance
+  // releases the rig (settleWithinMs is counted from the 'land' cue, so the window must outlive busy)
+  let tail = null;
+  while ((r.busy || (tail !== null && performance.now() - tail < 700)) && performance.now() - t0 < 7000) { if (!r.busy && tail === null) tail = performance.now(); s.push({ t: performance.now() - t0, rot: ROT('root'), sq: SQ(), pup: PUP(), head: ROT('head'), pupLayers: LAYERS(/^pupil/), bodyKf: name === 'oops' ? BODYKF() : null }); await new Promise(requestAnimationFrame); }
   await pr; r.onCue = prev;
   return { name, tier, totalMs: performance.now() - t0, cues: cues.map(c => ({ p: c.p, t: c.t - t0, vfx: c.c && c.c.vfx, cycles: c.c && c.c.cycles })), samples: s, plan: r._lastPerf && r._lastPerf.plan || null }; }"""
 
@@ -106,8 +109,12 @@ def analyse_triumph(res, T, tier):
     near = min(s, key=lambda x: abs(x['t'] - land)) if (land is not None and s) else None
     out['rot_at_land_deg'] = round(abs(near['rot']), 2) if near else None
     after = [x for x in s if land is not None and x['t'] >= land]
-    settled = next((x['t'] - land for x in after if abs(x['sq'] - 1) <= 0.01 and x['t'] - land > 60), None)
+    # settled = first instant after which EVERY later sample stays within 1 pct of rest (a spring passing through 1.0 does not count)
+    settled = None
+    for i in range(len(after)):
+        if after[i]['t'] - land > 60 and all(abs(y['sq'] - 1) <= 0.01 for y in after[i:]): settled = after[i]['t'] - land; break
     out['settle_ms_after_land'] = round(settled, 1) if settled is not None else None
+    out['squash_tail_ms'] = round(after[-1]['t'] - land, 1) if after else None
     order = [c['p'] for c in res['cues'] if c['p'] in ('perf', 'anticipate', 'jump', 'land', 'settle')]
     out['cue_order'] = order
     out['fx'] = [c['vfx'] for c in res['cues'] if c['p'] == 'fx']

@@ -322,7 +322,7 @@ P.puzzled = function (tier = 'small') {
 P.startMovingHold = function () {
   const M = this.spec.acting && this.spec.acting.performances && this.spec.acting.performances.movingHold;
   if (!M || M.enabled === false || REDUCED || PERF_OFF) return () => {};
-  const names = Object.keys(M.impulses); let on = true; const lastJoint = {};
+  const names = Object.keys(M.impulses); let on = true; const lastJoint = {}; let bag = [];
   this.stats.holdImpulses = this.stats.holdImpulses || {};
   const fire = (name) => {
     const im = M.impulses[name], now = performance.now();
@@ -341,7 +341,12 @@ P.startMovingHold = function () {
   };
   const tick = () => {
     if (!on || this.disposed) return;
-    if (!this.busy && !this.flying) { const order = names.slice().sort(() => Math.random() - 0.5); for (const n of order) if (fire(n)) break; }
+    if (!this.busy && !this.flying) {
+      // shuffled bag: every impulse name is used once before any repeats (declared budget: >= 3 distinct names in 20 s),
+      // then the bag is reshuffled - random order, guaranteed variety (P4: no favourite tic)
+      if (!bag.length) bag = names.slice().sort(() => Math.random() - 0.5);
+      for (let i = 0; i < bag.length; i++) { if (fire(bag[i])) { bag.splice(i, 1); break; } }
+    }
     this.later(tick, randIn(M.intervalMs));
   };
   this.later(tick, randIn(M.intervalMs));
