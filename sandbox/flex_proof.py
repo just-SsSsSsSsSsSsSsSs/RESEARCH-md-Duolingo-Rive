@@ -41,10 +41,10 @@ READY = "window.__rigs && window.__rigs[0] && !window.__rigs[0].busy"
 
 HELPERS = """
   const r = window.__rigs[0]; const sleep = ms => new Promise(res => setTimeout(res, ms));
-  const M = n => { const el = r.j(n); if (!el) return [1,0,0,1,0,0]; const t = getComputedStyle(el).transform; const m = t.match(/matrix\\\\(([^)]+)\\\\)/); return m ? m[1].split(',').map(Number) : [1,0,0,1,0,0]; };
+  const M = n => { const el = r.j(n); if (!el) return [1,0,0,1,0,0]; const t = getComputedStyle(el).transform; const m = t.match(/matrix\\(([^)]+)\\)/); return m ? m[1].split(',').map(Number) : [1,0,0,1,0,0]; };
   const ROT = n => { const v = M(n); return Math.atan2(v[1], v[0]) * 180 / Math.PI; };
   const LAY = n => (r.j(n) ? r.j(n).getAnimations() : []).map(a => { const t = a.effect.getTiming(); return { kf: a.effect.getKeyframes().map(x => x.transform), delay: t.delay, duration: t.duration, iterations: t.iterations, fill: t.fill, composite: a.effect.composite, kept: r.live.has(a) }; });
-  const ANG = s => { const m = /rotate\\\\((-?[\\\\d.]+)/.exec(s || ''); return m ? +m[1] : null; };
+  const ANG = s => { const m = /rotate\\((-?[\\d.]+)/.exec(s || ''); return m ? +m[1] : null; };
 """
 
 JS_MAIN = "async () => {" + HELPERS + """
