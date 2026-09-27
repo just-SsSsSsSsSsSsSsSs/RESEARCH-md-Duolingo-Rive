@@ -105,6 +105,7 @@
 <script type="module">
   import { mount } from './rig.js?v=g4';
   import { mountCinematic, clock } from './engine/motion.js';
+  import { blinkRng } from './engine/rng.js';   // K9.5-1: ?seed=<int> pins the blink scheduler on both arms (recording time only)
   import './engine/flight.js';
   import { CharacterStates, validateSpec } from './engine/states.js';
   import { Foley } from './engine/foley.js';
@@ -116,6 +117,8 @@
 
   const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
   const params = new URLSearchParams(location.search);
+  // K9.5-1 (owner decision 2026-09-27, item b): seed the BLINK source only, before any rig mounts. No param = Math.random, unchanged.
+  if (params.has('seed')) { blinkRng.seed(params.get('seed')); window.__blinkRng = blinkRng; }
   const ACTING = params.get('acting') !== '0';   // K9 feature flag: ?acting=0 restores the K8 behaviour exactly
   const BROWS = params.get('brows') !== '0';
   const POSES = params.get('poses') === '1';     // K9.2c-3: pose buttons 1..6 (freeze) + release

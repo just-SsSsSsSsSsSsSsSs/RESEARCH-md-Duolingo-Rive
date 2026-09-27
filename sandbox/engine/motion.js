@@ -15,6 +15,7 @@
  */
 import { SvgRig, EASE, REDUCED, loadSvg } from '../rig.js?v=g4';
 import { SecondaryRig, SquashSpring, bezier, randIn, clock } from './physics.js';
+import { blinkRng } from './rng.js';   // K9.5-1: blink scheduler only; Math.random unless index.html seeds it (?seed=)
 
 const KF2 = (t) => [{ transform: t }, { transform: t }];
 
@@ -90,7 +91,7 @@ export class CinematicRig extends SvgRig {
   }
   scheduleBlink() {
     const T = this.spec.timing;
-    this.later(() => { if (this.disposed) return; this.blink(Math.random() < T.doubleBlinkChance); this.scheduleBlink(); }, randIn(T.blinkGap));
+    this.later(() => { if (this.disposed) return; this.blink(blinkRng.random() < T.doubleBlinkChance); this.scheduleBlink(); }, blinkRng.between(T.blinkGap[0], T.blinkGap[1]));
   }
   scheduleLook() {
     const T = this.spec.timing;
