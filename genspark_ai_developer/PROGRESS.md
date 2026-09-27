@@ -1175,3 +1175,5 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
   Governance: PR at phase end (owner recommendation b, accepted); review surface until then = branch + permanent Pages URL.
   Next: K9.5-3 per the frozen plan (spec acting.flex + validateActing checks; engine/flex.js follower in the anim() funnel; ?flex=0; REDUCED off; states unchanged), then K9.5-4 flex_proof.py with an A/B control arm (owner rule 2).
   ack: DIRECTIVES #08 received.
+- 2026-09-27 resume-check #58 (after sandbox reset): branch at 8c0cc68 == origin, clean; origin/main 120ce1a; app/ diff 0. Gist unchanged (15953320 = #08). Pages VERIFIED serving this branch: build 8c0cc68 at 04:00:23Z, live page loads owl.motion.json?v=k94a (acting bar present) at https://just-ssssssssssssssss.github.io/RESEARCH-md-Duolingo-Rive/sandbox/index.html?engine=v2 - the permanent URL now shows the branch. K9.5-3 (spec acting.flex + engine/flex.js) was drafted and NOT committed before the reset -> redo now in two committed chunks (spec + validation first, engine second). Continue frozen plan K9.5-3.
+  ack: DIRECTIVES #08 received.
