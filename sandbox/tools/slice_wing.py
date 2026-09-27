@@ -127,23 +127,27 @@ def slice_wing(part, cuts):
     vis = plate[..., 3] > 0
     raw_vis = np.abs(canvas.astype(int) - plate.astype(int))[vis]
 
-    # crop bands to their row ranges (full width keeps x placement trivial)
-    bands = {
-        'sh': (0, c1, sh[0:c1]),
-        'mid': (c1 - EXT, c2, mid[c1 - EXT:c2]),
-        'tip': (c2 - EXT, H, tip[c2 - EXT:H]),
-    }
+    # Bands are FULL-PLATE canvases (W x H, transparent outside their rows), placed with exactly the
+    # original <image> box and its default preserveAspectRatio (xMidYMid meet). Measured reasons
+    # (PROGRESS resume-check #55): (1) a non-uniform per-band scale resampled every pixel (DPR1 max diff 84,
+    # 3971 px); (2) cropped band bitmaps resample differently from the whole plate because the filter
+    # phase aligns to the bitmap origin (3577 px left after fix 1). Full-plate canvases leave only the
+    # seam rows themselves. Transparent rows cost about nothing in lossless WebP.
+    bands = {'sh': (0, c1, sh), 'mid': (c1 - EXT, c2, mid), 'tip': (c2 - EXT, H, tip)}
     bx, by, bw, bh = WING_BOX[part]
-    sy = bh / H; sx = bw / W
+    s_uni = min(bw / W, bh / H)
+    sx = sy = s_uni
+    bx_r = bx + (bw - W * s_uni) / 2; by_r = by + (bh - H * s_uni) / 2   # rendered rect, for the child pivots
     out_parts, layout = {}, {}
     for key, (r0, r1, arr) in bands.items():
         name = f'{part}_{key}'
         nbytes = save_lossless(np.ascontiguousarray(arr), name)
-        out_parts[name] = dict(file=name + '.webp', w=int(W), h=int(r1 - r0), plate_offset=[0, int(r0)],
+        out_parts[name] = dict(file=name + '.webp', w=int(W), h=int(H), plate_offset=[0, 0],
                                derived_from=part + '.webp', lossless=True, bytes=nbytes,
                                rows=[int(r0), int(r1)], extension_rows=(0 if key == 'sh' else EXT),
-                               note='wing band; extension rows sit under the band above (Toon Boom overlap)')
-        layout[name] = dict(x=round(bx, 4), y=round(by + r0 * sy, 4), w=round(bw, 4), h=round((r1 - r0) * sy, 4))
+                               note='full-plate canvas wing band; extension rows sit under the band above (Toon Boom overlap)')
+        layout[name] = dict(x=bx, y=by, w=bw, h=bh)
+    bx, by = bx_r, by_r
     # child pivots at the cut lines (viewBox px): x = alpha centroid of the cut row
     piv = {
         f'{part}_mid': (round(bx + centroid_col(plate[c1, :, 3]) * sx, 4), round(by + c1 * sy, 4)),
@@ -176,9 +180,9 @@ def rewrite_svg(reports):
         L = rep['layout_viewbox']; P = rep['child_pivots_viewbox']
         def im(key):
             b = L[f'{part}_{key}']
-            return f'<image href="art/parts/owl/{part}_{key}.webp" x="{b["x"]}" y="{b["y"]}" width="{b["w"]}" height="{b["h"]}" preserveAspectRatio="none" />'
+            return f'<image href="art/parts/owl/{part}_{key}.webp" x="{b["x"]}" y="{b["y"]}" width="{b["w"]}" height="{b["h"]}" />'
         pm, pt = P[f'{part}_mid'], P[f'{part}_tip']
-        m = re.search(r'<g data-joint="%s" data-pivot="([^"]+)">' % side, svg)
+        m = re.search(r'<g data-joint="%s" data-pivot="([^"]+)"(?: data-flex="\d+")?>' % side, svg)
         if not m: raise SystemExit(f'{side} not found in {SVG}')
         pivot = m.group(1)
         new = (f'<g data-joint="{side}" data-pivot="{pivot}" data-flex="3">'
