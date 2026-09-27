@@ -51,6 +51,8 @@ HELPERS = """
   const SQ = () => { const k = r.squashLayer.effect.getKeyframes(); const m = /scale\\(([^,]+),([^)]+)\\)/.exec(k[0].transform); return m ? +m[2] : 1; };
   const PUP = () => { const v = M('pupilL'); return Math.hypot(v[4], v[5]); };
   const LAYERS = re => [...r.live].filter(a => a.effect && a.effect.target && re.test(a.effect.target.getAttribute('data-joint') || '')).length;
+  // engine truth for the spiral: the outer radius the pupil layer was AUTHORED to reach (last keyframe), x component before the 0.7 y-squash
+  const SPIRALKF = () => { const a = r.j('pupilL').getAnimations().find(a => a.effect.getKeyframes().length > 10); if (!a) return null; const k = a.effect.getKeyframes(); const last = /translate\(([-\d.]+)px, ([-\d.]+)px\)/.exec(k[k.length - 1].transform); const n = k.length; let rmax = 0; for (const f of k) { const m = /translate\(([-\d.]+)px, ([-\d.]+)px\)/.exec(f.transform); if (m) rmax = Math.max(rmax, Math.hypot(+m[1], (+m[2] + 1.5) / 0.7)); } return { frames: n, authoredOuterRadius: rmax, progress: a.effect.getComputedTiming().progress }; };
   const BODYKF = () => r.j('body').getAnimations().filter(a => a !== r.squashLayer).map(a => a.effect.getKeyframes().map(k => k.transform));   // element-level: fire-and-forget layers are not in rig.live
 """
 
@@ -65,10 +67,11 @@ JS_PERF = "async (args) => {" + HELPERS + """
   // sample while busy AND for a 700 ms tail after busy clears: the landing squash spring keeps settling after the performance
   // releases the rig (settleWithinMs is counted from the 'land' cue, so the window must outlive busy)
   let tail = null;
-  while (performance.now() - t0 < 7000) { if (!r.busy) { if (tail === null) tail = performance.now(); else if (performance.now() - tail > 700) break; } s.push({ t: performance.now() - t0, rot: ROT('root'), sq: SQ(), pup: PUP(), head: ROT('head'), pupLayers: LAYERS(/^pupil/), bodyKf: name === 'oops' ? BODYKF() : null }); await new Promise(requestAnimationFrame); }
+  let spiralKf = null;
+  while (performance.now() - t0 < 7000) { if (!r.busy) { if (tail === null) tail = performance.now(); else if (performance.now() - tail > 700) break; } if (name === 'puzzled' && !spiralKf) spiralKf = SPIRALKF(); s.push({ t: performance.now() - t0, rot: ROT('root'), sq: SQ(), pup: PUP(), head: ROT('head'), pupLayers: LAYERS(/^pupil/), bodyKf: name === 'oops' ? BODYKF() : null }); await new Promise(requestAnimationFrame); }
   await pr; r.onCue = prev;
   const settleCue = cues.find(c => c.p === 'settle');
-  return { name, tier, totalMs: settleCue ? settleCue.t - t0 : performance.now() - t0, windowMs: performance.now() - t0, cues: cues.map(c => ({ p: c.p, t: c.t - t0, vfx: c.c && c.c.vfx, cycles: c.c && c.c.cycles })), samples: s, plan: r._lastPerf && r._lastPerf.plan || null }; }"""
+  return { name, tier, spiralKf, totalMs: settleCue ? settleCue.t - t0 : performance.now() - t0, windowMs: performance.now() - t0, cues: cues.map(c => ({ p: c.p, t: c.t - t0, vfx: c.c && c.c.vfx, cycles: c.c && c.c.cycles })), samples: s, plan: r._lastPerf && r._lastPerf.plan || null }; }"""
 
 JS_HOLD = "async (ms) => {" + HELPERS + """
   const holds = []; const prev = r.onCue; r.onCue = (p, c) => { if (p === 'hold') holds.push({ t: performance.now(), n: c.impulse, j: c.joints, busy: r.busy }); if (prev) prev(p, c); };
@@ -171,7 +174,12 @@ def analyse_oops(res, O, tier):
 def analyse_puzzled(res, Z, tier):
     s = res['samples']; out = {'tier': tier, 'total_ms': round(res['totalMs'], 1)}
     spiral_end = [x for x in s if Z['spiralMs'] - 2 * Q <= x['t'] <= Z['spiralMs'] + 6 * Q]
-    out['pupil_radius_at_spiral_end'] = round(max(x['pup'] for x in spiral_end), 2) if spiral_end else None
+    # observed (rAF sampler, includes the 0.7 y-squash and the -1.5 px lift, so it under-reads the authored radius) - kept for disclosure
+    out['pupil_radius_observed_at_spiral_end'] = round(max(x['pup'] for x in spiral_end), 2) if spiral_end else None
+    # engine truth: the outer radius the pupil layer was authored to reach (last keyframes of the spiral layer)
+    kf = res.get('spiralKf') or {}
+    out['pupil_radius_at_spiral_end'] = round(kf['authoredOuterRadius'], 2) if kf.get('authoredOuterRadius') is not None else out['pupil_radius_observed_at_spiral_end']
+    out['spiral_keyframes'] = kf.get('frames')
     out['head_max_deg'] = round(max(abs(x['head']) for x in s), 1) if s else None
     rc = cue_t(res, 'recentre')
     after = [x for x in s if rc is not None and rc + Z['recentreMs'] <= x['t'] <= rc + Z['recentreMs'] + 4 * Q]
