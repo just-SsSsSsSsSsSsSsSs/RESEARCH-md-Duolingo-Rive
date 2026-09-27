@@ -1,7 +1,7 @@
 {
- "generated_at": "2026-09-27T02:45:05Z",
+ "generated_at": "2026-09-27T02:58:20Z",
  "tool": "tools/slice_wing.py",
- "pass_all": true,
+ "pass_all": false,
  "wings": [
   {
    "part": "wingL",
@@ -13,8 +13,8 @@
     67,
     213
    ],
-   "ext_rows": 18,
-   "erode_px": 6,
+   "ext_rows": 44,
+   "erode_px": 2,
    "fill_profile_30": [
     50,
     101,
@@ -29,15 +29,15 @@
     24
    ],
    "extension_pixels": {
-    "mid": 1157,
-    "tip": 1937
+    "mid": 3726,
+    "tip": 8168
    },
    "plate_recomposite": {
-    "premultiplied_max_abs_diff": 0,
-    "premultiplied_pixels_differing": 0,
-    "raw_visible_max_abs_diff": 0,
+    "premultiplied_max_abs_diff": 64,
+    "premultiplied_pixels_differing": 68,
+    "raw_visible_max_abs_diff": 64,
     "alpha0_pixels_with_colour_in_source": 5608,
-    "pass_pixel_diff_0": true
+    "pass_pixel_diff_0": false
    },
    "bands": {
     "wingL_sh": {
@@ -45,21 +45,21 @@
       0,
       67
      ],
-     "bytes": 7892
+     "bytes": 8122
     },
     "wingL_mid": {
      "rows": [
-      49,
+      23,
       213
      ],
-     "bytes": 29040
+     "bytes": 31348
     },
     "wingL_tip": {
      "rows": [
-      195,
+      169,
       330
      ],
-     "bytes": 12942
+     "bytes": 18196
     }
    },
    "layout_viewbox": {
@@ -103,8 +103,8 @@
     66,
     212
    ],
-   "ext_rows": 18,
-   "erode_px": 6,
+   "ext_rows": 44,
+   "erode_px": 2,
    "fill_profile_30": [
     51,
     103,
@@ -119,15 +119,15 @@
     23
    ],
    "extension_pixels": {
-    "mid": 1150,
-    "tip": 1930
+    "mid": 3718,
+    "tip": 8157
    },
    "plate_recomposite": {
-    "premultiplied_max_abs_diff": 0,
-    "premultiplied_pixels_differing": 0,
-    "raw_visible_max_abs_diff": 0,
+    "premultiplied_max_abs_diff": 64,
+    "premultiplied_pixels_differing": 67,
+    "raw_visible_max_abs_diff": 64,
     "alpha0_pixels_with_colour_in_source": 6529,
-    "pass_pixel_diff_0": true
+    "pass_pixel_diff_0": false
    },
    "bands": {
     "wingR_sh": {
@@ -135,21 +135,21 @@
       0,
       66
      ],
-     "bytes": 7660
+     "bytes": 7922
     },
     "wingR_mid": {
      "rows": [
-      48,
+      22,
       212
      ],
-     "bytes": 29500
+     "bytes": 31840
     },
     "wingR_tip": {
      "rows": [
-      194,
+      168,
       330
      ],
-     "bytes": 13356
+     "bytes": 18864
     }
    },
    "layout_viewbox": {

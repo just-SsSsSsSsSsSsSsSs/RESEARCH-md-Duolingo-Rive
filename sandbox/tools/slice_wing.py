@@ -32,8 +32,10 @@ SANDBOX = os.path.dirname(HERE)
 PARTS = os.path.join(SANDBOX, 'art', 'parts', 'owl')
 PROOFS = os.path.join(SANDBOX, 'samples', 'proofs')
 
-EXT = 18        # rows of hidden extension under the band above (source px)
-ERODE = 6       # erosion of the "band above is opaque" mask (source px); > bilinear kernel at DPR1 (232/50 = 4.6 px per CSS px)
+EXT = 44        # rows of hidden extension under the band above (source px). Bend geometry: the far end of a
+                # cut line about 110 px from its pivot moves 110*sin(20 deg) = 38 px at the 20 deg budget; 18 left
+                # 8-21 gap columns (measured, resume-check #55).
+ERODE = 2       # erosion of the "band above is opaque" mask (source px); keeps the extension off the AA silhouette edge
 ALPHA_ON = 16   # alpha threshold for the fill profile
 
 # placement of the whole wing in owl_p2.svg (viewBox px) - read from the SVG, not assumed
@@ -106,8 +108,10 @@ def slice_wing(part, cuts):
     c1, c2 = cuts if cuts else auto_cuts(plate[..., 3])
     opaque = plate[..., 3] == 255
 
-    sh = np.zeros_like(plate); sh[:c1] = plate[:c1]
-    mid = np.zeros_like(plate); mid[c1:c2] = plate[c1:c2]
+    # Both bands own the cut row (v6_dup_row, the best of 14 measured constructions in
+    # samples/proofs/g14_wing_seam_variants.json): the upper band ends at c+1, the lower starts at c.
+    sh = np.zeros_like(plate); sh[:c1 + 1] = plate[:c1 + 1]
+    mid = np.zeros_like(plate); mid[c1:c2 + 1] = plate[c1:c2 + 1]
     tip = np.zeros_like(plate); tip[c2:] = plate[c2:]
 
     # hidden extensions: original pixels where the band above is opaque (eroded), only inside the EXT rows

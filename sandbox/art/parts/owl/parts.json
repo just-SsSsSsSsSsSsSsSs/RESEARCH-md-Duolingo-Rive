@@ -224,7 +224,7 @@
    ],
    "derived_from": "wingL.webp",
    "lossless": true,
-   "bytes": 7892,
+   "bytes": 8122,
    "rows": [
     0,
     67
@@ -242,12 +242,12 @@
    ],
    "derived_from": "wingL.webp",
    "lossless": true,
-   "bytes": 29040,
+   "bytes": 31348,
    "rows": [
-    49,
+    23,
     213
    ],
-   "extension_rows": 18,
+   "extension_rows": 44,
    "note": "full-plate canvas wing band; extension rows sit under the band above (Toon Boom overlap)"
   },
   "wingL_tip": {
@@ -260,12 +260,12 @@
    ],
    "derived_from": "wingL.webp",
    "lossless": true,
-   "bytes": 12942,
+   "bytes": 18196,
    "rows": [
-    195,
+    169,
     330
    ],
-   "extension_rows": 18,
+   "extension_rows": 44,
    "note": "full-plate canvas wing band; extension rows sit under the band above (Toon Boom overlap)"
   },
   "wingR_sh": {
@@ -278,7 +278,7 @@
    ],
    "derived_from": "wingR.webp",
    "lossless": true,
-   "bytes": 7660,
+   "bytes": 7922,
    "rows": [
     0,
     66
@@ -296,12 +296,12 @@
    ],
    "derived_from": "wingR.webp",
    "lossless": true,
-   "bytes": 29500,
+   "bytes": 31840,
    "rows": [
-    48,
+    22,
     212
    ],
-   "extension_rows": 18,
+   "extension_rows": 44,
    "note": "full-plate canvas wing band; extension rows sit under the band above (Toon Boom overlap)"
   },
   "wingR_tip": {
@@ -314,16 +314,16 @@
    ],
    "derived_from": "wingR.webp",
    "lossless": true,
-   "bytes": 13356,
+   "bytes": 18864,
    "rows": [
-    194,
+    168,
     330
    ],
-   "extension_rows": 18,
+   "extension_rows": 44,
    "note": "full-plate canvas wing band; extension rows sit under the band above (Toon Boom overlap)"
   }
  },
- "total_bytes": 319454,
+ "total_bytes": 335356,
  "slice": {
   "tool": "tools/slice_parts.py",
   "cut_col": 168,
@@ -345,7 +345,7 @@
     212
    ]
   },
-  "ext_rows": 18,
-  "erode_px": 6
+  "ext_rows": 44,
+  "erode_px": 2
  }
 }

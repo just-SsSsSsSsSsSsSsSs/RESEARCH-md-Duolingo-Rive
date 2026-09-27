@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-27T02:52:45Z",
+ "generated_at": "2026-09-27T02:55:02Z",
  "ref_original": "317bd3c",
  "cuts": [
   67,
@@ -329,6 +329,48 @@
      649,
      650,
      651
+    ]
+   },
+   "pass_rest_0_both_dpr": false
+  },
+  "v13_bleed_partition": {
+   "dpr1": {
+    "max_abs_diff": 60,
+    "pixels_differing": 130,
+    "diff_rows_dev": [
+     261,
+     323,
+     324
+    ]
+   },
+   "dpr2": {
+    "max_abs_diff": 60,
+    "pixels_differing": 181,
+    "diff_rows_dev": [
+     522,
+     648
+    ]
+   },
+   "pass_rest_0_both_dpr": false
+  },
+  "v14_bleed_dup_row": {
+   "dpr1": {
+    "max_abs_diff": 29,
+    "pixels_differing": 102,
+    "diff_rows_dev": [
+     261,
+     323,
+     324
+    ]
+   },
+   "dpr2": {
+    "max_abs_diff": 35,
+    "pixels_differing": 219,
+    "diff_rows_dev": [
+     522,
+     523,
+     648,
+     649
     ]
    },
    "pass_rest_0_both_dpr": false

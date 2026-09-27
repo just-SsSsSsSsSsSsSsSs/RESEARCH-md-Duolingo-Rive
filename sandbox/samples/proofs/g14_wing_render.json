@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-27T02:51:44Z",
+ "generated_at": "2026-09-27T02:58:20Z",
  "ref_original": "317bd3c",
  "bend_deg_per_segment": 20.0,
  "renders_per_doc": 3,
@@ -21,126 +21,126 @@
     400
    ],
    "median_diff_whole": {
-    "max_abs_diff": 60,
-    "pixels_differing": 231,
+    "max_abs_diff": 29,
+    "pixels_differing": 311,
     "diff_bbox_px": [
-     67,
-     260,
-     330,
+     64,
+     243,
+     331,
      324
     ]
    },
    "median_diff_wing_boxes": {
     "L": {
-     "max_abs_diff": 60,
-     "pixels_differing": 130,
+     "max_abs_diff": 29,
+     "pixels_differing": 115,
      "diff_bbox_px": [
-      7,
-      29,
-      73,
+      4,
+      11,
+      72,
       92
      ]
     },
     "R": {
-     "max_abs_diff": 54,
-     "pixels_differing": 101,
+     "max_abs_diff": 27,
+     "pixels_differing": 196,
      "diff_bbox_px": [
       27,
-      28,
-      90,
-      91
+      11,
+      91,
+      92
      ]
     }
    },
    "raw_pairs": [
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 231,
+     "max_abs_diff": 29,
+     "pixels_differing": 355,
      "diff_bbox_px": [
-      67,
-      260,
-      330,
-      324
-     ]
-    },
-    {
-     "max_abs_diff": 60,
-     "pixels_differing": 274,
-     "diff_bbox_px": [
-      67,
-      257,
-      330,
+      64,
+      243,
+      331,
       331
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 231,
+     "max_abs_diff": 29,
+     "pixels_differing": 311,
      "diff_bbox_px": [
-      67,
-      260,
-      330,
+      64,
+      243,
+      331,
       324
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 231,
+     "max_abs_diff": 29,
+     "pixels_differing": 311,
      "diff_bbox_px": [
-      67,
-      260,
-      330,
+      64,
+      243,
+      331,
       324
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 274,
+     "max_abs_diff": 29,
+     "pixels_differing": 355,
      "diff_bbox_px": [
-      67,
-      257,
-      330,
+      64,
+      243,
+      331,
       331
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 231,
+     "max_abs_diff": 29,
+     "pixels_differing": 311,
      "diff_bbox_px": [
-      67,
-      260,
-      330,
+      64,
+      243,
+      331,
       324
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 231,
+     "max_abs_diff": 29,
+     "pixels_differing": 311,
      "diff_bbox_px": [
-      67,
-      260,
-      330,
+      64,
+      243,
+      331,
       324
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 274,
+     "max_abs_diff": 29,
+     "pixels_differing": 311,
      "diff_bbox_px": [
-      67,
-      257,
-      330,
+      64,
+      243,
+      331,
+      324
+     ]
+    },
+    {
+     "max_abs_diff": 29,
+     "pixels_differing": 355,
+     "diff_bbox_px": [
+      64,
+      243,
+      331,
       331
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 231,
+     "max_abs_diff": 29,
+     "pixels_differing": 355,
      "diff_bbox_px": [
-      67,
-      260,
-      330,
-      324
+      64,
+      243,
+      331,
+      331
      ]
     }
    ],
@@ -151,14 +151,34 @@
      "diff_bbox_px": null
     },
     {
-     "max_abs_diff": 0,
-     "pixels_differing": 0,
-     "diff_bbox_px": null
+     "max_abs_diff": 13,
+     "pixels_differing": 46,
+     "diff_bbox_px": [
+      97,
+      257,
+      97,
+      331
+     ]
     },
     {
-     "max_abs_diff": 0,
-     "pixels_differing": 0,
-     "diff_bbox_px": null
+     "max_abs_diff": 13,
+     "pixels_differing": 46,
+     "diff_bbox_px": [
+      97,
+      257,
+      97,
+      331
+     ]
+    },
+    {
+     "max_abs_diff": 13,
+     "pixels_differing": 45,
+     "diff_bbox_px": [
+      97,
+      257,
+      97,
+      331
+     ]
     },
     {
      "max_abs_diff": 13,
@@ -174,16 +194,6 @@
      "max_abs_diff": 0,
      "pixels_differing": 0,
      "diff_bbox_px": null
-    },
-    {
-     "max_abs_diff": 13,
-     "pixels_differing": 45,
-     "diff_bbox_px": [
-      97,
-      257,
-      97,
-      331
-     ]
     }
    ],
    "seam_bend": {
@@ -191,24 +201,24 @@
      {
       "cut_css_y": 261,
       "inside_cols": 99,
-      "gap_cols": 8
+      "gap_cols": 0
      },
      {
       "cut_css_y": 324,
-      "inside_cols": 95,
-      "gap_cols": 11
+      "inside_cols": 97,
+      "gap_cols": 8
      }
     ],
     "R": [
      {
       "cut_css_y": 260,
       "inside_cols": 99,
-      "gap_cols": 11
+      "gap_cols": 0
      },
      {
       "cut_css_y": 323,
-      "inside_cols": 93,
-      "gap_cols": 12
+      "inside_cols": 97,
+      "gap_cols": 8
      }
     ]
    },
@@ -248,126 +258,126 @@
     800
    ],
    "median_diff_whole": {
-    "max_abs_diff": 60,
-    "pixels_differing": 370,
+    "max_abs_diff": 35,
+    "pixels_differing": 443,
     "diff_bbox_px": [
      134,
      520,
-     661,
-     648
+     666,
+     649
     ]
    },
    "median_diff_wing_boxes": {
     "L": {
-     "max_abs_diff": 60,
-     "pixels_differing": 181,
+     "max_abs_diff": 35,
+     "pixels_differing": 218,
      "diff_bbox_px": [
       14,
       58,
-      145,
-      184
+      142,
+      185
      ]
     },
     "R": {
-     "max_abs_diff": 59,
-     "pixels_differing": 189,
+     "max_abs_diff": 29,
+     "pixels_differing": 225,
      "diff_bbox_px": [
-      54,
       56,
-      181,
-      182
+      56,
+      186,
+      183
      ]
     }
    },
    "raw_pairs": [
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     },
     {
-     "max_abs_diff": 60,
-     "pixels_differing": 370,
+     "max_abs_diff": 35,
+     "pixels_differing": 443,
      "diff_bbox_px": [
       134,
       520,
-      661,
-      648
+      666,
+      649
      ]
     }
    ],
@@ -407,25 +417,25 @@
     "L": [
      {
       "cut_css_y": 522,
-      "inside_cols": 212,
-      "gap_cols": 19
+      "inside_cols": 222,
+      "gap_cols": 5
      },
      {
       "cut_css_y": 649,
-      "inside_cols": 169,
-      "gap_cols": 9
+      "inside_cols": 175,
+      "gap_cols": 2
      }
     ],
     "R": [
      {
       "cut_css_y": 521,
-      "inside_cols": 211,
-      "gap_cols": 21
+      "inside_cols": 221,
+      "gap_cols": 7
      },
      {
       "cut_css_y": 646,
-      "inside_cols": 169,
-      "gap_cols": 9
+      "inside_cols": 174,
+      "gap_cols": 3
      }
     ]
    },

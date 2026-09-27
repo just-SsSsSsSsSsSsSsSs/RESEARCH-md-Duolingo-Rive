@@ -27,7 +27,8 @@ PROOFS = os.path.join(ROOT, 'samples', 'proofs')
 SVG = os.path.join(ROOT, 'companions', 'owl_p2.svg')
 URL = os.environ.get('SANDBOX_BASE', 'http://localhost:8080/sandbox/')
 REF = os.environ.get('WING_REF', '317bd3c')   # last commit with the single-plate wing SVG
-BEND = 20.0                                   # deg per segment (PROGRESS K9.5 RESEARCH budget)
+BEND = float(os.environ.get('WING_BEND', '20'))   # deg per segment (PROGRESS K9.5 RESEARCH budget)
+SWEEP = [float(v) for v in os.environ.get('WING_SWEEP', '5,10,15,20').split(',')]   # gap columns per angle, reported
 CSS = 2.0                                     # css px per viewBox unit (400 px box for 200 units)
 REPS = 3
 BG = (255, 0, 255)                            # magenta background: any seam shows as pure BG
@@ -116,6 +117,11 @@ async def main():
             ctrl = [summarize(np.abs(so[i] - so[j]).max(-1)) for i in range(REPS) for j in range(i + 1, REPS)]
             ctrl += [summarize(np.abs(sn[i] - sn[j]).max(-1)) for i in range(REPS) for j in range(i + 1, REPS)]
             seams_bend, seams_rest = seams_for(mb, cuts, dpr), seams_for(mn, cuts, dpr)
+            sweep = {}
+            for ang in SWEEP:
+                css = BEND_CSS % (piv['armL_mid'], ang, piv['armL_tip'], ang, piv['armR_mid'], ang, piv['armR_tip'], ang)
+                ms = np.median(np.stack(await shots(b, new, dpr, css)), 0)
+                sweep[str(ang)] = {side: [c['gap_cols'] for c in v] for side, v in seams_for(ms, cuts, dpr).items()}
             Image.fromarray(mn.astype(np.uint8)).save(os.path.join(PROOFS, f'g14_wing_rest_dpr{dpr}.png'))
             Image.fromarray(mb.astype(np.uint8)).save(os.path.join(PROOFS, f'g14_wing_bend_dpr{dpr}.png'))
             Image.fromarray(np.clip(d * 40, 0, 255).astype(np.uint8)).save(os.path.join(PROOFS, f'g14_wing_diff_dpr{dpr}.png'))
@@ -123,6 +129,7 @@ async def main():
             gr = sum(s['gap_cols'] for v in seams_rest.values() for s in v)
             report['dpr'][str(dpr)] = dict(shape=list(d.shape), median_diff_whole=summarize(d), median_diff_wing_boxes=wing,
                                           raw_pairs=raw, control_same_doc_pairs=ctrl, seam_bend=seams_bend, seam_rest=seams_rest,
+                                          seam_gap_sweep=sweep,
                                           pass_rest_wing_median_diff_0=all(v['max_abs_diff'] == 0 for v in wing.values()),
                                           pass_seam_gap_0_bend=gb == 0, pass_seam_gap_0_rest=gr == 0)
         await b.close()
@@ -134,6 +141,7 @@ async def main():
               f"whole {v['median_diff_whole']['max_abs_diff']}/{v['median_diff_whole']['pixels_differing']}")
         print(f"      seam bend {v['seam_bend']}")
         print(f"      seam rest {v['seam_rest']}")
+        print(f"      gap sweep (deg -> gap cols per cut, L/R) {v['seam_gap_sweep']}")
     print('pass_all', report['pass_all'])
     sys.exit(0 if report['pass_all'] else 1)
 
