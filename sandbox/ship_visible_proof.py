@@ -83,13 +83,16 @@ async def main():
         Image.open(io.BytesIO(png)).save(os.path.join(OUT, 'g11c_wink.png'))
         await pg.evaluate("document.getAnimations().forEach(a => a.play())")
 
-        # ---- + dart ----
+        # ---- + dart ----  (resume #60: the random-angle dart allowed a mid displacement down to ampPx[0]*0.6 - asymPx = 1.0 px and an idle
+        #      micro-saccade (0.9 px) could land inside the end read -> two tool races, not engine faults. Now: a deterministic 4 px target
+        #      (spec ampPx [3,5]) so disp >= 4 - asymPx 0.8 = 3.2, and the end is engine truth: 0 kept pupil layers after the return.)
         dart = await pg.evaluate("async () => {" + JS_HELPERS + """
-          const pr = r.dart(); await sleep(170); const mid = { L: TX('pupilL'), R: TX('pupilR') }; await pr; await sleep(150); const end = { L: TX('pupilL'), R: TX('pupilR') };
-          return { mid, end, darts: r.stats.darts }; }""")
+          const kept = () => [...r.live].filter(a => a.effect && a.effect.target && /^pupil/.test(a.effect.target.getAttribute('data-joint') || '')).length;
+          const pr = r.dart({ x: 4, y: 0 }); await sleep(170); const mid = { L: TX('pupilL'), R: TX('pupilR') }; const keptMid = kept(); await pr; await sleep(30); const end = { L: TX('pupilL'), R: TX('pupilR') };
+          return { mid, end, keptMid, keptEnd: kept(), darts: r.stats.darts }; }""")
         R['dart'] = dict(**dart, dispL=hyp(dart['mid']['L']), dispR=hyp(dart['mid']['R']),
                          asym=hyp([dart['mid']['L'][0] - dart['mid']['R'][0], dart['mid']['L'][1] - dart['mid']['R'][1]]))
-        R['dart']['pass_'] = R['dart']['dispL'] >= 2 and R['dart']['dispR'] >= 2 and R['dart']['asym'] > 0.05 and hyp(dart['end']['L']) < 0.6
+        R['dart']['pass_'] = R['dart']['dispL'] >= 3.2 and R['dart']['dispR'] >= 3.2 and R['dart']['asym'] > 0.05 and dart['keptMid'] == 2 and dart['keptEnd'] == 0
 
         # ---- + saccades ----
         sac0 = await pg.evaluate("window.__rigs[0].stats.saccades || 0")
@@ -239,6 +242,7 @@ async def main():
 
         # ---- 10 flex (K9.5): the bar button exists and is ON; the 480 ms flap puts follower layers on armL_mid/armL_tip (engine truth via getAnimations);
         #      pressing the button turns flex off -> the next flap adds 0 followers and no child layer; pressing again restores it.
+        #      followers per celebrate = 8: flap (480 ms) + return (620 ms) layers x 2 arms x 2 segments (same count as g14_flex.json stats).
         #      Full timing proof (ratio, lag, tail, perf) lives in flex_proof.py -> g14_flex.json. ----
         pg, ctx, errs = await page(b, '&sfx=0')
         flex = await pg.evaluate("async () => {" + JS_HELPERS + """
@@ -254,9 +258,9 @@ async def main():
           btn.click(); o.pressed2 = btn.getAttribute('aria-pressed'); o.specEnabled2 = r.spec.acting.flex.enabled;
           f0 = f(); r.celebrate(); await waitFlap(); o.childBack = lay('armL_mid') + lay('armL_tip'); await idle(); o.followersBack = f() - f0;
           return o; }""")
-        R['10_flex'] = dict(**flex, errors=errs[:], pass_=flex['present'] and flex['pressed0'] == 'true' and flex['childOn'] == 2 and flex['followersOn'] == 4
+        R['10_flex'] = dict(**flex, errors=errs[:], pass_=flex['present'] and flex['pressed0'] == 'true' and flex['childOn'] == 2 and flex['followersOn'] == 8
                             and flex['pressed1'] == 'false' and flex['specEnabled1'] is False and flex['childOff'] == 0 and flex['followersOff'] == 0
-                            and flex['pressed2'] == 'true' and flex['childBack'] == 2 and flex['followersBack'] == 4 and len(errs) == 0)
+                            and flex['pressed2'] == 'true' and flex['childBack'] == 2 and flex['followersBack'] == 8 and len(errs) == 0)
         await ctx.close()
         await b.close()
 
