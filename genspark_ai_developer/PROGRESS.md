@@ -1133,3 +1133,13 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
     K9.5-5 acting bar toggle for flex (A/B), PREVIEW row 10, ship_visible check 10_flex, sw bump, PROGRESS K9.5 DONE + visible-change statement (md5 of the new strip), DIRECTIVES update.
   Next: K9.5-1.
   ack: DIRECTIVES #07 received.
+- 2026-09-27 K9.5-1 DONE: sandbox/tools/slice_wing.py run -> wingL_sh/mid/tip.webp + wingR_sh/mid/tip.webp (lossless VP8L), parts.json updated (wingL/wingR superseded_by, kept for the proof), proof samples/proofs/g14_wing_slice.json pass_all true.
+  Numbers copied from g14_wing_slice.json: cuts wingL [67, 213], wingR [66, 212] (auto from the alpha profile, 80 % of max fill); extension 18 rows, erosion 6 px;
+  extension pixels wingL mid 1157 / tip 1937, wingR 1150 / 1930; plate recomposite (sh over mid over tip) premultiplied max_abs_diff 0, raw visible max_abs_diff 0 for both wings.
+  Disclosure 1 (tool defect found on the first dry run, fixed before the real run): the first compare was raw RGBA and reported max diff 255 on 5608 px - all of them alpha-0 pixels
+  that carry colour in the source plate (e.g. [255,60,156,0]), invisible to any compositor. The compare now uses premultiplied RGBA and reports the raw diff on visible pixels separately (both 0).
+  Disclosure 2 (byte cost, measured): lossless bands 50620 B per wing vs 13154 B for the single plate (+37 KB per wing, +75 KB per owl, VP8L does not gzip). Lossy alternatives measured on
+  wingL: q100 24652 B (premul max diff 24), q95 19054 B (25), q90 15492 B (25, 587 px > 8). Kept lossless because the declared budget is pixel_diff 0 (same trade as K9.2b-1 eyes); the byte
+  cost goes into the K9.5-4 report and can be revisited as a product decision (one lossy band set + a measured diff budget) if the owner prefers bytes over exactness.
+  Child pivots (viewBox px) for K9.5-2: wingL_mid (55.0, 130.537), wingL_tip (59.9193, 162.2145); wingR_mid (144.4612, 130.2), wingR_tip (140.2562, 161.6121). Next: K9.5-2.
+  ack: DIRECTIVES #07 received.

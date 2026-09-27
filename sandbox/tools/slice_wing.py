@@ -88,6 +88,13 @@ def over(dst, src):
     dst[..., 3:4] = np.rint(oa * 255).astype(np.uint8)
 
 
+def premul(rgba):
+    a = rgba[..., 3:4].astype(np.float32) / 255
+    out = rgba.copy()
+    out[..., :3] = np.rint(rgba[..., :3] * a).astype(np.uint8)
+    return out
+
+
 def centroid_col(alpha_row):
     cols = np.where(alpha_row > ALPHA_ON)[0]
     return float(cols.mean()) if len(cols) else alpha_row.shape[0] / 2
@@ -114,7 +121,11 @@ def slice_wing(part, cuts):
     # recomposite: tip, then mid over, then shoulder over
     canvas = np.zeros_like(plate)
     over(canvas, tip); over(canvas, mid); over(canvas, sh)
-    diff = np.abs(canvas.astype(int) - plate.astype(int))
+    # compare what a renderer sees: premultiplied RGB + alpha. The source plate carries colour in alpha-0
+    # pixels (e.g. [255,60,156,0]) that no compositor can show; the raw diff on visible pixels is reported too.
+    diff = np.abs(premul(canvas).astype(int) - premul(plate).astype(int))
+    vis = plate[..., 3] > 0
+    raw_vis = np.abs(canvas.astype(int) - plate.astype(int))[vis]
 
     # crop bands to their row ranges (full width keeps x placement trivial)
     bands = {
@@ -141,8 +152,10 @@ def slice_wing(part, cuts):
     report = dict(part=part, size=[int(W), int(H)], cuts=[int(c1), int(c2)], ext_rows=EXT, erode_px=ERODE,
                   fill_profile_30=[int(v) for v in fill_profile(plate[..., 3]).reshape(-1, 30).mean(1)] if H % 30 == 0 else None,
                   extension_pixels=dict(mid=int(ext_mid.sum()), tip=int(ext_tip.sum())),
-                  plate_recomposite=dict(max_abs_diff=int(diff.max()), pixels_differing=int((diff.max(-1) > 0).sum()),
-                                         pass_pixel_diff_0=bool(diff.max() == 0)),
+                  plate_recomposite=dict(premultiplied_max_abs_diff=int(diff.max()), premultiplied_pixels_differing=int((diff.max(-1) > 0).sum()),
+                                         raw_visible_max_abs_diff=int(raw_vis.max()) if raw_vis.size else 0,
+                                         alpha0_pixels_with_colour_in_source=int(((plate[..., 3] == 0) & (plate[..., :3].max(-1) > 0)).sum()),
+                                         pass_pixel_diff_0=bool(diff.max() == 0 and (raw_vis.size == 0 or raw_vis.max() == 0))),
                   bands={k: dict(rows=v['rows'], bytes=v['bytes']) for k, v in out_parts.items()},
                   layout_viewbox=layout, child_pivots_viewbox=piv)
     return out_parts, report

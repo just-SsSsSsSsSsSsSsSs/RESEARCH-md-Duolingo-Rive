@@ -1,0 +1,187 @@
+{
+ "generated_at": "2026-09-27T02:19:20Z",
+ "tool": "tools/slice_wing.py",
+ "pass_all": true,
+ "wings": [
+  {
+   "part": "wingL",
+   "size": [
+    232,
+    330
+   ],
+   "cuts": [
+    67,
+    213
+   ],
+   "ext_rows": 18,
+   "erode_px": 6,
+   "fill_profile_30": [
+    50,
+    101,
+    194,
+    221,
+    220,
+    223,
+    209,
+    147,
+    105,
+    69,
+    24
+   ],
+   "extension_pixels": {
+    "mid": 1157,
+    "tip": 1937
+   },
+   "plate_recomposite": {
+    "premultiplied_max_abs_diff": 0,
+    "premultiplied_pixels_differing": 0,
+    "raw_visible_max_abs_diff": 0,
+    "alpha0_pixels_with_colour_in_source": 5608,
+    "pass_pixel_diff_0": true
+   },
+   "bands": {
+    "wingL_sh": {
+     "rows": [
+      0,
+      67
+     ],
+     "bytes": 7836
+    },
+    "wingL_mid": {
+     "rows": [
+      49,
+      213
+     ],
+     "bytes": 29580
+    },
+    "wingL_tip": {
+     "rows": [
+      195,
+      330
+     ],
+     "bytes": 13204
+    }
+   },
+   "layout_viewbox": {
+    "wingL_sh": {
+     "x": 30.0,
+     "y": 116.0,
+     "w": 50.0,
+     "h": 14.537
+    },
+    "wingL_mid": {
+     "x": 30.0,
+     "y": 126.6315,
+     "w": 50.0,
+     "h": 35.583
+    },
+    "wingL_tip": {
+     "x": 30.0,
+     "y": 158.3091,
+     "w": 50.0,
+     "h": 29.2909
+    }
+   },
+   "child_pivots_viewbox": {
+    "wingL_mid": [
+     55.0,
+     130.537
+    ],
+    "wingL_tip": [
+     59.9193,
+     162.2145
+    ]
+   }
+  },
+  {
+   "part": "wingR",
+   "size": [
+    232,
+    330
+   ],
+   "cuts": [
+    66,
+    212
+   ],
+   "ext_rows": 18,
+   "erode_px": 6,
+   "fill_profile_30": [
+    51,
+    103,
+    198,
+    222,
+    220,
+    223,
+    207,
+    144,
+    103,
+    69,
+    23
+   ],
+   "extension_pixels": {
+    "mid": 1150,
+    "tip": 1930
+   },
+   "plate_recomposite": {
+    "premultiplied_max_abs_diff": 0,
+    "premultiplied_pixels_differing": 0,
+    "raw_visible_max_abs_diff": 0,
+    "alpha0_pixels_with_colour_in_source": 6529,
+    "pass_pixel_diff_0": true
+   },
+   "bands": {
+    "wingR_sh": {
+     "rows": [
+      0,
+      66
+     ],
+     "bytes": 7656
+    },
+    "wingR_mid": {
+     "rows": [
+      48,
+      212
+     ],
+     "bytes": 29842
+    },
+    "wingR_tip": {
+     "rows": [
+      194,
+      330
+     ],
+     "bytes": 13452
+    }
+   },
+   "layout_viewbox": {
+    "wingR_sh": {
+     "x": 120.0,
+     "y": 116.0,
+     "w": 50.0,
+     "h": 14.2
+    },
+    "wingR_mid": {
+     "x": 120.0,
+     "y": 126.3273,
+     "w": 50.0,
+     "h": 35.2848
+    },
+    "wingR_tip": {
+     "x": 120.0,
+     "y": 157.7394,
+     "w": 50.0,
+     "h": 29.2606
+    }
+   },
+   "child_pivots_viewbox": {
+    "wingR_mid": [
+     144.4612,
+     130.2
+    ],
+    "wingR_tip": [
+     140.2562,
+     161.6121
+    ]
+   }
+  }
+ ]
+}
