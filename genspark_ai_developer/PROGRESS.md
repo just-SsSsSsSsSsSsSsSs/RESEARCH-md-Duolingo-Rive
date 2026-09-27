@@ -1072,3 +1072,5 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
   ack: DIRECTIVES #07 received.
 - 2026-09-27 resume-check #52 (after sandbox reset): branch at c89c475 == origin, clean; origin/main 120ce1a; app/ diff 0. Gist unchanged (a2a05a8d = #07). K9.4-4 DONE and on the branch: g13_performances.json pass_all true 3/3 (c89c475) + strip. K9.4-5 (bar buttons, reel beats, ship_visible_proof 9, PREVIEW rows) was started before the reset and NOT committed -> redo now. Continue K9.4-5.
   ack: DIRECTIVES #07 received.
+- 2026-09-27 resume-check #53 (after sandbox reset): branch at 32ab289 == origin, clean; origin/main 120ce1a; app/ diff 0. Gist unchanged (a2a05a8d = #07). K9.4-5a DONE and on the branch (79c180e UI, 32ab289 proof checks). The regenerated g11c_ship_visible.json (14/14) and PREVIEW rows 9/9b were NOT committed before the reset -> redo now (rerun ship_visible_proof, then commit result + PREVIEW rows). Then K9.4-6.
+  ack: DIRECTIVES #07 received.
