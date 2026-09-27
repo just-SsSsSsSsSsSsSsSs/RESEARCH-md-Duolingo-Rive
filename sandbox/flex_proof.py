@@ -7,11 +7,16 @@ Engine-truth reads (WAAPI keyframes / timing on the child joints), not screensho
   followers_present   A: armL_mid and armL_tip carry a 480 ms follower while celebrate() runs; B: no child layer.
   ratio_and_clamp     follower last keyframe == clamp(parent_last * ratio, maxDeg) (+-0.01 deg, from the layers).
   lag_from_timing     follower delay - parent delay == segments.X.lagMs exactly (timing is engine truth) AND the
-                      observed peak of the child's RELATIVE rotation lags the parent's peak by lagMs +- Q (16.7 ms).
-  tail_after_stop     a tail layer (duration tail.ms) exists on the tip starting at parent end + tip lag; >= 1 'flex' cue.
+                      observed peak of the child's OWN rotation lags the parent's peak by lagMs +- Q (16.7 ms).
+  tail_after_stop     the 480 ms flap is fill:forwards (kept) so it gets NO tail by design; the 620 ms return layer is
+                      finite and non-filling -> a tail layer (duration tail.ms) on the tip starting at return end +
+                      tip lag; >= 1 'flex' cue; 0 tail layers on the flap.
+Tool notes (disclosed, resume #60): (1) the flap is scheduled after the anticipation hold (150-250 ms), so the layer
+census waits for the 480 ms layer to appear instead of sleeping a guessed 60 ms; (2) getComputedStyle().transform is
+the element's OWN transform (not cumulative), so joints are sampled raw, no parent subtraction.
   min_parent_deg      the idle breath layer (3 deg on armL < minParentDeg 4) produces NO follower.
   release_clears      a kept fill-forwards layer on armL spawns kept followers; rig.release(/^arm/) clears all of them.
-  b_control           arm B: 0 followers, 0 cues, relative child rotation stays < 0.05 deg for the whole run.
+  b_control           arm B: 0 followers, 0 cues, the child joints' own rotation stays < 0.05 deg for the whole run.
   reduced_motion      prefers-reduced-motion: 0 followers, 0 cues.
   no_page_errors      three pages, zero console errors.
 Perf (annex d, declared before the run): 5 owls, CPU 1x/4x, flex on vs ?flex=0, FLEX_PERF_ROUNDS rounds via
@@ -53,9 +58,18 @@ JS_MAIN = "async () => {" + HELPERS + """
   out.idleChildLayers = LAY('armL_mid').length + LAY('armL_tip').length; out.idleArmLayers = LAY('armL').length;
   out.idleArmMaxDeg = Math.max(0, ...LAY('armL').flatMap(l => l.kf.map(ANG).filter(v => v !== null).map(Math.abs)));
   const s = []; const t0 = performance.now(); r.celebrate();
-  await sleep(60);
+  // the 480 ms flap is scheduled after the anticipation hold (150-250 ms): wait for the layer, do not guess a delay
+  while (performance.now() - t0 < 700 && !LAY('armL').some(l => l.duration === 480)) await new Promise(requestAnimationFrame);
+  out.flapSeenAtMs = +(performance.now() - t0).toFixed(1);
   out.armLayers = LAY('armL'); out.midLayers = LAY('armL_mid'); out.tipLayers = LAY('armL_tip');
-  while (performance.now() - t0 < 2400) { const a = ROT('armL'), m = ROT('armL_mid'), t = ROT('armL_tip'); s.push({ t: performance.now() - t0, arm: a, mid: m - a, tip: t - m }); await new Promise(requestAnimationFrame); }
+  // computed transform is the element's OWN transform (not cumulative): sample each joint raw
+  out.returnSeenAtMs = null;
+  while (performance.now() - t0 < 2400) {
+    s.push({ t: performance.now() - t0, arm: ROT('armL'), mid: ROT('armL_mid'), tip: ROT('armL_tip') });
+    if (out.returnSeenAtMs === null && LAY('armL').some(l => l.duration === 620)) { out.returnSeenAtMs = +(performance.now() - t0).toFixed(1); out.returnArm = LAY('armL'); out.returnMid = LAY('armL_mid'); out.returnTip = LAY('armL_tip'); }
+    await new Promise(requestAnimationFrame);
+  }
+  if (out.returnSeenAtMs === null) { out.returnArm = []; out.returnMid = []; out.returnTip = []; }
   const peak = k => s.reduce((b, x) => Math.abs(x[k]) > Math.abs(b[k]) ? x : b, s[0]);
   out.peakArm = peak('arm'); out.peakMid = peak('mid'); out.peakTip = peak('tip'); out.samples = s.length;
   out.flexCues = cues.filter(c => c.p === 'flex').map(c => ({ t: +(c.t - t0).toFixed(1), c: c.c }));
@@ -87,21 +101,25 @@ def analyse(a, b, rr, spec):
         n['lag_observed_peak_ms'] = {'mid': round(a['peakMid']['t'] - a['peakArm']['t'], 1), 'tip': round(a['peakTip']['t'] - a['peakArm']['t'], 1)}
         ch['lag_from_timing'] = (n['lag_timing_ms']['mid'] == S['mid']['lagMs'] and n['lag_timing_ms']['tip'] == S['tip']['lagMs']
                                  and abs(n['lag_observed_peak_ms']['mid'] - S['mid']['lagMs']) <= Q and abs(n['lag_observed_peak_ms']['tip'] - S['tip']['lagMs']) <= Q)
-        tails = [l for l in a['tipLayers'] if l['duration'] == F['tail']['ms']]
-        exp_start = parent[0]['delay'] + parent[0]['duration'] + S['tip']['lagMs']
-        n['tail'] = {'layers': tails, 'expected_start_ms': exp_start, 'cues': a['flexCues']}
-        ch['tail_after_stop'] = bool(tails) and abs(tails[0]['delay'] - exp_start) <= 0.5 and len(a['flexCues']) >= 1
+        # the 480 ms flap is fill:forwards -> no tail by design; the tail rides the 620 ms return layer (finite, non-filling)
+        ret = [l for l in a['returnArm'] if l['iterations'] == 1 and l['duration'] == 620]
+        ret_mid = [l for l in a['returnMid'] if l['duration'] == 620]; ret_tip = [l for l in a['returnTip'] if l['duration'] == 620]
+        tails = [l for l in a['returnTip'] if l['duration'] == F['tail']['ms']]
+        exp_start = (ret[0]['delay'] + ret[0]['duration'] + S['tip']['lagMs']) if ret else None
+        n['tail'] = {'return_seen_at_ms': a['returnSeenAtMs'], 'return_followers': {'mid': len(ret_mid), 'tip': len(ret_tip)}, 'layers': tails, 'expected_start_ms': exp_start, 'cues': a['flexCues'],
+                     'flap_tail_layers_on_fill_forwards': len([l for l in a['tipLayers'] if l['duration'] == F['tail']['ms']])}
+        ch['tail_after_stop'] = bool(ret and ret_mid and ret_tip and tails) and abs(tails[0]['delay'] - exp_start) <= 0.5 and len(a['flexCues']) >= 1 and n['tail']['flap_tail_layers_on_fill_forwards'] == 0
     else:
         ch['ratio_and_clamp'] = ch['lag_from_timing'] = ch['tail_after_stop'] = False
     n['idle'] = {'armLayers': a['idleArmLayers'], 'armMaxDeg': a['idleArmMaxDeg'], 'childLayers': a['idleChildLayers']}
     ch['min_parent_deg'] = a['idleChildLayers'] == 0 and a['idleArmLayers'] >= 1 and a['idleArmMaxDeg'] < F['minParentDeg']
     n['release'] = {'keptBefore': a['keptBeforeRelease'], 'keptAfter': a['keptAfterRelease']}
     ch['release_clears'] = a['keptBeforeRelease'] >= 2 and a['keptAfterRelease'] == 0
-    n['b'] = {'flexOn': b['flexOn'], 'stats': b['stats'], 'peakMidRel': b['peakMid']['mid'], 'peakTipRel': b['peakTip']['tip'], 'parentPeakDeg': b['peakArm']['arm'], 'cues': len(b['flexCues'])}
+    n['b'] = {'flexOn': b['flexOn'], 'stats': b['stats'], 'peakMidOwn': b['peakMid']['mid'], 'peakTipOwn': b['peakTip']['tip'], 'parentPeakDeg': b['peakArm']['arm'], 'cues': len(b['flexCues']), 'flapSeenAtMs': b['flapSeenAtMs']}
     ch['b_control'] = (not b['flexOn']) and b['stats']['flexFollowers'] == 0 and abs(b['peakMid']['mid']) < 0.05 and abs(b['peakTip']['tip']) < 0.05 and not b['flexCues']
     n['reduced'] = {'flexOn': rr['flexOn'], 'stats': rr['stats'], 'cues': len(rr['flexCues'])}
     ch['reduced_motion'] = (not rr['flexOn']) and rr['stats']['flexFollowers'] == 0 and not rr['flexCues']
-    n['a_peaks'] = {'arm': a['peakArm'], 'mid_rel': a['peakMid'], 'tip_rel': a['peakTip'], 'samples': a['samples'], 'stats': a['stats']}
+    n['a_peaks'] = {'arm': a['peakArm'], 'mid_own': a['peakMid'], 'tip_own': a['peakTip'], 'samples': a['samples'], 'stats': a['stats'], 'flapSeenAtMs': a['flapSeenAtMs']}
     return ch, n
 
 
