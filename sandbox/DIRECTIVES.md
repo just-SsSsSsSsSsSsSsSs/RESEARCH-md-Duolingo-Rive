@@ -72,3 +72,25 @@ Format: `#NN | date (UTC) | source | status | summary` then indented detail and 
       samples/proofs/g12_intent.json (pass_all true; 5 consecutive runs after the bodyLag fix), g12_intent_strip.png (4 frames),
       g11c_ship_visible.json (10/10 incl. 8_intent, 8b_intent_off), samples/measure_matrix.json (new control cell v2 no-intent).
       Evidence-integrity annex (d): budgets were declared in owl.motion.json (acting.intent.budget, 1ffb865) before the engine code (887fbd1); >= 4 samples in every event window (rAF 16.7 ms); slow_rate not used (CPU 1x, disclosed in g12_intent.json env).
+
+#07 | 2026-09-27 00:10 | gist a402871d rev a2a05a8d | received | Owner review of resume #40 (+ K9.3 as seen on the branch): accepted with 4 notes and 5 requests; K9.4 approved (research first, frozen plan in small chunks)
+    Verified on receipt against the branch (914fd08):
+      note 1 (perf conclusion inverted between throttles) -> TRUE. measure_matrix.json (b34f6df): 1x jank v2+Foley 0.84 / no-intent 2.76 / no-Foley 3.69 / v1 2.77; 4x 6.24 / 6.19 / 4.37 / 3.47.
+        The ADR-002 sentence "Foley alone costs about 1.3 jank points there ... keep the Foley bus gated when the device proxy is slow" was written from the
+        K9.2b-6 file (fad583b: 4x 5.84 vs 4.53) and is not supported once the 1x direction reverses. Per-round spread inside one cell (e.g. no-Foley 1x: 5.54, 3.69, 0.0)
+        exceeds the between-cell gap. Action: ADR-002 conclusion re-worded (noise, no attribution, no Foley-gating recommendation) - this cycle.
+      note 1 (numbers in the report vs the file: "jank 0 %, 5.8 %" vs 0.84 / 6.24) -> TRUE and explained: the report quoted the K9.2b-6 file (fad583b: 0.0 / 5.84,
+        still in the ADR table) while the branch already had the K9.3-5 rerun (b34f6df: 0.84 / 6.24). Same root cause as before: a number written from memory of an
+        older file. Action: ADR table replaced by the current file's numbers; report numbers are now copied from files (rule added to AGENTS.md section 13).
+      note 2 (pose sheet byte-identical, "visible change" already delivered before #40) -> TRUE: g11_pose_sheet.png md5 b4161f4c..., last changed ca08a2d 21:53Z,
+        before the #40 report. Correction recorded: #40 = code + ADR decision + matrix, no new visible change. (K9.3 in #45 did carry a new visible change: intent.)
+      note 3 (bodyLag re-derived after measurement) -> acknowledged; justified by P2 + old/new disclosed (bodyLagNote). Rule: not a pattern; any future budget
+        change after measurement needs an external reference + old/new disclosure BEFORE the rerun.
+      note 4 (report behind the branch) -> TRUE at the time of the review (branch had K9.3 DONE). Rule: every report states the branch head it describes.
+      request "?sfx=0 measured" -> ALREADY on the branch: g11c_ship_visible.json check 7_sfx0 {bus:false, foley:false, winkRan:true, lidR_sy .37} (1892e03).
+        Gap accepted: it proves no SoundBus exists, not "sounds played = 0" as a number. Action: add played-count 0 via the SoundBus stats path on a normal page vs sfx=0.
+      request "bankLimit dead number" -> NOT dead (flight.js line 62 reads it; scope note bankLimitScope in the spec since 5e5c3d0). Kept, documented. No change.
+      Pages / permanent URL -> gist says "not enabled (API 404)". VERIFIED FALSE now: GET /pages = 200, status built, source main:/ (legacy build), and
+        https://just-SsSsSsSsSsSsSsSs.github.io/RESEARCH-md-Duolingo-Rive/sandbox/index.html serves the MAIN copy (spec v=k5, no acting bar). The permanent URL exists
+        but shows the old sandbox; switching the source branch (Settings -> Pages -> Branch = sandbox/a1-gate5-art-sw) is owner-only and remains open.
+      K9.4 approved: owner-vision performances (triumph roll, showoff flight, cartoon humour, reduced-motion). Research first, frozen plan, small chunks.
