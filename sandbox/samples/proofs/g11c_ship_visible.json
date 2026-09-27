@@ -19,7 +19,7 @@
   },
   "2_wink": {
     "peakL": 1,
-    "peakR": 0.168854,
+    "peakR": 0.168838,
     "after": {
       "L": 0,
       "R": 0
@@ -33,29 +33,31 @@
   "dart": {
     "mid": {
       "L": [
-        -0.74,
-        1.68
+        3.89,
+        0.19
       ],
       "R": [
-        -0.6,
-        2.35
+        4.52,
+        -0.25
       ]
     },
     "end": {
       "L": [
-        -0.261648,
-        0.549634
+        0,
+        0
       ],
       "R": [
-        -0.261648,
-        0.549634
+        0,
+        0
       ]
     },
+    "keptMid": 2,
+    "keptEnd": 0,
     "darts": 1,
-    "dispL": 1.835755975068582,
-    "dispR": 2.425386567126981,
-    "asym": 0.6844705983459043,
-    "pass_": false
+    "dispL": 3.8946373387004853,
+    "dispR": 4.526908437333364,
+    "asym": 0.7684399781375246,
+    "pass_": true
   },
   "saccades": {
     "before": 1,
@@ -79,7 +81,7 @@
       "mode": "roll",
       "dist": 286
     },
-    "ms": 3009,
+    "ms": 3024,
     "pass_": true
   },
   "4_escalation": {
@@ -110,14 +112,14 @@
     "pass_": true
   },
   "6_reel": {
-    "total_ms": 26747,
+    "total_ms": 26743,
     "beats": [
       {
         "name": "alert",
         "t": 0,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 965,
+        "tEnd": 966,
         "pose": null,
         "roll": null
       },
@@ -126,7 +128,7 @@
         "t": 1600,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 2085,
+        "tEnd": 2050,
         "pose": null,
         "roll": null
       },
@@ -144,7 +146,7 @@
         "t": 4600,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 7147,
+        "tEnd": 7142,
         "pose": null,
         "roll": "rollFlip"
       },
@@ -153,7 +155,7 @@
         "t": 10500,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 12948,
+        "tEnd": 12641,
         "pose": null,
         "roll": "rollFlip"
       },
@@ -162,7 +164,7 @@
         "t": 14500,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 15628,
+        "tEnd": 15623,
         "pose": null,
         "roll": "rollFlip"
       },
@@ -171,7 +173,7 @@
         "t": 18500,
         "stateBefore": "idle",
         "stateAfter": "idle",
-        "tEnd": 20672,
+        "tEnd": 20600,
         "pose": null,
         "roll": "rollFlip"
       },
@@ -180,16 +182,16 @@
         "t": 22500,
         "stateBefore": "rest",
         "stateAfter": "idle",
-        "tEnd": 25114,
+        "tEnd": 25041,
         "pose": null,
         "roll": "roll"
       },
       {
         "name": "rest",
-        "t": 26500,
+        "t": 26499,
         "stateBefore": "idle",
         "stateAfter": "rest",
-        "tEnd": 26747,
+        "tEnd": 26743,
         "pose": null,
         "roll": "roll"
       }
@@ -199,10 +201,10 @@
   },
   "7_sfx0": {
     "winkRan": true,
-    "lidR_sy": 0.367197,
+    "lidR_sy": 1,
     "bus": false,
     "foley": false,
-    "cues_fired": 17,
+    "cues_fired": 16,
     "sounds_played": 0,
     "sounds_muted": 0,
     "active_voices": 0,
@@ -212,8 +214,8 @@
     "with_sound_page": {
       "bus": true,
       "foley": true,
-      "cues_fired": 15,
-      "sounds_played": 1,
+      "cues_fired": 17,
+      "sounds_played": 3,
       "sounds_muted": 0,
       "audio_context_state": "running"
     },
@@ -232,7 +234,6 @@
       "flap",
       "flap",
       "cruise",
-      "blink",
       "roll",
       "flap",
       "flap",
@@ -243,12 +244,12 @@
       "settle"
     ],
     "intentCtx": {
-      "tVisual": 1332.5999999998603,
+      "tVisual": 1312.8000000000466,
       "dx": 349.921875,
       "dy": -246.083125,
-      "snapMs": 64.03927554305734,
-      "headLagMs": 40.43579375063941,
-      "bodyLagMs": 250.75816262031634,
+      "snapMs": 65.6905688848757,
+      "headLagMs": 47.085520105564555,
+      "bodyLagMs": 246.00969004312316,
       "headDeg": 6.0139774320864365
     },
     "budget": {
@@ -265,7 +266,7 @@
         600
       ]
     },
-    "intent_to_takeoff_ms": 441,
+    "intent_to_takeoff_ms": 501,
     "owl_cx_vs_answer_cx_px": 0,
     "intents": 1,
     "errors": [],
@@ -283,12 +284,11 @@
       "cruise",
       "roll",
       "flap",
-      "blink",
+      "flap",
       "flap",
       "flex",
       "flex",
       "land",
-      "flap",
       "settle"
     ],
     "intents": 0,
@@ -377,7 +377,7 @@
     "childBack": 2,
     "followersBack": 8,
     "errors": [],
-    "pass_": false
+    "pass_": true
   },
-  "pass_all": false
+  "pass_all": true
 }
