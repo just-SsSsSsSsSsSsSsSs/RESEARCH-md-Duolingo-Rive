@@ -1,6 +1,6 @@
 {
-  "measured_at": "2026-09-26T23:55:50Z",
-  "base": "http://127.0.0.1:8080/sandbox/",
+  "measured_at": "2026-09-27T02:08:40Z",
+  "base": "http://localhost:8080/sandbox/",
   "companions": 5,
   "seconds_per_run": 10.0,
   "rounds": 3,
@@ -21,20 +21,20 @@
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 16.7,
       "raf_p99_ms": 16.8,
-      "raf_max_ms": 33.4,
-      "jank_pct": 0.84,
-      "heap_delta_mb_after_scene": 0.88,
+      "raf_max_ms": 16.8,
+      "jank_pct": 0.0,
+      "heap_delta_mb_after_scene": 0.9,
       "animations_idle": 73,
-      "dom_nodes": 328,
+      "dom_nodes": 331,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        0.84,
-        0.84,
+        0.0,
+        0.0,
         0.0
       ],
       "runs_p95_ms": [
-        16.8,
         16.7,
+        16.8,
         16.7
       ],
       "errors": 0,
@@ -49,27 +49,27 @@
       "engine": "v2",
       "extra": "&intent=0",
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.8,
-      "raf_p99_ms": 33.4,
-      "raf_max_ms": 50,
-      "jank_pct": 2.76,
-      "heap_delta_mb_after_scene": 0.88,
+      "raf_p95_ms": 16.7,
+      "raf_p99_ms": 16.8,
+      "raf_max_ms": 16.8,
+      "jank_pct": 0.0,
+      "heap_delta_mb_after_scene": 0.9,
       "animations_idle": 73,
-      "dom_nodes": 328,
+      "dom_nodes": 331,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
+        4.41,
         0.0,
-        4.36,
-        2.76
+        0.0
       ],
       "runs_p95_ms": [
         16.8,
-        16.8,
-        16.8
+        16.7,
+        16.7
       ],
       "errors": 0,
       "budget_p95_le_20": true,
-      "budget_jank_lt_1pct": false
+      "budget_jank_lt_1pct": true
     },
     {
       "cell": "v2 no-Foley",
@@ -79,27 +79,27 @@
       "engine": "v2",
       "extra": "&sfx=0",
       "raf_p50_ms": 16.7,
-      "raf_p95_ms": 16.8,
-      "raf_p99_ms": 50,
-      "raf_max_ms": 66.6,
-      "jank_pct": 3.69,
-      "heap_delta_mb_after_scene": 0.82,
+      "raf_p95_ms": 16.7,
+      "raf_p99_ms": 16.8,
+      "raf_max_ms": 33.4,
+      "jank_pct": 0.84,
+      "heap_delta_mb_after_scene": 0.83,
       "animations_idle": 73,
-      "dom_nodes": 327,
+      "dom_nodes": 330,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        5.54,
-        3.69,
-        0.0
+        4.24,
+        0.0,
+        0.84
       ],
       "runs_p95_ms": [
-        33.3,
         16.8,
-        16.8
+        16.7,
+        16.7
       ],
       "errors": 0,
       "budget_p95_le_20": true,
-      "budget_jank_lt_1pct": false
+      "budget_jank_lt_1pct": true
     },
     {
       "cell": "v1 reference",
@@ -110,17 +110,17 @@
       "extra": "",
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 16.8,
-      "raf_p99_ms": 50,
+      "raf_p99_ms": 33.4,
       "raf_max_ms": 50.1,
-      "jank_pct": 2.77,
+      "jank_pct": 2.94,
       "heap_delta_mb_after_scene": 0.65,
       "animations_idle": 38,
-      "dom_nodes": 327,
+      "dom_nodes": 330,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        2.77,
-        1.02,
-        3.87
+        1.87,
+        2.94,
+        3.11
       ],
       "runs_p95_ms": [
         16.8,
@@ -141,19 +141,19 @@
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 33.3,
       "raf_p99_ms": 33.4,
-      "raf_max_ms": 50,
-      "jank_pct": 6.24,
-      "heap_delta_mb_after_scene": 0.88,
+      "raf_max_ms": 49.9,
+      "jank_pct": 6.38,
+      "heap_delta_mb_after_scene": 0.89,
       "animations_idle": 73,
-      "dom_nodes": 328,
+      "dom_nodes": 331,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        5.81,
-        6.24,
-        6.98
+        4.7,
+        6.38,
+        7.91
       ],
       "runs_p95_ms": [
-        33.3,
+        16.8,
         33.3,
         33.3
       ],
@@ -172,18 +172,18 @@
       "raf_p95_ms": 33.3,
       "raf_p99_ms": 33.4,
       "raf_max_ms": 50,
-      "jank_pct": 6.19,
-      "heap_delta_mb_after_scene": 0.88,
+      "jank_pct": 6.56,
+      "heap_delta_mb_after_scene": 0.9,
       "animations_idle": 73,
-      "dom_nodes": 328,
+      "dom_nodes": 331,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        4.18,
-        6.19,
-        8.36
+        6.17,
+        6.56,
+        8.91
       ],
       "runs_p95_ms": [
-        16.8,
+        33.3,
         33.3,
         33.3
       ],
@@ -201,16 +201,16 @@
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 16.8,
       "raf_p99_ms": 33.4,
-      "raf_max_ms": 50.1,
-      "jank_pct": 4.37,
-      "heap_delta_mb_after_scene": 0.82,
+      "raf_max_ms": 33.4,
+      "jank_pct": 3.98,
+      "heap_delta_mb_after_scene": 0.84,
       "animations_idle": 73,
-      "dom_nodes": 327,
+      "dom_nodes": 330,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        2.56,
-        4.37,
-        4.96
+        3.98,
+        3.98,
+        2.91
       ],
       "runs_p95_ms": [
         16.8,
@@ -231,16 +231,16 @@
       "raf_p50_ms": 16.7,
       "raf_p95_ms": 16.8,
       "raf_p99_ms": 33.4,
-      "raf_max_ms": 50.1,
-      "jank_pct": 3.47,
+      "raf_max_ms": 66.6,
+      "jank_pct": 1.7,
       "heap_delta_mb_after_scene": 0.65,
       "animations_idle": 38,
-      "dom_nodes": 327,
+      "dom_nodes": 330,
       "engine_idle_loops_after_scene": 0,
       "runs_jank_pct": [
-        2.04,
-        4.03,
-        3.47
+        1.01,
+        1.7,
+        3.66
       ],
       "runs_p95_ms": [
         16.8,
