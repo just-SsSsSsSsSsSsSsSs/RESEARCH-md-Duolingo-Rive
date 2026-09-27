@@ -1219,3 +1219,44 @@ Hypothesis: a raster-part owl reads as alive without a mesh engine if (a) the st
 | `index.html`, `sw.js` g5-19 | wiring | acting bar (wink, dart, roll, intent, triumph, oops, puzzled, brows, wing flex A/B, poses 1-6, 30 s reel); captions name the tier |
 | proof tools | - | `eyelead_ab.py`, `intent_proof.py`, `perf_proof.py`, `flex_proof.py`, `wing_render_proof.py`, `wing_seam_variants.py`, `ship_visible_proof.py`, `measure_matrix.py`, `watch_kit.py`, `tools/report_k9.py` |
 Runtime dependencies added: 0. Runtime assets added: 6 wing bands (part of the 384 KB above); the watch clips are evidence, not shipped.
+
+### 5. Measurements (declared budget -> measured; file, timestamp)
+| gate / budget | declared | measured | file | pass |
+|---|---|---|---|---|
+| G3 anticipation hold | [150, 250] ms | 214.8 ms | proofs.json 2026-09-26T20:08:09Z | PASS |
+| intent eye -> head / eye -> body / pre-takeoff | [40, 50] / [200, 280] / [350, 600] ms | 46.7 / 231.7 / 400.1 ms median | g12_intent.json 2026-09-26T23:42:43Z | PASS |
+| eyes lead head (A vs B) | leadMs 45 vs 0 | A 33.7 ms, B 0.0 ms | g11c_eyelead_ab.json | PASS |
+| triumph large roll / landing level / settle | 360 deg / abs rot < 2 / <= 400 ms | 360.0 / 0 / 180.6 ms | g13_performances.json 2026-09-27T01:30:59Z | PASS |
+| oops anticipation / hold / stretch | [125, 250] / [125, 333] ms / [1.1, 1.18] | 132.5-232.3 / 230.9 ms / 1.151 | same | PASS |
+| puzzled head tilt (large) | 14 deg | 13.9 deg | same | PASS |
+| escalation | s s m s s m L | s s m s s m L | g11c_ship_visible.json (15/15) | PASS |
+| flex lag mid / tip (timing; observed peaks) | 40 / 90 ms | 40 / 90 ms; 50.1 / 99.9 ms (Q 16.7) | g14_flex.json 2026-09-27T04:23:36Z (3/3 runs, 9/9 checks) | PASS |
+| flex ratio + clamp, tail | .55 / .85, 28 deg; overshoot .18 over 260 ms | 28 / 28 deg (clamped); -5.04 deg over 260 ms at 710 ms | same | PASS |
+| wing seam at rest (option a) | max abs diff <= 35 on <= 2 device rows per cut | 29 / 27 DPR1, 35 / 29 DPR2 | g14_wing_render.json 2026-09-27T04:39:28Z | PASS (at the edge) |
+| wing bend pinholes per wing | <= 6 px DPR1, <= 64 px DPR2 | 3 / 64 px | same | PASS (at the edge) |
+| perf 5 owls 1x: p95 / jank / heap | <= 20 ms / < 1 % / reported | 16.7 ms / 0.0 % / +0.9 MB (v1 reference 16.8 / 2.94 % / +0.65) | measure_matrix.json 2026-09-27T02:08:40Z | PASS |
+| flex perf rule | activeOnly iff p95 rise > in-cell spread | 1x rise 0.0 vs 0.1; 4x 0.1 vs 0.1 -> not recommended | g14_flex.json | PASS |
+| perf 4x throttle jank | NOT declared | 6.38 % (flex on 13.79 / off 7.99) | matrix; g14_flex.json | OPEN (no budget; item 8) |
+| Foley sync / mix / polyphony (K8, unchanged) | p95 <= 16.7 ms; peak <= -3 dBFS; <= 3 voices | 1.1 ms; -13.62 dBFS; 3 | samples/sfx/*.json 2026-09-26T18:51:03Z | PASS |
+| watch kit budgets | <= 12 MB, clip <= 10.5 s, 0 external, 0 errors | 6.88 MB, 10.4 s x 8, 0, 0 | samples/watch/manifest.json 2026-09-27T05:05:59Z | PASS |
+Full tables: `sandbox/docs/K9_BUDGETS.md` (25 rows: 23 PASS, 3 OPEN, 0 FAIL) and `sandbox/docs/K9_MATRIX.md` - both generated.
+
+### 6. Visual proof (files that exist in `sandbox/samples/proofs/` on 2026-09-27)
+`g11_pose_sheet.png` (6 stills) + `g11_sil_*.png` silhouettes, `g11c_wink.png`, `g12_intent_strip.png`, `g13_performances_strip.png` (md5 06a6c1f4), `g14_flex_strip.png` (md5 bc6fa2c4), `g14_wing_{rest,bend,diff}_dpr{1,2}.png`, `g8_side_by_side.png` (v1 vs v2), and the 8 watch clips in `samples/watch/`. Live: the permanent Pages URL serves this branch (`sandbox/index.html?engine=v2&reel=1`); `docs/PREVIEW.md` rows 1-11 are the 60-second checklist.
+
+### 7. The 12 principles (annex b)
+Generated matrix `sandbox/docs/K9_MATRIX.md`: 11 PASS by number, 1 OPEN (12 Appeal = human gate G12). Row 4 discloses the exact 2 linear easings in the engine (rig.js:371 shake oscillation, acting.js:298 pupil spiral), both constant-rate by design.
+
+### 8. Risks and rollback
+`sandbox/docs/RISK_LOG.md`: 14 rows - OPEN 5 (G12 human gate; 4x-throttle jank budget never declared; heap cap never declared; iOS mute switch unverified on a device; owner-only actions), WATCH 5, CLOSED 4. Every rollback is a flag that exists today: `?engine=v1 ?acting=0 ?brows=0 ?wink=0 ?intent=0 ?perf=0 ?flex=0 ?sfx=0 ?sw=0`, plus OS reduced motion (measured: 0 body layers added).
+
+### 9. Objections with evidence, and what we did
+- "The 3-band wing seam must be pixel-diff 0" (original budget): 14 bitmap constructions measured (`g14_wing_seam_variants.json`), best rest max 29-35 on the cut rows; escalated with numbers and 3 options per Article 13; owner chose (a) renegotiated budget (DIRECTIVES #08). The original budget stays in the JSON as `pass_original_budget false`.
+- "Use a mesh warp / Rive for the wing": ruled out by ADR-002 addenda d / d2 with measured cost (`g11d_meshwarp_cost.json`); reopen clause stands.
+- "Engine fix, not threshold" (owner rule, #08): every defect this cycle was fixed in the tool or the engine and disclosed - flex_proof snapshot timing, per-element rotation, tail on the return layer; ship_visible follower count 4 -> 8; dart de-raced; wing_render L+R sum -> per wing; watch kit framing (8 clips of sky), duration, trim target. No threshold moved to make a number pass.
+- Prose drift found and corrected while writing K9.6: sfx drop counts (RESEARCH cycle 5 quotes 34 / 44 / 3; committed JSON 28 / 82 / 2), K9.6-2 timestamp (05:08 -> 05:05:59Z), "no linear easing" (false; 2 exist), a visual-proof file name that did not exist (`g11c_eyelead_strip.png`) removed from item 6. Recorded in PROGRESS.
+
+### 10. Single blocker
+G12 is a human gate: the owner (plus 2-4 raters) runs `sandbox/samples/watch/index.html` and returns the JSON blocks; the claim rule is in its README (p <= 0.05 over >= 12 trials from >= 3 raters). Everything else in K9 is closed by a number on the branch or listed OPEN with its measured value. Owner-only actions after this report: review the phase PR (merge is owner-only), decide the two undeclared budgets (4x jank, heap cap) for K10, run the iPhone mute-switch check.
+
+Gate table G1-G14 (proof per gate): G1 scope `git diff` 0 | G2 squash proofs.json | G3 anticipation proofs.json + g12_intent.json | G4 arcs proofs.json sagitta 12.2 / 21.9 % | G5 follow-through proofs.json ratio 0.09 + g14_flex.json tail | G6 secondary action g13 hold impulses + sfx_sync.json | G7 edges proofs.json median 3 device px DPR2 | G8 video match: OPEN as written (no reference video in the repo; v1-vs-v2 kit is the honest substitute) | G9 perf measure_matrix.json | G10 data-driven validate* + fake-character test | G11 pose sheet g11_pose_sheet.png | G12 watch kit samples/watch/ OPEN (human) | G13 budgets K9_BUDGETS.md 23 / 25 PASS, 2 undeclared listed OPEN | G14 flex g14_flex.json + g14_wing_render.json PASS under the accepted budget.
