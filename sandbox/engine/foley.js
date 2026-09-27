@@ -48,6 +48,7 @@ export class Foley {
       case 'wake': cue = 'gulp'; break;
       case 'blink': if (stName === 'idle' || stName === 'rest') { cue = sfx.blink; fx = vfx.blink; } break;
       case 'jump': cue = 'boing'; break;
+      case 'fx': fx = (ctx.vfx && this.spec.vfx && this.spec.vfx[ctx.vfx]) ? ctx.vfx : null; cue = sfx.fx || null; break;   // K9.4: tier-specific VFX named by the performance (catalogue-checked)
       default: cue = sfx[phase]; fx = vfx[phase];
     }
     let tAudio = null;

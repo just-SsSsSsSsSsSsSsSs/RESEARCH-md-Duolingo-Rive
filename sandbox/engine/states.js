@@ -23,8 +23,8 @@ const CLIPS = {
     wave: (rig) => rig.nod(),
     bob: noop,                              // talk() drives the head spring itself
     ponder: (rig) => rig.think(),
-    jumpJoy: (rig) => rig.celebrate(),
-    recoil: (rig) => rig.sad(),
+    jumpJoy: (rig) => (rig.triumph && rig.perfSpec && rig.perfSpec('triumph')) ? rig.triumph(rig.escalate('triumph')) : rig.celebrate(),   // K9.4: escalating performance, ?perf=0 -> legacy clip
+    recoil: (rig) => (rig.oops && rig.perfSpec && rig.perfSpec('oops')) ? rig.oops(rig.escalate('oops')) : rig.sad(),
     flight: (rig, ctx) => {
       const trace = !!(ctx && ctx.trace);
       if (ctx && ctx.home) return rig.flyTo(null, { trace, home: true });

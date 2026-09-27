@@ -143,6 +143,7 @@ P.roam = async function (room, { trace = false } = {}) {
 /** Celebrate: anticipation crouch -> jump with stretch -> volume-preserving landing -> wings settle. */
 P.celebrate = function () {
   if (this.busy) return; this.busy = true;
+  if (REDUCED) { this.setMouth('smile'); this.blink(true); this.later(() => { this.setMouth('closed'); this.busy = false; }, 1200); return; }   // WCAG 2.3.3: face only
   const S = this.spec.squash.jump, hold = randIn(this.spec.squash.takeoffCrouch.holdMs), H = this.spec.hierarchy;
   this._writeSquash(1 / S.scaleY, S.scaleY);
   this.cue('anticipate', { holdMs: hold });

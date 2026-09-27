@@ -149,6 +149,136 @@ P.startSaccades = function () {
   return () => { on = false; };
 };
 
+// ---------------------------------------------------------------------------------------------
+// K9.4 owner-vision performances (spec.acting.performances). Structure per Webster 2005 (P6):
+// anticipation (squash) -> extreme (stretch) -> settle; escalation tier = the exaggeration dial.
+// Every performance: cue('perf', {name, tier}) at start, cue('fx', {vfx}) per tier VFX, cue('settle') at the end.
+// `?perf=0` or performances.enabled false -> callers fall back to the pre-K9.4 clips (celebrate/sad/think).
+// ---------------------------------------------------------------------------------------------
+const PERF_OFF = typeof location !== 'undefined' && new URLSearchParams(location.search).get('perf') === '0';
+
+P.perfSpec = function (name) {
+  const Pf = this.spec.acting && this.spec.acting.performances;
+  if (!Pf || Pf.enabled === false || PERF_OFF || !Pf[name]) return null;
+  return Pf[name];
+};
+P._tierOf = function (spec, tier) { return spec.tiers[tier] || spec.tiers.small; };
+P._fx = function (list) { for (const v of list || []) this.cue('fx', { vfx: v }); };
+/** A reduced-motion performance: face only (mouth + blink), no root/body transforms, no VFX (WCAG 2.3.3). */
+P._reducedFace = function (mouth, ms) {
+  this.setMouth(mouth); this.blink(true);
+  this.later(() => { this.setMouth('closed'); this.busy = false; this.cue('settle'); }, ms);
+};
+
+/**
+ * Triumph: crouch -> jump (apex scaled by tier) -> [large: 360 root roll around the apex, level before landing]
+ * -> volume-preserving landing -> wink; VFX per tier. Returns a promise resolved at settle.
+ */
+P.triumph = function (tier = 'small') {
+  const T = this.perfSpec('triumph'); if (!T) return this.celebrate();
+  if (this.busy) return Promise.resolve(false); this.busy = true;
+  const t = this._tierOf(T, tier);
+  this._lastPerf = { name: 'triumph', tier };
+  this.stats.performances = (this.stats.performances || 0) + 1;
+  this.cue('perf', { name: 'triumph', tier });
+  if (REDUCED) { this._reducedFace('smile', 1200); return this._sleep(1200); }
+  const S = this.spec.squash.jump, hold = randIn(T.anticipateMs), air = T.airMs, jump = T.jumpPx * t.apexScale;
+  return new Promise((resolve) => {
+    this._writeSquash(1 / S.scaleY, S.scaleY);
+    this.cue('anticipate', { holdMs: hold });
+    this.later(() => {
+      this._writeSquash(1 / S.stretch, S.stretch);
+      this.cue('jump');
+      this.anim(this.j('root'), [{ transform: 'translateY(0)' }, { transform: `translateY(${-jump}px)`, offset: 0.45 }, { transform: `translateY(${-jump}px)`, offset: 0.52 }, { transform: 'translateY(0)' }],
+        { duration: air, easing: EASE.soft, composite: 'add' });
+      [['armL', 125], ['armR', -125]].forEach(([n, d]) => this.anim(this.j(n), [{ transform: 'rotate(0)' }, { transform: `rotate(${d}deg)` }], { duration: 480, easing: EASE.pop, composite: 'add', fill: 'forwards' }, true));
+      this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-6deg) translateY(-3px)' }, { transform: 'rotate(0)' }], { duration: air, easing: EASE.soft, composite: 'add' });
+      if (t.roll) {
+        // 360 roll centred on the apex; the layer ends before touchdown so the owl lands level (proof: |root rot| < 2 deg at 'land')
+        const rollMs = Math.min(T.rollMs, air * 0.7), start = air * 0.5 - rollMs / 2;
+        this.later(() => { this.anim(this.j('root'), [{ transform: 'rotate(0)' }, { transform: 'rotate(360deg)' }], { duration: rollMs, easing: EASE.soft, composite: 'add' }); this.cue('roll', { tier, perf: 'triumph' }); }, start);
+      }
+      this._fx(t.vfx);
+      this.setMouth('open'); this.later(() => this.setMouth('smile'), 400);
+      this.later(() => this._writeSquash(1, 1), 200);
+      this.later(async () => {
+        this.squash.impact(this.spec.squash.landing.scaleY);
+        this.cue('land', { jump: true, perf: 'triumph', tier });
+        this.secondary.impulse('head', -30); this.secondary.impulse('legL', 120); this.secondary.impulse('legR', 120); this.secondary.release();
+        await this._runSquash();
+        this.release(/^arm/);
+        [['armL', 125], ['armR', -125]].forEach(([n, d]) => this.anim(this.j(n), [{ transform: `rotate(${d}deg)` }, { transform: 'rotate(0)' }], { duration: 620, easing: EASE.soft, composite: 'add' }));
+        if (t.wink && this.wink) this.later(() => this.wink(), 120); else this.blink(true);
+        this.setMouth('closed'); this.busy = false; this.cue('settle');
+        resolve(true);
+      }, air);
+    }, hold);
+  });
+};
+
+/**
+ * Oops: the take (P6). rest -> squash anticipation -> stretch extreme (held) -> recoil -> settle.
+ * medium = double take (second anticipation before the extreme); large = + jiggle (damped body oscillation).
+ */
+P.oops = function (tier = 'small') {
+  const O = this.perfSpec('oops'); if (!O) return this.sad();
+  if (this.busy) return Promise.resolve(false); this.busy = true;
+  const t = this._tierOf(O, tier);
+  this._lastPerf = { name: 'oops', tier };
+  this.stats.performances = (this.stats.performances || 0) + 1;
+  this.cue('perf', { name: 'oops', tier });
+  if (REDUCED) { this._reducedFace('sad', 1400); return this._sleep(1400); }
+  const ant = randIn(O.anticipateMs), stretch = randIn(O.stretchScaleY), holdMs = randIn(O.holdMs);
+  const squashY = 1 / stretch;           // volume-preserving pair: the anticipation squash mirrors the extreme stretch
+  const takes = t.doubleTake ? 2 : 1;
+  const beats = [];                       // [{at, fn}] assembled on the engine clock; the proof reads the squash layer keyframes
+  let at = 0;
+  for (let k = 0; k < takes; k++) {
+    beats.push({ at, fn: () => { this._writeSquash(1 / squashY, squashY); this.cue('anticipate', { holdMs: ant, take: k + 1 }); this.setMouth(k ? 'mid' : 'closed'); if (k) this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-7deg)' }, { transform: 'rotate(0)' }], { duration: ant, easing: EASE.soft, composite: 'add' }); } });
+    at += ant;
+    if (k < takes - 1) { beats.push({ at, fn: () => { this._writeSquash(1, 1); } }); at += Math.max(80, ant * 0.6); }
+  }
+  const extremeAt = at;
+  beats.push({ at, fn: () => {
+    this._writeSquash(1 / stretch, stretch);                                   // the extreme: eyes wide, wings up, mouth open
+    this.cue('take', { stretch, holdMs, tier });
+    this.setMouth('open'); this.blink(false);
+    ['pupilL', 'pupilR'].forEach((p) => this.anim(this.j(p), [{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }], { duration: 120, easing: EASE.pop, composite: 'add', fill: 'forwards' }, true));
+    [['armL', 1], ['armR', -1]].forEach(([n, s]) => this.anim(this.j(n), [{ transform: 'rotate(0)' }, { transform: `rotate(${95 * s}deg)` }], { duration: 140, easing: EASE.pop, composite: 'add', fill: 'forwards' }, true));
+    this.anim(this.j('root'), [{ transform: 'translate(0,0)' }, { transform: 'translate(-4px,-10px)' }], { duration: 140, easing: EASE.pop, composite: 'add', fill: 'forwards' }, true);
+  } });
+  at += holdMs;
+  beats.push({ at, fn: () => {                                                 // recoil back and down, dizzy head, mouth sad
+    this.cue('recoil', { tier });
+    this.release(/^(pupil|arm|root)/);
+    this.anim(this.j('root'), [{ transform: 'translate(-4px,-10px) rotate(0)' }, { transform: 'translate(-14px,0) rotate(-5deg)', offset: 0.35 }, { transform: 'translate(-10px,0) rotate(0)', offset: 0.7 }, { transform: 'translate(0,0) rotate(0)' }], { duration: 900, easing: EASE.soft, composite: 'add' });
+    [['armL', 1], ['armR', -1]].forEach(([n, s]) => this.anim(this.j(n), [{ transform: `rotate(${95 * s}deg)` }, { transform: `rotate(${75 * s}deg)`, offset: 0.3 }, { transform: 'rotate(0)' }], { duration: 700, easing: EASE.soft, composite: 'add' }));
+    this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-10deg) translate(-3px,2px)' }, { transform: 'rotate(10deg) translate(3px,2px)' }, { transform: 'rotate(0)' }], { duration: 480, iterations: 2, easing: EASE.sine, composite: 'add' });
+    this.setMouth('sad');
+    // settle with jiggle (large): damped body oscillation about rest, amplitude *= jiggleDecay per cycle
+    this.squash.impact(1 - O.jiggleAmpScale * (t.jiggle ? 1 : 0.4));
+    this._runSquash();
+    if (t.jiggle) {
+      const amp0 = O.jiggleAmpScale, n = t.jiggle, per = O.jiggleMs, kf = [{ transform: 'scale(1,1)', offset: 0 }];
+      for (let i = 0; i < n; i++) { const a = amp0 * Math.pow(O.jiggleDecay, i); kf.push({ transform: `scale(${(1 - a).toFixed(3)},${(1 + a).toFixed(3)})`, offset: (i + 0.5) / n }); kf.push({ transform: `scale(${(1 + a * 0.6).toFixed(3)},${(1 - a * 0.6).toFixed(3)})`, offset: (i + 1) / n - 0.001 }); }
+      kf.push({ transform: 'scale(1,1)', offset: 1 });
+      this.anim(this.j('body'), kf, { duration: per * n, easing: EASE.sine, composite: 'add' });
+      this.cue('jiggle', { cycles: n, ms: per * n });
+    }
+  } });
+  at += 900;
+  beats.push({ at, fn: () => {                                                 // recovery: shrug + oops smile (encourage retry)
+    this.setMouth('smile');
+    [['armL', 1], ['armR', -1]].forEach(([n, s]) => this.anim(this.j(n), [{ transform: 'rotate(0)' }, { transform: `rotate(${35 * s}deg)` }, { transform: 'rotate(0)' }], { duration: 500, easing: EASE.pop, composite: 'add' }));
+    this.blink(true);
+  } });
+  const total = Math.min(O.totalMaxMs, at + 600);
+  beats.push({ at: total, fn: () => { this.setMouth('closed'); this.busy = false; this.cue('settle'); } });
+  this._lastPerf.plan = { anticipateMs: ant, stretch, holdMs, extremeAt, totalMs: total, takes, jiggle: t.jiggle };
+  for (const b of beats) this.later(b.fn, b.at);
+  return this._sleep(total).then(() => true);
+};
+
 /** Spec validation for the acting extras (called from validateSpec consumers). */
 export function validateActing(spec) {
   const problems = [];

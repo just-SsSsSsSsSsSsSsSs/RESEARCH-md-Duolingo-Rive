@@ -385,6 +385,7 @@ export class SvgRig {
   // a small foot tap, then a light-bulb "aha" pop (owner note 3).
   think() {
     if (this.busy) return; this.busy = true;
+    if (REDUCED) { this.setMouth('mid'); this.blink(true); this.later(() => { this.setMouth('closed'); this.busy = false; }, 1400); return; }   // WCAG 2.3.3: face only
     this.setMouth('mid');
     // eyes roll: up, sweep left, right, then settle looking up-right
     ['pupilL', 'pupilR'].forEach((p) => this.anim(this.j(p), [
