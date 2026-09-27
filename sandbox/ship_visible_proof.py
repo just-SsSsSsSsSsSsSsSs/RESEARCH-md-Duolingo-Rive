@@ -60,7 +60,7 @@ def hyp(v):
 async def main():
     R = dict(tool='sandbox/ship_visible_proof.py', url=URL)
     async with async_playwright() as p:
-        b = await p.chromium.launch()
+        b = await p.chromium.launch()   # default flags: no autoplay override (same as sfx_measure.py); sound is unlocked by a real pointer gesture
 
         # ---- 1 default: brows visible, no errors, bar present ----
         pg, ctx, errs = await page(b)
@@ -140,12 +140,31 @@ async def main():
         R['6_reel'] = dict(total_ms=reel['total'], beats=reel['beats'], errors=errs[:], pass_=reel['total'] <= 30000 and len(reel['beats']) == 9 and len(errs) == 0)
         await ctx.close()
 
-        # ---- 7 sfx=0 ----
+        # ---- 7 sfx=0 (DIRECTIVES #07: a NUMBER, not only "no bus"): same flight on a normal page vs ?sfx=0; count sounds played and audio nodes ----
+        SFX_JS = "async () => {" + JS_HELPERS + """
+          const ac0 = performance.getEntriesByType('resource').filter(e => /\\.(mp3|ogg|wav|webm)(\\?|$)/.test(e.name)).length;
+          const ok = r.wink('R'); await sleep(60); const lid = SY('lidR');
+          const cues = []; const prev = r.onCue; r.onCue = (p, c) => { cues.push(p); if (prev) prev(p, c); };
+          r.flyBy(160, -40); const t0 = performance.now();
+          while (!r.busy && performance.now() - t0 < 1500) await sleep(16);
+          while (r.busy && performance.now() - t0 < 8000) await sleep(16);
+          r.onCue = prev;
+          const bus = window.__bus, st = bus ? bus.stats : null;
+          return { winkRan: ok, lidR_sy: lid, bus: !!bus, foley: !!window.__foley, cues_fired: cues.length,
+                   sounds_played: st ? st.played : 0, sounds_muted: st ? st.muted : 0, active_voices: bus ? bus.active.length : 0,
+                   audio_elements: document.querySelectorAll('audio').length, audio_context_state: bus && bus.ctx ? bus.ctx.state : null,
+                   audio_files_fetched: performance.getEntriesByType('resource').filter(e => /\\.(mp3|ogg|wav|webm)(\\?|$)/.test(e.name)).length - ac0 }; }"""
         pg, ctx, errs = await page(b, '&sfx=0')
-        sfx = await pg.evaluate("async () => {" + JS_HELPERS + """
-          const ok = r.wink('R'); await sleep(60); return { winkRan: ok, lidR_sy: SY('lidR'), bus: !!window.__bus, foley: !!window.__foley }; }""")
-        R['7_sfx0'] = dict(**sfx, errors=errs[:], pass_=bool(sfx['winkRan']) and (sfx['lidR_sy'] or 0) > 0.3 and not sfx['bus'] and len(errs) == 0)
+        sfx = await pg.evaluate(SFX_JS)
         await ctx.close()
+        pg, ctx, errs_on = await page(b, '')
+        # real pointer gesture on the stage -> SoundBus.unlock() (autoplay policy respected, as in the K8 gates)
+        await pg.mouse.click(500, 120); await pg.wait_for_timeout(150)
+        on = await pg.evaluate(SFX_JS)
+        await ctx.close()
+        R['7_sfx0'] = dict(**sfx, with_sound_page={k: on[k] for k in ('bus', 'foley', 'cues_fired', 'sounds_played', 'sounds_muted', 'audio_context_state')}, errors=errs[:] + errs_on[:],
+                           pass_=bool(sfx['winkRan']) and (sfx['lidR_sy'] or 0) > 0.3 and not sfx['bus'] and sfx['sounds_played'] == 0 and sfx['active_voices'] == 0
+                           and sfx['cues_fired'] >= 3 and on['bus'] and (on['sounds_played'] + on['sounds_muted']) > 0 and len(errs) + len(errs_on) == 0)
 
         # ---- 8 intent (K9.3): button present, cue order intent -> anticipate -> takeoff, lags inside spec budget, arrives at the answer card ----
         pg, ctx, errs = await page(b, '&sfx=0')
