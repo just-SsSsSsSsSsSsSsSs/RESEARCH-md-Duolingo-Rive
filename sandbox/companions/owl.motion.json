@@ -799,6 +799,43 @@
         "jiggleDecay": 0.5,
         "jiggleAmpScale": 0.06
       },
+      "think": {
+        "comment": "K9.5-2 (owner decision 2026-09-27, item a): the think state gets its OWN calm performance instead of borrowing puzzled. Read from the G12 data (think 0/7 against a monotonic v1 gaze): fewer, slower, larger-legibility moves - eyes lead (gaze lifts up-and-away and HOLDS), head follows with a small tilt, wing to chin, one soft blink mid-hold, micro-drift so the hold is alive, then a clean settle. No spiral, no bubble, no shrug. puzzled stays untouched for confusion beats.",
+        "liftMs": 520,
+        "gazePx": [
+          4,
+          -5
+        ],
+        "headFollowMs": 90,
+        "holdMs": [
+          1100,
+          1500
+        ],
+        "driftPx": 1.2,
+        "driftMs": 900,
+        "blinkAtMs": 800,
+        "settleMs": 420,
+        "totalMaxMs": 3000,
+        "tiers": {
+          "small": {
+            "headDeg": 5,
+            "wing": false,
+            "vfx": []
+          },
+          "medium": {
+            "headDeg": 7,
+            "wing": true,
+            "vfx": []
+          },
+          "large": {
+            "headDeg": 9,
+            "wing": true,
+            "vfx": [
+              "question"
+            ]
+          }
+        }
+      },
       "puzzled": {
         "comment": "spiral gaze + dramatic head tilt + thought bubble; pupils recentre within recentreMs at the end",
         "spiralRadiusPx": [
