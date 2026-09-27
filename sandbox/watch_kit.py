@@ -56,7 +56,12 @@ async def record(b, engine, beat):
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' else None)
     await pg.goto(url, wait_until='networkidle'); await pg.wait_for_function(READY)
-    await pg.evaluate("document.querySelectorAll('header, .bar, #caption, #hud').forEach(e => { e.style.visibility = 'hidden'; })")
+    # display:none (not visibility): hidden chrome must leave the layout so the stage moves into the 640x520 frame.
+    # Tool defect disclosed (resume #62): the first run used visibility:hidden and recorded 8 clips of sky with the owl at y=834.
+    await pg.evaluate("document.querySelectorAll('header, .bar, #caption, #hud').forEach(e => { e.style.display = 'none'; }); document.getElementById('stage').style.marginTop = '0'; scrollTo(0, 0);")
+    box = await pg.evaluate("() => { const r = window.__rigs[0].svg.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; }")
+    if not (box[0] >= 0 and box[1] >= 0 and box[2] <= 640 and box[3] <= 520):
+        await ctx.close(); sys.exit(f'owl outside the recorded frame for {engine}/{beat}: {box}')
     await pg.wait_for_timeout(IDLE_MS)
     t0 = time.time(); await pg.evaluate(RUN[beat])
     await pg.wait_for_timeout(SECOND_BEAT_MS)
@@ -65,7 +70,7 @@ async def record(b, engine, beat):
     if rest > 0: await pg.wait_for_timeout(rest)
     video = pg.video; await ctx.close()
     src = await video.path(); dst = os.path.join(OUT, f'{engine}_{beat}.webm'); shutil.move(src, dst)
-    return dst, errs
+    return dst, errs, [round(v) for v in box]
 
 
 def binom_two_sided(k, n):
@@ -155,8 +160,8 @@ async def main():
         b = await p.chromium.launch()
         for engine in ('v2', 'v1'):
             for beat in BEATS:
-                path, errs = await record(b, engine, beat)
-                manifest['clips'][f'{engine}_{beat}'] = os.path.basename(path); manifest['errors'][f'{engine}_{beat}'] = errs
+                path, errs, box = await record(b, engine, beat)
+                manifest['clips'][f'{engine}_{beat}'] = os.path.basename(path); manifest['errors'][f'{engine}_{beat}'] = errs; manifest.setdefault('owl_box_at_rest', {})[f'{engine}_{beat}'] = box
                 print('recorded', os.path.basename(path), f'{os.path.getsize(path) / 1024:.0f} KB', 'errors', len(errs))
         await b.close()
     shutil.rmtree(os.path.join(OUT, '_tmp'), ignore_errors=True)
