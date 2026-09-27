@@ -77,6 +77,9 @@
   <button data-actx="dart">نظرة خاطفة</button>
   <button data-actx="roll">لفة هوائية</button>
   <button data-actx="intent">نية: تنظر ثم تقفز</button>
+  <button data-actx="triumph">انتصار</button>
+  <button data-actx="oops">خطأ كوميدي</button>
+  <button data-actx="puzzled">حيرة</button>
   <button data-actx="brows" id="browsBtn" aria-pressed="true">الحواجب: ظاهرة</button>
   <button data-actx="poses" id="posesBtn" aria-pressed="false">الأوضاع 1-6</button>
   <span id="poseBtns" hidden>
@@ -421,12 +424,25 @@
     if (x === 'dart') return rigs.forEach((r) => r.dart && r.dart());
     if (x === 'roll') return rigs.forEach((r) => { if (r.busy || !r.states) return; r._forcedRoll = 'medium'; r.states.fire('move:to', { room: roomOf(r.svg.parentElement), trace: traceOn }); });
     if (x === 'intent') return intentToAnswer();
+    if (x === 'triumph' || x === 'oops' || x === 'puzzled') return performOnce(x);
     if (x === 'reel') return reel();
   });
   if (!BROWS) setBrows(false);
   if (POSES) showPoses(true);
 
   // ---- K9.3 intent: eyes -> head -> body -> flight, toward the answer card (solo owl); the flight itself is the existing move:to ----
+  // ---- K9.4 performances from the bar: the state machine escalates (small small medium small small medium large); the caption reads the tier ----
+  const PERF_EVENT = { triumph: 'answer:correct', oops: 'answer:wrong', puzzled: 'answer:pending' };
+  const TIER_AR = { small: 'صغيرة', medium: 'متوسطة', large: 'كبيرة' };
+  const PERF_AR = { triumph: 'انتصار', oops: 'خطأ كوميدي (take)', puzzled: 'حيرة' };
+  function performOnce(name) {
+    const r = rigs[0]; if (!r || r.busy || !r.states) return;
+    const n = ((r._esc && r._esc[name]) || 0) + 1;
+    r.states.fire(PERF_EVENT[name]);
+    const tier = (r._lastPerf && r._lastPerf.name === name) ? r._lastPerf.tier : null;
+    say(`${PERF_AR[name]} #${n}: درجة ${tier ? TIER_AR[tier] : ''} - السابعة دائماً كبيرة`, 2600);
+  }
+
   function intentToAnswer() {
     const r = rigs[0]; if (!r || r.busy || !r.states) return;
     const target = document.getElementById('perch-answer');
@@ -441,9 +457,9 @@
     { t: 1600,  name: 'dart',     cap: 'نظرة خاطفة: الحدقتان تتحركان داخل العين',   run: (r) => r.dart() },
     { t: 3200,  name: 'charged',  cap: 'تحفز: انحناء قبل الانطلاق',                 run: (r) => r.poses.apply('charged', { holdMs: 700 }) },
     { t: 4600,  name: 'roll',     cap: 'تنظر ثم تقفز: العينان ثم الرأس ثم الجسم، وانطلاق بلفة هوائية كاملة', run: (r) => { r._forcedRoll = 'large'; return r.states.fire('move:to', { by: { dx: 240, dy: -140 }, trace: traceOn }); } },
-    { t: 10500, name: 'puzzled',  cap: 'حيرة: ميل رأس وحاجب مرفوع وحده',            run: (r) => r.states.fire('answer:pending') },
-    { t: 14500, name: 'triumph',  cap: 'انتصار: غمزة ونجوم',                          run: (r) => { r.states.fire('answer:correct'); r.later(() => r.wink('R'), 500); } },
-    { t: 18500, name: 'oops',     cap: 'خطأ: تراجع وحواجب منكسرة',                    run: (r) => r.states.fire('answer:wrong') },
+    { t: 10500, name: 'puzzled',  cap: 'حيرة: نظرة حلزونية وميل رأس وفقاعة تفكير',     run: (r) => (r.puzzled && r.perfSpec && r.perfSpec('puzzled')) ? r.puzzled('large') : r.states.fire('answer:pending') },
+    { t: 14500, name: 'triumph',  cap: 'انتصار كبير: قفزة بلفة كاملة وغمزة ونجوم وقلوب',   run: (r) => (r.triumph && r.perfSpec && r.perfSpec('triumph')) ? r.triumph('large') : (r.states.fire('answer:correct'), r.later(() => r.wink('R'), 500)) },
+    { t: 18500, name: 'oops',     cap: 'خطأ كوميدي: استعداد مزدوج ثم دهشة ثم ارتجاج',  run: (r) => (r.oops && r.perfSpec && r.perfSpec('oops')) ? r.oops('large') : r.states.fire('answer:wrong') },
     { t: 22500, name: 'home',     cap: 'عودة إلى المكان',                              run: (r) => r.states.fire('move:to', { home: true, target: null, trace: traceOn }) },
     { t: 26500, name: 'rest',     cap: 'سكون: Zzz',                                    run: (r) => r.states.fire('idle:long') },
   ];
