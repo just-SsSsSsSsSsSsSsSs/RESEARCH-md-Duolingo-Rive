@@ -11,6 +11,8 @@ v2_chosen > n/2 over >= 12 trials from >= 3 named raters; a small p in the lower
 | 2026-09-27_gist-6ed35984_rater-null-2.json | (unnamed) | 4 | 3 | 0.625 | INSUFFICIENT |
 | 2026-09-27_gist-6ed35984_rater-salim.json | سليم | 4 | 3 | 0.625 | INSUFFICIENT |
 | 2026-09-27_gist-6ed35984_rater-karma.json | كارما | 4 | 3 | 0.625 | INSUFFICIENT |
+| 2026-09-27_gist-df1b7d02_rater-salim-kitv2.json | سليم | 4 | 2 | 1.0 | INSUFFICIENT (kit v2) |
+| 2026-09-27_gist-df1b7d02_rater-baba-kitv2.json | بابا | 4 | 2 | 1.0 | INSUFFICIENT (kit v2) |
 
 ## Kit v1 sessions (owner finding, gist rev b693458e)
 
@@ -24,3 +26,13 @@ under a new seed and order_sha256; the other six clips are reused byte-identical
 kit-v1 sessions: the scorer validates a block against the kit it was rated on, so under the kit-v2 manifest they read
 REJECTED by design (kit / seed / order mismatch), not as evidence for or against v2. Kit-v2 ratings need >= 3 named raters
 and >= 12 trials before any verdict; nothing from kit v1 is pooled with them.
+
+## Kit v2 sessions (gist rev df1b7d02, rated on the live page after PR #14 merged 19:29:05Z)
+
+Two named sessions, both kit 2026-09-27T17:27:58Z / seed 20260928 / order 8c83cf04..., both accepted by the scorer:
+Salim 2/4 and Baba 2/4 with the same pattern - think -> v1, celebrate -> v2, flight -> v2, sad -> v1. Pooled: 4/8, p 1.0,
+2 named raters = INSUFFICIENT. Read as data, not meaning: on kit v2 the think beat still went to v1 (0/2, was 0/4 on kit v1),
+and the sad beat flipped to v1 (0/2, was 4/4 for v2 on kit v1) although its clips are byte-identical to kit v1 - a reminder
+that 2 trials per beat carry no signal on their own and that the single-recording random component (results/README above,
+DIRECTIVES rev 9a6e90aa) is not excluded. A third NAMED rater is required before any verdict; if the same pattern holds
+the pooled count is 6/12 (p 1.0) = FAIL. No engine work follows from this under the freeze.
