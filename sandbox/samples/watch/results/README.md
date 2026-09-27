@@ -8,3 +8,6 @@ v2_chosen > n/2 over >= 12 trials from >= 3 named raters; a small p in the lower
 | file | rater | n | v2 | p (two-sided) | alone |
 |---|---|---|---|---|---|
 | 2026-09-27_gist-d33eaf03_rater-null.json | (unnamed) | 4 | 3 | 0.625 | INSUFFICIENT |
+| 2026-09-27_gist-6ed35984_rater-null-2.json | (unnamed) | 4 | 3 | 0.625 | INSUFFICIENT |
+| 2026-09-27_gist-6ed35984_rater-salim.json | سليم | 4 | 3 | 0.625 | INSUFFICIENT |
+| 2026-09-27_gist-6ed35984_rater-karma.json | كارما | 4 | 3 | 0.625 | INSUFFICIENT |
