@@ -65,9 +65,10 @@ JS_PERF = "async (args) => {" + HELPERS + """
   // sample while busy AND for a 700 ms tail after busy clears: the landing squash spring keeps settling after the performance
   // releases the rig (settleWithinMs is counted from the 'land' cue, so the window must outlive busy)
   let tail = null;
-  while ((r.busy || (tail !== null && performance.now() - tail < 700)) && performance.now() - t0 < 7000) { if (!r.busy && tail === null) tail = performance.now(); s.push({ t: performance.now() - t0, rot: ROT('root'), sq: SQ(), pup: PUP(), head: ROT('head'), pupLayers: LAYERS(/^pupil/), bodyKf: name === 'oops' ? BODYKF() : null }); await new Promise(requestAnimationFrame); }
+  while (performance.now() - t0 < 7000) { if (!r.busy) { if (tail === null) tail = performance.now(); else if (performance.now() - tail > 700) break; } s.push({ t: performance.now() - t0, rot: ROT('root'), sq: SQ(), pup: PUP(), head: ROT('head'), pupLayers: LAYERS(/^pupil/), bodyKf: name === 'oops' ? BODYKF() : null }); await new Promise(requestAnimationFrame); }
   await pr; r.onCue = prev;
-  return { name, tier, totalMs: performance.now() - t0, cues: cues.map(c => ({ p: c.p, t: c.t - t0, vfx: c.c && c.c.vfx, cycles: c.c && c.c.cycles })), samples: s, plan: r._lastPerf && r._lastPerf.plan || null }; }"""
+  const settleCue = cues.find(c => c.p === 'settle');
+  return { name, tier, totalMs: settleCue ? settleCue.t - t0 : performance.now() - t0, windowMs: performance.now() - t0, cues: cues.map(c => ({ p: c.p, t: c.t - t0, vfx: c.c && c.c.vfx, cycles: c.c && c.c.cycles })), samples: s, plan: r._lastPerf && r._lastPerf.plan || null }; }"""
 
 JS_HOLD = "async (ms) => {" + HELPERS + """
   const holds = []; const prev = r.onCue; r.onCue = (p, c) => { if (p === 'hold') holds.push({ t: performance.now(), n: c.impulse, j: c.joints, busy: r.busy }); if (prev) prev(p, c); };

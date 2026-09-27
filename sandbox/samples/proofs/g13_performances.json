@@ -1,0 +1,1401 @@
+{
+ "tool": "sandbox/perf_proof.py",
+ "budgets_declared": {
+  "comment": "K9.4 owner-vision performances. Each channel escalates through rig.escalate(channel) with acting.escalation (small small medium small small medium large). Structure per P6 (Webster 2005): anticipation squash -> extreme stretch -> settle. Budgets declared 2026-09-27 before code (PROGRESS K9.4 RESEARCH); measured by perf_proof.py. ?perf=0 falls back to the pre-K9.4 clips.",
+  "enabled": true,
+  "triumph": {
+   "comment": "jump of joy; medium lifts the apex and adds stars; large adds a 360 root roll at the apex (level before landing, |rot| < 2 deg) and hearts",
+   "jumpPx": 52,
+   "anticipateMs": [
+    150,
+    250
+   ],
+   "airMs": 760,
+   "settleWithinMs": 400,
+   "tiers": {
+    "small": {
+     "apexScale": 1.0,
+     "roll": false,
+     "wink": true,
+     "vfx": []
+    },
+    "medium": {
+     "apexScale": 1.3,
+     "roll": false,
+     "wink": true,
+     "vfx": [
+      "stars"
+     ]
+    },
+    "large": {
+     "apexScale": 1.3,
+     "roll": true,
+     "wink": true,
+     "vfx": [
+      "stars",
+      "hearts"
+     ]
+    }
+   },
+   "rollMs": 520
+  },
+  "oops": {
+   "comment": "the take (P6): squash anticipation -> stretch extreme held -> recoil -> settle. medium = double take (second anticipation), large = + jiggle (damped body oscillation)",
+   "anticipateMs": [
+    125,
+    250
+   ],
+   "stretchScaleY": [
+    1.1,
+    1.18
+   ],
+   "holdMs": [
+    125,
+    333
+   ],
+   "totalMaxMs": 2600,
+   "tiers": {
+    "small": {
+     "doubleTake": false,
+     "jiggle": 0
+    },
+    "medium": {
+     "doubleTake": true,
+     "jiggle": 0
+    },
+    "large": {
+     "doubleTake": true,
+     "jiggle": 3
+    }
+   },
+   "jiggleMs": 220,
+   "jiggleDecay": 0.5,
+   "jiggleAmpScale": 0.06
+  },
+  "puzzled": {
+   "comment": "spiral gaze + dramatic head tilt + thought bubble; pupils recentre within recentreMs at the end",
+   "spiralRadiusPx": [
+    2,
+    4
+   ],
+   "spiralMs": 600,
+   "spiralTurns": 2,
+   "holdMs": [
+    600,
+    1200
+   ],
+   "recentreMs": 100,
+   "totalMaxMs": 3000,
+   "tiers": {
+    "small": {
+     "headDeg": 9,
+     "vfx": []
+    },
+    "medium": {
+     "headDeg": 12,
+     "vfx": [
+      "bubble"
+     ]
+    },
+    "large": {
+     "headDeg": 14,
+     "vfx": [
+      "bubble"
+     ],
+     "shrug": true
+    }
+   }
+  },
+  "movingHold": {
+   "comment": "P4/P5 moving hold: named, distributed idle impulses so the owl is never a breathing statue. Scheduler in motion.js; never while busy; never two on the same joint within minGapSameJointMs; prefers-reduced-motion disables.",
+   "enabled": true,
+   "intervalMs": [
+    2500,
+    6000
+   ],
+   "maxMs": 300,
+   "maxPx": 3,
+   "maxDeg": 3,
+   "minGapSameJointMs": 1000,
+   "impulses": {
+    "footShift": {
+     "joints": [
+      "legL",
+      "legR"
+     ],
+     "px": 2,
+     "ms": 260
+    },
+    "wingSettle": {
+     "joints": [
+      "armL",
+      "armR"
+     ],
+     "deg": 3,
+     "ms": 300
+    },
+    "headMicroTurn": {
+     "joints": [
+      "head"
+     ],
+     "deg": 2.5,
+     "ms": 280
+    },
+    "blinkDouble": {
+     "joints": [
+      "lidL",
+      "lidR"
+     ],
+     "ms": 260
+    }
+   }
+  }
+ },
+ "captured_at": "2026-09-27T01:21:37Z",
+ "env": "headless Chromium, DPR 1, CPU 1x, sfx=0, n=1; tolerance Q = one rAF quantum 16.7 ms unless stated; root rotation unwrapped",
+ "runs": [
+  {
+   "escalation": {
+    "triumph": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ],
+    "oops": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ],
+    "puzzled": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ]
+   },
+   "triumph": {
+    "small": {
+     "tier": "small",
+     "total_ms": 1859,
+     "rot_max_deg_unwrapped": 0.0,
+     "rot_max_deg_wrapped": 0,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 208.4,
+     "squash_tail_ms": 891.9,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 1828.2,
+     "rot_max_deg_unwrapped": 0.0,
+     "rot_max_deg_wrapped": 0,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 186.1,
+     "squash_tail_ms": 885.5,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [
+      "stars"
+     ],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 1877.4,
+     "rot_max_deg_unwrapped": 360.0,
+     "rot_max_deg_wrapped": 177.9,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 180.7,
+     "squash_tail_ms": 880.3,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [
+      "stars",
+      "hearts"
+     ],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    }
+   },
+   "oops": {
+    "small": {
+     "tier": "small",
+     "total_ms": 2652.4,
+     "plan": {
+      "anticipateMs": 249.92444703896123,
+      "stretch": 1.1445843149642267,
+      "holdMs": 171.20685655775068,
+      "extremeAt": 249.92444703896123,
+      "totalMs": 1921.1313035967119,
+      "takes": 1,
+      "jiggle": 0
+     },
+     "anticipation_ms": [
+      233.9
+     ],
+     "stretch_scaleY": 1.145,
+     "hold_ms": 172.2,
+     "anticipate_cues": 1,
+     "jiggle_cycles": 0,
+     "jiggle_amps": [],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 2957.8,
+     "plan": {
+      "anticipateMs": 200.84012601971497,
+      "stretch": 1.1259075504236404,
+      "holdMs": 205.83308549477712,
+      "extremeAt": 522.184327651259,
+      "totalMs": 2228.0174131460362,
+      "takes": 2,
+      "jiggle": 0
+     },
+     "anticipation_ms": [
+      199.7,
+      199.7
+     ],
+     "stretch_scaleY": 1.126,
+     "hold_ms": 205.9,
+     "anticipate_cues": 2,
+     "jiggle_cycles": 0,
+     "jiggle_amps": [],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 3001.3,
+     "plan": {
+      "anticipateMs": 168.7446992869432,
+      "stretch": 1.1208759745154664,
+      "holdMs": 332.90262067866774,
+      "extremeAt": 438.73621814605224,
+      "totalMs": 2271.63883882472,
+      "takes": 2,
+      "jiggle": 3
+     },
+     "anticipation_ms": [
+      167.4,
+      165.9
+     ],
+     "stretch_scaleY": 1.121,
+     "hold_ms": 332.9,
+     "anticipate_cues": 2,
+     "jiggle_cycles": 3,
+     "jiggle_amps": [
+      0.06,
+      0.03,
+      0.015
+     ],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    }
+   },
+   "puzzled": {
+    "small": {
+     "tier": "small",
+     "total_ms": 2975.7,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 8.6,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": true
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 2995.6,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 13.0,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [
+      "bubble"
+     ],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": true
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 3023.1,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 13.4,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [
+      "bubble"
+     ],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": false
+     }
+    }
+   },
+   "moving_hold": {
+    "window_ms": 20000,
+    "count": 6,
+    "names": [
+     "blinkDouble",
+     "footShift",
+     "headMicroTurn",
+     "wingSettle"
+    ],
+    "gaps_ms": [
+     3514,
+     3869,
+     3423,
+     2956,
+     3855
+    ],
+    "while_busy": 0,
+    "checks": {
+     "ge_3_names": true,
+     "gaps_in_budget": true,
+     "none_while_busy": true,
+     "no_joint_repeat_within_gap": true
+    }
+   },
+   "errors": [],
+   "reduced": {
+    "triumph": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1225
+    },
+    "oops": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1416
+    },
+    "puzzled": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1417
+    },
+    "legacy_celebrate": {
+     "addedRootBodyLayers": 0
+    },
+    "legacy_think": {
+     "addedRootBodyLayers": 0
+    },
+    "vfxSkippedReduced": null,
+    "matches": true,
+    "checks": {
+     "media_matches": true,
+     "zero_body_layers_all_performances": true,
+     "legacy_zero_root_body": true
+    }
+   },
+   "checks": {
+    "escalation_sequence": true,
+    "no_errors": true
+   },
+   "flat": {
+    "escalation_sequence": true,
+    "no_errors": true,
+    "triumph.small.cue_order": true,
+    "triumph.small.roll_360_if_large": true,
+    "triumph.small.level_at_land": true,
+    "triumph.small.settle_within_budget": true,
+    "triumph.small.vfx_match_tier": true,
+    "triumph.medium.cue_order": true,
+    "triumph.medium.roll_360_if_large": true,
+    "triumph.medium.level_at_land": true,
+    "triumph.medium.settle_within_budget": true,
+    "triumph.medium.vfx_match_tier": true,
+    "triumph.large.cue_order": true,
+    "triumph.large.roll_360_if_large": true,
+    "triumph.large.level_at_land": true,
+    "triumph.large.settle_within_budget": true,
+    "triumph.large.vfx_match_tier": true,
+    "oops.small.anticipation_in_budget": true,
+    "oops.small.stretch_in_budget": true,
+    "oops.small.hold_in_budget": true,
+    "oops.small.double_take_by_tier": true,
+    "oops.small.jiggle_by_tier": true,
+    "oops.small.total_le_max": false,
+    "oops.medium.anticipation_in_budget": true,
+    "oops.medium.stretch_in_budget": true,
+    "oops.medium.hold_in_budget": true,
+    "oops.medium.double_take_by_tier": true,
+    "oops.medium.jiggle_by_tier": true,
+    "oops.medium.total_le_max": false,
+    "oops.large.anticipation_in_budget": true,
+    "oops.large.stretch_in_budget": true,
+    "oops.large.hold_in_budget": true,
+    "oops.large.double_take_by_tier": true,
+    "oops.large.jiggle_by_tier": true,
+    "oops.large.total_le_max": false,
+    "puzzled.small.spiral_reaches_outer_radius": true,
+    "puzzled.small.head_tilt_by_tier": true,
+    "puzzled.small.recentre_within_budget": true,
+    "puzzled.small.vfx_match_tier": true,
+    "puzzled.small.total_le_max": true,
+    "puzzled.medium.spiral_reaches_outer_radius": true,
+    "puzzled.medium.head_tilt_by_tier": true,
+    "puzzled.medium.recentre_within_budget": true,
+    "puzzled.medium.vfx_match_tier": true,
+    "puzzled.medium.total_le_max": true,
+    "puzzled.large.spiral_reaches_outer_radius": true,
+    "puzzled.large.head_tilt_by_tier": true,
+    "puzzled.large.recentre_within_budget": true,
+    "puzzled.large.vfx_match_tier": true,
+    "puzzled.large.total_le_max": false,
+    "hold.ge_3_names": true,
+    "hold.gaps_in_budget": true,
+    "hold.none_while_busy": true,
+    "hold.no_joint_repeat_within_gap": true,
+    "reduced.media_matches": true,
+    "reduced.zero_body_layers_all_performances": true,
+    "reduced.legacy_zero_root_body": true
+   },
+   "pass_all": false
+  },
+  {
+   "escalation": {
+    "triumph": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ],
+    "oops": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ],
+    "puzzled": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ]
+   },
+   "triumph": {
+    "small": {
+     "tier": "small",
+     "total_ms": 1875.3,
+     "rot_max_deg_unwrapped": 0.0,
+     "rot_max_deg_wrapped": 0,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 183.5,
+     "squash_tail_ms": 883.5,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 1808.6,
+     "rot_max_deg_unwrapped": 0.0,
+     "rot_max_deg_wrapped": 0,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 177.4,
+     "squash_tail_ms": 860.4,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [
+      "stars"
+     ],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 1872.9,
+     "rot_max_deg_unwrapped": 360.0,
+     "rot_max_deg_wrapped": 177.6,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 186.1,
+     "squash_tail_ms": 886.1,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [
+      "stars",
+      "hearts"
+     ],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    }
+   },
+   "oops": {
+    "small": {
+     "tier": "small",
+     "total_ms": 2625.8,
+     "plan": {
+      "anticipateMs": 139.74999058669385,
+      "stretch": 1.1576772690660133,
+      "holdMs": 266.8592996287645,
+      "extremeAt": 139.74999058669385,
+      "totalMs": 1906.6092902154583,
+      "takes": 1,
+      "jiggle": 0
+     },
+     "anticipation_ms": [
+      133.2
+     ],
+     "stretch_scaleY": 1.158,
+     "hold_ms": 268.0,
+     "anticipate_cues": 1,
+     "jiggle_cycles": 0,
+     "jiggle_amps": [],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 2942.4,
+     "plan": {
+      "anticipateMs": 163.01874021005298,
+      "stretch": 1.1452701972751163,
+      "holdMs": 291.03337462259867,
+      "extremeAt": 423.84872454613776,
+      "totalMs": 2214.882099168736,
+      "takes": 2,
+      "jiggle": 0
+     },
+     "anticipation_ms": [
+      166.8,
+      149.4
+     ],
+     "stretch_scaleY": 1.145,
+     "hold_ms": 290.9,
+     "anticipate_cues": 2,
+     "jiggle_cycles": 0,
+     "jiggle_amps": [],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 2794.1,
+     "plan": {
+      "anticipateMs": 153.98346035634228,
+      "stretch": 1.1449596059503366,
+      "holdMs": 172.80858076765213,
+      "extremeAt": 400.3569969264899,
+      "totalMs": 2073.165577694142,
+      "takes": 2,
+      "jiggle": 3
+     },
+     "anticipation_ms": [
+      150.0,
+      149.4
+     ],
+     "stretch_scaleY": 1.145,
+     "hold_ms": 173.0,
+     "anticipate_cues": 2,
+     "jiggle_cycles": 3,
+     "jiggle_amps": [
+      0.06,
+      0.03,
+      0.015
+     ],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    }
+   },
+   "puzzled": {
+    "small": {
+     "tier": "small",
+     "total_ms": 3119.6,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 8.7,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": false
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 3131,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 13.0,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [
+      "bubble"
+     ],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": false
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 2972.7,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 13.1,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [
+      "bubble"
+     ],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": true
+     }
+    }
+   },
+   "moving_hold": {
+    "window_ms": 20000,
+    "count": 4,
+    "names": [
+     "blinkDouble",
+     "footShift",
+     "headMicroTurn"
+    ],
+    "gaps_ms": [
+     4121,
+     4945,
+     4433
+    ],
+    "while_busy": 0,
+    "checks": {
+     "ge_3_names": true,
+     "gaps_in_budget": true,
+     "none_while_busy": true,
+     "no_joint_repeat_within_gap": true
+    }
+   },
+   "errors": [],
+   "reduced": {
+    "triumph": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1221
+    },
+    "oops": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1417
+    },
+    "puzzled": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1417
+    },
+    "legacy_celebrate": {
+     "addedRootBodyLayers": 0
+    },
+    "legacy_think": {
+     "addedRootBodyLayers": 0
+    },
+    "vfxSkippedReduced": null,
+    "matches": true,
+    "checks": {
+     "media_matches": true,
+     "zero_body_layers_all_performances": true,
+     "legacy_zero_root_body": true
+    }
+   },
+   "checks": {
+    "escalation_sequence": true,
+    "no_errors": true
+   },
+   "flat": {
+    "escalation_sequence": true,
+    "no_errors": true,
+    "triumph.small.cue_order": true,
+    "triumph.small.roll_360_if_large": true,
+    "triumph.small.level_at_land": true,
+    "triumph.small.settle_within_budget": true,
+    "triumph.small.vfx_match_tier": true,
+    "triumph.medium.cue_order": true,
+    "triumph.medium.roll_360_if_large": true,
+    "triumph.medium.level_at_land": true,
+    "triumph.medium.settle_within_budget": true,
+    "triumph.medium.vfx_match_tier": true,
+    "triumph.large.cue_order": true,
+    "triumph.large.roll_360_if_large": true,
+    "triumph.large.level_at_land": true,
+    "triumph.large.settle_within_budget": true,
+    "triumph.large.vfx_match_tier": true,
+    "oops.small.anticipation_in_budget": true,
+    "oops.small.stretch_in_budget": true,
+    "oops.small.hold_in_budget": true,
+    "oops.small.double_take_by_tier": true,
+    "oops.small.jiggle_by_tier": true,
+    "oops.small.total_le_max": false,
+    "oops.medium.anticipation_in_budget": true,
+    "oops.medium.stretch_in_budget": true,
+    "oops.medium.hold_in_budget": true,
+    "oops.medium.double_take_by_tier": true,
+    "oops.medium.jiggle_by_tier": true,
+    "oops.medium.total_le_max": false,
+    "oops.large.anticipation_in_budget": true,
+    "oops.large.stretch_in_budget": true,
+    "oops.large.hold_in_budget": true,
+    "oops.large.double_take_by_tier": true,
+    "oops.large.jiggle_by_tier": true,
+    "oops.large.total_le_max": false,
+    "puzzled.small.spiral_reaches_outer_radius": true,
+    "puzzled.small.head_tilt_by_tier": true,
+    "puzzled.small.recentre_within_budget": true,
+    "puzzled.small.vfx_match_tier": true,
+    "puzzled.small.total_le_max": false,
+    "puzzled.medium.spiral_reaches_outer_radius": true,
+    "puzzled.medium.head_tilt_by_tier": true,
+    "puzzled.medium.recentre_within_budget": true,
+    "puzzled.medium.vfx_match_tier": true,
+    "puzzled.medium.total_le_max": false,
+    "puzzled.large.spiral_reaches_outer_radius": true,
+    "puzzled.large.head_tilt_by_tier": true,
+    "puzzled.large.recentre_within_budget": true,
+    "puzzled.large.vfx_match_tier": true,
+    "puzzled.large.total_le_max": true,
+    "hold.ge_3_names": true,
+    "hold.gaps_in_budget": true,
+    "hold.none_while_busy": true,
+    "hold.no_joint_repeat_within_gap": true,
+    "reduced.media_matches": true,
+    "reduced.zero_body_layers_all_performances": true,
+    "reduced.legacy_zero_root_body": true
+   },
+   "pass_all": false
+  },
+  {
+   "escalation": {
+    "triumph": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ],
+    "oops": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ],
+    "puzzled": [
+     "small",
+     "small",
+     "medium",
+     "small",
+     "small",
+     "medium",
+     "large"
+    ]
+   },
+   "triumph": {
+    "small": {
+     "tier": "small",
+     "total_ms": 1827.2,
+     "rot_max_deg_unwrapped": 0.0,
+     "rot_max_deg_wrapped": 0,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 179.2,
+     "squash_tail_ms": 879.0,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 1822.9,
+     "rot_max_deg_unwrapped": 0.0,
+     "rot_max_deg_wrapped": 0,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 186.6,
+     "squash_tail_ms": 869.6,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [
+      "stars"
+     ],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 1889.7,
+     "rot_max_deg_unwrapped": 360.0,
+     "rot_max_deg_wrapped": 177.7,
+     "rot_at_land_deg": 0,
+     "settle_ms_after_land": 177.4,
+     "squash_tail_ms": 877.4,
+     "cue_order": [
+      "perf",
+      "anticipate",
+      "jump",
+      "land",
+      "settle"
+     ],
+     "fx": [
+      "stars",
+      "hearts"
+     ],
+     "checks": {
+      "cue_order": true,
+      "roll_360_if_large": true,
+      "level_at_land": true,
+      "settle_within_budget": true,
+      "vfx_match_tier": true
+     }
+    }
+   },
+   "oops": {
+    "small": {
+     "tier": "small",
+     "total_ms": 2661,
+     "plan": {
+      "anticipateMs": 211.11134599793343,
+      "stretch": 1.1599268736804131,
+      "holdMs": 218.36142264322592,
+      "extremeAt": 211.11134599793343,
+      "totalMs": 1929.4727686411593,
+      "takes": 1,
+      "jiggle": 0
+     },
+     "anticipation_ms": [
+      215.8
+     ],
+     "stretch_scaleY": 1.16,
+     "hold_ms": 216.5,
+     "anticipate_cues": 1,
+     "jiggle_cycles": 0,
+     "jiggle_amps": [],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 3026.1,
+     "plan": {
+      "anticipateMs": 229.72659772596995,
+      "stretch": 1.1155737717480323,
+      "holdMs": 201.67532771331213,
+      "extremeAt": 597.2891540875219,
+      "totalMs": 2298.9644818008337,
+      "takes": 2,
+      "jiggle": 0
+     },
+     "anticipation_ms": [
+      233.4,
+      233.3
+     ],
+     "stretch_scaleY": 1.116,
+     "hold_ms": 200.8,
+     "anticipate_cues": 2,
+     "jiggle_cycles": 0,
+     "jiggle_amps": [],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 2844.2,
+     "plan": {
+      "anticipateMs": 165.4162920835813,
+      "stretch": 1.1154031834494325,
+      "holdMs": 187.89990392654457,
+      "extremeAt": 430.0823594173114,
+      "totalMs": 2117.982263343856,
+      "takes": 2,
+      "jiggle": 3
+     },
+     "anticipation_ms": [
+      166.9,
+      165.7
+     ],
+     "stretch_scaleY": 1.115,
+     "hold_ms": 186.8,
+     "anticipate_cues": 2,
+     "jiggle_cycles": 3,
+     "jiggle_amps": [
+      0.06,
+      0.03,
+      0.015
+     ],
+     "checks": {
+      "anticipation_in_budget": true,
+      "stretch_in_budget": true,
+      "hold_in_budget": true,
+      "double_take_by_tier": true,
+      "jiggle_by_tier": true,
+      "total_le_max": false
+     }
+    }
+   },
+   "puzzled": {
+    "small": {
+     "tier": "small",
+     "total_ms": 2856.7,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 9.8,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": true
+     }
+    },
+    "medium": {
+     "tier": "medium",
+     "total_ms": 2912.8,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 11.4,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [
+      "bubble"
+     ],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": true
+     }
+    },
+    "large": {
+     "tier": "large",
+     "total_ms": 2624.3,
+     "pupil_radius_at_spiral_end": 4.33,
+     "head_max_deg": 15.8,
+     "pupil_px_after_recentre": 0,
+     "pupil_layers_after_recentre": 0,
+     "fx": [
+      "bubble"
+     ],
+     "checks": {
+      "spiral_reaches_outer_radius": true,
+      "head_tilt_by_tier": true,
+      "recentre_within_budget": true,
+      "vfx_match_tier": true,
+      "total_le_max": true
+     }
+    }
+   },
+   "moving_hold": {
+    "window_ms": 20000,
+    "count": 4,
+    "names": [
+     "blinkDouble",
+     "footShift",
+     "headMicroTurn",
+     "wingSettle"
+    ],
+    "gaps_ms": [
+     4612,
+     3837,
+     2846
+    ],
+    "while_busy": 0,
+    "checks": {
+     "ge_3_names": true,
+     "gaps_in_budget": true,
+     "none_while_busy": true,
+     "no_joint_repeat_within_gap": true
+    }
+   },
+   "errors": [],
+   "reduced": {
+    "triumph": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1227
+    },
+    "oops": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1417
+    },
+    "puzzled": {
+     "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+     },
+     "ms": 1417
+    },
+    "legacy_celebrate": {
+     "addedRootBodyLayers": 0
+    },
+    "legacy_think": {
+     "addedRootBodyLayers": 0
+    },
+    "vfxSkippedReduced": null,
+    "matches": true,
+    "checks": {
+     "media_matches": true,
+     "zero_body_layers_all_performances": true,
+     "legacy_zero_root_body": true
+    }
+   },
+   "checks": {
+    "escalation_sequence": true,
+    "no_errors": true
+   },
+   "flat": {
+    "escalation_sequence": true,
+    "no_errors": true,
+    "triumph.small.cue_order": true,
+    "triumph.small.roll_360_if_large": true,
+    "triumph.small.level_at_land": true,
+    "triumph.small.settle_within_budget": true,
+    "triumph.small.vfx_match_tier": true,
+    "triumph.medium.cue_order": true,
+    "triumph.medium.roll_360_if_large": true,
+    "triumph.medium.level_at_land": true,
+    "triumph.medium.settle_within_budget": true,
+    "triumph.medium.vfx_match_tier": true,
+    "triumph.large.cue_order": true,
+    "triumph.large.roll_360_if_large": true,
+    "triumph.large.level_at_land": true,
+    "triumph.large.settle_within_budget": true,
+    "triumph.large.vfx_match_tier": true,
+    "oops.small.anticipation_in_budget": true,
+    "oops.small.stretch_in_budget": true,
+    "oops.small.hold_in_budget": true,
+    "oops.small.double_take_by_tier": true,
+    "oops.small.jiggle_by_tier": true,
+    "oops.small.total_le_max": false,
+    "oops.medium.anticipation_in_budget": true,
+    "oops.medium.stretch_in_budget": true,
+    "oops.medium.hold_in_budget": true,
+    "oops.medium.double_take_by_tier": true,
+    "oops.medium.jiggle_by_tier": true,
+    "oops.medium.total_le_max": false,
+    "oops.large.anticipation_in_budget": true,
+    "oops.large.stretch_in_budget": true,
+    "oops.large.hold_in_budget": true,
+    "oops.large.double_take_by_tier": true,
+    "oops.large.jiggle_by_tier": true,
+    "oops.large.total_le_max": false,
+    "puzzled.small.spiral_reaches_outer_radius": true,
+    "puzzled.small.head_tilt_by_tier": true,
+    "puzzled.small.recentre_within_budget": true,
+    "puzzled.small.vfx_match_tier": true,
+    "puzzled.small.total_le_max": true,
+    "puzzled.medium.spiral_reaches_outer_radius": true,
+    "puzzled.medium.head_tilt_by_tier": true,
+    "puzzled.medium.recentre_within_budget": true,
+    "puzzled.medium.vfx_match_tier": true,
+    "puzzled.medium.total_le_max": true,
+    "puzzled.large.spiral_reaches_outer_radius": true,
+    "puzzled.large.head_tilt_by_tier": true,
+    "puzzled.large.recentre_within_budget": true,
+    "puzzled.large.vfx_match_tier": true,
+    "puzzled.large.total_le_max": true,
+    "hold.ge_3_names": true,
+    "hold.gaps_in_budget": true,
+    "hold.none_while_busy": true,
+    "hold.no_joint_repeat_within_gap": true,
+    "reduced.media_matches": true,
+    "reduced.zero_body_layers_all_performances": true,
+    "reduced.legacy_zero_root_body": true
+   },
+   "pass_all": false
+  }
+ ],
+ "strip": {
+  "file": "g13_performances_strip.png",
+  "frames": [
+   {
+    "label": "anticipate",
+    "captured_ms": 121.9
+   },
+   {
+    "label": "apex + roll",
+    "captured_ms": 642.1
+   },
+   {
+    "label": "land",
+    "captured_ms": 1061.7
+   },
+   {
+    "label": "wink",
+    "captured_ms": 1441.9
+   }
+  ]
+ },
+ "summary": {
+  "pass_all": false,
+  "runs": 3,
+  "failing_any_run": [
+   "oops.large.total_le_max",
+   "oops.medium.total_le_max",
+   "oops.small.total_le_max",
+   "puzzled.large.total_le_max",
+   "puzzled.medium.total_le_max",
+   "puzzled.small.total_le_max"
+  ],
+  "triumph_large_median": {
+   "rot_max_deg_unwrapped": 360.0,
+   "rot_at_land_deg": 0,
+   "settle_ms_after_land": 180.7,
+   "total_ms": 1877.4
+  },
+  "oops_large_median": {
+   "stretch_scaleY": 1.121,
+   "hold_ms": 186.8,
+   "total_ms": 2844.2
+  },
+  "oops_anticipation_ms_all": [
+   233.9,
+   199.7,
+   199.7,
+   167.4,
+   165.9,
+   133.2,
+   166.8,
+   149.4,
+   150.0,
+   149.4,
+   215.8,
+   233.4,
+   233.3,
+   166.9,
+   165.7
+  ],
+  "puzzled_large_median": {
+   "pupil_radius_at_spiral_end": 4.33,
+   "head_max_deg": 13.4,
+   "pupil_px_after_recentre": 0,
+   "total_ms": 2972.7
+  },
+  "hold_counts": [
+   6,
+   4,
+   4
+  ],
+  "hold_names": [
+   "blinkDouble",
+   "footShift",
+   "headMicroTurn",
+   "wingSettle"
+  ]
+ }
+}
