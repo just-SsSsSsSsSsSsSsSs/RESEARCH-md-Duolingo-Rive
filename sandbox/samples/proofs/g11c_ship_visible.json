@@ -1,0 +1,385 @@
+{
+  "tool": "sandbox/ship_visible_proof.py",
+  "url": "http://127.0.0.1:8080/sandbox/index.html",
+  "1_default": {
+    "errors": [],
+    "info": {
+      "brows": "inline",
+      "spec": {
+        "ok": true,
+        "problems": [],
+        "reduced": false
+      },
+      "hasWink": true,
+      "hasDart": true,
+      "bar": true,
+      "browsBtn": "true"
+    },
+    "pass_": true
+  },
+  "2_wink": {
+    "peakL": 1,
+    "peakR": 0.169122,
+    "after": {
+      "L": 0,
+      "R": 0
+    },
+    "cues": [
+      "wink"
+    ],
+    "winks": 1,
+    "pass_": true
+  },
+  "dart": {
+    "mid": {
+      "L": [
+        3.64,
+        -0.12
+      ],
+      "R": [
+        4.32,
+        0.15
+      ]
+    },
+    "end": {
+      "L": [
+        0,
+        0
+      ],
+      "R": [
+        0,
+        0
+      ]
+    },
+    "keptMid": 2,
+    "keptEnd": 0,
+    "darts": 1,
+    "dispL": 3.641977484828812,
+    "dispR": 4.322603382222339,
+    "asym": 0.731641988953614,
+    "pass_": true
+  },
+  "saccades": {
+    "before": 0,
+    "after_7s": 3,
+    "pass_": true
+  },
+  "3_brows_flag": {
+    "default_visible": true,
+    "off": {
+      "brows": "none",
+      "btn": "الحواجب: مخفية"
+    },
+    "pass_": true
+  },
+  "4_roll": {
+    "samples": 65,
+    "maxAbsAccumulatedDeg": 360,
+    "landingDeg": 0,
+    "lastRoll": {
+      "tier": "medium",
+      "mode": "roll",
+      "dist": 286
+    },
+    "ms": 3045,
+    "pass_": true
+  },
+  "4_escalation": {
+    "tiers": [
+      "small",
+      "small",
+      "medium",
+      "small",
+      "small",
+      "medium",
+      "large"
+    ],
+    "pass_": true
+  },
+  "5_poses": {
+    "visible": true,
+    "changedJointsPerPose": {
+      "alert": 6,
+      "charged": 7,
+      "launch": 7,
+      "puzzled": 7,
+      "triumph": 7,
+      "oops": 7
+    },
+    "poseLayers": 11,
+    "releasedJoints": 11,
+    "current": null,
+    "pass_": true
+  },
+  "6_reel": {
+    "total_ms": 26752,
+    "beats": [
+      {
+        "name": "alert",
+        "t": 0,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 966,
+        "pose": null,
+        "roll": null
+      },
+      {
+        "name": "dart",
+        "t": 1603,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 2462,
+        "pose": null,
+        "roll": null
+      },
+      {
+        "name": "charged",
+        "t": 3202,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 3995,
+        "pose": null,
+        "roll": null
+      },
+      {
+        "name": "roll",
+        "t": 4602,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 7156,
+        "pose": null,
+        "roll": "rollFlip"
+      },
+      {
+        "name": "puzzled",
+        "t": 10503,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 12590,
+        "pose": null,
+        "roll": "rollFlip"
+      },
+      {
+        "name": "triumph",
+        "t": 14501,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 15654,
+        "pose": null,
+        "roll": "rollFlip"
+      },
+      {
+        "name": "oops",
+        "t": 18502,
+        "stateBefore": "idle",
+        "stateAfter": "idle",
+        "tEnd": 20792,
+        "pose": null,
+        "roll": "rollFlip"
+      },
+      {
+        "name": "home",
+        "t": 22504,
+        "stateBefore": "rest",
+        "stateAfter": "idle",
+        "tEnd": 25105,
+        "pose": null,
+        "roll": "roll"
+      },
+      {
+        "name": "rest",
+        "t": 26501,
+        "stateBefore": "idle",
+        "stateAfter": "rest",
+        "tEnd": 26752,
+        "pose": null,
+        "roll": "roll"
+      }
+    ],
+    "errors": [],
+    "pass_": true
+  },
+  "7_sfx0": {
+    "winkRan": true,
+    "lidR_sy": 0.368767,
+    "bus": false,
+    "foley": false,
+    "cues_fired": 15,
+    "sounds_played": 0,
+    "sounds_muted": 0,
+    "active_voices": 0,
+    "audio_elements": 0,
+    "audio_context_state": null,
+    "audio_files_fetched": 0,
+    "with_sound_page": {
+      "bus": true,
+      "foley": true,
+      "cues_fired": 16,
+      "sounds_played": 2,
+      "sounds_muted": 0,
+      "audio_context_state": "running"
+    },
+    "errors": [],
+    "pass_": true
+  },
+  "8_intent": {
+    "buttonPresent": true,
+    "cues": [
+      "enter",
+      "intent",
+      "anticipate",
+      "flex",
+      "flex",
+      "takeoff",
+      "flap",
+      "blink",
+      "flap",
+      "cruise",
+      "roll",
+      "flap",
+      "flap",
+      "flap",
+      "flex",
+      "flex",
+      "land",
+      "settle"
+    ],
+    "intentCtx": {
+      "tVisual": 1314.7000000000116,
+      "dx": 349.921875,
+      "dy": -246.083125,
+      "snapMs": 59.79199660616365,
+      "headLagMs": 43.39733303894248,
+      "bodyLagMs": 244.26209085654693,
+      "headDeg": 6.0139774320864365
+    },
+    "budget": {
+      "headLagMs": [
+        40,
+        50
+      ],
+      "bodyLagMs": [
+        200,
+        280
+      ],
+      "preTakeoffMs": [
+        350,
+        600
+      ]
+    },
+    "intent_to_takeoff_ms": 464,
+    "owl_cx_vs_answer_cx_px": 0,
+    "intents": 1,
+    "errors": [],
+    "pass_": true
+  },
+  "8b_intent_off": {
+    "cues": [
+      "enter",
+      "anticipate",
+      "flex",
+      "flex",
+      "takeoff",
+      "flap",
+      "flap",
+      "cruise",
+      "roll",
+      "blink",
+      "flap",
+      "flap",
+      "flap",
+      "flex",
+      "flex",
+      "land",
+      "settle"
+    ],
+    "intents": 0,
+    "errors": [],
+    "pass_": true
+  },
+  "9_performances": {
+    "present": true,
+    "perfs": [
+      {
+        "name": "triumph",
+        "tier": "small"
+      },
+      {
+        "name": "oops",
+        "tier": "small"
+      },
+      {
+        "name": "puzzled",
+        "tier": "small"
+      },
+      {
+        "name": "puzzled",
+        "tier": "small"
+      },
+      {
+        "name": "puzzled",
+        "tier": "medium"
+      },
+      {
+        "name": "puzzled",
+        "tier": "small"
+      },
+      {
+        "name": "puzzled",
+        "tier": "small"
+      },
+      {
+        "name": "puzzled",
+        "tier": "medium"
+      },
+      {
+        "name": "puzzled",
+        "tier": "large"
+      }
+    ],
+    "captions": [
+      "انتصار #1: درجة صغيرة - السابعة دائماً كبيرة",
+      "خطأ كوميدي (take) #1: درجة صغيرة - السابعة دائماً كبيرة",
+      "حيرة #1: درجة صغيرة - السابعة دائماً كبيرة"
+    ],
+    "puzzledTiers": [
+      "small",
+      "small",
+      "medium",
+      "small",
+      "small",
+      "medium",
+      "large"
+    ],
+    "performances": 9,
+    "errors": [],
+    "pass_": true
+  },
+  "9b_reduced": {
+    "matches": true,
+    "addedRootBodyLayers": 0,
+    "performances": 3,
+    "vfxSkipped": null,
+    "errors": [],
+    "pass_": true
+  },
+  "10_flex": {
+    "present": true,
+    "pressed0": "true",
+    "label0": "مرونة الجناح: تعمل",
+    "childOn": 2,
+    "followersOn": 8,
+    "pressed1": "false",
+    "label1": "مرونة الجناح: متوقفة",
+    "specEnabled1": false,
+    "childOff": 0,
+    "followersOff": 0,
+    "pressed2": "true",
+    "specEnabled2": true,
+    "childBack": 2,
+    "followersBack": 8,
+    "errors": [],
+    "pass_": true
+  },
+  "pass_all": true
+}

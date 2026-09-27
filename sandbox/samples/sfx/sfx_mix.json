@@ -1,25 +1,25 @@
 {
-  "measured_at": "2026-09-26T16:05:05Z",
+  "measured_at": "2026-09-26T18:51:03Z",
   "method": "OfflineAudioContext 48 kHz render through the same duck -> master -> compressor chain",
   "ceiling_dbfs": -3,
   "per_cue_peak_dbfs": {
-    "breath": -34.0,
-    "blink": -28.59,
-    "crouch": -18.39,
-    "takeoff": -25.33,
-    "flap": -33.32,
-    "whoosh": -30.03,
-    "land": -14.49,
-    "boing": -18.01,
-    "settle": -28.91,
-    "hmm": -17.66,
-    "tick": -32.53,
-    "chime": -18.75,
-    "sparkle": -26.06,
-    "aww": -17.14,
-    "pant": -33.23,
-    "snore": -32.84,
-    "gulp": -22.36
+    "breath": -32.97,
+    "blink": -28.56,
+    "crouch": -18.43,
+    "takeoff": -24.71,
+    "flap": -31.61,
+    "whoosh": -31.24,
+    "land": -14.53,
+    "boing": -17.9,
+    "settle": -28.9,
+    "hmm": -17.61,
+    "tick": -32.47,
+    "chime": -19.05,
+    "sparkle": -26.03,
+    "aww": -17.16,
+    "pant": -34.58,
+    "snore": -31.21,
+    "gulp": -22.38
   },
   "per_cue_clipped": {
     "breath": 0,
@@ -41,9 +41,9 @@
     "gulp": 0
   },
   "overlap_5_cues": {
-    "peak_dbfs": -12.93,
+    "peak_dbfs": -13.62,
     "clipped": 0,
-    "rms_dbfs": -33.4
+    "rms_dbfs": -33.36
   },
   "duck_db": -9,
   "duck_pass": true,

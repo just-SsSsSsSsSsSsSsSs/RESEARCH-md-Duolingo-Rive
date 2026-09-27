@@ -115,5 +115,32 @@ export class VfxLayer {
     this._anim(c, 'circle', [{ transform: 'translateY(0) scale(.6)', opacity: 0 }, { opacity: .95, offset: .2 }, { transform: 'translateY(22px) scale(1)', opacity: 0 }], p.ms, 'cubic-bezier(.4,0,.8,.4)');
   }
 
+  /** K9.4 thought bubble: rising dots then a "..." cloud (pooled circles + one text glyph), transform/opacity only. */
+  _bubble(p, A) {
+    const x0 = A.x + A.w * 0.36, y0 = A.headY + 2, step = Math.max(6, A.w * 0.06);
+    for (let i = 0; i < (p.dots || 3); i++) {
+      const c = this._take('circle');
+      c.setAttribute('r', 2 + i * 1.3); c.setAttribute('cx', x0 + i * step * 0.8); c.setAttribute('cy', y0 - i * step); c.setAttribute('fill', p.color);
+      this._anim(c, 'circle', [{ transform: 'scale(0)', opacity: 0 }, { transform: 'scale(1)', opacity: p.opacity, offset: .25 }, { transform: `translateY(${-p.rise * 0.3}px) scale(1)`, opacity: p.opacity, offset: .8 }, { transform: `translateY(${-p.rise}px) scale(.6)`, opacity: 0 }], p.ms, 'ease-out', i * 140);
+    }
+    const cloud = this._take('text');
+    cloud.textContent = '...'; cloud.setAttribute('x', x0 + step * 3); cloud.setAttribute('y', y0 - step * 3.6);
+    cloud.setAttribute('fill', p.color); cloud.setAttribute('font-size', Math.max(20, A.w * 0.2)); cloud.setAttribute('font-weight', '800'); cloud.setAttribute('text-anchor', 'middle'); cloud.setAttribute('font-family', 'system-ui, sans-serif');
+    this._anim(cloud, 'text', [{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1)', opacity: p.opacity, offset: .3 }, { transform: 'scale(1)', opacity: p.opacity, offset: .8 }, { transform: `translateY(${-p.rise * 0.5}px) scale(.8)`, opacity: 0 }], p.ms, 'ease-out', 420);
+  }
+
+  /** K9.4 hearts (triumph large): each heart = two overlapping pooled circles, fanning up and fading. */
+  _hearts(p, A) {
+    for (let i = 0; i < p.count; i++) {
+      const ang = -Math.PI / 2 + (i - (p.count - 1) / 2) * 0.45, dist = randIn([p.spread * 0.5, p.spread]);
+      const dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist - p.rise, r = randIn(p.radius);
+      for (const side of [-1, 1]) {
+        const c = this._take('circle');
+        c.setAttribute('r', r); c.setAttribute('cx', A.x + side * r * 0.55); c.setAttribute('cy', A.headY + A.h * 0.25); c.setAttribute('fill', p.color);
+        this._anim(c, 'circle', [{ transform: 'translate(0,0) scale(0)', opacity: 1 }, { transform: `translate(${dx * 0.6}px, ${dy * 0.6}px) scale(1.15)`, opacity: 1, offset: .4 }, { transform: `translate(${dx}px, ${dy}px) scale(.7)`, opacity: 0 }], p.ms, 'cubic-bezier(.2,.7,.3,1)', i * 70);
+      }
+    }
+  }
+
   dispose() { this.live.forEach((a) => a.cancel()); this.live.clear(); this.svg.remove(); }
 }

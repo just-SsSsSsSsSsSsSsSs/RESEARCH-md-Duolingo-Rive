@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>K9.2b-4 mesh-warp prototype (Canvas2D, 0 deps)</title>
+<style>html,body{margin:0;background:#1a1e2c;color:#eee;font:13px ui-monospace,monospace}#c{display:block;background:#222a3d}#out{position:fixed;left:8px;bottom:8px;white-space:pre;background:#000a;padding:8px 10px;border-radius:8px}</style>
+</head><body>
+<canvas id="c" width="1000" height="420"></canvas>
+<pre id="out">measuring...</pre>
+<script>
+/*
+ * Purpose (ADR-002 addendum, measured not guessed): what does it COST to give a raster part
+ * real flex (bend, not just rotate) with a custom 2D mesh warp in Canvas2D, no library?
+ * Method: wingL.webp is cut into a GRID x GRID mesh; each vertex is displaced by a bend
+ * function (quadratic along the wing length + sine flutter); every cell is drawn as two
+ * affine-textured triangles (setTransform + clip + drawImage) - the standard Canvas2D
+ * approach to texture-mapped triangles. N owls x 2 wings drawn per frame; we report
+ * ms/frame (median, p95) for the draw loop and derive the CPU budget share at 60 fps.
+ * URL: ?n=5&grid=4  (owls, grid cells per axis)
+ */
+const P = new URLSearchParams(location.search);
+const N = +P.get('n') || 5, GRID = +P.get('grid') || 4, FRAMES = +P.get('frames') || 240;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const img = new Image(); img.src = '../art/parts/owl/wingL.webp';
+const W = 116, H = 165;   // drawn size per wing (px), close to the stage size at 2x scale
+
+function drawWarpedWing(x0, y0, t, phase, flip) {
+  const iw = img.naturalWidth, ih = img.naturalHeight;
+  const bend = 0.35 * Math.sin(t * 2.2 + phase);       // bend amount (-0.35..0.35 of width) at the tip
+  const flutter = 6 * Math.sin(t * 9 + phase);         // small tip flutter px
+  const px = (u, v) => {                                // mesh vertex -> screen (u along width 0..1, v along height 0..1)
+    const dx = bend * W * v * v + flutter * v * v * v;  // quadratic bend grows toward the tip (v=1 = tip)
+    return [x0 + (flip ? (W - u * W) : u * W) + dx, y0 + v * H];
+  };
+  for (let j = 0; j < GRID; j++) for (let i = 0; i < GRID; i++) {
+    const u0 = i / GRID, u1 = (i + 1) / GRID, v0 = j / GRID, v1 = (j + 1) / GRID;
+    const s = [[u0 * iw, v0 * ih], [u1 * iw, v0 * ih], [u1 * iw, v1 * ih], [u0 * iw, v1 * ih]];
+    const d = [px(u0, v0), px(u1, v0), px(u1, v1), px(u0, v1)];
+    tri(s[0], s[1], s[2], d[0], d[1], d[2]);
+    tri(s[0], s[2], s[3], d[0], d[2], d[3]);
+  }
+}
+// affine texture-mapped triangle: solve the 2x3 transform mapping source tri -> dest tri, clip, drawImage
+function tri(s0, s1, s2, d0, d1, d2) {
+  const [x0, y0] = s0, [x1, y1] = s1, [x2, y2] = s2;
+  const [u0, v0] = d0, [u1, v1] = d1, [u2, v2] = d2;
+  const det = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0); if (Math.abs(det) < 1e-6) return;
+  const a = ((u1 - u0) * (y2 - y0) - (u2 - u0) * (y1 - y0)) / det;
+  const b = ((v1 - v0) * (y2 - y0) - (v2 - v0) * (y1 - y0)) / det;
+  const c = ((u2 - u0) * (x1 - x0) - (u1 - u0) * (x2 - x0)) / det;
+  const d = ((v2 - v0) * (x1 - x0) - (v1 - v0) * (x2 - x0)) / det;
+  const e = u0 - a * x0 - c * y0, f = v0 - b * x0 - d * y0;
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(u0, v0); ctx.lineTo(u1, v1); ctx.lineTo(u2, v2); ctx.closePath();
+  // expand clip by ~0.7px to hide seams between triangles (standard trick)
+  ctx.lineWidth = 1.4; ctx.clip();
+  ctx.setTransform(a, b, c, d, e, f);
+  ctx.drawImage(img, 0, 0);
+  ctx.restore();
+}
+
+const times = [], deltas = [];   // draw ms (main-thread cost) and rAF frame deltas (same metric as measure.py)
+let frame = 0, t0 = performance.now(), last = 0;
+function loop() {
+  const t = (performance.now() - t0) / 1000;
+  const a = performance.now(); if (last) deltas.push(a - last); last = a;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+  for (let k = 0; k < N; k++) { const x = 40 + k * 190; drawWarpedWing(x, 120, t, k, false); drawWarpedWing(x + W + 10, 120, t, k + 1.3, true); }
+  times.push(performance.now() - a);
+  if (++frame < FRAMES) requestAnimationFrame(loop); else report();
+}
+function report() {
+  const s = [...times].sort((x, y) => x - y);
+  const med = s[Math.floor(s.length / 2)], p95 = s[Math.floor(s.length * 0.95)];
+  const trianglesPerFrame = N * 2 * GRID * GRID * 2;
+  const ds = [...deltas].sort((x, y) => x - y), q = (f) => ds.length ? +ds[Math.min(ds.length - 1, Math.floor(ds.length * f))].toFixed(2) : null;
+  const r = { owls: N, grid: GRID, wings: N * 2, triangles_per_frame: trianglesPerFrame, frames: times.length,
+              draw_ms_median: +med.toFixed(3), draw_ms_p95: +p95.toFixed(3), budget_share_60fps_pct: +(med / 16.7 * 100).toFixed(1),
+              raf_p50_ms: q(0.5), raf_p95_ms: q(0.95), raf_p99_ms: q(0.99), jank_pct: ds.length ? +(100 * ds.filter(d => d > 20).length / ds.length).toFixed(2) : null,
+              ua: navigator.userAgent.includes('Headless') ? 'headless' : 'headed' };
+  window.__meshwarp = r;
+  document.getElementById('out').textContent = JSON.stringify(r, null, 1);
+}
+img.onload = () => requestAnimationFrame(loop);
+</script></body></html>

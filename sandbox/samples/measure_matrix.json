@@ -1,0 +1,255 @@
+{
+  "measured_at": "2026-09-27T02:08:40Z",
+  "base": "http://localhost:8080/sandbox/",
+  "companions": 5,
+  "seconds_per_run": 10.0,
+  "rounds": 3,
+  "schedule": "interleaved round-robin over all cells per round (identical host conditions)",
+  "host": {
+    "cpu_count": 2,
+    "cpu_model": "Intel(R) Xeon(R) Processor @ 2.50GHz"
+  },
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+  "cells": [
+    {
+      "cell": "v2 + Foley",
+      "cpu_throttle": 1.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v2",
+      "extra": "",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.7,
+      "raf_p99_ms": 16.8,
+      "raf_max_ms": 16.8,
+      "jank_pct": 0.0,
+      "heap_delta_mb_after_scene": 0.9,
+      "animations_idle": 73,
+      "dom_nodes": 331,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "runs_p95_ms": [
+        16.7,
+        16.8,
+        16.7
+      ],
+      "errors": 0,
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": true
+    },
+    {
+      "cell": "v2 no-intent",
+      "cpu_throttle": 1.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v2",
+      "extra": "&intent=0",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.7,
+      "raf_p99_ms": 16.8,
+      "raf_max_ms": 16.8,
+      "jank_pct": 0.0,
+      "heap_delta_mb_after_scene": 0.9,
+      "animations_idle": 73,
+      "dom_nodes": 331,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        4.41,
+        0.0,
+        0.0
+      ],
+      "runs_p95_ms": [
+        16.8,
+        16.7,
+        16.7
+      ],
+      "errors": 0,
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": true
+    },
+    {
+      "cell": "v2 no-Foley",
+      "cpu_throttle": 1.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v2",
+      "extra": "&sfx=0",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.7,
+      "raf_p99_ms": 16.8,
+      "raf_max_ms": 33.4,
+      "jank_pct": 0.84,
+      "heap_delta_mb_after_scene": 0.83,
+      "animations_idle": 73,
+      "dom_nodes": 330,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        4.24,
+        0.0,
+        0.84
+      ],
+      "runs_p95_ms": [
+        16.8,
+        16.7,
+        16.7
+      ],
+      "errors": 0,
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": true
+    },
+    {
+      "cell": "v1 reference",
+      "cpu_throttle": 1.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v1",
+      "extra": "",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.8,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 50.1,
+      "jank_pct": 2.94,
+      "heap_delta_mb_after_scene": 0.65,
+      "animations_idle": 38,
+      "dom_nodes": 330,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        1.87,
+        2.94,
+        3.11
+      ],
+      "runs_p95_ms": [
+        16.8,
+        16.8,
+        16.8
+      ],
+      "errors": 0,
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": false
+    },
+    {
+      "cell": "v2 + Foley",
+      "cpu_throttle": 4.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v2",
+      "extra": "",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 33.3,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 49.9,
+      "jank_pct": 6.38,
+      "heap_delta_mb_after_scene": 0.89,
+      "animations_idle": 73,
+      "dom_nodes": 331,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        4.7,
+        6.38,
+        7.91
+      ],
+      "runs_p95_ms": [
+        16.8,
+        33.3,
+        33.3
+      ],
+      "errors": 0,
+      "budget_p95_le_20": false,
+      "budget_jank_lt_1pct": false
+    },
+    {
+      "cell": "v2 no-intent",
+      "cpu_throttle": 4.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v2",
+      "extra": "&intent=0",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 33.3,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 50,
+      "jank_pct": 6.56,
+      "heap_delta_mb_after_scene": 0.9,
+      "animations_idle": 73,
+      "dom_nodes": 331,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        6.17,
+        6.56,
+        8.91
+      ],
+      "runs_p95_ms": [
+        33.3,
+        33.3,
+        33.3
+      ],
+      "errors": 0,
+      "budget_p95_le_20": false,
+      "budget_jank_lt_1pct": false
+    },
+    {
+      "cell": "v2 no-Foley",
+      "cpu_throttle": 4.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v2",
+      "extra": "&sfx=0",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.8,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 33.4,
+      "jank_pct": 3.98,
+      "heap_delta_mb_after_scene": 0.84,
+      "animations_idle": 73,
+      "dom_nodes": 330,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        3.98,
+        3.98,
+        2.91
+      ],
+      "runs_p95_ms": [
+        16.8,
+        16.8,
+        16.8
+      ],
+      "errors": 0,
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": false
+    },
+    {
+      "cell": "v1 reference",
+      "cpu_throttle": 4.0,
+      "companions": 5,
+      "rounds": 3,
+      "engine": "v1",
+      "extra": "",
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.8,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 66.6,
+      "jank_pct": 1.7,
+      "heap_delta_mb_after_scene": 0.65,
+      "animations_idle": 38,
+      "dom_nodes": 330,
+      "engine_idle_loops_after_scene": 0,
+      "runs_jank_pct": [
+        1.01,
+        1.7,
+        3.66
+      ],
+      "runs_p95_ms": [
+        16.8,
+        16.8,
+        16.8
+      ],
+      "errors": 0,
+      "budget_p95_le_20": true,
+      "budget_jank_lt_1pct": false
+    }
+  ]
+}

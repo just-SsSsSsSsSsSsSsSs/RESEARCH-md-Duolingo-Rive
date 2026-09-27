@@ -1,16 +1,135 @@
 {
-  "measured_at": "2026-09-26T16:05:05Z",
+  "measured_at": "2026-09-26T18:51:03Z",
   "owls": 5,
   "scene": "celebrate x5 staggered 90 ms, then fly x5",
   "max_concurrent_voices": 3,
   "polyphony_cap": 3,
   "stats": {
-    "played": 34,
-    "dropped": 44,
-    "stolen": 3,
-    "muted": 0
+    "played": 28,
+    "dropped": 82,
+    "stolen": 2,
+    "muted": 0,
+    "droppedByCue": {
+      "chime": {
+        "gap": 2,
+        "polyphony": 0
+      },
+      "boing": {
+        "gap": 0,
+        "polyphony": 7
+      },
+      "blink": {
+        "gap": 0,
+        "polyphony": 4
+      },
+      "crouch": {
+        "gap": 6,
+        "polyphony": 0
+      },
+      "flap": {
+        "gap": 39,
+        "polyphony": 6
+      },
+      "takeoff": {
+        "gap": 7,
+        "polyphony": 0
+      },
+      "whoosh": {
+        "gap": 2,
+        "polyphony": 6
+      },
+      "land": {
+        "gap": 3,
+        "polyphony": 0
+      }
+    },
+    "playedByCue": {
+      "chime": 3,
+      "boing": 3,
+      "blink": 2,
+      "crouch": 4,
+      "takeoff": 3,
+      "flap": 10,
+      "land": 2,
+      "whoosh": 1
+    }
   },
-  "same_cue_min_gap_ms": 130.6,
+  "same_cue_min_gap_ms": 140.1,
   "same_cue_gap_rule_ms": 120,
+  "dropped_by_cue": {
+    "chime": {
+      "gap": 2,
+      "polyphony": 0
+    },
+    "boing": {
+      "gap": 0,
+      "polyphony": 7
+    },
+    "blink": {
+      "gap": 0,
+      "polyphony": 4
+    },
+    "crouch": {
+      "gap": 6,
+      "polyphony": 0
+    },
+    "flap": {
+      "gap": 39,
+      "polyphony": 6
+    },
+    "takeoff": {
+      "gap": 7,
+      "polyphony": 0
+    },
+    "whoosh": {
+      "gap": 2,
+      "polyphony": 6
+    },
+    "land": {
+      "gap": 3,
+      "polyphony": 0
+    }
+  },
+  "played_by_cue": {
+    "chime": 3,
+    "boing": 3,
+    "blink": 2,
+    "crouch": 4,
+    "takeoff": 3,
+    "flap": 10,
+    "land": 2,
+    "whoosh": 1
+  },
+  "priorities": {
+    "breath": 0,
+    "blink": 0,
+    "crouch": 1,
+    "takeoff": 2,
+    "flap": 1,
+    "whoosh": 1,
+    "land": 3,
+    "boing": 2,
+    "settle": 0,
+    "hmm": 2,
+    "tick": 0,
+    "chime": 3,
+    "sparkle": 1,
+    "aww": 3,
+    "pant": 0,
+    "snore": 0,
+    "gulp": 1
+  },
+  "top_priority_cues": [
+    "land",
+    "chime",
+    "aww"
+  ],
+  "top_priority_dropped_by_polyphony": {},
+  "top_priority_dropped_by_same_cue_gap": {
+    "land": 3,
+    "chime": 2
+  },
+  "pass_top_priority_never_dropped_by_polyphony": true,
+  "note": "same-cue gap drops of a top-priority cue are by design (5 owls landing within 120 ms share one land sound); polyphony drops of a top-priority cue would be a defect.",
   "pass": true
 }

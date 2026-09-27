@@ -29,6 +29,9 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
     this.busy = false; this.flying = false; return;
   }
 
+  // 0) intent (K9.3): eyes -> head toward the target, body last (spec.acting.intent; ?intent=0 for A/B)
+  if (this.intent) this._lastIntent = await this.intent(dx, dy);
+
   // 1) anticipation (G3)
   const crouchSy = S.takeoffCrouch.scaleY, hold = randIn(S.takeoffCrouch.holdMs);
   this._writeSquash(1 / crouchSy, crouchSy);
@@ -39,6 +42,7 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
   if (headDip) { headDip.cancel(); this.live.delete(headDip); }
   this._writeSquash(1 / S.takeoffStretch.scaleY, S.takeoffStretch.scaleY);
   this.later(() => this._writeSquash(1, 1), S.takeoffStretch.ms);
+  if (this.releaseIntent) this.releaseIntent();               // the flight owns head + pupils from here
   this.cue('takeoff', { dir: dx < -10 ? -1 : 1, dist });
 
   // 2) arc (G4)
@@ -68,7 +72,22 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
   const beatTimer = () => { if (!this.flying) return; this.cue('flap', { beat: beats++ }); this.later(beatTimer, beatMs); };
   this.later(beatTimer, 60);
   this.later(() => this.flying && this.cue('cruise', { vy: -(dy) / total, dist }), total * 0.35);
-  if (dist > F.rollIfDistOver) this.later(() => this.anim(this.j('root'), [{ transform: 'rotate(0)' }, { transform: `rotate(${360 * facing}deg)` }], { duration: F.rollMs, easing: EASE.soft, composite: 'add' }), total * 0.45);
+  // K9.2c-4 aerial roll by escalation tier (spec.flight.roll): small = bank only, medium = 360 roll, large = roll + heading flip.
+  // A long flight (dist > forceIfDistOver) is at least medium so the old behaviour is preserved. Level-off before touchdown is in the bank keyframes above.
+  const R = F.roll || null;
+  let tier = this._forcedRoll || (R ? this.escalate('flight') : (dist > F.rollIfDistOver ? 'medium' : 'small'));
+  this._forcedRoll = null;
+  if (R && dist > (R.forceIfDistOver ?? F.rollIfDistOver) && tier === 'small') tier = 'medium';
+  const mode = R ? R[tier] : (tier === 'small' ? 'bank' : 'roll');
+  this._lastRoll = { tier, mode, dist: Math.round(dist) };
+  if (mode === 'roll' || mode === 'rollFlip') {
+    this.later(() => this.anim(this.j('root'), [{ transform: 'rotate(0)' }, { transform: `rotate(${360 * facing}deg)` }], { duration: F.rollMs, easing: EASE.soft, composite: 'add' }), total * 0.45);
+    this.later(() => this.cue('roll', { tier }), total * 0.45);
+  }
+  if (mode === 'rollFlip') {
+    // 180 heading flip at the apex: scaleX flips on the root for the second half of the arc, back to facing before touchdown
+    this.later(() => this.anim(this.j('root'), [{ transform: 'scaleX(1)' }, { transform: 'scaleX(-1)', offset: 0.5 }, { transform: 'scaleX(1)' }], { duration: total * 0.4, easing: EASE.soft, composite: 'add' }), total * 0.5);
+  }
 
   // 3) physics driven by the analytic velocity of the path (no layout reads)
   const t0 = clock.now(), ease = cssEase(F.easing), N = points.length - 1;
@@ -92,6 +111,7 @@ P.flyBy = async function (dx, dy, { trace = false } = {}) {
   this.secondary.impulse('armL', -260); this.secondary.impulse('armR', 260); this.secondary.impulse('head', -40);
   this.squash.impact(S.landing.scaleY);
   this.cue('land', { dist });
+  if (this.releaseIntent) this.releaseIntent();               // eyes lead the settle: pupils re-centre first (spec.acting.intent.landRecentreMs is the budget measured by intent_proof.py)
   await this._runSquash();
   this.cue('settle');
   this.setMouth('closed');
@@ -123,6 +143,7 @@ P.roam = async function (room, { trace = false } = {}) {
 /** Celebrate: anticipation crouch -> jump with stretch -> volume-preserving landing -> wings settle. */
 P.celebrate = function () {
   if (this.busy) return; this.busy = true;
+  if (REDUCED) { this.setMouth('smile'); this.blink(true); this.later(() => { this.setMouth('closed'); this.busy = false; }, 1200); return; }   // WCAG 2.3.3: face only
   const S = this.spec.squash.jump, hold = randIn(this.spec.squash.takeoffCrouch.holdMs), H = this.spec.hierarchy;
   this._writeSquash(1 / S.scaleY, S.scaleY);
   this.cue('anticipate', { holdMs: hold });

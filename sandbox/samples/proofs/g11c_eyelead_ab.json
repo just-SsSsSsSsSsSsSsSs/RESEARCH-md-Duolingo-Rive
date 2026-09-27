@@ -1,0 +1,113 @@
+{
+  "tool": "sandbox/eyelead_ab.py",
+  "pose": "alert",
+  "reps_per_arm": 8,
+  "frame_ms_note": "sampled per rAF (~16.7 ms), so lead has +-17 ms quantisation",
+  "hierarchy_eyes_in_spec": false,
+  "code_reads_hierarchy_eyes": false,
+  "A": {
+    "label": "A leadMs=45 (eyes lead)",
+    "n": 8,
+    "rows": [
+      {
+        "tPupil": 15.900000000023283,
+        "tHead": 65.90000000002328
+      },
+      {
+        "tPupil": 15.79999999993015,
+        "tHead": 49.59999999997672
+      },
+      {
+        "tPupil": 15.5,
+        "tHead": 49.40000000002328
+      },
+      {
+        "tPupil": 16.20000000006985,
+        "tHead": 49.90000000002328
+      },
+      {
+        "tPupil": 16,
+        "tHead": 50
+      },
+      {
+        "tPupil": 332.79999999993015,
+        "tHead": 49.90000000002328
+      },
+      {
+        "tPupil": null,
+        "tHead": null
+      },
+      {
+        "tPupil": null,
+        "tHead": null
+      }
+    ],
+    "lead_ms": [
+      50.0,
+      33.800000000046566,
+      33.90000000002328,
+      33.699999999953434,
+      34,
+      -282.89999999990687
+    ],
+    "lead_median_ms": 33.850000000034925,
+    "lead_min_ms": -282.89999999990687,
+    "lead_max_ms": 50.0
+  },
+  "B": {
+    "label": "B leadMs=0 (no lead)",
+    "n": 8,
+    "rows": [
+      {
+        "tPupil": 16,
+        "tHead": 16
+      },
+      {
+        "tPupil": 16,
+        "tHead": 16
+      },
+      {
+        "tPupil": 15.5,
+        "tHead": 15.5
+      },
+      {
+        "tPupil": 16.20000000006985,
+        "tHead": 16.20000000006985
+      },
+      {
+        "tPupil": 16,
+        "tHead": 16
+      },
+      {
+        "tPupil": 16.20000000006985,
+        "tHead": 16.20000000006985
+      },
+      {
+        "tPupil": 15.5,
+        "tHead": 15.5
+      },
+      {
+        "tPupil": 16,
+        "tHead": 16
+      }
+    ],
+    "lead_ms": [
+      0,
+      0,
+      0.0,
+      0.0,
+      0,
+      0.0,
+      0.0,
+      0
+    ],
+    "lead_median_ms": 0.0,
+    "lead_min_ms": 0,
+    "lead_max_ms": 0
+  },
+  "pass_A_eyes_lead": true,
+  "pass_B_no_lead": true,
+  "pass_hierarchy_eyes_removed": true,
+  "verdict": "acting.lead/leadMs is the only system that moves eye timing (A median 34 ms vs B 0 ms); hierarchy.eyes was dead data and is removed.",
+  "pass_all": true
+}

@@ -1,0 +1,60 @@
+{
+  "measured_at": "2026-09-26T19:07:11Z",
+  "base": "http://localhost:8080/sandbox/",
+  "machine": "sandbox CI proxy (not a 2-3 GB Android)",
+  "host": {
+    "platform": "Linux-6.1.155-x86_64-with-glibc2.41",
+    "python": "3.13.14",
+    "cpu_count": 2,
+    "cpu_model": "Intel(R) Xeon(R) Processor @ 2.50GHz",
+    "mem_total_gb": 1.0
+  },
+  "cpu_throttle": 4.0,
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+  "extra_params": "",
+  "results": [
+    {
+      "art": "p2",
+      "companions": 5,
+      "heap_delta_mb_after_mount": 0.53,
+      "heap_delta_mb_after_scene": 0.65,
+      "dom_nodes": 255,
+      "animations_idle": 38,
+      "animations_peak_sampled": 51,
+      "animations_after_dispose": 0,
+      "frames": 572,
+      "raf_p50_ms": 16.7,
+      "raf_p95_ms": 16.8,
+      "raf_p99_ms": 33.4,
+      "raf_max_ms": 83.3,
+      "cpu_throttle": 4.0,
+      "env": {
+        "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "cores": 2,
+        "deviceMemoryGb": null,
+        "dpr": 1,
+        "viewport": [
+          900,
+          600
+        ]
+      },
+      "long_frames_over_33ms": 24,
+      "jank_frames_over_20ms": 24,
+      "jank_pct": 4.2,
+      "engine_idle_loops_after_scene": 0,
+      "engine": "v1",
+      "transferred_bytes": 344910,
+      "errors": [],
+      "runs": 2,
+      "runs_jank_pct": [
+        3.86,
+        4.2
+      ],
+      "runs_p99_ms": [
+        50,
+        33.4
+      ],
+      "runs_min_jank_pct": 3.86
+    }
+  ]
+}
