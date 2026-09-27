@@ -61,10 +61,21 @@ ok(r.verdict === 'PASS' && r.blocks_rejected.length === 1 && r.blocks_accepted =
 const text = 'x ' + JSON.stringify(block('a', W)) + '\n---\n' + JSON.stringify(block('b', W), null, 1) + ' trailing';
 const parsed = G12.parseBlocks(text);
 ok(parsed.blocks.length === 2 && parsed.errors.length === 0, `parseBlocks -> ${parsed.blocks.length} blocks, ${parsed.errors.length} errors`);
-// 13. the real first block from the gist (rater null, 3/4) -> INSUFFICIENT
+// 13. the real first block from the gist (rater null, 3/4, rated on kit v1) - under kit v2 it is REJECTED by design
+//     (kit / seed / order mismatch; gist rev b693458e: kit-v1 sessions stay in results/ and are never pooled with kit v2).
+//     Against the kit it was rated on (manifest.previous_kit) the same block still validates and reads INSUFFICIENT alone.
 const first = JSON.parse(readFileSync(path.join(here, '..', 'samples', 'watch', 'results', '2026-09-27_gist-d33eaf03_rater-null.json'), 'utf8'));
 r = G12.score([first], M);
-ok(r.verdict === 'INSUFFICIENT' && r.n === 4 && r.v2_chosen === 3, `first real block -> ${r.verdict} (${r.v2_chosen}/${r.n})`);
+ok(r.verdict === 'REJECTED' && r.blocks_rejected.length === 1 && r.blocks_accepted === 0, `kit-v1 real block under kit v${M.kit_version} -> ${r.verdict} (by design)`);
+ok(M.kit_version === 2 && M.previous_kit && M.previous_kit.kit_version === 1 && M.previous_kit.seed !== M.seed && M.previous_kit.order_sha256 !== M.order_sha256,
+  `manifest is kit v${M.kit_version}; previous_kit v${M.previous_kit && M.previous_kit.kit_version} has a different seed and order_sha256`);
+const Mv1 = { ...M, generated_at: M.previous_kit.generated_at, seed: M.previous_kit.seed, order_sha256: M.previous_kit.order_sha256, order: first.answers.map(a => ({ beat: a.beat, left: 'v2' })) };
+r = G12.score([first], Mv1);
+ok(r.verdict === 'INSUFFICIENT' && r.n === 4 && r.v2_chosen === 3, `same block against its own kit (previous_kit) -> ${r.verdict} (${r.v2_chosen}/${r.n})`);
+// 14. kit v2 rule line: every clip states which state it runs; the think clip runs the real state, not puzzled
+ok(M.states_per_clip && M.beats.every(b => M.states_per_clip[b] && M.states_per_clip[b].v2 && M.states_per_clip[b].v1), 'states_per_clip covers all beats on both arms');
+ok(/answer:pending/.test(M.states_per_clip.think.v2) && !/puzzled/.test(M.states_per_clip.think.v2) && M.states_per_clip.think.v1 === 'think()', `think clip: v2 "${M.states_per_clip.think.v2.slice(0, 40)}..." / v1 "${M.states_per_clip.think.v1}"`);
+ok(Array.isArray(M.reused_from_previous_kit) && M.reused_from_previous_kit.length === 6 && !M.reused_from_previous_kit.some(f => /think/.test(f)), `6 clips reused from kit v1, none of them a think clip`);
 
 console.log(fails ? `\nG12 SCORER FAIL (${fails})` : '\nG12 SCORER PASS');
 process.exit(fails ? 1 : 0);
