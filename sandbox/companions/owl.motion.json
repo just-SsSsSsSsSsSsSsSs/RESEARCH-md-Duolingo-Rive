@@ -634,6 +634,26 @@
     "sweat": {
       "ms": 700,
       "color": "#7bdff2"
+    },
+    "bubble": {
+      "ms": 2200,
+      "rise": 22,
+      "dots": 3,
+      "color": "#ffffff",
+      "opacity": 0.9,
+      "comment": "thought bubble: 3 rising dots then a cloud; transform/opacity only"
+    },
+    "hearts": {
+      "count": 5,
+      "radius": [
+        4,
+        6
+      ],
+      "spread": 60,
+      "rise": 70,
+      "ms": 1100,
+      "color": "#ff7b9c",
+      "comment": "triumph large only"
     }
   },
   "acting": {
@@ -706,6 +726,157 @@
       "measureNote": "settleDegTarget and the crouch onset are measured on the ADDED layers (intent head layer, squash layer keyframes), not on the computed transform: the idle breath is a permanent +-1 deg head tilt / +-2.5 pct body scale by design (rig.idle), so an absolute reading can never settle below it. Found and documented 2026-09-26 (K9.3-3); nothing hidden.",
       "bodyLagNote": "was [120,200]: measured pre-takeoff 293-382 ms fell short of the declared 350-600 (bodyLag + crouch hold 150-250). 200-280 = the body waits one fixation-saccade cycle (P2 Fang 2015: >= 200 ms) -> 350-530 ms total.",
       "asymNote": "L/R pupil jitter is now min budget.asymMinPx .. gaze.dart.asymPx apart by construction (one flight measured 0.27 px with independent jitters)."
+    },
+    "performances": {
+      "comment": "K9.4 owner-vision performances. Each channel escalates through rig.escalate(channel) with acting.escalation (small small medium small small medium large). Structure per P6 (Webster 2005): anticipation squash -> extreme stretch -> settle. Budgets declared 2026-09-27 before code (PROGRESS K9.4 RESEARCH); measured by perf_proof.py. ?perf=0 falls back to the pre-K9.4 clips.",
+      "enabled": true,
+      "triumph": {
+        "comment": "jump of joy; medium lifts the apex and adds stars; large adds a 360 root roll at the apex (level before landing, |rot| < 2 deg) and hearts",
+        "jumpPx": 52,
+        "anticipateMs": [
+          150,
+          250
+        ],
+        "airMs": 760,
+        "settleWithinMs": 400,
+        "tiers": {
+          "small": {
+            "apexScale": 1.0,
+            "roll": false,
+            "wink": true,
+            "vfx": []
+          },
+          "medium": {
+            "apexScale": 1.3,
+            "roll": false,
+            "wink": true,
+            "vfx": [
+              "stars"
+            ]
+          },
+          "large": {
+            "apexScale": 1.3,
+            "roll": true,
+            "wink": true,
+            "vfx": [
+              "stars",
+              "hearts"
+            ]
+          }
+        },
+        "rollMs": 520
+      },
+      "oops": {
+        "comment": "the take (P6): squash anticipation -> stretch extreme held -> recoil -> settle. medium = double take (second anticipation), large = + jiggle (damped body oscillation)",
+        "anticipateMs": [
+          125,
+          250
+        ],
+        "stretchScaleY": [
+          1.1,
+          1.18
+        ],
+        "holdMs": [
+          125,
+          333
+        ],
+        "totalMaxMs": 2600,
+        "tiers": {
+          "small": {
+            "doubleTake": false,
+            "jiggle": 0
+          },
+          "medium": {
+            "doubleTake": true,
+            "jiggle": 0
+          },
+          "large": {
+            "doubleTake": true,
+            "jiggle": 3
+          }
+        },
+        "jiggleMs": 220,
+        "jiggleDecay": 0.5,
+        "jiggleAmpScale": 0.06
+      },
+      "puzzled": {
+        "comment": "spiral gaze + dramatic head tilt + thought bubble; pupils recentre within recentreMs at the end",
+        "spiralRadiusPx": [
+          2,
+          4
+        ],
+        "spiralMs": 600,
+        "spiralTurns": 2,
+        "holdMs": [
+          600,
+          1200
+        ],
+        "recentreMs": 100,
+        "totalMaxMs": 3000,
+        "tiers": {
+          "small": {
+            "headDeg": 9,
+            "vfx": []
+          },
+          "medium": {
+            "headDeg": 12,
+            "vfx": [
+              "bubble"
+            ]
+          },
+          "large": {
+            "headDeg": 14,
+            "vfx": [
+              "bubble"
+            ],
+            "shrug": true
+          }
+        }
+      },
+      "movingHold": {
+        "comment": "P4/P5 moving hold: named, distributed idle impulses so the owl is never a breathing statue. Scheduler in motion.js; never while busy; never two on the same joint within minGapSameJointMs; prefers-reduced-motion disables.",
+        "enabled": true,
+        "intervalMs": [
+          2500,
+          6000
+        ],
+        "maxMs": 300,
+        "maxPx": 3,
+        "maxDeg": 3,
+        "minGapSameJointMs": 1000,
+        "impulses": {
+          "footShift": {
+            "joints": [
+              "legL",
+              "legR"
+            ],
+            "px": 2,
+            "ms": 260
+          },
+          "wingSettle": {
+            "joints": [
+              "armL",
+              "armR"
+            ],
+            "deg": 3,
+            "ms": 300
+          },
+          "headMicroTurn": {
+            "joints": [
+              "head"
+            ],
+            "deg": 2.5,
+            "ms": 280
+          },
+          "blinkDouble": {
+            "joints": [
+              "lidL",
+              "lidR"
+            ],
+            "ms": 260
+          }
+        }
+      }
     }
   },
   "poses": {

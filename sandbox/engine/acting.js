@@ -163,5 +163,27 @@ export function validateActing(spec) {
     if (A.intent.headLagMs && A.intent.bodyLagMs && !(A.intent.headLagMs[1] <= A.intent.bodyLagMs[0])) problems.push('acting.intent: head must lead the body (headLagMs.max <= bodyLagMs.min)');
   }
   if (spec.flight && spec.flight.roll) for (const k of ['small', 'medium', 'large']) if (!['bank', 'roll', 'rollFlip'].includes(spec.flight.roll[k])) problems.push(`flight.roll.${k} must be bank | roll | rollFlip`);
+  const Pf = A.performances;
+  if (Pf && Pf.enabled !== false) {                                    // K9.4 performances: declared budgets must be well-formed
+    const range = (o, k, path) => { if (!Array.isArray(o[k]) || o[k].length !== 2 || !(o[k][0] > 0 && o[k][0] <= o[k][1])) problems.push(`${path}.${k} must be [min,max] > 0`); };
+    const num = (o, k, path) => { if (!(typeof o[k] === 'number' && o[k] > 0)) problems.push(`${path}.${k} must be a number > 0`); };
+    const tiers = (o, path, check) => { if (!o.tiers) return problems.push(`${path}.tiers missing`); for (const t of ['small', 'medium', 'large']) { if (!o.tiers[t]) problems.push(`${path}.tiers.${t} missing`); else check(o.tiers[t], `${path}.tiers.${t}`); } };
+    const vfxNames = (o, path) => { if (o.vfx !== undefined) { if (!Array.isArray(o.vfx)) problems.push(`${path}.vfx must be a list`); else for (const v of o.vfx) if (!(spec.vfx && spec.vfx[v])) problems.push(`${path}.vfx '${v}' not in the vfx catalogue`); } };
+    if (Pf.triumph) { const T = Pf.triumph, p = 'acting.performances.triumph'; num(T, 'jumpPx', p); range(T, 'anticipateMs', p); num(T, 'airMs', p); num(T, 'settleWithinMs', p); num(T, 'rollMs', p);
+      tiers(T, p, (t, tp) => { num(t, 'apexScale', tp); vfxNames(t, tp); }); }
+    if (Pf.oops) { const O = Pf.oops, p = 'acting.performances.oops'; range(O, 'anticipateMs', p); range(O, 'stretchScaleY', p); range(O, 'holdMs', p); num(O, 'totalMaxMs', p); num(O, 'jiggleMs', p);
+      if (!(O.jiggleDecay > 0 && O.jiggleDecay < 1)) problems.push(`${p}.jiggleDecay must be in (0,1)`);
+      if (O.stretchScaleY && !(O.stretchScaleY[0] > 1)) problems.push(`${p}.stretchScaleY must stretch (> 1)`);
+      tiers(O, p, (t, tp) => { if (!(Number.isInteger(t.jiggle) && t.jiggle >= 0)) problems.push(`${tp}.jiggle must be an integer >= 0`); }); }
+    if (Pf.puzzled) { const Z = Pf.puzzled, p = 'acting.performances.puzzled'; range(Z, 'spiralRadiusPx', p); num(Z, 'spiralMs', p); num(Z, 'spiralTurns', p); range(Z, 'holdMs', p); num(Z, 'recentreMs', p); num(Z, 'totalMaxMs', p);
+      tiers(Z, p, (t, tp) => { num(t, 'headDeg', tp); vfxNames(t, tp); }); }
+    if (Pf.movingHold && Pf.movingHold.enabled !== false) { const M = Pf.movingHold, p = 'acting.performances.movingHold'; range(M, 'intervalMs', p); num(M, 'maxMs', p); num(M, 'maxPx', p); num(M, 'maxDeg', p); num(M, 'minGapSameJointMs', p);
+      if (!M.impulses || Object.keys(M.impulses).length < 3) problems.push(`${p}.impulses needs >= 3 named impulses (distributed life)`);
+      else for (const [name, im] of Object.entries(M.impulses)) { const ip = `${p}.impulses.${name}`;
+        if (!Array.isArray(im.joints) || !im.joints.length) problems.push(`${ip}.joints must be a non-empty list`);
+        if (!(im.ms > 0 && im.ms <= M.maxMs)) problems.push(`${ip}.ms must be in (0, maxMs ${M.maxMs}]`);
+        if (im.px !== undefined && !(im.px > 0 && im.px <= M.maxPx)) problems.push(`${ip}.px must be in (0, maxPx ${M.maxPx}]`);
+        if (im.deg !== undefined && !(im.deg > 0 && im.deg <= M.maxDeg)) problems.push(`${ip}.deg must be in (0, maxDeg ${M.maxDeg}]`); } }
+  }
   return problems;
 }
