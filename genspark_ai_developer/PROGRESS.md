@@ -1088,3 +1088,48 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
   Visible-change statement: YES, new. Proof file samples/proofs/g13_performances_strip.png md5 06a6c1f4ef725fe84fa881eaec62f126 did not exist before K9.4 (added 6ae7c97, final c89c475); the pose sheet g11_pose_sheet.png is untouched (md5 b4161f4c, unchanged since ca08a2d, as DIRECTIVES #07 note 2 recorded). What a viewer sees: three new bar buttons (triumph / oops / puzzled) with a 7-press escalation, the large triumph jumps with a 360 roll + stars + hearts, the large oops does a double take + jiggle, the large puzzled spirals its gaze under a thought bubble; the idle owl now shifts weight, settles a wing, micro-turns its head, double-blinks (named moving holds). Reduced motion: face only. ?perf=0: pre-K9.4 clips.
   Sources applied: [P4] Thomas & Johnston (exaggeration, secondary action, moving hold), [P5] Loyall p.74 (moving holds), [P6] Webster pp.100-103 (the take), [P7] WCAG 2.1 SC 2.3.3, [P8] owner vision. app/ diff vs main: 0. Next: K9.5 per the frozen plan (research first if the plan marks it as a new sub-phase; otherwise its frozen chunks).
   ack: DIRECTIVES #07 received.
+- 2026-09-27 K9.5 RESEARCH (new sub-phase "Flex (limited)", research first, no code yet; branch head 4f06e88):
+  Question: give the wing a believable bend and follow-through without a mesh warp (ADR-002 addendum d rules B out by measurement) and without
+  touching the joint API the 20+ existing callers use (rig.js 15, acting.js 8, flight.js 4, motion.js 2, poses.js 1 reference armL/armR).
+  Facts read from the branch (not assumed):
+    wingL.webp / wingR.webp 232x330 RGBA, placed 50x71.6 viewBox px, pivot 64,122 = image px (157.8, 27.7): the shoulder is at the TOP of the plate.
+    Alpha profile per 30-row band (filled columns of 232): 50, 102, 195, 222, 220, 223, 209, 148, 105, 70, 24 -> a narrow shoulder (rows 0-60),
+    a wide middle (rows 60-210), a narrowing tip (rows 210-330). Two natural cut lines: about row 70 and about row 215.
+    Existing slice tool sandbox/tools/slice_parts.py (K9.2b-1, eyes/lids/pupils) delivered rendered recomposite pixel_diff 0 at DPR1/DPR2 x3 runs.
+    assemble.py emits <g data-joint data-pivot><image/></g>; rig.js discovers joints generically from data-joint, so new nested joints need no engine change to exist.
+    Every rotation goes through rig.anim(el, keyframes, opts, keep) (rig.js:84) - one funnel.
+  Primary sources (new for this sub-phase):
+    [P9] Lasseter 1987, SIGGRAPH, section 2.5 Follow Through and Overlapping Action: "Appendages or loose parts of a character or object will move at a slower
+         speed and drag behind the leading part of the figure. Then as the leading part of the figure slows to a stop, these appendages will continue to move and
+         will take longer to settle down ... The degree that the appendages drag behind and the time it takes for them to stop is directly proportional to their weight."
+         (graphics.cs.cmu.edu/nsp/course/15-464/Fall05/papers/lasseter.pdf, read 2026-09-27) -> the tip segment lags the shoulder by a fixed delay and a ratio, and
+         keeps moving after the shoulder stops.
+    [P10] Toon Boom Harmony docs, "About Articulations" and "About Auto-Patch Articulations" (docs.toonboom.com, harmony-20, read 2026-09-27): cut-out pieces
+         overlap at the joint in semicircles and the upper piece covers the seam; without overlap "a puppet cannot move properly and will not look good"; deformers
+         remove the need for overlap (we have no deformer, so we overlap). -> each lower segment carries a hidden extension under the segment above it.
+    [P3] ADR-002 addendum d (this branch): Canvas2D mesh warp misses the budget at 1 owl / 2 parts on CPU 4x; recommendation "keep A ... 2-3 segment wing via slicing".
+    [P4] Thomas & Johnston: overlapping action / drag (already on file).
+  Design (Option A, spec-driven, one funnel, zero API change):
+    1. Slice each wing plate into 3 bands (shoulder / mid / tip) at the two alpha cut lines. The mid and tip bands keep an upward EXTENSION of about 18 px
+       under the band above, masked to the pixels where the band above is fully opaque (alpha 255) so that at rest the composite is byte-identical to the
+       original plate (pixel_diff 0, same proof as K9.2b-1) and under a bend the extension fills the seam (Toon Boom overlap).
+    2. assemble.py emits nested joints armL > armL_mid > armL_tip (and R), pivots at the cut lines in viewBox px. The parent joint armL keeps its name and
+       pivot, so every existing caller is untouched and moves the whole wing exactly as before.
+    3. Flex layer (engine, small file engine/flex.js): rig.anim() funnel - when the target is armL/armR and the keyframes contain rotate(), derive follower
+       animations for the child segments: mid = rotate * ratioMid delayed lagMid ms, tip = rotate * ratioTip delayed lagTip ms, same duration and easing,
+       plus a follow-through tail (tip settles after the parent stops, [P9]). Caps from the spec; clamp to maxDeg so the tip never folds through the body.
+       Spec block acting.flex { enabled, segments, mid {ratio, lagMs}, tip {ratio, lagMs}, tailMs, maxDeg, activeOnly }. ?flex=0 kill switch. REDUCED -> off.
+    4. "active owl only if p95 rises" (frozen plan): flex.activeOnly is a spec switch; the decision is taken from the K9.5-4 measurement, not before it.
+  Budgets declared BEFORE code (annex d rule, all measured by flex_proof.py):
+    rest recomposite pixel_diff = 0 at DPR1 and DPR2 (3 runs each); seam gap under a 20 deg parent bend = 0 transparent pixels along both cut lines at DPR1/DPR2
+    (the "edge width proof" of the frozen plan); tip peak lags parent peak by lagTip +- Q (16.7 ms); tip still moving when the parent stops (|d rot| > 0.5 deg over
+    the next 100 ms) and settles within tailMs; idle animations unchanged (73) - followers are keep=false and vanish; perf: 5 owls, 1x and 4x, flex on vs ?flex=0,
+    3 rounds; any p95 rise beyond the in-cell spread -> activeOnly true.
+  FROZEN PLAN K9.5 (small chunks, commit + push per chunk):
+    K9.5-1 sandbox/tools/slice_wing.py: 3 bands + masked extensions -> wingL_sh/mid/tip.webp (and R), parts.json entries; plate recomposite pixel_diff 0 (PIL).
+    K9.5-2 assemble.py nested joints + regenerated owl_p2.svg; rendered recomposite proof DPR1/DPR2 x3 (pixel_diff 0); sw precache; validatePoses joint list.
+    K9.5-3 spec acting.flex + validateActing checks; engine/flex.js follower in the anim() funnel; ?flex=0; REDUCED off; states unchanged.
+    K9.5-4 flex_proof.py (rest diff, seam gap at 20 deg, lag/tail from engine-truth reads, perf on/off) -> samples/proofs/g14_flex.json + strip; activeOnly decision from the file.
+    K9.5-5 acting bar toggle for flex (A/B), PREVIEW row 10, ship_visible check 10_flex, sw bump, PROGRESS K9.5 DONE + visible-change statement (md5 of the new strip), DIRECTIVES update.
+  Next: K9.5-1.
+  ack: DIRECTIVES #07 received.
