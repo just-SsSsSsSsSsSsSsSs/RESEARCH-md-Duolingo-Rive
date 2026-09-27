@@ -30,6 +30,7 @@ SECOND_BEAT_MS = 5500   # a second beat so a 10 s clip is not 60 % idle
 BEATS = ['celebrate', 'flight', 'think', 'sad']
 SEED = int(os.environ.get('WATCH_SEED', '20260927'))
 MAX_KIT_MB = 12.0
+MAX_CLIP_S = 10.5   # declared in PROGRESS K9.6 RESEARCH before the first run
 
 RUN = {
     'celebrate': "() => { const r = window.__rigs[0]; if (r.triumph && r.perfSpec && r.perfSpec('triumph')) r.triumph('large'); else r.celebrate(); }",
@@ -69,7 +70,20 @@ async def record(b, engine, beat):
     rest = CLIP_MS - int((time.time() - t0) * 1000)
     if rest > 0: await pg.wait_for_timeout(rest)
     video = pg.video; await ctx.close()
-    src = await video.path(); dst = os.path.join(OUT, f'{engine}_{beat}.webm'); shutil.move(src, dst)
+    src = await video.path(); dst = os.path.join(OUT, f'{engine}_{beat}.webm')
+    # Playwright records from page open (load + READY wait + IDLE_MS) and the encoder adds a tail, so the raw file ran 12.8 s
+    # against the declared <= 10.5 s (first two runs, disclosed). Trim to the last CLIP_MS + IDLE_MS/2 with ffmpeg (re-encode,
+    # same codec) so every clip carries 0.6 s idle then the two beats; if ffmpeg is missing the raw file is kept and flagged.
+    import subprocess
+    probe = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', src], capture_output=True, text=True)
+    raw_s = float(probe.stdout.strip()) if probe.returncode == 0 and probe.stdout.strip() else None
+    want_s = (CLIP_MS + IDLE_MS / 2) / 1000
+    if raw_s and raw_s > want_s + 0.05:
+        r = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{raw_s - want_s:.3f}', '-i', src, '-t', f'{want_s:.3f}', '-c:v', 'libvpx', '-b:v', '1M', '-an', dst], capture_output=True, text=True)
+        if r.returncode != 0: errs.append('ffmpeg trim failed: ' + r.stderr[:200]); shutil.move(src, dst)
+        else: os.remove(src)
+    else:
+        shutil.move(src, dst)
     return dst, errs, [round(v) for v in box]
 
 
@@ -185,6 +199,8 @@ async def main():
     total = sum(manifest['bytes'].values()) + len(kit.encode())
     manifest['kit_total_mb'] = round(total / 1e6, 2); manifest['pass_kit_size'] = manifest['kit_total_mb'] <= MAX_KIT_MB
     manifest['pass_no_page_errors'] = all(not e for e in manifest['errors'].values())
+    manifest['max_clip_s'] = MAX_CLIP_S
+    manifest['pass_clip_duration'] = isinstance(manifest['duration_s'], dict) and all(v is not None and v <= MAX_CLIP_S for v in manifest['duration_s'].values())
     manifest['readout_examples_p'] = {f'{k}/{n}': round(binom_two_sided(k, n), 4) for n in (12, 16, 20) for k in (n, n - 1, n - 2, n - 3, n - 4, n - 5)}
     with open(os.path.join(OUT, 'manifest.json'), 'w') as fh: json.dump(manifest, fh, indent=1, ensure_ascii=False)
     clips = '\n'.join(f'| {k} | {manifest["bytes"][k]} | {manifest["sha256"][k][:16]} | {manifest["duration_s"][k] if isinstance(manifest["duration_s"], dict) else "-"} |' for k in manifest['clips'])
@@ -204,11 +220,11 @@ Limits: {manifest['limits']}
 |---|---|---|---|
 {clips}
 
-Total {manifest['kit_total_mb']} MB (budget {MAX_KIT_MB} MB): {'PASS' if manifest['pass_kit_size'] else 'FAIL'}; page errors: {'none' if manifest['pass_no_page_errors'] else json.dumps(manifest['errors'])}.
+Total {manifest['kit_total_mb']} MB (budget {MAX_KIT_MB} MB): {'PASS' if manifest['pass_kit_size'] else 'FAIL'}; clip duration <= {MAX_CLIP_S} s: {'PASS' if manifest['pass_clip_duration'] else 'FAIL'}; page errors: {'none' if manifest['pass_no_page_errors'] else json.dumps(manifest['errors'])}.
 """
     with open(os.path.join(OUT, 'README.md'), 'w') as fh: fh.write(readme)
-    print('kit', manifest['kit_total_mb'], 'MB', 'size', 'PASS' if manifest['pass_kit_size'] else 'FAIL', '| errors', 'none' if manifest['pass_no_page_errors'] else 'YES', '| durations', manifest.get('duration_s'))
-    sys.exit(0 if manifest['pass_kit_size'] and manifest['pass_no_page_errors'] else 1)
+    print('kit', manifest['kit_total_mb'], 'MB', 'size', 'PASS' if manifest['pass_kit_size'] else 'FAIL', '| errors', 'none' if manifest['pass_no_page_errors'] else 'YES', '| durations <=', MAX_CLIP_S, 'PASS' if manifest['pass_clip_duration'] else 'FAIL', manifest.get('duration_s'))
+    sys.exit(0 if manifest['pass_kit_size'] and manifest['pass_no_page_errors'] and manifest['pass_clip_duration'] else 1)
 
 
 if __name__ == '__main__':
