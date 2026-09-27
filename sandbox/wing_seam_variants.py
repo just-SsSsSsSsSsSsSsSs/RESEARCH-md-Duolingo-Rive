@@ -18,8 +18,10 @@ Variants (each = how the three full-plate canvases are built):
                     anti-aliased clipPath (the lip only fixes the filter neighbourhood; the clip restores
                     the exact partition).
   v5_lip_clipCrisp: v4 with shape-rendering="crispEdges" on the clip rects.
-  v6_dup_row      : v1, but the upper band keeps ONE extra row (c) and the lower band starts at c as well
-                    (both bands own the cut row; the over operator with alpha 255 on top is exact).
+  v6_dup_row      : v1, but the upper band keeps ONE extra row (c) and the lower band starts at c as well.
+  v7_add_lip_clipAA: v3 bands, AA clips, mix-blend-mode plus-lighter inside an isolated group (additive
+                    compositing of a partition is exact for a linear filter; see build_variants).
+  v8_add_nolip_clipAA: v7 without the lips (control: shows the lip is what supplies true neighbours).
 Result JSON: samples/proofs/g14_wing_seam_variants.json (numbers copied into PROGRESS from this file).
 """
 import argparse, asyncio, io, json, os, re, shutil, subprocess, sys, time
@@ -68,12 +70,24 @@ def build_variants(plate, c1, c2):
     V['v5_lip_clipCrisp'] = (V['v3_lip_full'][0], V['v3_lip_full'][1], base_tip, 'crisp')
     sh6 = band(0, c1 + 1); mid6 = with_ext(band(c1, c2 + 1), op & (rows < c1), c1 - S.EXT)
     V['v6_dup_row'] = (sh6, mid6, base_tip, None)
+    # v7/v8: additive compositing. A linear downscale filter is additive in premultiplied space, so a
+    # strict partition of the plate composited with mix-blend-mode plus-lighter inside an isolated group
+    # reproduces the whole plate; the anti-aliased clip at the cut line then splits coverage a / (1-a) of
+    # the SAME true colour (both bands carry real neighbour rows across the cut: lip + extension), so the
+    # sum is exact up to 8-bit rounding. The extension rows are clipped away at rest (parent-frame clip)
+    # and only become visible when the child rotates, so nothing is ever added twice.
+    V['v7_add_lip_clipAA'] = (V['v3_lip_full'][0], V['v3_lip_full'][1], base_tip, 'add')
+    V['v8_add_nolip_clipAA'] = (base_sh, base_mid, base_tip, 'add')
     return V
 
 
 def svg_for(orig, name, clips, x, y, w, h, Y1, Y2):
     im = lambda k, extra='': f'<image href="tmp_wing/{name}_{k}.webp" x="{x}" y="{y}" width="{w}" height="{h}" {extra}/>'  # noqa: E731
     defs = csh = cmid = cw1 = cw2 = ''
+    iso = ''
+    if clips == 'add':
+        iso = 'style="isolation:isolate"'
+        im = lambda k, extra='': f'<image href="tmp_wing/{name}_{k}.webp" x="{x}" y="{y}" width="{w}" height="{h}" style="mix-blend-mode:plus-lighter" {extra}/>'  # noqa: E731
     if clips:
         cr = 'shape-rendering="crispEdges"' if clips == 'crisp' else ''
         defs = (f'<clipPath id="k_sh"><rect x="0" y="0" width="200" height="{Y1}" {cr}/></clipPath>'
@@ -81,7 +95,7 @@ def svg_for(orig, name, clips, x, y, w, h, Y1, Y2):
                 f'<clipPath id="k_mid"><rect x="0" y="0" width="200" height="{Y2}" {cr}/></clipPath>'
                 f'<clipPath id="k_w2"><rect x="0" y="{Y2}" width="200" height="200" {cr}/></clipPath>')
         csh, cmid, cw1, cw2 = 'clip-path="url(#k_sh)"', 'clip-path="url(#k_mid)"', 'clip-path="url(#k_w1)"', 'clip-path="url(#k_w2)"'
-    body = (f'<g data-joint="armL" data-pivot="64 122"><g {cw1}><g data-joint="armL_mid" data-pivot="55 {Y1}">'
+    body = (f'<g data-joint="armL" data-pivot="64 122" {iso}><g {cw1}><g data-joint="armL_mid" data-pivot="55 {Y1}">'
             f'<g {cw2}><g data-joint="armL_tip" data-pivot="60 {Y2}">{im("tip")}</g></g>{im("mid", cmid)}</g></g>{im("sh", csh)}</g>')
     out = orig.replace('<defs>', '<defs>' + defs, 1)
     return re.sub(r'<g data-joint="armL"[^>]*>.*?</g>', body, out, count=1, flags=re.S)
