@@ -1143,3 +1143,5 @@ Decision required first: turtle name (owl is already «حكيمة»): rename the
   cost goes into the K9.5-4 report and can be revisited as a product decision (one lossy band set + a measured diff budget) if the owner prefers bytes over exactness.
   Child pivots (viewBox px) for K9.5-2: wingL_mid (55.0, 130.537), wingL_tip (59.9193, 162.2145); wingR_mid (144.4612, 130.2), wingR_tip (140.2562, 161.6121). Next: K9.5-2.
   ack: DIRECTIVES #07 received.
+- 2026-09-27 resume-check #54 (after sandbox reset): branch at 317bd3c == origin, clean; origin/main 120ce1a; app/ diff 0. Gist unchanged (a2a05a8d = #07). K9.5-1 DONE on the branch (bands + parts.json + g14_wing_slice.json). K9.5-2: slice_wing.py --svg is on the branch (317bd3c) but the rewritten owl_p2.svg and the render proof tool (wing_render_proof.py) were NOT committed before the reset -> redo now (regenerate the SVG from the tool, commit the proof tool before its first run). Continue K9.5-2.
+  ack: DIRECTIVES #07 received.
