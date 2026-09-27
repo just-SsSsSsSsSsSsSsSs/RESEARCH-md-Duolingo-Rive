@@ -161,10 +161,46 @@ def slice_wing(part, cuts):
     return out_parts, report
 
 
+SVG = os.path.join(SANDBOX, 'companions', 'owl_p2.svg')
+
+
+def rewrite_svg(reports):
+    """K9.5-2: replace each <g data-joint="armL|armR"><image wingX/></g> with nested joints
+    armX (unchanged name + pivot) > armX_mid > armX_tip, three band images, draw order tip, mid, shoulder
+    (the shoulder covers the mid extension, the mid covers the tip extension). Idempotent: an already
+    nested group is replaced whole."""
+    import re
+    svg = open(SVG, encoding='utf-8').read()
+    for rep in reports:
+        part = rep['part']; side = 'armL' if part == 'wingL' else 'armR'
+        L = rep['layout_viewbox']; P = rep['child_pivots_viewbox']
+        def im(key):
+            b = L[f'{part}_{key}']
+            return f'<image href="art/parts/owl/{part}_{key}.webp" x="{b["x"]}" y="{b["y"]}" width="{b["w"]}" height="{b["h"]}" preserveAspectRatio="none" />'
+        pm, pt = P[f'{part}_mid'], P[f'{part}_tip']
+        m = re.search(r'<g data-joint="%s" data-pivot="([^"]+)">' % side, svg)
+        if not m: raise SystemExit(f'{side} not found in {SVG}')
+        pivot = m.group(1)
+        new = (f'<g data-joint="{side}" data-pivot="{pivot}" data-flex="3">'
+               f'<g data-joint="{side}_mid" data-pivot="{pm[0]} {pm[1]}">'
+               f'<g data-joint="{side}_tip" data-pivot="{pt[0]} {pt[1]}">{im("tip")}</g>'
+               f'{im("mid")}</g>{im("sh")}</g>')
+        # whole group: nested or flat. Match from the opening tag to the closing of the outermost armX group.
+        start = m.start(); depth = 0; i = start
+        for tag in re.finditer(r'<g\b|</g>', svg[start:]):
+            depth += 1 if tag.group(0) == '<g' else -1
+            if depth == 0:
+                i = start + tag.end(); break
+        svg = svg[:start] + new + svg[i:]
+    open(SVG, 'w', encoding='utf-8').write(svg)
+    return os.path.getsize(SVG)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--cuts', help='R1,R2 source rows (default: auto from the alpha profile)')
     ap.add_argument('--dry', action='store_true', help='compute and print, write nothing')
+    ap.add_argument('--svg', action='store_true', help='also rewrite companions/owl_p2.svg with the nested wing joints (K9.5-2)')
     a = ap.parse_args()
     cuts = tuple(int(v) for v in a.cuts.split(',')) if a.cuts else None
     if a.dry:
@@ -189,6 +225,8 @@ def main():
         os.makedirs(PROOFS, exist_ok=True)
         json.dump(dict(generated_at=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), tool='tools/slice_wing.py',
                        pass_all=ok, wings=reports), open(os.path.join(PROOFS, 'g14_wing_slice.json'), 'w'), indent=1)
+    if a.svg and not a.dry and ok:
+        print('svg rewritten', rewrite_svg(reports), 'bytes')
     print('pass_pixel_diff_0', ok)
     sys.exit(0 if ok else 1)
 
