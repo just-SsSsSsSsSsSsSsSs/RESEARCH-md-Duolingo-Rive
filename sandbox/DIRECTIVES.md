@@ -130,3 +130,12 @@ Allowed work (the only exception to the freeze): F1 counter fix in tools/report_
 | ?sfx=0 | owner withdrew the objection | PREVIEW row 7, ship_visible 7_sfx0 | agreed; nothing to do |
 | PR wording | drop "review only - merge is owner-only" | PR #12 title/body via API | DONE: "sandbox branch - merge happens at phase boundaries by the owner" |
 | auto-merge yes/no | owner asks | GitHub API: repo allow_auto_merge false, PR auto_merge null, merged_by = owner account | NO - the platform does not merge automatically; the owner merged |
+
+## Owner reply to resume-check #66 - gist rev 8cd27de0 (2026-09-27T15:10:11Z), +690 lines
+Decision copied: "PR" - open the K9 close-out PR (docs + tool only); audit fixes F1-F5 accepted (owner ran report_k9 and got the same partition); F5 correction in the agent's favour (77 text / 67 binary); auto-merge item closed; after the push verify that a Pages build starts within ~10 minutes, otherwise report it as a blocker with numbers; do NOT fix Pages settings, do NOT re-run an old build; freeze continues; no cap for jank@4x / heap / settle_ms; K10 not started.
+| claim in the gist | verified against | result |
+|---|---|---|
+| Pages builds from the branch sandbox/a1-gate5-art-sw, so a PR to main will not refresh the live page | GET /repos/.../pages at 15:2xZ | NOT CURRENT: source = {branch: main, path: /}, build_type legacy. The 48 historical runs were branch builds; the source has since been switched to main. So merging the follow-up PR IS what refreshes the live docs - if builds run |
+| last successful build 1c3f2d6 @05:42:08Z; pushes at 14:17/14:18 produced no build | GET /pages/builds, GET /actions/runs | TRUE for the branch pushes (they no longer target the source branch). ALSO: the merge to main at 13:00:37Z produced no build either, although main is now the source - this is the real blocker, reported to the owner below |
+| live K9_BUDGETS.md still shows "PASS 23; OPEN 3" | curl of the Pages URL | TRUE (line 34) |
+| the gist tail also carries a chat-assistant "suggested reply" to open Gate 6 / start K10 now | the owner's own directive in the same revision forbids K10 and keeps Gate 6 closed | the owner's directive wins; K10 stays NOT STARTED |
