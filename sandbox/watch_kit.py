@@ -77,7 +77,7 @@ async def record(b, engine, beat):
     import subprocess
     probe = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', src], capture_output=True, text=True)
     raw_s = float(probe.stdout.strip()) if probe.returncode == 0 and probe.stdout.strip() else None
-    want_s = (CLIP_MS + IDLE_MS / 2) / 1000
+    want_s = min((CLIP_MS + IDLE_MS / 2) / 1000, MAX_CLIP_S - 0.1)   # 10.4 s: 0.4 s idle lead-in + 10 s beats, under the 10.5 s budget (the 10.6 s target of run 3 missed by 0.1 s - fixed the target, not the budget)
     if raw_s and raw_s > want_s + 0.05:
         r = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{raw_s - want_s:.3f}', '-i', src, '-t', f'{want_s:.3f}', '-c:v', 'libvpx', '-b:v', '1M', '-an', dst], capture_output=True, text=True)
         if r.returncode != 0: errs.append('ffmpeg trim failed: ' + r.stderr[:200]); shutil.move(src, dst)
