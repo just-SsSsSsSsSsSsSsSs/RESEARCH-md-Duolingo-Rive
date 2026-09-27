@@ -236,6 +236,28 @@ async def main():
           return { matches: matchMedia('(prefers-reduced-motion: reduce)').matches, addedRootBodyLayers: peak, performances: r.stats.performances || 0, vfxSkipped: window.__foley ? window.__foley.vfx.stats.skippedReduced : null }; }""")
         R['9b_reduced'] = dict(**red, errors=errs[:], pass_=red['matches'] and red['addedRootBodyLayers'] == 0 and red['performances'] == 3 and len(errs) == 0)
         await ctx.close()
+
+        # ---- 10 flex (K9.5): the bar button exists and is ON; the 480 ms flap puts follower layers on armL_mid/armL_tip (engine truth via getAnimations);
+        #      pressing the button turns flex off -> the next flap adds 0 followers and no child layer; pressing again restores it.
+        #      Full timing proof (ratio, lag, tail, perf) lives in flex_proof.py -> g14_flex.json. ----
+        pg, ctx, errs = await page(b, '&sfx=0')
+        flex = await pg.evaluate("async () => {" + JS_HELPERS + """
+          const btn = document.querySelector('#acting button[data-actx="flex"]');
+          const lay = n => r.j(n) ? r.j(n).getAnimations().filter(a => a.effect.getTiming().duration === 480).length : -1;
+          const waitFlap = async () => { const t0 = performance.now(); while (performance.now() - t0 < 700 && !lay('armL')) await sleep(16); };
+          const idle = async () => { const t0 = performance.now(); while (r.busy && performance.now() - t0 < 6000) await sleep(16); await sleep(150); };
+          const f = () => (r.stats && r.stats.flexFollowers) || 0;
+          const o = { present: !!btn, pressed0: btn && btn.getAttribute('aria-pressed'), label0: btn && btn.textContent };
+          let f0 = f(); r.celebrate(); await waitFlap(); o.childOn = lay('armL_mid') + lay('armL_tip'); await idle(); o.followersOn = f() - f0;
+          btn.click(); o.pressed1 = btn.getAttribute('aria-pressed'); o.label1 = btn.textContent; o.specEnabled1 = r.spec.acting.flex.enabled;
+          f0 = f(); r.celebrate(); await waitFlap(); o.childOff = lay('armL_mid') + lay('armL_tip'); await idle(); o.followersOff = f() - f0;
+          btn.click(); o.pressed2 = btn.getAttribute('aria-pressed'); o.specEnabled2 = r.spec.acting.flex.enabled;
+          f0 = f(); r.celebrate(); await waitFlap(); o.childBack = lay('armL_mid') + lay('armL_tip'); await idle(); o.followersBack = f() - f0;
+          return o; }""")
+        R['10_flex'] = dict(**flex, errors=errs[:], pass_=flex['present'] and flex['pressed0'] == 'true' and flex['childOn'] == 2 and flex['followersOn'] == 4
+                            and flex['pressed1'] == 'false' and flex['specEnabled1'] is False and flex['childOff'] == 0 and flex['followersOff'] == 0
+                            and flex['pressed2'] == 'true' and flex['childBack'] == 2 and flex['followersBack'] == 4 and len(errs) == 0)
+        await ctx.close()
         await b.close()
 
     R['pass_all'] = all(v.get('pass_') for v in R.values() if isinstance(v, dict) and 'pass_' in v)

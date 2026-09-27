@@ -81,6 +81,7 @@
   <button data-actx="oops">خطأ كوميدي</button>
   <button data-actx="puzzled">حيرة</button>
   <button data-actx="brows" id="browsBtn" aria-pressed="true">الحواجب: ظاهرة</button>
+  <button data-actx="flex" id="flexBtn" aria-pressed="true">مرونة الجناح: تعمل</button>
   <button data-actx="poses" id="posesBtn" aria-pressed="false">الأوضاع 1-6</button>
   <span id="poseBtns" hidden>
     <button data-pose="alert">1 يقظة</button><button data-pose="charged">2 تحفز</button><button data-pose="launch">3 انطلاق</button>
@@ -408,6 +409,16 @@
     rigs.forEach((r) => r.svg.querySelectorAll('[data-feature="brows"]').forEach((g) => { g.style.display = on ? '' : 'none'; }));
   }
   function showPoses(on) { posesBtn.setAttribute('aria-pressed', String(on)); poseBtns.hidden = !on; if (!on) rigs.forEach((r) => r.poses && r.poses.release()); }
+  // K9.5-5 A/B from the bar: flips the same spec kill switch flexSpec() reads (spec.acting.flex.enabled); the next arm layer decides, no engine path added
+  const flexBtn = document.getElementById('flexBtn');
+  const FLEX_URL_OFF = params.get('flex') === '0';
+  function flexState() { return !FLEX_URL_OFF && !!(SPEC && SPEC.acting && SPEC.acting.flex && SPEC.acting.flex.enabled !== false); }
+  function setFlex(on) {
+    if (SPEC && SPEC.acting && SPEC.acting.flex) SPEC.acting.flex.enabled = !!on;
+    const eff = flexState(); flexBtn.setAttribute('aria-pressed', String(eff));
+    flexBtn.textContent = FLEX_URL_OFF ? 'مرونة الجناح: معطلة (?flex=0)' : (eff ? 'مرونة الجناح: تعمل' : 'مرونة الجناح: متوقفة');
+    flexBtn.disabled = FLEX_URL_OFF;
+  }
   function freezePose(name) {
     rigs.forEach((r) => {
       if (!r.poses) return;
@@ -421,6 +432,7 @@
     const b = e.target.closest('button[data-actx]'); if (!b) return;
     const x = b.dataset.actx;
     if (x === 'brows') return setBrows(!browsShown);
+    if (x === 'flex') return setFlex(!flexState());
     if (x === 'poses') return showPoses(poseBtns.hidden);
     if (x === 'wink') return rigs.forEach((r, i) => r.wink && setTimeout(() => r.wink(), i * 120));
     if (x === 'dart') return rigs.forEach((r) => r.dart && r.dart());
@@ -431,6 +443,7 @@
   });
   if (!BROWS) setBrows(false);
   if (POSES) showPoses(true);
+  loadSpec().then(() => setFlex(flexState()));
 
   // ---- K9.3 intent: eyes -> head -> body -> flight, toward the answer card (solo owl); the flight itself is the existing move:to ----
   // ---- K9.4 performances from the bar: the state machine escalates (small small medium small small medium large); the caption reads the tier ----
