@@ -877,6 +877,29 @@
           }
         }
       }
+    },
+    "flex": {
+      "comment": "K9.5 limited flex: the wing is 3 raster bands (art/parts/owl/wing*_sh|mid|tip, tools/slice_wing.py) under nested joints armX > armX_mid > armX_tip. engine/flex.js wraps rig.anim(): every pure rotate() layer authored on armL/armR gets follower layers on the children - same duration/easing/iterations, scaled by ratio, delayed by lagMs, plus a follow-through tail on the tip after the parent's last keyframe (Lasseter 1987 sec 2.5: appendages drag behind the leading part and take longer to settle; Toon Boom articulation overlap for the seam). translate/scale on the parent move the whole wing as before. ?flex=0 kill switch; prefers-reduced-motion -> off. Budgets measured by sandbox/flex_proof.py -> samples/proofs/g14_flex.json.",
+      "enabled": true,
+      "segments": {
+        "mid": {
+          "ratio": 0.55,
+          "lagMs": 40
+        },
+        "tip": {
+          "ratio": 0.85,
+          "lagMs": 90
+        }
+      },
+      "maxDeg": 28,
+      "tail": {
+        "ms": 260,
+        "overshoot": 0.18,
+        "easing": "land"
+      },
+      "minParentDeg": 4,
+      "activeOnly": false,
+      "activeOnlyComment": "set true by K9.5-4 only if the perf matrix shows a p95 rise beyond the in-cell spread; then only the rig with data-active=1 gets followers"
     }
   },
   "poses": {

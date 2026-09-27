@@ -110,6 +110,7 @@
   import { PoseLayer, validatePoses } from './engine/poses.js';
   import './engine/acting.js';
   import { validateActing } from './engine/acting.js';
+  import { validateFlex } from './engine/flex.js';   // K9.5: 3-band wing followers (wraps rig.anim once); ?flex=0 off
   import { SoundBus } from './engine/sound.js';
 
   const ART = { p1: ['companions/owl.svg', 'companions/bee.svg'], p2: ['companions/owl_p2.svg'] };
@@ -131,12 +132,13 @@
   let SPEC = null;
   async function loadSpec() {
     if (SPEC) return SPEC;
-    const res = await fetch('companions/owl.motion.json?v=k94a');
+    const res = await fetch('companions/owl.motion.json?v=k95a');
     SPEC = await res.json();
     const v = validateSpec(SPEC);
     const pp = validatePoses(SPEC, ['root','body','head','eyeL','eyeR','pupilL','pupilR','lidL','lidR','mouth','armL','armR','legL','legR','shadow','browL','browR']);
     if (pp.length) { v.ok = false; v.problems.push(...pp); }
     const pa = validateActing(SPEC); if (pa.length) { v.ok = false; v.problems.push(...pa); }
+    const pf = validateFlex(SPEC); if (pf.length) { v.ok = false; v.problems.push(...pf); }
     if (!v.ok) console.warn('spec problems', v.problems);
     window.__specCheck = v;
     return SPEC;
