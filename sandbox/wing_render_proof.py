@@ -138,14 +138,17 @@ async def main():
     # Budget: renegotiated by the owner (DIRECTIVES #08, option a) after 14 constructions could not reach the
     # original 0 (g14_wing_seam_variants.json). Original kept for the record.
     report['budget_original'] = dict(rest_median_diff=0, bend_holes_px=0, rest_holes_px=0)
-    report['budget_accepted'] = dict(rest_max_abs_diff=35, rest_diff_rows_per_cut=2, rest_holes_px=0, bend_holes_px={'1': 6, '2': 64})
+    report['budget_accepted'] = dict(rest_max_abs_diff=35, rest_diff_rows_per_cut=2, rest_holes_px=0, bend_holes_px={'1': 6, '2': 64}, per='wing')
     for k, v in report['dpr'].items():
         rest_ok = all(w['max_abs_diff'] <= 35 for w in v['median_diff_wing_boxes'].values())
         rows = set()
         for w in v['median_diff_wing_boxes'].values():
             if w['diff_bbox_px']: rows.add((w['diff_bbox_px'][1], w['diff_bbox_px'][3]))
-        holes_bend = sum(h['hole_px'] for h in v['seam_bend'].values())
-        holes_rest = sum(h['hole_px'] for h in v['seam_rest'].values())
+        # the accepted budget is PER WING (the numbers the owner accepted were 63 / 64 px at DPR2, one wing each);
+        # an earlier draft summed L+R here (127 vs 64) - tool defect, disclosed in PROGRESS (resume #60)
+        holes_bend = max(h['hole_px'] for h in v['seam_bend'].values())
+        holes_rest = max(h['hole_px'] for h in v['seam_rest'].values())
+        v['bend_holes_px_max_wing'] = holes_bend; v['rest_holes_px_max_wing'] = holes_rest
         v['pass_accepted_rest_max_35'] = rest_ok
         v['pass_accepted_rest_holes_0'] = holes_rest <= 1   # 1 px AA-tint noise at DPR1 observed on the unbent render
         v['pass_accepted_bend_holes'] = holes_bend <= report['budget_accepted']['bend_holes_px'][k]
