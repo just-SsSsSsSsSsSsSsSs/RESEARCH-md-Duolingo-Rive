@@ -78,6 +78,17 @@ def build_variants(plate, c1, c2):
     # and only become visible when the child rotates, so nothing is ever added twice.
     V['v7_add_lip_clipAA'] = (V['v3_lip_full'][0], V['v3_lip_full'][1], base_tip, 'add')
     V['v8_add_nolip_clipAA'] = (base_sh, base_mid, base_tip, 'add')
+    # v9..v11: OVERLAP, not partition. The rest seam is a conflation artifact: the two half-covered
+    # device rows at the cut composite to less than full alpha and the background bleeds through
+    # (screenshot: a 1-px magenta line). Cut-out rigs solve it by overlap [P10 Toon Boom]: the upper
+    # band keeps K full rows of the plate below the cut (visible pixels, no erosion) so its edge lands on
+    # fully opaque pixels of the lower band; the lower band keeps its extension upward. At rest both
+    # bands show the same true pixels where they overlap, so the over operator returns the plate value
+    # and the only inexactness is the AA edge of the upper band, which now sits ON TOP of an opaque region
+    # instead of on the background.
+    for K in (2, 4, 8):
+        sh_k = band(0, c1 + K); mid_k = with_ext(band(c1, c2 + K), op & (rows < c1), c1 - S.EXT)
+        V[f'v{9 + (K // 4) + (K == 8)}_overlap{K}'] = (sh_k, mid_k, base_tip, None)
     return V
 
 

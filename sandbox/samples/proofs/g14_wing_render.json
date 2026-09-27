@@ -1,0 +1,464 @@
+{
+ "generated_at": "2026-09-27T02:51:44Z",
+ "ref_original": "317bd3c",
+ "bend_deg_per_segment": 20.0,
+ "renders_per_doc": 3,
+ "url": "http://localhost:8080/sandbox/",
+ "cuts": {
+  "wingL": [
+   67,
+   213
+  ],
+  "wingR": [
+   66,
+   212
+  ]
+ },
+ "dpr": {
+  "1": {
+   "shape": [
+    480,
+    400
+   ],
+   "median_diff_whole": {
+    "max_abs_diff": 60,
+    "pixels_differing": 231,
+    "diff_bbox_px": [
+     67,
+     260,
+     330,
+     324
+    ]
+   },
+   "median_diff_wing_boxes": {
+    "L": {
+     "max_abs_diff": 60,
+     "pixels_differing": 130,
+     "diff_bbox_px": [
+      7,
+      29,
+      73,
+      92
+     ]
+    },
+    "R": {
+     "max_abs_diff": 54,
+     "pixels_differing": 101,
+     "diff_bbox_px": [
+      27,
+      28,
+      90,
+      91
+     ]
+    }
+   },
+   "raw_pairs": [
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 231,
+     "diff_bbox_px": [
+      67,
+      260,
+      330,
+      324
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 274,
+     "diff_bbox_px": [
+      67,
+      257,
+      330,
+      331
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 231,
+     "diff_bbox_px": [
+      67,
+      260,
+      330,
+      324
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 231,
+     "diff_bbox_px": [
+      67,
+      260,
+      330,
+      324
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 274,
+     "diff_bbox_px": [
+      67,
+      257,
+      330,
+      331
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 231,
+     "diff_bbox_px": [
+      67,
+      260,
+      330,
+      324
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 231,
+     "diff_bbox_px": [
+      67,
+      260,
+      330,
+      324
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 274,
+     "diff_bbox_px": [
+      67,
+      257,
+      330,
+      331
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 231,
+     "diff_bbox_px": [
+      67,
+      260,
+      330,
+      324
+     ]
+    }
+   ],
+   "control_same_doc_pairs": [
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 13,
+     "pixels_differing": 45,
+     "diff_bbox_px": [
+      97,
+      257,
+      97,
+      331
+     ]
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 13,
+     "pixels_differing": 45,
+     "diff_bbox_px": [
+      97,
+      257,
+      97,
+      331
+     ]
+    }
+   ],
+   "seam_bend": {
+    "L": [
+     {
+      "cut_css_y": 261,
+      "inside_cols": 99,
+      "gap_cols": 8
+     },
+     {
+      "cut_css_y": 324,
+      "inside_cols": 95,
+      "gap_cols": 11
+     }
+    ],
+    "R": [
+     {
+      "cut_css_y": 260,
+      "inside_cols": 99,
+      "gap_cols": 11
+     },
+     {
+      "cut_css_y": 323,
+      "inside_cols": 93,
+      "gap_cols": 12
+     }
+    ]
+   },
+   "seam_rest": {
+    "L": [
+     {
+      "cut_css_y": 261,
+      "inside_cols": 69,
+      "gap_cols": 0
+     },
+     {
+      "cut_css_y": 324,
+      "inside_cols": 72,
+      "gap_cols": 0
+     }
+    ],
+    "R": [
+     {
+      "cut_css_y": 260,
+      "inside_cols": 69,
+      "gap_cols": 0
+     },
+     {
+      "cut_css_y": 323,
+      "inside_cols": 71,
+      "gap_cols": 0
+     }
+    ]
+   },
+   "pass_rest_wing_median_diff_0": false,
+   "pass_seam_gap_0_bend": false,
+   "pass_seam_gap_0_rest": true
+  },
+  "2": {
+   "shape": [
+    960,
+    800
+   ],
+   "median_diff_whole": {
+    "max_abs_diff": 60,
+    "pixels_differing": 370,
+    "diff_bbox_px": [
+     134,
+     520,
+     661,
+     648
+    ]
+   },
+   "median_diff_wing_boxes": {
+    "L": {
+     "max_abs_diff": 60,
+     "pixels_differing": 181,
+     "diff_bbox_px": [
+      14,
+      58,
+      145,
+      184
+     ]
+    },
+    "R": {
+     "max_abs_diff": 59,
+     "pixels_differing": 189,
+     "diff_bbox_px": [
+      54,
+      56,
+      181,
+      182
+     ]
+    }
+   },
+   "raw_pairs": [
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    },
+    {
+     "max_abs_diff": 60,
+     "pixels_differing": 370,
+     "diff_bbox_px": [
+      134,
+      520,
+      661,
+      648
+     ]
+    }
+   ],
+   "control_same_doc_pairs": [
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    },
+    {
+     "max_abs_diff": 0,
+     "pixels_differing": 0,
+     "diff_bbox_px": null
+    }
+   ],
+   "seam_bend": {
+    "L": [
+     {
+      "cut_css_y": 522,
+      "inside_cols": 212,
+      "gap_cols": 19
+     },
+     {
+      "cut_css_y": 649,
+      "inside_cols": 169,
+      "gap_cols": 9
+     }
+    ],
+    "R": [
+     {
+      "cut_css_y": 521,
+      "inside_cols": 211,
+      "gap_cols": 21
+     },
+     {
+      "cut_css_y": 646,
+      "inside_cols": 169,
+      "gap_cols": 9
+     }
+    ]
+   },
+   "seam_rest": {
+    "L": [
+     {
+      "cut_css_y": 522,
+      "inside_cols": 148,
+      "gap_cols": 0
+     },
+     {
+      "cut_css_y": 649,
+      "inside_cols": 168,
+      "gap_cols": 0
+     }
+    ],
+    "R": [
+     {
+      "cut_css_y": 521,
+      "inside_cols": 149,
+      "gap_cols": 0
+     },
+     {
+      "cut_css_y": 646,
+      "inside_cols": 169,
+      "gap_cols": 0
+     }
+    ]
+   },
+   "pass_rest_wing_median_diff_0": false,
+   "pass_seam_gap_0_bend": false,
+   "pass_seam_gap_0_rest": true
+  }
+ },
+ "pass_all": false
+}
