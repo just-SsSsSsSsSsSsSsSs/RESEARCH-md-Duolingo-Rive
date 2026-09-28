@@ -269,7 +269,7 @@ async def main():
     os.makedirs(OUT, exist_ok=True)
     manifest = {'generated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'kit_version': KIT_VERSION, 'seed': SEED, 'clip_ms': CLIP_MS, 'idle_ms': IDLE_MS, 'second_beat_ms': SECOND_BEAT_MS,
                 'answer_lock_ms': SECOND_BEAT_MS, 'blink_seed': BLINK_SEED, 'resolved_clips': {}, 'recording_urls': {}, 'blink_seeded': {}, 'scoring_mode': SCORING_MODE, 'trials_per_beat': TRIALS_PER_BEAT,
-                'beats': BEATS, 'arms': {'v2': 'engine=v2 art=p2 (this branch)', 'v1': 'engine=v1 art=p2 (frozen K7 reference)'}, 'states_per_clip': STATES_PER_CLIP, 'clips': {}, 'errors': {}}
+                'beats': BEATS, 'arms': {'v2': 'engine=v2 art=p2 (this branch)', 'v1': 'engine=v1 art=p2 (frozen K7 reference)'}, 'states_per_clip': {b: STATES_PER_CLIP[b] for b in BEATS}, 'clips': {}, 'errors': {}}   # only the beats in THIS kit
     only = None; prev = None
     if '--only' in sys.argv:
         only = set(sys.argv[sys.argv.index('--only') + 1].split(','))

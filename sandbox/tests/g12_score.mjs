@@ -42,8 +42,11 @@ ok(r.verdict === 'FAIL' && r.v2_chosen === 2 && near(r.two_sided_p, 0.0386), `2/
 r = G12.score([block('a', L), block('b', L), block('c', L)], M);
 ok(r.verdict === 'FAIL' && near(r.two_sided_p, 0.0005), `0/12 (p ${r.two_sided_p.toFixed(4)}) -> ${r.verdict} (trap caught)`);
 // 7. no evidence: 8/12
+const Mwin = { ...M, scoring_mode: 'win' };   // kit v1-v3 rule (the current manifest may be a tie-mode kit v4)
+r = G12.score([block('a', ['v2', 'v2', 'v1', 'v1']), block('b', ['v2', 'v2', 'v2', 'v1']), block('c', ['v2', 'v2', 'v2', 'v1'])], Mwin);
+ok(r.verdict === 'FAIL' && r.v2_chosen === 8, `8/12 under win mode -> ${r.verdict} (no evidence)`);
 r = G12.score([block('a', ['v2', 'v2', 'v1', 'v1']), block('b', ['v2', 'v2', 'v2', 'v1']), block('c', ['v2', 'v2', 'v2', 'v1'])], M);
-ok(r.verdict === 'FAIL' && r.v2_chosen === 8, `8/12 -> ${r.verdict} (no evidence)`);
+ok(M.scoring_mode !== 'tie' || r.verdict === 'PASS', `8/12 under the current manifest (mode ${r.mode}) -> ${r.verdict}`);
 // 8. INSUFFICIENT: 2 raters, 8 trials
 r = G12.score([block('a', W), block('b', W)], M);
 ok(r.verdict === 'INSUFFICIENT', `2 raters / 8 trials -> ${r.verdict}`);
@@ -68,10 +71,10 @@ const first = JSON.parse(readFileSync(path.join(here, '..', 'samples', 'watch', 
 r = G12.score([first], M);
 ok(r.verdict === 'REJECTED' && r.blocks_rejected.length === 1 && r.blocks_accepted === 0, `kit-v1 real block under kit v${M.kit_version} -> ${r.verdict} (by design)`);
 const chain = []; for (let pk = M.previous_kit; pk; pk = pk.previous_kit) chain.push(pk);
-ok(M.kit_version === 3 && chain.length === 2 && chain[0].kit_version === 2 && chain[1].kit_version === 1, `manifest is kit v${M.kit_version}; previous_kit chain v${chain.map(c => c.kit_version).join(' -> v')}`);
-ok(new Set([M.seed, ...chain.map(c => c.seed)]).size === 3 && new Set([M.order_sha256, ...chain.map(c => c.order_sha256)]).size === 3, 'v1, v2, v3 have three different seeds and three different order_sha256');
-const v1kit = chain[1];
-const Mv1 = { ...M, generated_at: v1kit.generated_at, seed: v1kit.seed, order_sha256: v1kit.order_sha256, order: first.answers.map(a => ({ beat: a.beat, left: 'v2' })) };
+ok(M.kit_version === 4 && chain.length === 3 && chain.map(c => c.kit_version).join() === '3,2,1', `manifest is kit v${M.kit_version}; previous_kit chain v${chain.map(c => c.kit_version).join(' -> v')}`);
+ok(new Set([M.seed, ...chain.map(c => c.seed)]).size === 4 && new Set([M.order_sha256, ...chain.map(c => c.order_sha256)]).size === 4, 'v1, v2, v3, v4 have four different seeds and four different order_sha256');
+const v1kit = chain[2];
+const Mv1 = { ...M, scoring_mode: 'win', generated_at: v1kit.generated_at, seed: v1kit.seed, order_sha256: v1kit.order_sha256, order: first.answers.map(a => ({ beat: a.beat, left: 'v2' })) };
 r = G12.score([first], Mv1);
 ok(r.verdict === 'INSUFFICIENT' && r.n === 4 && r.v2_chosen === 3, `same block against its own kit (v1 in the chain) -> ${r.verdict} (${r.v2_chosen}/${r.n})`);
 // 13b. the real kit-v2 blocks (Salim, Baba, Karma) are REJECTED under kit v3 by design, and still score FAIL 6/12 against kit v2
@@ -79,20 +82,35 @@ const v2files = ['2026-09-27_gist-df1b7d02_rater-salim-kitv2.json', '2026-09-27_
 const v2blocks = v2files.map(f => JSON.parse(readFileSync(path.join(here, '..', 'samples', 'watch', 'results', f), 'utf8')));
 r = G12.score(v2blocks, M);
 ok(r.verdict === 'REJECTED' && r.blocks_rejected.length === 3, `3 real kit-v2 blocks under kit v3 -> ${r.verdict} (by design)`);
-const v2kit = chain[0];
-const Mv2 = { ...M, generated_at: v2kit.generated_at, seed: v2kit.seed, order_sha256: v2kit.order_sha256, order: v2blocks[0].answers.map(a => ({ beat: a.beat, left: 'v2' })) };
+const v2kit = chain[1];
+const Mv2 = { ...M, scoring_mode: 'win', generated_at: v2kit.generated_at, seed: v2kit.seed, order_sha256: v2kit.order_sha256, order: v2blocks[0].answers.map(a => ({ beat: a.beat, left: 'v2' })) };
 r = G12.score(v2blocks, Mv2);
 ok(r.verdict === 'FAIL' && r.n === 12 && r.v2_chosen === 6 && r.raters.length === 3, `same 3 blocks against kit v2 -> ${r.verdict} ${r.v2_chosen}/${r.n} from ${r.raters.length} raters (the recorded kit-v2 result)`);
+// 13c. the real kit-v3 blocks (Salim, Karma, Baba) are REJECTED under kit v4 by design, and still score FAIL 6/12 against kit v3 (win mode)
+const v3files = ['2026-09-28_gist-795870df_rater-salim-kitv3.json', '2026-09-28_gist-98611011_rater-karma-kitv3.json', '2026-09-28_gist-98611011_rater-baba-kitv3.json'];
+const v3blocks = v3files.map(f => JSON.parse(readFileSync(path.join(here, '..', 'samples', 'watch', 'results', f), 'utf8')));
+r = G12.score(v3blocks, M);
+ok(r.verdict === 'REJECTED' && r.blocks_rejected.length === 3, `3 real kit-v3 blocks under kit v4 -> ${r.verdict} (by design)`);
+const v3kit = chain[0];
+const Mv3 = { ...M, scoring_mode: 'win', generated_at: v3kit.generated_at, seed: v3kit.seed, order_sha256: v3kit.order_sha256, order: v3blocks[0].answers.map(a => ({ beat: a.beat, left: 'v2' })) };
+r = G12.score(v3blocks, Mv3);
+ok(r.verdict === 'FAIL' && r.n === 12 && r.v2_chosen === 6 && r.raters.length === 3, `same 3 blocks against kit v3 (win mode) -> ${r.verdict} ${r.v2_chosen}/${r.n} from ${r.raters.length} raters (the recorded kit-v3 result)`);
 // 14. kit v3 rule lines: every clip states which clip the state RESOLVES to (read live at recording time), the think clip resolves
 //     to rig.ponder (the K9.5-2 performance, not puzzled), the sad clip names the K9.5-3 plate, blink seeded on every re-recorded clip
 ok(M.states_per_clip && M.beats.every(b => M.states_per_clip[b] && M.states_per_clip[b].v2 && M.states_per_clip[b].v1), 'states_per_clip covers all beats on both arms');
 ok(/RESOLVED/.test(M.states_per_clip.think.v2) && /ponder/.test(M.states_per_clip.think.v2) && !/spiral\b(?!\))/.test(M.states_per_clip.think.v2.replace('no spiral', '')), `think label names the resolved clip: "${M.states_per_clip.think.v2.slice(0, 60)}..."`);
-ok(M.resolved_clips && /rig\.ponder/.test(M.resolved_clips.v2_think || '') && !/puzzled/.test(M.resolved_clips.v2_think || ''), `live resolved v2_think = "${M.resolved_clips && M.resolved_clips.v2_think}"`);
+ok(M.resolved_clips && /rig\.perform\(think\) choreo 8 channels 3500 ms/.test(M.resolved_clips.v2_think || '') && !/puzzled/.test(M.resolved_clips.v2_think || ''), `live resolved v2_think = "${M.resolved_clips && M.resolved_clips.v2_think}"`);
+ok(M.resolved_clips && /body recoil -> rig\.perform\(sad\) choreo 10 channels 2500 ms/.test(M.resolved_clips.v2_sad || ''), `live resolved v2_sad names the choreo player: "${M.resolved_clips && M.resolved_clips.v2_sad}"`);
 ok(M.resolved_clips && /beak_sad\.webp/.test(M.resolved_clips.v2_sad || ''), `live resolved v2_sad = "${M.resolved_clips && M.resolved_clips.v2_sad}"`);
 ok(M.answer_lock_ms === M.second_beat_ms && M.answer_lock_ms === 5500, `answer_lock_ms ${M.answer_lock_ms} == second_beat_ms ${M.second_beat_ms}`);
 ok(typeof M.blink_seed === 'number' && M.blink_seeded && M.blink_seeded.v2_think === true && M.blink_seeded.v2_sad === true, `blink seeded on the re-recorded clips (seed ${M.blink_seed})`);
 ok(M.recording_urls && /[?&]seed=\d+/.test(M.recording_urls.v2_think || ''), `recording URL carries &seed=: ${M.recording_urls && M.recording_urls.v2_think}`);
-ok(Array.isArray(M.reused_from_previous_kit) && M.reused_from_previous_kit.length === 6 && !M.reused_from_previous_kit.some(f => /^v2_(think|sad)/.test(f)), `6 clips reused from kit v2 (all v1 clips + v2 celebrate/flight), v2 think/sad re-recorded`);
+ok(Array.isArray(M.reused_from_previous_kit) && M.reused_from_previous_kit.join() === 'v1_think.webm,v1_sad.webm' && Object.keys(M.clips).sort().join() === 'v1_sad,v1_think,v2_sad,v2_think', `kit v4: v1 think/sad reused byte-identical from kit v3, v2 think/sad re-recorded, no other clips (${Object.keys(M.clips).join(' ')})`);
+// kit v4 shape: beats think + sad, 2 trials per beat, tie mode, dropped beats documented with the kit they were decided on
+ok(M.beats.join() === 'think,sad' && M.order.length === 4 && M.order.filter(o => o.beat === 'think').length === 2 && M.trials_per_beat === 2, `kit v4 order: ${M.order.map(o => o.beat + ':' + o.left).join(' ')}`);
+ok(M.scoring_mode === 'tie' && M.previous_kit.beats_dropped.join() === 'celebrate,flight' && /kit v3/.test(M.beats_not_in_this_kit.celebrate), 'kit v4 manifest: scoring_mode tie; celebrate/flight recorded as decided on kit v3');
+ok(Object.keys(M.states_per_clip).join() === 'think,sad', 'kit intro lists only the beats in this kit');
+ok(/scoring_mode tie/.test(readFileSync(path.join(here, '..', 'samples', 'watch', 'README.md'), 'utf8')) && /3\.98 pct at 12/.test(readFileSync(path.join(here, '..', 'samples', 'watch', 'README.md'), 'utf8')), 'kit README states the tie rule and the exact false-FAIL figures');
 // 15. the kit HTML locks the answer buttons until answer_lock_ms (attribute + handler guard) and shows a countdown
 const html = readFileSync(path.join(here, '..', 'samples', 'watch', 'index.html'), 'utf8');
 ok(/<button data-side="R" disabled>/.test(html) && /<button data-side="L" disabled>/.test(html), 'answer buttons start disabled');
@@ -136,7 +154,7 @@ ok(r.per_beat.think.v2 === 2 && r.per_beat.sad.v2 === 2 && r.verdict === 'PASS',
 // win mode untouched: the same 6/12 blocks under a manifest WITHOUT scoring_mode -> FAIL (no evidence)
 r = G12.score([block4('a', ['v2', 'v1', 'v1', 'v2']), block4('b', ['v1', 'v2', 'v2', 'v1']), block4('c', ['v1', 'v1', 'v2', 'v2'])], { ...M4, scoring_mode: undefined });
 ok(r.mode === 'win' && r.verdict === 'FAIL', `same 6/12 under win mode -> ${r.verdict} (kit v1-v3 rule unchanged)`);
-ok(M.scoring_mode === undefined || M.scoring_mode === 'win' || M.kit_version >= 4, `current manifest kit v${M.kit_version} scoring_mode ${M.scoring_mode} (tie only from kit v4)`);
+ok(M.scoring_mode === 'tie' && M.kit_version >= 4, `current manifest kit v${M.kit_version} scoring_mode ${M.scoring_mode} (tie only from kit v4)`);
 // exact false-FAIL probability for a perfect port, as told to the owner (DIRECTIVES 0b1f96bc): 4.0 pct at 12, 6.9 pct at 16
 ok(near(G12.tieFalseFail(2, 6), 0.0398, 5e-4) && near(G12.tieFalseFail(2, 8), 0.0691, 5e-4), `tie false-FAIL for a perfect port: ${(G12.tieFalseFail(2, 6) * 100).toFixed(2)} pct at 12 trials, ${(G12.tieFalseFail(2, 8) * 100).toFixed(2)} pct at 16`);
 
