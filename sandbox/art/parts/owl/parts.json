@@ -321,6 +321,84 @@
    ],
    "extension_rows": 44,
    "note": "full-plate canvas wing band; extension rows sit under the band above (Toon Boom overlap)"
+  },
+  "beak_smile": {
+   "file": "beak_smile.webp",
+   "w": 137,
+   "h": 126,
+   "cell_offset": [
+    215,
+    227
+   ],
+   "scale": 0.6,
+   "bytes": 14130,
+   "derived_from": "beak_closed.webp",
+   "tool": "art/author_mouth_plates.py",
+   "warp": {
+    "amp": -16.0,
+    "tip": 4.0,
+    "spread": 5.0,
+    "pin_row": 58,
+    "ramp_rows": 22,
+    "crease": {
+     "corners": [
+      [
+       18.0,
+       76.0
+      ],
+      [
+       117.0,
+       84.0
+      ]
+     ],
+     "centre": [
+      67.5,
+      106
+     ],
+     "width": 4.2,
+     "points": 400
+    },
+    "healed_source_crease": true
+   }
+  },
+  "beak_sad": {
+   "file": "beak_sad.webp",
+   "w": 137,
+   "h": 126,
+   "cell_offset": [
+    215,
+    227
+   ],
+   "scale": 0.6,
+   "bytes": 14730,
+   "derived_from": "beak_closed.webp",
+   "tool": "art/author_mouth_plates.py",
+   "warp": {
+    "amp": 14.0,
+    "tip": -4.0,
+    "spread": -4.0,
+    "pin_row": 58,
+    "ramp_rows": 22,
+    "crease": {
+     "corners": [
+      [
+       19.0,
+       99.0
+      ],
+      [
+       117.0,
+       98.0
+      ]
+     ],
+     "centre": [
+      68.0,
+      87
+     ],
+     "width": 4.2,
+     "points": 400
+    },
+    "healed_source_crease": true
+   }
   }
  },
  "total_bytes": 335356,
@@ -347,5 +425,13 @@
   },
   "ext_rows": 44,
   "erode_px": 2
+ },
+ "mouth_plates": {
+  "tool": "art/author_mouth_plates.py",
+  "method": "column-shear displacement, premultiplied bilinear, top half pinned",
+  "plates": [
+   "beak_smile",
+   "beak_sad"
+  ]
  }
 }
