@@ -171,6 +171,62 @@ P._reducedFace = function (mouth, ms) {
   this.later(() => { this.setMouth('closed'); this.busy = false; this.cue('settle'); }, ms);
 };
 
+// ---------------------------------------------------------------------------------------------
+// K9.6-3 generic choreography player (owner decision a3e73842 / cf3d3a8a: "carry the winner" = the v1 hand-written
+// performances become DATA under performances.<name>.choreo and are played back by ONE engine path).
+// A choreo block (validated by validateActing) is: totalMs, reduced{mouth, blinkDouble, closeAtMs}, channels[], events[].
+//   channel: {id, joints[], keyframes[], ms, delayMs?, atMs?, iterations?, easing, composite?, fill?, keep?}
+//            -> this.anim(this.j(joint), keyframes, {duration, delay, iterations, easing, composite, fill}, keep)
+//            The option object carries ONLY the keys present in the data, so getTiming() of the produced Animation is
+//            byte-for-byte what the v1 method produced (delay stays a WAAPI delay; atMs stays a later() timer - both
+//            mechanisms are kept because v1 used both, and the proof compares startTime within one frame).
+//   event:   {atMs, mouth} | {atMs, blink} | {atMs, release:[joints]} | {atMs, cue}
+// Scheduling: everything sharing one atMs runs from ONE timer, in the fixed order release -> channels -> mouth -> blink
+// -> cue (v1 released the held layers before starting the aha trio). atMs 0 runs synchronously, exactly like the inline
+// statements at the top of v1 think()/sad(). REDUCED (WCAG 2.3.3): face only, from `reduced`, no channels, no VFX.
+// Cues: perf at start, fx per tier, settle at totalMs - the K9.4 convention Foley/state layer already listen to.
+// ---------------------------------------------------------------------------------------------
+P._choreoSchedule = function (C) {
+  const at = new Map();
+  const add = (ms, order, run) => { const k = Math.max(0, ms | 0); if (!at.has(k)) at.set(k, []); at.get(k).push({ order, run }); };
+  for (const ch of C.channels) {
+    const opts = { duration: ch.ms };
+    if (ch.delayMs) opts.delay = ch.delayMs;
+    if (ch.iterations != null) opts.iterations = ch.iterations;
+    opts.easing = EASE[ch.easing] || ch.easing;
+    if (ch.composite) opts.composite = ch.composite;
+    if (ch.fill) opts.fill = ch.fill;
+    add(ch.atMs || 0, 1, () => { for (const jn of ch.joints) this.anim(this.j(jn), ch.keyframes, opts, ch.keep === true); });
+  }
+  for (const ev of C.events) {
+    if (ev.release) add(ev.atMs, 0, () => this.release(new RegExp('^(' + ev.release.join('|') + ')$')));
+    else if (ev.mouth) add(ev.atMs, 2, () => this.setMouth(ev.mouth));
+    else if (typeof ev.blink === 'boolean') add(ev.atMs, 3, () => this.blink(ev.blink));
+    else if (ev.cue) add(ev.atMs, 4, () => this.cue(ev.cue, { perf: this._lastPerf && this._lastPerf.name }));
+  }
+  const times = [...at.keys()].sort((a, b) => a - b);
+  for (const t of times) at.get(t).sort((a, b) => a.order - b.order);
+  return { times, at };
+};
+
+/** Play performances.<name>.choreo. Resolves true at totalMs (false when busy). Falls back to nothing when absent. */
+P.perform = function (name, tier = 'small') {
+  const S = this.perfSpec(name); if (!S || !S.choreo) return Promise.resolve(false);
+  if (this.busy) return Promise.resolve(false); this.busy = true;
+  const C = S.choreo, t = S.tiers ? this._tierOf(S, tier) : { vfx: [] };
+  this._lastPerf = { name, tier, plan: { totalMs: C.totalMs, channels: C.channels.length, events: C.events.length, reduced: !!REDUCED } };
+  this.stats.performances = (this.stats.performances || 0) + 1;
+  this.cue('perf', { name, tier });
+  if (REDUCED) { const R = C.reduced; this.setMouth(R.mouth); this.blink(!!R.blinkDouble); this.later(() => { this.setMouth('closed'); this.busy = false; this.cue('settle'); }, R.closeAtMs); return this._sleep(R.closeAtMs).then(() => true); }
+  const { times, at } = this._choreoSchedule(C);
+  const fire = (ms) => { for (const a of at.get(ms)) a.run(); };
+  for (const ms of times) { if (ms === 0) fire(0); else this.later(() => fire(ms), ms); }
+  this._fx(t.vfx);
+  this._lastPerf.plan.schedule = times.map((ms) => ({ atMs: ms, actions: at.get(ms).length }));
+  this.later(() => { this.busy = false; this.cue('settle'); }, C.totalMs);   // the closing mouth event is part of the data (validated: exactly one at totalMs)
+  return this._sleep(C.totalMs).then(() => true);
+};
+
 /**
  * Triumph: crouch -> jump (apex scaled by tier) -> [large: 360 root roll around the apex, level before landing]
  * -> volume-preserving landing -> wink; VFX per tier. Returns a promise resolved at settle.
@@ -292,6 +348,7 @@ P.oops = function (tier = 'small') {
  */
 P.ponder = function (tier = 'small') {
   const K = this.perfSpec('think'); if (!K) return this.think();
+  if (K.choreo) return this.perform('think', tier);   // K9.6-3: the v1 think() choreography as data (owner decision a3e73842); the K9.5-2 calm block below stays for legacy specs
   if (this.busy) return Promise.resolve(false); this.busy = true;
   const t = this._tierOf(K, tier);
   this._lastPerf = { name: 'think', tier };
