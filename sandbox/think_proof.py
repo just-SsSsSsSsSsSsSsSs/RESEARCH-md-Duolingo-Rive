@@ -25,6 +25,10 @@ medium head -6.7 deg and pupil (3,-4) px. Kept here so the record is honest.
 Run 2 (ef2a6f7): every engine budget PASS; one check FAIL - medium.one_blink_in_hold counted 2 blinks because the seeded IDLE
 blink scheduler fired inside the hold (legitimate, independent of the performance). Check redesigned to perf_blink_at_blinkAtMs
 (the performance's own blink at perf + blinkAtMs +- 120 ms == exactly 1); idle blinks are reported, not failed.
+Run 3 (same tool + blink fix): PASS 49/49, but large sampled head 9.47 deg - inside the declared 0.5 deg sampling slack yet above
+the 9 deg nominal, because the sample is absolute and the idle head spring composites on top of the authored tilt. Added the
+engine-truth check head_authored_le_9deg (authored rotate read from the head layer keyframes, strict <= 9 and == tier headDeg)
+and the idle overlay is reported separately (head_idle_overlay_deg). The run recorded in k95_think.json is the one after this.
 """
 import asyncio
 import hashlib
@@ -59,6 +63,7 @@ HELPERS = """
   const ROT = n => { const v = M(n); return Math.atan2(v[1], v[0]) * 180 / Math.PI; };
   const PUP = n => { const v = M(n); return Math.hypot(v[4], v[5]); };
   const LAYERS = re => [...r.live].filter(a => a.effect && a.effect.target && re.test(a.effect.target.getAttribute('data-joint') || '')).length;
+  const HEADKF = () => { let best = 0; for (const a of r.j('head').getAnimations()) { for (const k of a.effect.getKeyframes()) { const m = /rotate\\((-?[\\d.]+)deg\\) translate\\(/.exec(k.transform || ''); if (m) best = Math.max(best, Math.abs(+m[1])); } } return best; };
 """
 
 # one think beat through the STATE MACHINE (not a direct method call): that is the path the watch kit records
@@ -72,7 +77,7 @@ JS_THINK = "async (tier) => {" + HELPERS + """
   while (performance.now() - t0 < 6000) {
     if (!settled && cues.some(c => c.p === 'settle')) settled = performance.now();
     if (settled && performance.now() - settled > 400) break;
-    s.push({ t: performance.now() - t0, head: ROT('head'), pupL: PUP('pupilL'), pupR: PUP('pupilR'), root: ROT('root'), busy: r.busy });
+    s.push({ t: performance.now() - t0, head: ROT('head'), headKf: HEADKF(), pupL: PUP('pupilL'), pupR: PUP('pupilR'), root: ROT('root'), busy: r.busy });
     await new Promise(requestAnimationFrame);
   }
   await pr; r.onCue = prev; off();
@@ -114,10 +119,11 @@ def analyse(res, K, tier):
     perf_blinks = [t for t in blinks if abs(t - (t_perf + K['blinkAtMs'])) <= 120]
     idle_blinks = len(blinks) - len(perf_blinks)
     head_max = max((abs(x['head']) for x in s), default=0)
+    head_authored = max((x['headKf'] for x in s), default=0)   # engine truth: the rotate the ponder head layer was AUTHORED to reach
     pup_max = max((max(x['pupL'], x['pupR']) for x in s), default=0)
     root_max = max((abs(x['root']) for x in s), default=0)
     want_deg = K['tiers'][tier]['headDeg']
-    out = {'tier': tier, 'total_ms': None if res['totalMs'] is None else round(res['totalMs'], 1), 'head_max_deg': round(head_max, 2),
+    out = {'tier': tier, 'total_ms': None if res['totalMs'] is None else round(res['totalMs'], 1), 'head_max_deg': round(head_max, 2), 'head_authored_deg': round(head_authored, 2), 'head_idle_overlay_deg': round(head_max - head_authored, 2),
            'pupil_max_px': round(pup_max, 2), 'root_max_deg': round(root_max, 2), 'blink_cues_in_hold': len(blinks), 'perf_blink_at_ms': [round(t - t_perf, 1) for t in perf_blinks], 'idle_blinks_in_hold': idle_blinks, 'cue_order': cues,
            'states': res['states'], 'final_state': res['finalState'], 'plan': res['plan'], 'fx': [c['vfx'] for c in res['cues'] if c['p'] == 'fx'],
            'samples': len(s)}
@@ -126,7 +132,8 @@ def analyse(res, K, tier):
         'no_spiral_cue': 'spiral' not in cues,
         'state_think_then_idle': [x['to'] for x in res['states']][:2] == ['think', 'idle'] and res['finalState'] == 'idle',
         'total_ms_le_3000': res['totalMs'] is not None and res['totalMs'] <= 3000,
-        'head_le_9deg': head_max <= 9 + SLACK_DEG,
+        'head_le_9deg': head_max <= 9 + SLACK_DEG,                # sampled absolute (idle head spring composites on top)
+        'head_authored_le_9deg': 0 < head_authored <= 9 and abs(head_authored - want_deg) < 0.01,   # strict, engine truth == tier headDeg
         'head_reaches_tier': head_max >= want_deg * 0.6,           # the tilt is visible, not a no-op
         'pupil_le_6px': pup_max <= 6 + SLACK_PX,
         'pupil_lifts': pup_max >= 3.0,                             # the gaze actually leaves centre
