@@ -98,5 +98,47 @@ const html = readFileSync(path.join(here, '..', 'samples', 'watch', 'index.html'
 ok(/<button data-side="R" disabled>/.test(html) && /<button data-side="L" disabled>/.test(html), 'answer buttons start disabled');
 ok(/performance\.now\(\) < lockUntil\) return;/.test(html) && /id="countdown"/.test(html) && /M\.answer_lock_ms/.test(html), 'lock enforced in the click handler, countdown element present, lock read from the manifest');
 
+// 16. K9.6-6 tie mode (kit v4 rule, frozen in DIRECTIVES.md from gist 0b1f96bc BEFORE any recording). Synthetic kit-v4 manifest:
+//     beats think + sad, 4 trials per session (2 per beat), scoring_mode 'tie'. Blocks follow the same shape as the real kit.
+const M4 = { ...M, generated_at: '2026-09-28T00:00:00Z-synthetic-v4', seed: 999, order_sha256: 'f'.repeat(64), scoring_mode: 'tie', beats: ['think', 'sad'],
+             order: [{ beat: 'think', left: 'v1' }, { beat: 'sad', left: 'v2' }, { beat: 'think', left: 'v2' }, { beat: 'sad', left: 'v1' }] };
+function block4(rater, choices) {
+  const answers = M4.order.map((o, i) => ({ trial: i + 1, beat: o.beat, chosen: choices[i], ms: 1000, replays: 0 }));
+  const k = answers.filter(a => a.chosen === 'v2').length;
+  return { kit: M4.generated_at, rater, seed: M4.seed, order_sha256: M4.order_sha256, n: answers.length, v2_chosen: k, v1_chosen: answers.length - k, binomial_two_sided_p: +G12.twoSided(k, answers.length).toFixed(4), answers };
+}
+// order per session: [think, sad, think, sad]
+r = G12.score([block4('a', ['v2', 'v1', 'v1', 'v2']), block4('b', ['v1', 'v2', 'v2', 'v1']), block4('c', ['v1', 'v1', 'v2', 'v2'])], M4);
+ok(r.mode === 'tie' && r.verdict === 'PASS' && r.v2_chosen === 6 && /perceived tie/.test(r.reason), `tie: 6/12 (think 3/6, sad 3/6) -> ${r.verdict} (${r.reason.slice(0, 40)}...)`);
+r = G12.score([block4('a', ['v2', 'v1', 'v1', 'v1']), block4('b', ['v1', 'v2', 'v1', 'v1']), block4('c', ['v1', 'v1', 'v2', 'v1'])], M4);
+ok(r.verdict === 'PASS' && r.v2_chosen === 3 && near(r.two_sided_p, 0.1460), `tie: 3/12 (p ${r.two_sided_p.toFixed(4)} > 0.05, think 2, sad 1) -> ${r.verdict} (no significant loss, floors met)`);
+r = G12.score([block4('a', ['v2', 'v1', 'v1', 'v1']), block4('b', ['v1', 'v1', 'v1', 'v1']), block4('c', ['v1', 'v1', 'v2', 'v1'])], M4);
+ok(r.verdict === 'FAIL' && r.v2_chosen === 2 && near(r.two_sided_p, 0.0386) && /beat floor/.test(r.reason) && r.beats_below_floor.join() === 'sad', `tie: 2/12 both on think (p ${r.two_sided_p.toFixed(4)}) -> ${r.verdict} (sad floor reported first; the loss is also significant)`);
+// significant loss with every floor met: 2/12 split 1 + 1
+r = G12.score([block4('a', ['v2', 'v1', 'v1', 'v1']), block4('b', ['v1', 'v2', 'v1', 'v1']), block4('c', ['v1', 'v1', 'v1', 'v1'])], M4);
+ok(r.verdict === 'FAIL' && r.v2_chosen === 2 && r.beats_below_floor.length === 0 && /significant loss/.test(r.reason), `tie: 2/12 (think 1, sad 1, floors met, p ${r.two_sided_p.toFixed(4)}) -> ${r.verdict} (significant loss)`);
+r = G12.score([block4('a', ['v2', 'v1', 'v2', 'v1']), block4('b', ['v1', 'v1', 'v2', 'v1']), block4('c', ['v2', 'v1', 'v2', 'v1'])], M4);
+ok(r.verdict === 'FAIL' && r.v2_chosen === 5 && r.beats_below_floor.join() === 'sad' && /beat floor/.test(r.reason), `tie: 5/12 but sad 0/6 -> ${r.verdict} (beat floor: ${r.beats_below_floor})`);
+r = G12.score([block4('a', ['v2', 'v2', 'v2', 'v2']), block4('b', ['v2', 'v2', 'v2', 'v1']), block4('c', ['v2', 'v2', 'v2', 'v1'])], M4);
+ok(r.verdict === 'PASS' && r.v2_chosen === 10 && /wins outright/.test(r.reason), `tie: 10/12 -> ${r.verdict} (outright win also PASS)`);
+r = G12.score([block4('a', ['v2', 'v1', 'v1', 'v2']), block4('b', ['v1', 'v2', 'v2', 'v1'])], M4);
+ok(r.verdict === 'INSUFFICIENT', `tie: 2 raters / 8 trials -> ${r.verdict} (same admissibility)`);
+// 4th named rater -> 16 trials, beat floor 2/8
+const four = (c) => [block4('a', c[0]), block4('b', c[1]), block4('c', c[2]), block4('d', c[3])];
+r = G12.score(four([['v2', 'v1', 'v1', 'v1'], ['v1', 'v1', 'v1', 'v2'], ['v1', 'v1', 'v1', 'v1'], ['v1', 'v1', 'v1', 'v1']]), M4);
+ok(r.verdict === 'FAIL' && r.n === 16 && r.per_beat.think.floor === 2 && r.beats_below_floor.length === 2, `tie 16: think 1/8, sad 1/8 -> ${r.verdict} (floor 2/8 on both beats: ${r.beats_below_floor})`);
+r = G12.score(four([['v2', 'v1', 'v1', 'v2'], ['v1', 'v1', 'v2', 'v1'], ['v1', 'v2', 'v1', 'v1'], ['v1', 'v1', 'v1', 'v1']]), M4);
+ok(r.verdict === 'PASS' && r.n === 16 && r.v2_chosen === 4 && near(r.two_sided_p, 0.0768), `tie 16: 4/16 (think 2/8, sad 2/8, p ${r.two_sided_p.toFixed(4)}) -> ${r.verdict} (floors met, no significant loss)`);
+r = G12.score(four([['v2', 'v1', 'v1', 'v2'], ['v1', 'v1', 'v2', 'v1'], ['v1', 'v1', 'v1', 'v1'], ['v1', 'v1', 'v1', 'v1']]), M4);
+ok(r.verdict === 'FAIL' && r.v2_chosen === 3 && near(r.two_sided_p, 0.0213) && r.beats_below_floor.join() === 'sad', `tie 16: 3/16 (think 2, sad 1 -> sad floor 2/8; p ${r.two_sided_p.toFixed(4)} also significant) -> ${r.verdict}`);
+r = G12.score(four([['v2', 'v1', 'v1', 'v2'], ['v1', 'v1', 'v2', 'v1'], ['v1', 'v2', 'v1', 'v1'], ['v1', 'v1', 'v1', 'v1']]), { ...M4 });
+ok(r.per_beat.think.v2 === 2 && r.per_beat.sad.v2 === 2 && r.verdict === 'PASS', `tie 16: exactly at the 2/8 floors on both beats -> ${r.verdict}`);
+// win mode untouched: the same 6/12 blocks under a manifest WITHOUT scoring_mode -> FAIL (no evidence)
+r = G12.score([block4('a', ['v2', 'v1', 'v1', 'v2']), block4('b', ['v1', 'v2', 'v2', 'v1']), block4('c', ['v1', 'v1', 'v2', 'v2'])], { ...M4, scoring_mode: undefined });
+ok(r.mode === 'win' && r.verdict === 'FAIL', `same 6/12 under win mode -> ${r.verdict} (kit v1-v3 rule unchanged)`);
+ok(M.scoring_mode === undefined || M.scoring_mode === 'win' || M.kit_version >= 4, `current manifest kit v${M.kit_version} scoring_mode ${M.scoring_mode} (tie only from kit v4)`);
+// exact false-FAIL probability for a perfect port, as told to the owner (DIRECTIVES 0b1f96bc): 4.0 pct at 12, 6.9 pct at 16
+ok(near(G12.tieFalseFail(2, 6), 0.0398, 5e-4) && near(G12.tieFalseFail(2, 8), 0.0691, 5e-4), `tie false-FAIL for a perfect port: ${(G12.tieFalseFail(2, 6) * 100).toFixed(2)} pct at 12 trials, ${(G12.tieFalseFail(2, 8) * 100).toFixed(2)} pct at 16`);
+
 console.log(fails ? `\nG12 SCORER FAIL (${fails})` : '\nG12 SCORER PASS');
 process.exit(fails ? 1 : 0);

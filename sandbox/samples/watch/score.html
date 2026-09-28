@@ -27,8 +27,8 @@ document.getElementById('go').onclick = () => {
   const { blocks, errors } = G12.parseBlocks(document.getElementById('in').value);
   const r = G12.score(blocks, M);
   const out = document.getElementById('out');
-  const beats = Object.entries(r.per_beat).map(([b, e]) => '<tr><td>' + b + '</td><td>' + e.v2 + '/' + e.n + '</td></tr>').join('');
-  out.innerHTML = '<p><span class="v ' + r.verdict + '">' + r.verdict + '</span></p><p>' + r.reason + '</p>' +
+  const beats = Object.entries(r.per_beat).map(([b, e]) => '<tr><td>' + b + '</td><td>' + e.v2 + '/' + e.n + (r.mode === 'tie' ? ' (floor ' + e.floor + (e.below_floor ? ', BELOW' : '') + ')' : '') + '</td></tr>').join('');
+  out.innerHTML = '<p><span class="v ' + r.verdict + '">' + r.verdict + '</span> <small>mode ' + r.mode + '</small></p><p>' + r.reason + '</p><p><small>' + r.rule + '</small></p>' +
     (errors.length ? '<p>parse errors: ' + errors.join('; ') + '</p>' : '') +
     (r.blocks_rejected.length ? '<p>rejected blocks (not from this kit): ' + JSON.stringify(r.blocks_rejected) + '</p>' : '') +
     '<table><tr><th>المشهد</th><th>v2 / n</th></tr>' + beats + '</table>' +

@@ -6,6 +6,15 @@
 // requires BOTH: two-sided p <= 0.05 AND v2 in the upper tail (v2_chosen > n / 2).
 //
 // Verdict values: PASS | FAIL | INSUFFICIENT | REJECTED (no block belongs to this kit).
+//
+// K9.6-6 scoring modes (manifest.scoring_mode, default 'win'):
+//   'win'  kit v1-v3: v2 must BEAT v1 - PASS iff two-sided p <= 0.05 AND v2 > n/2.
+//   'tie'  kit v4 (owner decision, gist 0b1f96bc, frozen in DIRECTIVES.md "KIT V4 RULE" BEFORE any recording): the v2 arm is a
+//          PORT of the v1 choreography, so the perceptual question is "can raters tell it from the winner", not "does it win".
+//          FAIL iff any beat has v2 = 0 of its trials (beat floor "not zero"; with >= 8 trials per beat, i.e. a 4th named rater,
+//          the floor is >= 2/8), OR two-sided p <= 0.05 with v2 < n/2 (a significant loss). PASS otherwise (a tie), and also
+//          PASS when v2 >= the win threshold (10/12, 13/16). Same admissibility: >= 12 trials from >= 3 named raters.
+//          Exact false-FAIL probability for a perfect port (P(v2) = 0.5): 4.0 pct at 12 trials (6 per beat), 6.9 pct at 16.
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.G12 = factory();
@@ -69,16 +78,49 @@
     const p = n ? twoSided(k, n) : null, need = n ? minWins(n) : null;
     const perBeat = {};
     answers.forEach(a => { const e = perBeat[a.beat] || (perBeat[a.beat] = { n: 0, v2: 0 }); e.n++; if (a.chosen === 'v2') e.v2++; });
+    const mode = manifest.scoring_mode === 'tie' ? 'tie' : 'win';
+    // tie mode: per-beat floor - v2 must be chosen at least once per beat (>= 2 when the beat has >= 8 trials, i.e. a 4th rater)
+    Object.keys(perBeat).forEach(b => { const e = perBeat[b]; e.floor = e.n >= 8 ? 2 : 1; e.below_floor = e.v2 < e.floor; });
+    const belowFloor = Object.keys(perBeat).filter(b => perBeat[b].below_floor);
     let verdict, reason;
     if (accepted.length === 0) { verdict = 'REJECTED'; reason = 'no block belongs to this kit'; }
     else if (n < MIN_TRIALS || raters.size < MIN_RATERS) { verdict = 'INSUFFICIENT'; reason = n + ' trials from ' + raters.size + ' named raters (' + unnamed + ' unnamed session' + (unnamed === 1 ? '' : 's') + '); need >= ' + MIN_TRIALS + ' trials and >= ' + MIN_RATERS + ' named raters'; }
+    else if (mode === 'tie') {
+      if (belowFloor.length) { verdict = 'FAIL'; reason = 'beat floor: ' + belowFloor.map(b => b + ' v2 ' + perBeat[b].v2 + '/' + perBeat[b].n + ' (floor >= ' + perBeat[b].floor + ')').join(', ') + ' - the port is told apart on that beat'; }
+      else if (p <= ALPHA && k < n / 2) { verdict = 'FAIL'; reason = 'significant loss: v2 only ' + k + '/' + n + ', two-sided p ' + p.toFixed(4) + ' <= ' + ALPHA; }
+      else if (k >= need) { verdict = 'PASS'; reason = 'v2 wins outright ' + k + '/' + n + ' (>= ' + need + '), two-sided p ' + p.toFixed(4); }
+      else { verdict = 'PASS'; reason = 'perceived tie: v2 ' + k + '/' + n + ', two-sided p ' + p.toFixed(4) + ' (no significant loss), every beat above its floor - raters cannot tell the port from the winner'; }
+    }
     else if (p <= ALPHA && k > n / 2) { verdict = 'PASS'; reason = 'v2 ' + k + '/' + n + ', two-sided p ' + p.toFixed(4) + ' <= ' + ALPHA + ' and v2 in the upper tail (need >= ' + need + ')'; }
     else if (p <= ALPHA && k < n / 2) { verdict = 'FAIL'; reason = 'v1 wins: v2 only ' + k + '/' + n + ', two-sided p ' + p.toFixed(4) + ' - small p in the LOWER tail is a loss, not a pass'; }
     else { verdict = 'FAIL'; reason = 'no evidence: v2 ' + k + '/' + n + ', two-sided p ' + p.toFixed(4) + ' > ' + ALPHA + ' (need >= ' + need + '/' + n + ')'; }
-    return { verdict, reason, n, v2_chosen: k, v1_chosen: n - k, two_sided_p: p, min_v2_wins_for_pass: need, raters: [...raters], unnamed_sessions: unnamed,
-             blocks_accepted: accepted.length, blocks_rejected: rejected.map(r => ({ index: r.index, why: r.why })), per_beat: perBeat,
-             rule: 'PASS iff two-sided p <= ' + ALPHA + ' AND v2_chosen > n/2, over >= ' + MIN_TRIALS + ' trials from >= ' + MIN_RATERS + ' named raters', kit: manifest.generated_at, order_sha256: manifest.order_sha256 };
+    const rule = mode === 'tie'
+      ? 'tie mode: FAIL iff any beat has v2 below its floor (1, or 2 when the beat has >= 8 trials) OR two-sided p <= ' + ALPHA + ' with v2 < n/2; PASS otherwise (tie) and when v2 >= the win threshold; over >= ' + MIN_TRIALS + ' trials from >= ' + MIN_RATERS + ' named raters'
+      : 'PASS iff two-sided p <= ' + ALPHA + ' AND v2_chosen > n/2, over >= ' + MIN_TRIALS + ' trials from >= ' + MIN_RATERS + ' named raters';
+    return { verdict, reason, mode, n, v2_chosen: k, v1_chosen: n - k, two_sided_p: p, min_v2_wins_for_pass: need, raters: [...raters], unnamed_sessions: unnamed,
+             blocks_accepted: accepted.length, blocks_rejected: rejected.map(r => ({ index: r.index, why: r.why })), per_beat: perBeat, beats_below_floor: belowFloor,
+             rule, kit: manifest.generated_at, order_sha256: manifest.order_sha256 };
   }
 
-  return { ALPHA, MIN_TRIALS, MIN_RATERS, twoSided, minWins, parseBlocks, validateBlock, score };
+  // Exact probability that a PERFECT port (P(v2) = 0.5 on every trial) is called FAIL under tie mode, for `beats` beats of
+  // `perBeat` trials each: P(some beat below floor) + P(all beats at/above floor AND total in the significant lower tail).
+  function tieFalseFail(beats, perBeat) {
+    const n = beats * perBeat, floor = perBeat >= 8 ? 2 : 1;
+    // enumerate per-beat counts
+    let pFail = 0;
+    const rec = (b, counts) => {
+      if (b === beats) {
+        const k = counts.reduce((x, y) => x + y, 0);
+        const prob = counts.reduce((acc, c) => acc * C(perBeat, c) / Math.pow(2, perBeat), 1);
+        const below = counts.some(c => c < floor);
+        if (below || (twoSided(k, n) <= ALPHA && k < n / 2)) pFail += prob;
+        return;
+      }
+      for (let c = 0; c <= perBeat; c++) rec(b + 1, counts.concat(c));
+    };
+    rec(0, []);
+    return pFail;
+  }
+
+  return { ALPHA, MIN_TRIALS, MIN_RATERS, twoSided, minWins, parseBlocks, validateBlock, score, tieFalseFail };
 });
