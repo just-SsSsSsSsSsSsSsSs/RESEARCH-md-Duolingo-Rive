@@ -72,6 +72,10 @@ def main():
     else:   # a fresh kit with no accepted block yet (kit v3 after K9.5-4): the scorer says REJECTED / 0 accepted; the previous kit's verdict stays in results/README.md
         g12_line = (f'watch kit v{g12_kit} ({get(g12, "kit", src="SCORE.generated")}): {g12_verdict} - {g12.get("reason")}; '
                     f'{g12.get("blocks_accepted", 0)} accepted, {len(g12.get("blocks_rejected", []))} earlier-kit blocks rejected by design (previous kit v{g12_kit - 1} verdict recorded in samples/watch/results/README.md)')
+    # K9.5 (owner decision 2026-09-27): three proofs, budgets declared in PROGRESS K9.5 FROZEN PLAN before the runs
+    k95b_p = os.path.join(PROOFS, 'k95_blink_seed.json'); kb = load(k95b_p)
+    k95t_p = os.path.join(PROOFS, 'k95_think.json'); kt = load(k95t_p)
+    k95p_p = os.path.join(PROOFS, 'k95_plates.json'); kp = load(k95p_p)
     sync_p = os.path.join(SFX, 'sfx_sync.json'); sy = load(sync_p)
     mix_p = os.path.join(SFX, 'sfx_mix.json'); mi = load(mix_p)
     poly_p = os.path.join(SFX, 'sfx_polyphony.json'); po = load(poly_p)
@@ -80,6 +84,7 @@ def main():
         'proofs': get(pr, 'captured_at', src='proofs.json'), 'intent': get(it, 'captured_at', src='g12'), 'perf': get(pf, 'captured_at', src='g13'),
         'flex': get(fx, 'generated_at', src='g14_flex'), 'wing': get(wg, 'generated_at', src='g14_wing_render'), 'matrix': get(mx, 'measured_at', src='matrix'),
         'g12': get(g12, 'scored_at', src='SCORE.generated'),
+        'k95b': get(kb, 'captured_at', src='k95_blink_seed'), 'k95t': get(kt, 'captured', src='k95_think'), 'k95p': get(kp, 'captured', src='k95_plates'),
         'sync': get(sy, 'measured_at', src='sfx_sync'), 'mix': get(mi, 'measured_at', src='sfx_mix'), 'poly': get(po, 'measured_at', src='sfx_poly'),
     }
     eye_ts = eye.get('captured_at') or 'no timestamp in file; commit history: git log -- ' + rel(eye_p)
@@ -200,6 +205,15 @@ def main():
         ('Foley sync (controlled offset)', 'sfx target/cap declared in sfx_measure.py', f'p95 <= {sy["target_ms"]} ms, max <= {sy["cap_ms"]} ms', f'p95 {sy["controlled_ms"]["p95"]} ms, max {sy["controlled_ms"]["max"]} ms', f'{rel(sync_p)} {ts["sync"]}', P(sy['pass_target'] and sy['pass_cap'])),
         ('Foley mix', 'sfx_measure.py ceiling', f'peak <= {mi["ceiling_dbfs"]} dBFS, duck >= 8 dB', f'5-cue overlap peak {mi["overlap_5_cues"]["peak_dbfs"]} dBFS, clipped {mi["overlap_5_cues"]["clipped"]}, duck {mi["duck_db"]} dB', f'{rel(mix_p)} {ts["mix"]}', P(mi['pass'])),
         ('Foley polyphony', 'spec sound.polyphony / sameCueGapMs', f'<= {po["polyphony_cap"]} voices, same cue >= {po["same_cue_gap_rule_ms"]} ms apart', f'max {po["max_concurrent_voices"]} voices, min gap {po["same_cue_min_gap_ms"]} ms', f'{rel(poly_p)} {ts["poly"]}', P(po['max_concurrent_voices'] <= po['polyphony_cap'] and po['same_cue_min_gap_ms'] >= po['same_cue_gap_rule_ms'])),
+        ('K9.5-1 blink seed (recording time only)', 'PROGRESS K9.5 FROZEN PLAN', f'same seed -> identical inter-blink gaps within {kb["tolerance_ms"]} ms on both arms; different seed differs; no seed = Math.random',
+         'v2 ' + ('all 6 checks' if all(kb['pass']['v2'].values()) else 'FAIL ' + ','.join(k for k, v in kb['pass']['v2'].items() if not v)) + '; v1 ' + ('all 6 checks' if all(kb['pass']['v1'].values()) else 'FAIL ' + ','.join(k for k, v in kb['pass']['v1'].items() if not v)) + f' (window {kb["window_ms"]} ms)',
+         f'{rel(k95b_p)} {ts["k95b"]}', P(kb['pass_all'])),
+        ('K9.5-2 think redesign (own calm performance)', 'PROGRESS K9.5 FROZEN PLAN', f'total <= {kt["budgets"]["total_ms_max"]} ms, authored head <= {kt["budgets"]["head_deg_max"]} deg, pupil <= {kt["budgets"]["pupil_px_max"]} px, no spiral cue, reduced 0 body layers, puzzled byte-identical',
+         'tiers small/medium/large: total ' + '/'.join(str(round(kt['tiers'][t]['total_ms'])) for t in ('small', 'medium', 'large')) + ' ms, authored head ' + '/'.join(str(kt['tiers'][t]['head_authored_deg']) for t in ('small', 'medium', 'large')) + ' deg, pupil ' + '/'.join(str(kt['tiers'][t]['pupil_max_px']) for t in ('small', 'medium', 'large')) + f' px; {sum(1 for v in kt["checks"].values() if v)}/{len(kt["checks"])} checks',
+         f'{rel(k95t_p)} {ts["k95t"]}', P(kt['pass_all'])),
+        ('K9.5-3 smile/sad plates (real art)', 'PROGRESS K9.5 FROZEN PLAN', f'{kp["budgets"]["plate_size"][0]} x {kp["budgets"]["plate_size"][1]} exact, soft alpha edge, live render diff outside the mouth box <= {kp["budgets"]["render_diff_outside_mouth_pct_max"]} pct',
+         f'smile {kp["plates"]["beak_smile"]["size"][0]} x {kp["plates"]["beak_smile"]["size"][1]}, sad {kp["plates"]["beak_sad"]["size"][0]} x {kp["plates"]["beak_sad"]["size"][1]}; outside smile {kp["render"]["shapes"]["smile"]["diff_outside_mouth_pct"]} / sad {kp["render"]["shapes"]["sad"]["diff_outside_mouth_pct"]} pct, inside {kp["render"]["shapes"]["smile"]["diff_inside_mouth_pct"]} / {kp["render"]["shapes"]["sad"]["diff_inside_mouth_pct"]} pct; {sum(1 for v in kp["checks_flat"].values() if v)}/{len(kp["checks_flat"])} checks',
+         f'{rel(k95p_p)} {ts["k95p"]}', P(kp['pass_all'])),
     ]
     out = ['# K9 declared budgets (gate G13) - GENERATED by tools/report_k9.py, do not edit by hand', '',
            'G13 rule (gist): a budget is declared first, then measured; a value measured without a prior declaration is OPEN and is never given a cap afterwards.',

@@ -31,9 +31,12 @@ Tolerance on timing rows: one frame (16.7 ms) where the measurement samples on r
 | Foley sync (controlled offset) | sfx target/cap declared in sfx_measure.py | p95 <= 16.7 ms, max <= 40 ms | p95 1.1 ms, max 1.2 ms | samples/sfx/sfx_sync.json 2026-09-26T18:51:03Z | PASS |
 | Foley mix | sfx_measure.py ceiling | peak <= -3 dBFS, duck >= 8 dB | 5-cue overlap peak -13.62 dBFS, clipped 0, duck -9 dB | samples/sfx/sfx_mix.json 2026-09-26T18:51:03Z | PASS |
 | Foley polyphony | spec sound.polyphony / sameCueGapMs | <= 3 voices, same cue >= 120 ms apart | max 3 voices, min gap 140.1 ms | samples/sfx/sfx_polyphony.json 2026-09-26T18:51:03Z | PASS |
+| K9.5-1 blink seed (recording time only) | PROGRESS K9.5 FROZEN PLAN | same seed -> identical inter-blink gaps within 16.7 ms on both arms; different seed differs; no seed = Math.random | v2 all 6 checks; v1 all 6 checks (window 12000 ms) | samples/proofs/k95_blink_seed.json 2026-09-27T23:40:49Z | PASS |
+| K9.5-2 think redesign (own calm performance) | PROGRESS K9.5 FROZEN PLAN | total <= 3000 ms, authored head <= 9 deg, pupil <= 6 px, no spiral cue, reduced 0 body layers, puzzled byte-identical | tiers small/medium/large: total 2363/2347/2092 ms, authored head 5/7/9 deg, pupil 5.81/5.81/5.81 px; 49/49 checks | samples/proofs/k95_think.json 2026-09-28T00:02:41Z | PASS |
+| K9.5-3 smile/sad plates (real art) | PROGRESS K9.5 FROZEN PLAN | 137 x 126 exact, soft alpha edge, live render diff outside the mouth box <= 2.0 pct | smile 137 x 126, sad 137 x 126; outside smile 0.601 / sad 0.0 pct, inside 7.96 / 7.49 pct; 33/33 checks | samples/proofs/k95_plates.json 2026-09-28T00:20:50Z | PASS |
 
-Totals: 25 rows = PASS 22 + OPEN 2 + MIXED 1 + FAIL 0 (exact partition, each row counted once).
-Criteria: 26 = 25 rows + 1 MIXED row(s) counted twice; MIXED row(s): landing settle_ms (body springs).
+Totals: 28 rows = PASS 25 + OPEN 2 + MIXED 1 + FAIL 0 (exact partition, each row counted once).
+Criteria: 29 = 28 rows + 1 MIXED row(s) counted twice; MIXED row(s): landing settle_ms (body springs).
 Undeclared (OPEN or the OPEN half of MIXED): 3 - measured, recorded, never given a cap after the fact.
 
 ## Throttle disclosure (owner audit F4, numbers from samples/measure_matrix.json, no cap set)
