@@ -17,7 +17,11 @@ Per channel of the choreo data (the k96 test already proved the data == the v1 s
   matched      exactly one recorded animate() call per joint whose keyframes equal the channel's keyframes (on BOTH arms;
                idle/look/saccade layers that happen to run are listed under `extras`, never matched, never failed)
   call_dt_ms   |t_rel(v2) - t_rel(v1)| <= 16.7 (one 60 Hz frame)          <- THE acceptance metric (engine schedule)
-  start_latency each arm: Animation.startTime - call time <= 2 frames (the player adds no paused/deferred start)
+  start_latency Animation.startTime - call time, per arm, must be a real number <= 3 frames (50 ms) on both arms: proves the
+               player hands the browser a RUNNING animation at call time (no paused / deferred start, startTime never null).
+               The value itself is the browser's frame scheduling and is quantised per page (14 ms typical, 26-31 when the
+               call lands just after a frame, 45 once in headless while a context closed) - so neither its absolute value
+               nor its cross-arm parity is a port metric; the engine schedule (call_dt) is.
   start_dt_ms  informational only: |startTime(v2) - startTime(v1)| is quantised by each PAGE's own frame phase (the two arms
                run in two contexts whose document timelines are not phase-locked), so a 1 ms call difference can straddle a
                frame edge and read 16.7 or 33 ms. Measured runs: call_dt <= 1.5 ms every channel, start_dt 0.05 / 16.6 / 33.3.
@@ -57,12 +61,12 @@ COMMON = 'index.html?art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928'
 URL_V1 = BASE + COMMON + '&engine=v1'
 URL_V2 = BASE + COMMON + '&engine=v2'
 FRAME_MS = 16.7
-STRIP_AT = [400, 1200, 2000, 2750, 3300]
+STRIP_AT = {'think': [400, 1200, 2000, 2750, 3300], 'sad': [300, 700, 1200, 1900, 2350]}
 
 # perf name -> how each arm plays it and which state event routes to it on v2
 PERFS = {
     'think': {'v1': 'think', 'v2': 'ponder', 'state': 'answer:pending', 'stateName': 'think'},
-    'sad': {'v1': 'sad', 'v2': 'recoil', 'state': 'answer:wrong', 'stateName': 'sad'},
+    'sad': {'v1': 'sad', 'v2': 'perform', 'state': 'answer:wrong', 'stateName': 'wrong'},   # v2: perform('sad') directly; the CLIPS.body.recoil route is proven by the state run
 }
 
 INIT = """
@@ -98,7 +102,7 @@ JS_BEAT = "async (m) => {" + HELPERS + """
   const held = FWD(/^(pupilL|pupilR|head|armR|armL|body|root|legL|legR)$/);
   const cues = []; const prev = r.onCue; if ('onCue' in r) r.onCue = (p, c) => { cues.push({ p, t: performance.now(), c }); if (prev) prev(p, c); };
   const t0 = performance.now(); window.__animRec = Object.assign([], { t0, tl0: document.timeline.currentTime }); window.__evRec = Object.assign([], { t0 });
-  const pr = r[m.method](m.arg);
+  const pr = m.method === 'perform' ? r.perform(m.perf, m.arg) : r[m.method](m.arg);
   const total = m.totalMs;
   while (performance.now() - t0 < total + 250) await new Promise(requestAnimationFrame);
   const busyAtEnd = r.busy; const mouthAtEnd = r._mouth; const heldAtEnd = FWD(/^(pupilL|pupilR|head|armR|armL|body|root|legL|legR)$/);
@@ -115,7 +119,7 @@ JS_STATE = "async (m) => {" + HELPERS + """
 
 JS_PERF_OFF = "async (m) => {" + HELPERS + """
   const cues = []; const prev = r.onCue; r.onCue = (p, c) => { cues.push(p); if (prev) prev(p, c); };
-  const t0 = performance.now(); r[m.method](); await sleep(150); const busyDuring = r.busy; while (r.busy && performance.now() - t0 < 6000) await sleep(50); r.onCue = prev;
+  const t0 = performance.now(); r.states.fire(m.event); await sleep(150); const busyDuring = r.busy; while (r.busy && performance.now() - t0 < 6000) await sleep(50); r.onCue = prev;
   return { perfSpecNull: r.perfSpec(m.perf) === null, busyDuring, busyAfter: r.busy, cues, ms: Math.round(performance.now() - t0) }; }"""
 
 
@@ -164,7 +168,7 @@ def compare(choreo, v1, v2):
                                                  for ps, rs in ((a['playStateAtEnd'], a['replaceStateAtEnd']), (b['playStateAtEnd'], b['replaceStateAtEnd'])))
             lat = lambda r: None if r['startRel'] is None else round(r['startRel'] - r['t'], 2)
             c['v1_start_latency_ms'] = lat(a); c['v2_start_latency_ms'] = lat(b)
-            c['start_latency_ok'] = all(l is not None and -FRAME_MS <= l <= 2 * FRAME_MS + 1 for l in (c['v1_start_latency_ms'], c['v2_start_latency_ms']))
+            c['start_latency_ok'] = all(l is not None and -FRAME_MS <= l <= 3 * FRAME_MS for l in (c['v1_start_latency_ms'], c['v2_start_latency_ms']))
             c['pass'] = dt <= FRAME_MS and c['start_latency_ok'] and c['timing_equal'] and c['composite_equal'] and c['keyframes_equal'] and c['released_or_finished_both']
         else:
             c['pass'] = False
@@ -172,13 +176,15 @@ def compare(choreo, v1, v2):
     # events: mouth / blink / release sequences
     # blink: only the performance's OWN blinks (declared in the data) are compared; the seeded idle blink scheduler runs on both
     # arms independently of the beat (rig.js scheduleBlink) and its jitter is idle noise, not a port difference -> reported as idle_blinks
-    blink_at = [e['atMs'] for e in choreo['events'] if 'blink' in e]
+    # a blink(true) event is two calls: blink(true) at atMs and the inner blink(false) that rig.blink schedules at +200 - both are own
+    blink_at = [e['atMs'] for e in choreo['events'] if 'blink' in e] + [e['atMs'] + 200 for e in choreo['events'] if e.get('blink') is True]
     own = lambda t: any(abs(t - a) <= 100 for a in blink_at)
     def seq(rec, kind): return [e for e in rec['events'] if e['kind'] == kind and (kind != 'blink' or own(e['t']))]
     ev = {'idle_blinks': {'v1': [e['t'] for e in v1['events'] if e['kind'] == 'blink' and not own(e['t'])], 'v2': [e['t'] for e in v2['events'] if e['kind'] == 'blink' and not own(e['t'])]}}
     for kind in ('setMouth', 'blink', 'release'):
         e1, e2 = seq(v1, kind), seq(v2, kind)
-        rows = []; k_ok = len(e1) == len(e2) and len(e1) == sum(1 for e in choreo['events'] if {'setMouth': 'mouth', 'blink': 'blink', 'release': 'release'}[kind] in e)
+        want_n = sum(1 for e in choreo['events'] if {'setMouth': 'mouth', 'blink': 'blink', 'release': 'release'}[kind] in e) + (sum(1 for e in choreo['events'] if e.get('blink') is True) if kind == 'blink' else 0)
+        rows = []; k_ok = len(e1) == len(e2) and len(e1) == want_n
         for a, b in zip(e1, e2):
             dt = abs(a['t'] - b['t']); same = a['arg'] == b['arg'] and dt <= FRAME_MS
             rows.append({'v1': a, 'v2': b, 'dt_ms': round(dt, 2), 'pass': same}); k_ok = k_ok and same
@@ -201,21 +207,20 @@ async def strip(browser, perf, spec, choreo):
     frames = {}
     for eng, url, ready in (('v1', URL_V1, READY_V1), ('v2', URL_V2, READY_V2)):
         ctx, page, _ = await arm(browser, url, ready)
-        method = spec[eng]
-        await page.evaluate("(m) => { const r = window.__rigs[0]; r[m](); }", method)
+        await page.evaluate("(m) => { const r = window.__rigs[0]; if (m.method === 'perform') r.perform(m.perf, 'small'); else r[m.method](); }", {'method': spec[eng], 'perf': perf})
         t0 = time.perf_counter(); shots = []
-        for at in STRIP_AT:
+        for at in STRIP_AT[perf]:
             while (time.perf_counter() - t0) * 1000 < at: await asyncio.sleep(0.005)
             shots.append((at, await page.locator('.slot').first.screenshot()))
         frames[eng] = shots; await ctx.close()
     import io
     imgs = {e: [Image.open(io.BytesIO(b)).convert('RGB') for _, b in frames[e]] for e in frames}
-    w, h = imgs['v1'][0].size; W = w * len(STRIP_AT); H = h * 2 + 44
+    w, h = imgs['v1'][0].size; W = w * len(STRIP_AT[perf]); H = h * 2 + 44
     canvas = Image.new('RGB', (W, H), (11, 18, 36)); d = ImageDraw.Draw(canvas)
     for row, e in enumerate(('v1', 'v2')):
         for i, im in enumerate(imgs[e]): canvas.paste(im.resize((w, h)), (i * w, 22 + row * (h + 0)))
         d.text((6, 4 + row * (h + 0)), f"{e}: {'rig.js ' + spec['v1'] + '()' if e == 'v1' else 'perform(' + repr(perf) + ') from owl.motion.json choreo'}", fill=(230, 230, 230))
-    for i, at in enumerate(STRIP_AT): d.text((i * w + 6, H - 18), f'{at} ms', fill=(200, 200, 200))
+    for i, at in enumerate(STRIP_AT[perf]): d.text((i * w + 6, H - 18), f'{at} ms', fill=(200, 200, 200))
     path = os.path.join(OUT, f'k96_{perf}_strip.png'); canvas.save(path); return os.path.relpath(path, REPO)
 
 
@@ -229,8 +234,8 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch()
         # 1) timing run, both arms
-        c1, p1, e1 = await arm(b, URL_V1, READY_V1); v1 = await p1.evaluate(JS_BEAT, {'method': spec['v1'], 'arg': None, 'totalMs': total}); await c1.close()
-        c2, p2, e2 = await arm(b, URL_V2, READY_V2); v2 = await p2.evaluate(JS_BEAT, {'method': spec['v2'], 'arg': 'small', 'totalMs': total})
+        c1, p1, e1 = await arm(b, URL_V1, READY_V1); v1 = await p1.evaluate(JS_BEAT, {'method': spec['v1'], 'arg': None, 'totalMs': total, 'perf': perf}); await c1.close()
+        c2, p2, e2 = await arm(b, URL_V2, READY_V2); v2 = await p2.evaluate(JS_BEAT, {'method': spec['v2'], 'arg': 'small', 'totalMs': total, 'perf': perf})
         st = await p2.evaluate(JS_STATE, {'event': spec['state']}); await c2.close()
         ok, channels, events, extras = compare(choreo, v1, v2)
         out['channels'] = channels; out['events'] = events; out['extras_not_in_data'] = extras
@@ -240,12 +245,12 @@ async def main():
         C = out['checks']
         C['all_channels_matched_once_both_arms'] = all(c['v1_hits'] == 1 and c['v2_hits'] == 1 for c in channels)
         C['every_channel_scheduled_within_one_frame'] = all(c.get('call_dt_ms', 99) <= FRAME_MS for c in channels)
-        C['every_channel_start_latency_le_two_frames_both_arms'] = all(c.get('start_latency_ok') for c in channels)
+        C['every_channel_starts_running_within_three_frames_both_arms'] = all(c.get('start_latency_ok') for c in channels)
         C['every_channel_timing_equal'] = all(c.get('timing_equal') for c in channels)
         C['every_channel_composite_equal'] = all(c.get('composite_equal') for c in channels)
         C['every_channel_keyframes_equal'] = all(c.get('keyframes_equal') for c in channels)
         C['mouth_sequence_equal_within_frame'] = events['setMouth']['pass'] and events['setMouth']['v1_count'] >= 3
-        C['blink_calls_equal_within_frame'] = events['blink']['pass'] and events['blink']['v1_count'] == len([e for e in choreo['events'] if 'blink' in e])
+        C['blink_calls_equal_within_frame'] = events['blink']['pass']
         C['release_calls_equal_within_frame'] = events['release']['pass']
         # end state: mouth closed, rig free, and every fill:forwards CHANNEL of the performance cancelled (idle look() layers
         # from the unseeded idle scheduler may land after settle on either arm - they are reported under held_forwards_after, not failed)
@@ -259,18 +264,24 @@ async def main():
         C['no_page_errors_timing_run'] = not e1 and not e2
         out['errors'] = {'v1': e1, 'v2': e2}
         # 2) reduced motion, both arms
-        c1, p1, e1 = await arm(b, URL_V1, READY_V1, reduced=True); r1 = await p1.evaluate(JS_BEAT, {'method': spec['v1'], 'arg': None, 'totalMs': choreo['reduced']['closeAtMs']}); await c1.close()
-        c2, p2, e2 = await arm(b, URL_V2, READY_V2, reduced=True); r2 = await p2.evaluate(JS_BEAT, {'method': spec['v2'], 'arg': 'small', 'totalMs': choreo['reduced']['closeAtMs']}); await c2.close()
+        c1, p1, e1 = await arm(b, URL_V1, READY_V1, reduced=True); r1 = await p1.evaluate(JS_BEAT, {'method': spec['v1'], 'arg': None, 'totalMs': choreo['reduced']['closeAtMs'], 'perf': perf}); await c1.close()
+        c2, p2, e2 = await arm(b, URL_V2, READY_V2, reduced=True); r2 = await p2.evaluate(JS_BEAT, {'method': spec['v2'], 'arg': 'small', 'totalMs': choreo['reduced']['closeAtMs'], 'perf': perf}); await c2.close()
         nonlid = lambda rec: [a for a in rec['anims'] if a['joint'] not in ('lidL', 'lidR')]
-        rm = {'v1': {'non_lid_anims': len(nonlid(r1)), 'events': r1['events'], 'mouthAtEnd': r1['mouthAtEnd'], 'busy': r1['busyAtEnd']}, 'v2': {'non_lid_anims': len(nonlid(r2)), 'events': r2['events'], 'mouthAtEnd': r2['mouthAtEnd'], 'busy': r2['busyAtEnd'], 'cues': r2['cues']}}
+        # v1's idle look() (rig.js scheduleLook: pupilL/pupilR 420 ms + head 600 ms, unseeded, no busy or reduced-motion check) can fire
+        # inside the window on the v1 arm; it is idle noise, not part of the beat -> listed as idle_look_anims, never matched against the data
+        is_look = lambda a: (a['joint'] in ('pupilL', 'pupilR') and a['timing']['duration'] == 420 and a['timing']['fill'] == 'forwards') or (a['joint'] == 'head' and a['timing']['duration'] == 600 and a['timing']['delay'] == 80)
+        beat_anims = lambda rec: [a for a in nonlid(rec) if not is_look(a)]
+        rm = {'v1': {'non_lid_anims': len(beat_anims(r1)), 'idle_look_anims': len([a for a in nonlid(r1) if is_look(a)]), 'events': r1['events'], 'mouthAtEnd': r1['mouthAtEnd'], 'busy': r1['busyAtEnd']},
+              'v2': {'non_lid_anims': len(beat_anims(r2)), 'idle_look_anims': len([a for a in nonlid(r2) if is_look(a)]), 'events': r2['events'], 'mouthAtEnd': r2['mouthAtEnd'], 'busy': r2['busyAtEnd'], 'cues': r2['cues']}}
         out['reduced'] = rm
         m1 = [(e['arg'], e['t']) for e in r1['events'] if e['kind'] == 'setMouth']; m2 = [(e['arg'], e['t']) for e in r2['events'] if e['kind'] == 'setMouth']
         C['reduced_no_body_animation_both_arms'] = rm['v1']['non_lid_anims'] == 0 and rm['v2']['non_lid_anims'] == 0
         C['reduced_mouth_sequence_equal_within_frame'] = len(m1) == len(m2) and all(a[0] == b[0] and abs(a[1] - b[1]) <= FRAME_MS for a, b in zip(m1, m2)) and m1[-1][0] == 'closed'
-        C['reduced_blink_equal'] = [e['arg'] for e in r1['events'] if e['kind'] == 'blink'] == [e['arg'] for e in r2['events'] if e['kind'] == 'blink']
+        b1 = [(e['arg'], e['t']) for e in r1['events'] if e['kind'] == 'blink']; b2 = [(e['arg'], e['t']) for e in r2['events'] if e['kind'] == 'blink']
+        C['reduced_blink_equal_within_frame'] = len(b1) == len(b2) and all(a[0] == b[0] and abs(a[1] - b[1]) <= FRAME_MS for a, b in zip(b1, b2))
         C['no_page_errors_reduced'] = not e1 and not e2
         # 3) legacy fallback ?perf=0 on v2
-        c3, p3, e3 = await arm(b, URL_V2 + '&perf=0', READY_V2); lg = await p3.evaluate(JS_PERF_OFF, {'method': spec['v2'], 'perf': perf}); await c3.close()
+        c3, p3, e3 = await arm(b, URL_V2 + '&perf=0', READY_V2); lg = await p3.evaluate(JS_PERF_OFF, {'event': spec['state'], 'perf': perf}); await c3.close()   # through the state route: CLIPS fall back to the legacy clip
         out['legacy_perf_off'] = lg
         C['perf_off_legacy_alive'] = lg['perfSpecNull'] and lg['busyDuring'] and not lg['busyAfter'] and 'perf' not in lg['cues'] and not e3
         # 4) strip
