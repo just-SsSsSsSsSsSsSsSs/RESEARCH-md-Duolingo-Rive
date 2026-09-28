@@ -61,21 +61,42 @@ ok(r.verdict === 'PASS' && r.blocks_rejected.length === 1 && r.blocks_accepted =
 const text = 'x ' + JSON.stringify(block('a', W)) + '\n---\n' + JSON.stringify(block('b', W), null, 1) + ' trailing';
 const parsed = G12.parseBlocks(text);
 ok(parsed.blocks.length === 2 && parsed.errors.length === 0, `parseBlocks -> ${parsed.blocks.length} blocks, ${parsed.errors.length} errors`);
-// 13. the real first block from the gist (rater null, 3/4, rated on kit v1) - under kit v2 it is REJECTED by design
-//     (kit / seed / order mismatch; gist rev b693458e: kit-v1 sessions stay in results/ and are never pooled with kit v2).
-//     Against the kit it was rated on (manifest.previous_kit) the same block still validates and reads INSUFFICIENT alone.
+// 13. the real first block from the gist (rater null, 3/4, rated on kit v1) - under kit v3 it is REJECTED by design
+//     (kit / seed / order mismatch; gist rev b693458e: sessions from an earlier kit stay in results/ and are never pooled).
+//     Against the kit it was rated on (manifest.previous_kit chain) the same block still validates and reads INSUFFICIENT alone.
 const first = JSON.parse(readFileSync(path.join(here, '..', 'samples', 'watch', 'results', '2026-09-27_gist-d33eaf03_rater-null.json'), 'utf8'));
 r = G12.score([first], M);
 ok(r.verdict === 'REJECTED' && r.blocks_rejected.length === 1 && r.blocks_accepted === 0, `kit-v1 real block under kit v${M.kit_version} -> ${r.verdict} (by design)`);
-ok(M.kit_version === 2 && M.previous_kit && M.previous_kit.kit_version === 1 && M.previous_kit.seed !== M.seed && M.previous_kit.order_sha256 !== M.order_sha256,
-  `manifest is kit v${M.kit_version}; previous_kit v${M.previous_kit && M.previous_kit.kit_version} has a different seed and order_sha256`);
-const Mv1 = { ...M, generated_at: M.previous_kit.generated_at, seed: M.previous_kit.seed, order_sha256: M.previous_kit.order_sha256, order: first.answers.map(a => ({ beat: a.beat, left: 'v2' })) };
+const chain = []; for (let pk = M.previous_kit; pk; pk = pk.previous_kit) chain.push(pk);
+ok(M.kit_version === 3 && chain.length === 2 && chain[0].kit_version === 2 && chain[1].kit_version === 1, `manifest is kit v${M.kit_version}; previous_kit chain v${chain.map(c => c.kit_version).join(' -> v')}`);
+ok(new Set([M.seed, ...chain.map(c => c.seed)]).size === 3 && new Set([M.order_sha256, ...chain.map(c => c.order_sha256)]).size === 3, 'v1, v2, v3 have three different seeds and three different order_sha256');
+const v1kit = chain[1];
+const Mv1 = { ...M, generated_at: v1kit.generated_at, seed: v1kit.seed, order_sha256: v1kit.order_sha256, order: first.answers.map(a => ({ beat: a.beat, left: 'v2' })) };
 r = G12.score([first], Mv1);
-ok(r.verdict === 'INSUFFICIENT' && r.n === 4 && r.v2_chosen === 3, `same block against its own kit (previous_kit) -> ${r.verdict} (${r.v2_chosen}/${r.n})`);
-// 14. kit v2 rule line: every clip states which state it runs; the think clip runs the real state, not puzzled
+ok(r.verdict === 'INSUFFICIENT' && r.n === 4 && r.v2_chosen === 3, `same block against its own kit (v1 in the chain) -> ${r.verdict} (${r.v2_chosen}/${r.n})`);
+// 13b. the real kit-v2 blocks (Salim, Baba, Karma) are REJECTED under kit v3 by design, and still score FAIL 6/12 against kit v2
+const v2files = ['2026-09-27_gist-df1b7d02_rater-salim-kitv2.json', '2026-09-27_gist-df1b7d02_rater-baba-kitv2.json', '2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json'];
+const v2blocks = v2files.map(f => JSON.parse(readFileSync(path.join(here, '..', 'samples', 'watch', 'results', f), 'utf8')));
+r = G12.score(v2blocks, M);
+ok(r.verdict === 'REJECTED' && r.blocks_rejected.length === 3, `3 real kit-v2 blocks under kit v3 -> ${r.verdict} (by design)`);
+const v2kit = chain[0];
+const Mv2 = { ...M, generated_at: v2kit.generated_at, seed: v2kit.seed, order_sha256: v2kit.order_sha256, order: v2blocks[0].answers.map(a => ({ beat: a.beat, left: 'v2' })) };
+r = G12.score(v2blocks, Mv2);
+ok(r.verdict === 'FAIL' && r.n === 12 && r.v2_chosen === 6 && r.raters.length === 3, `same 3 blocks against kit v2 -> ${r.verdict} ${r.v2_chosen}/${r.n} from ${r.raters.length} raters (the recorded kit-v2 result)`);
+// 14. kit v3 rule lines: every clip states which clip the state RESOLVES to (read live at recording time), the think clip resolves
+//     to rig.ponder (the K9.5-2 performance, not puzzled), the sad clip names the K9.5-3 plate, blink seeded on every re-recorded clip
 ok(M.states_per_clip && M.beats.every(b => M.states_per_clip[b] && M.states_per_clip[b].v2 && M.states_per_clip[b].v1), 'states_per_clip covers all beats on both arms');
-ok(/answer:pending/.test(M.states_per_clip.think.v2) && !/puzzled/.test(M.states_per_clip.think.v2) && M.states_per_clip.think.v1 === 'think()', `think clip: v2 "${M.states_per_clip.think.v2.slice(0, 40)}..." / v1 "${M.states_per_clip.think.v1}"`);
-ok(Array.isArray(M.reused_from_previous_kit) && M.reused_from_previous_kit.length === 6 && !M.reused_from_previous_kit.some(f => /think/.test(f)), `6 clips reused from kit v1, none of them a think clip`);
+ok(/RESOLVED/.test(M.states_per_clip.think.v2) && /ponder/.test(M.states_per_clip.think.v2) && !/spiral\b(?!\))/.test(M.states_per_clip.think.v2.replace('no spiral', '')), `think label names the resolved clip: "${M.states_per_clip.think.v2.slice(0, 60)}..."`);
+ok(M.resolved_clips && /rig\.ponder/.test(M.resolved_clips.v2_think || '') && !/puzzled/.test(M.resolved_clips.v2_think || ''), `live resolved v2_think = "${M.resolved_clips && M.resolved_clips.v2_think}"`);
+ok(M.resolved_clips && /beak_sad\.webp/.test(M.resolved_clips.v2_sad || ''), `live resolved v2_sad = "${M.resolved_clips && M.resolved_clips.v2_sad}"`);
+ok(M.answer_lock_ms === M.second_beat_ms && M.answer_lock_ms === 5500, `answer_lock_ms ${M.answer_lock_ms} == second_beat_ms ${M.second_beat_ms}`);
+ok(typeof M.blink_seed === 'number' && M.blink_seeded && M.blink_seeded.v2_think === true && M.blink_seeded.v2_sad === true, `blink seeded on the re-recorded clips (seed ${M.blink_seed})`);
+ok(M.recording_urls && /[?&]seed=\d+/.test(M.recording_urls.v2_think || ''), `recording URL carries &seed=: ${M.recording_urls && M.recording_urls.v2_think}`);
+ok(Array.isArray(M.reused_from_previous_kit) && M.reused_from_previous_kit.length === 6 && !M.reused_from_previous_kit.some(f => /^v2_(think|sad)/.test(f)), `6 clips reused from kit v2 (all v1 clips + v2 celebrate/flight), v2 think/sad re-recorded`);
+// 15. the kit HTML locks the answer buttons until answer_lock_ms (attribute + handler guard) and shows a countdown
+const html = readFileSync(path.join(here, '..', 'samples', 'watch', 'index.html'), 'utf8');
+ok(/<button data-side="R" disabled>/.test(html) && /<button data-side="L" disabled>/.test(html), 'answer buttons start disabled');
+ok(/performance\.now\(\) < lockUntil\) return;/.test(html) && /id="countdown"/.test(html) && /M\.answer_lock_ms/.test(html), 'lock enforced in the click handler, countdown element present, lock read from the manifest');
 
 console.log(fails ? `\nG12 SCORER FAIL (${fails})` : '\nG12 SCORER PASS');
 process.exit(fails ? 1 : 0);
