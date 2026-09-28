@@ -60,3 +60,19 @@ is kept as a file for the record but not counted; only the owner can say whether
 The human gate did its job twice: it caught the harness defect in kit v1 (puzzled instead of think) and the performance
 defect in kit v2 (the still acting loses). What follows is a phase-boundary decision in the owner's own words; nothing
 here unfreezes engine, art, puzzled or blink randomness.
+
+## Kit v3 (K9.5-4, owner decision 2026-09-27 gist 4f70a2dc rev ab621e74) - no session yet
+
+Kit v3 = kit v2 protocol + three changes the kit-v2 record asked for: (1) the answer buttons are LOCKED until
+second_beat_ms = 5500 ms into each trial with a visible countdown (attribute + click-handler guard), so a rating cannot
+precede the second beat (Baba 2459 ms on kit v2); (2) the blink scheduler is seeded at recording time on both arms
+(`&seed=20260928` on the recording URL, K9.5-1) - pinned for the recording only, the shipped page stays unseeded;
+(3) every per-clip label names the clip the state RESOLVES to, read live from the page at recording time
+(`manifest.resolved_clips`): v2_think -> `state think -> body ponder -> rig.ponder (acting.performances.think)` (the
+K9.5-2 calm think; kit v2 ran the puzzled spiral under the label "body ponder"), v2_sad -> `oops(large) -> sad plate
+beak_sad.webp` (the K9.5-3 authored plate). Only v2 think and v2 sad were re-recorded (`--only think,sad --arms v2`); the
+six other clips are reused byte-identical from kit v2 (sha256-checked). Kit v3: seed 20260929, order_sha256 in
+`../manifest.json`, 6.74 MB, 0 page errors, 8 clips x 10.4 s. `SCORE.generated.json` is now written by
+`../score_results.mjs` (committed tool): under kit v3 it reads REJECTED, 0 accepted / 7 earlier-kit blocks rejected by
+design - the kit-v2 verdict above stays the record until >= 3 named raters rate kit v3 (owner side; after the phone
+session of 2026-09-28/29). PASS rule unchanged: v2 >= 10/12 from >= 3 named raters.
