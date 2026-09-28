@@ -26,14 +26,25 @@ check(start >= 0, 'validateActing found in acting.js');
 const fnText = actingSrc.slice(start + 'export '.length, actingSrc.indexOf('\n}\n', start) + 2);
 const validateActing = new Function(`${fnText}; return validateActing;`)();
 
-// 1) shipped spec validates with the think block present
-const K = owl.acting && owl.acting.performances && owl.acting.performances.think;
-check(!!K, 'owl.motion.json has acting.performances.think');
-const p0 = validateActing(owl);
-check(p0.length === 0, `shipped owl spec validates (${p0.length} problems${p0.length ? ': ' + p0.join(' | ') : ''})`);
+// K9.6-2 (owner decision a3e73842): the routed acting.performances.think is now the v1 choreography as data (choreo
+// schema, tested in k96_choreo_spec.mjs). The K9.5-2 calm design is preserved verbatim as acting.performances.think_calm_k95
+// (record only, not routed). This test keeps checking that design and its validator branch by re-seating the record
+// under `think` in a copy - so the K9.5 budgets stay enforced for as long as the legacy branch exists.
+const shipped = owl.acting && owl.acting.performances;
+check(!!(shipped && shipped.think && shipped.think.choreo), 'owl.motion.json routed think carries choreo (K9.6-2)');
+check(!!(shipped && shipped.think_calm_k95 && !shipped.think_calm_k95.choreo), 'owl.motion.json keeps think_calm_k95 as an un-routed record');
+const p00 = validateActing(owl);
+check(p00.length === 0, `shipped owl spec validates (${p00.length} problems${p00.length ? ': ' + p00.join(' | ') : ''})`);
+const owlK95 = JSON.parse(JSON.stringify(owl)); owlK95.acting.performances.think = owlK95.acting.performances.think_calm_k95; delete owlK95.acting.performances.think_calm_k95;
+
+// 1) the K9.5 record validates when seated as the think block (legacy branch)
+const K = owlK95.acting.performances.think;
+check(!!K, 'think_calm_k95 record present');
+const p0 = validateActing(owlK95);
+check(p0.length === 0, `K9.5 record validates under the legacy branch (${p0.length} problems${p0.length ? ': ' + p0.join(' | ') : ''})`);
 
 // 2) budget enforcement - each mutation must be rejected with a think-scoped message
-const mutate = (fn) => { const s = JSON.parse(JSON.stringify(owl)); fn(s.acting.performances.think); return validateActing(s).filter((m) => m.includes('performances.think')); };
+const mutate = (fn) => { const s = JSON.parse(JSON.stringify(owlK95)); fn(s.acting.performances.think); return validateActing(s).filter((m) => m.includes('performances.think')); };
 check(mutate((t) => { t.gazePx = [6, 6]; }).length === 1, 'rejects |gazePx| > 6 px');
 check(mutate((t) => { t.gazePx = [4]; }).length === 1, 'rejects gazePx that is not [dx,dy]');
 check(mutate((t) => { t.gazePx = [1, -1]; t.driftPx = 2.5; }).length === 1, 'rejects driftPx > 2 (with a small gaze so only the drift rule fires)');
@@ -45,7 +56,7 @@ check(mutate((t) => { t.holdMs = [1100, 4000]; }).length === 1, 'rejects lift + 
 check(mutate((t) => { delete t.blinkAtMs; }).length === 1, 'rejects missing blinkAtMs');
 check(mutate((t) => { delete t.tiers.medium; }).length === 1, 'rejects a missing tier');
 // removing the block entirely is allowed (legacy think() fallback)
-const noBlock = JSON.parse(JSON.stringify(owl)); delete noBlock.acting.performances.think;
+const noBlock = JSON.parse(JSON.stringify(owlK95)); delete noBlock.acting.performances.think;
 check(validateActing(noBlock).length === 0, 'spec without the think block still validates (fallback path)');
 
 // 3) shipped values sit inside the frozen budgets (not only "valid")
@@ -54,6 +65,8 @@ check(Math.max(...['small', 'medium', 'large'].map((t) => K.tiers[t].headDeg)) <
 check(Math.hypot(K.gazePx[0], K.gazePx[1]) + K.driftPx <= 6.5, 'gaze + drift excursion <= 6.5 px');
 
 // 4) CLIPS.body.ponder routes to rig.ponder and falls back to think()
+// (K9.6-3 routes to the choreo player when performances.think.choreo exists; the legacy ponder route below is kept for
+// a spec whose think block has no choreo, exactly as it was.)
 const { CLIPS } = await import(join(here, '../engine/states.js'));
 const calls = [];
 const rigA = { ponder: (t) => { calls.push(['ponder', t]); return 'A'; }, puzzled: () => { calls.push(['puzzled']); }, think: () => { calls.push(['think']); }, perfSpec: (n) => (n === 'think' ? K : null), escalate: (ch) => { calls.push(['escalate', ch]); return 'medium'; } };
