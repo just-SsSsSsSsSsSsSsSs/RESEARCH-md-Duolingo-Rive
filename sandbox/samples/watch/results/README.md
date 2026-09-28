@@ -120,3 +120,23 @@ What this record does NOT say: it does not say v2 is worse than v1 on think and 
 carry no statistical weight on their own), and it does not authorise any engine or art work. The next step is a
 phase-boundary decision in the owner's own words; the freeze holds (app/ 0, Gate 6 closed, K10 NOT STARTED,
 celebrate / flight untouched).
+
+## Kit v4 (recorded 2026-09-28T05:31:59Z, K9.6-6b) - awaiting rater blocks
+
+Owner decision (gist 4f70a2dc rev a3e73842 / cf3d3a8a / 0b1f96bc): the kit v3 result stands as official; the winner (v1 think / sad) was
+carried into v2 as DATA (acting.performances.think.choreo, .sad.choreo, played by the generic choreo player). The primary proof of the
+port is automatic - samples/proofs/k96_think.json and k96_sad.json: every channel scheduled within 16.7 ms of v1, identical timing,
+keyframes, mouth plates, end state (see V1_CHOREOGRAPHY.md section 4). Kit v4 is the perceptual sanity check.
+
+Kit v4 protocol: beats think + sad ONLY (celebrate 10/10 and flight 10/10 were decided on kits v1-v3 and are not re-tested), 2 trials per
+beat per session (4 per rater; 12 from 3 named raters, 16 with a 4th), v1 clips reused byte-identical from kit v3, v2 clips re-recorded
+on the choreo player (resolved live at recording time: think -> rig.perform(think) 8 channels 3500 ms; sad -> rig.perform(sad) 10
+channels 2500 ms), lock 5500 ms, seeded blink, seed 20260930, order sha256 cbf5d81b470bbeef...
+
+Scoring: manifest.scoring_mode = tie (score_core.js, written and tested BEFORE this recording, commit 953c287). FAIL iff any beat has v2
+below its floor (1 of its trials; 2 when the beat has >= 8 trials, i.e. a 4th named rater) OR two-sided p <= 0.05 with v2 < n/2; PASS
+otherwise as a perceived tie, and on an outright win (>= 10/12, 13/16). Exact false-FAIL probability for a perfect port: 3.98 pct at 12
+trials, 6.91 pct at 16 (score_core.tieFalseFail). Blocks from kits v1-v3 are REJECTED by design (kit / seed / order mismatch).
+
+Status: SCORE.generated.json = REJECTED (no kit-v4 block yet). Rater blocks arrive through the owner's gist and are appended here as
+`2026-09-28_gist-<rev>_rater-<name>-kitv4.json`; the verdict is written only by `node sandbox/samples/watch/score_results.mjs`.
