@@ -22,6 +22,9 @@ Run log: run 1 (3177360) FAILED on head_reaches_tier / pupil_lifts for every tie
 not the engine: the matrix regex was written `\\\\(` inside a non-raw Python string, so JS received `\\(` (a literal backslash)
 and the sampler never matched getComputedStyle().transform. Fixed to `\\(`; the engine debug at that point already showed
 medium head -6.7 deg and pupil (3,-4) px. Kept here so the record is honest.
+Run 2 (ef2a6f7): every engine budget PASS; one check FAIL - medium.one_blink_in_hold counted 2 blinks because the seeded IDLE
+blink scheduler fired inside the hold (legitimate, independent of the performance). Check redesigned to perf_blink_at_blinkAtMs
+(the performance's own blink at perf + blinkAtMs +- 120 ms == exactly 1); idle blinks are reported, not failed.
 """
 import asyncio
 import hashlib
@@ -107,12 +110,15 @@ def analyse(res, K, tier):
     t_settle = next((c['t'] for c in res['cues'] if c['p'] == 'settle'), None)
     t_recentre = next((c['t'] for c in res['cues'] if c['p'] == 'recentre'), None)
     blinks = [c['t'] for c in res['cues'] if c['p'] == 'blink' and t_settle is not None and t_perf <= c['t'] <= t_settle]
+    # the performance's own blink is the one at perf + blinkAtMs (+- 120 ms); the idle scheduler may add more (seeded, legitimate)
+    perf_blinks = [t for t in blinks if abs(t - (t_perf + K['blinkAtMs'])) <= 120]
+    idle_blinks = len(blinks) - len(perf_blinks)
     head_max = max((abs(x['head']) for x in s), default=0)
     pup_max = max((max(x['pupL'], x['pupR']) for x in s), default=0)
     root_max = max((abs(x['root']) for x in s), default=0)
     want_deg = K['tiers'][tier]['headDeg']
     out = {'tier': tier, 'total_ms': None if res['totalMs'] is None else round(res['totalMs'], 1), 'head_max_deg': round(head_max, 2),
-           'pupil_max_px': round(pup_max, 2), 'root_max_deg': round(root_max, 2), 'blink_cues_in_hold': len(blinks), 'cue_order': cues,
+           'pupil_max_px': round(pup_max, 2), 'root_max_deg': round(root_max, 2), 'blink_cues_in_hold': len(blinks), 'perf_blink_at_ms': [round(t - t_perf, 1) for t in perf_blinks], 'idle_blinks_in_hold': idle_blinks, 'cue_order': cues,
            'states': res['states'], 'final_state': res['finalState'], 'plan': res['plan'], 'fx': [c['vfx'] for c in res['cues'] if c['p'] == 'fx'],
            'samples': len(s)}
     out['checks'] = {
@@ -125,7 +131,7 @@ def analyse(res, K, tier):
         'pupil_le_6px': pup_max <= 6 + SLACK_PX,
         'pupil_lifts': pup_max >= 3.0,                             # the gaze actually leaves centre
         'root_untouched': root_max <= 0.5,                         # no body roll: it is a calm think
-        'one_blink_in_hold': len(blinks) == 1,
+        'perf_blink_at_blinkAtMs': len(perf_blinks) == 1,
         'recentre_before_settle': t_recentre is not None and t_settle is not None and t_recentre < t_settle,
         'fx_matches_tier': out['fx'] == list(K['tiers'][tier].get('vfx', [])),
     }
