@@ -17,6 +17,11 @@ Also a frames strip (3 tiers x 3 moments: lift, hold, settle) -> samples/proofs/
 
 Outputs samples/proofs/k95_think.json (pass_all + per-check flags + raw samples summary). Exit 1 on any failure.
 Run:  python3 tools/serve.py 8080 (detached)  ->  python3 sandbox/think_proof.py
+
+Run log: run 1 (3177360) FAILED on head_reaches_tier / pupil_lifts for every tier with head 0 deg / pupil 0 px - a TOOL bug,
+not the engine: the matrix regex was written `\\\\(` inside a non-raw Python string, so JS received `\\(` (a literal backslash)
+and the sampler never matched getComputedStyle().transform. Fixed to `\\(`; the engine debug at that point already showed
+medium head -6.7 deg and pupil (3,-4) px. Kept here so the record is honest.
 """
 import asyncio
 import hashlib
@@ -47,7 +52,7 @@ SLACK_DEG, SLACK_PX = 0.5, 0.5
 
 HELPERS = """
   const r = window.__rigs[0]; const sleep = ms => new Promise(res => setTimeout(res, ms));
-  const M = n => { const el = r.j(n); if (!el) return [1,0,0,1,0,0]; const t = getComputedStyle(el).transform; const m = t.match(/matrix\\\\(([^)]+)\\\\)/); return m ? m[1].split(',').map(Number) : [1,0,0,1,0,0]; };
+  const M = n => { const el = r.j(n); if (!el) return [1,0,0,1,0,0]; const t = getComputedStyle(el).transform; const m = t.match(/matrix\\(([^)]+)\\)/); return m ? m[1].split(',').map(Number) : [1,0,0,1,0,0]; };
   const ROT = n => { const v = M(n); return Math.atan2(v[1], v[0]) * 180 / Math.PI; };
   const PUP = n => { const v = M(n); return Math.hypot(v[4], v[5]); };
   const LAYERS = re => [...r.live].filter(a => a.effect && a.effect.target && re.test(a.effect.target.getAttribute('data-joint') || '')).length;
