@@ -1,16 +1,18 @@
 {
- "verdict": "INSUFFICIENT",
- "reason": "4 trials from 1 named raters (0 unnamed sessions); need >= 12 trials and >= 3 named raters",
- "n": 4,
- "v2_chosen": 2,
- "v1_chosen": 2,
+ "verdict": "FAIL",
+ "reason": "no evidence: v2 6/12, two-sided p 1.0000 > 0.05 (need >= 10/12)",
+ "n": 12,
+ "v2_chosen": 6,
+ "v1_chosen": 6,
  "two_sided_p": 1,
- "min_v2_wins_for_pass": null,
+ "min_v2_wins_for_pass": 10,
  "raters": [
-  "سليم"
+  "سليم",
+  "بابا",
+  "كارما"
  ],
  "unnamed_sessions": 0,
- "blocks_accepted": 1,
+ "blocks_accepted": 3,
  "blocks_rejected": [
   {
    "file": "2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json",
@@ -85,19 +87,19 @@
  ],
  "per_beat": {
   "think": {
-   "n": 1,
+   "n": 3,
    "v2": 0
   },
   "flight": {
-   "n": 1,
-   "v2": 1
+   "n": 3,
+   "v2": 3
   },
   "celebrate": {
-   "n": 1,
-   "v2": 1
+   "n": 3,
+   "v2": 3
   },
   "sad": {
-   "n": 1,
+   "n": 3,
    "v2": 0
   }
  },
@@ -105,7 +107,7 @@
  "kit": "2026-09-28T00:30:02Z",
  "order_sha256": "c1880f3a886fadb27be1fd266dad5782bb5433fd3c62b7e7b90ea11fffc12453",
  "kit_version": 3,
- "scored_at": "2026-09-28T01:27:18Z",
+ "scored_at": "2026-09-28T01:43:40Z",
  "files": [
   "2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json",
   "2026-09-27_gist-6ed35984_rater-karma.json",
@@ -114,12 +116,14 @@
   "2026-09-27_gist-d33eaf03_rater-null.json",
   "2026-09-27_gist-df1b7d02_rater-baba-kitv2.json",
   "2026-09-27_gist-df1b7d02_rater-salim-kitv2.json",
-  "2026-09-28_gist-795870df_rater-salim-kitv3.json"
+  "2026-09-28_gist-795870df_rater-salim-kitv3.json",
+  "2026-09-28_gist-98611011_rater-baba-kitv3.json",
+  "2026-09-28_gist-98611011_rater-karma-kitv3.json"
  ],
  "excluded": [
   "2026-09-27_gist-0c05fdfc_rater-mama-kitv2.DUPLICATE-of-karma.json (duplicate session, not independent; owner confirmed)",
   "2026-09-28_gist-795870df_rater-baba-kitv3.DUPLICATE-of-salim.json (duplicate session, not independent; owner confirmed)",
   "2026-09-28_gist-795870df_rater-karma-kitv3.DUPLICATE-of-salim.json (duplicate session, not independent; owner confirmed)"
  ],
- "note": "kit v3 first session (gist 4f70a2dc rev 795870df): Salim 2/4 accepted; the Karma and Baba blocks in the same revision are byte-identical to Salim's answers (same ms) -> DUPLICATE files, excluded; 7 earlier-kit blocks rejected by design"
+ "note": "kit v3 verdict: three independent named raters (Salim rev 795870df; Karma, Baba rev 98611011 with their own timings); the two same-named copies of the Salim block from rev 795870df stay excluded as DUPLICATE files; 7 earlier-kit blocks rejected by design"
 }

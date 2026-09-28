@@ -18,6 +18,8 @@ v2_chosen > n/2 over >= 12 trials from >= 3 named raters; a small p in the lower
 | 2026-09-28_gist-795870df_rater-salim-kitv3.json | سليم | 4 | 2 | 1.0 | INSUFFICIENT (kit v3, first named rater) |
 | 2026-09-28_gist-795870df_rater-karma-kitv3.DUPLICATE-of-salim.json | كارما | 4 | 2 | - | NOT COUNTED (byte-for-byte the Salim answers incl. ms) |
 | 2026-09-28_gist-795870df_rater-baba-kitv3.DUPLICATE-of-salim.json | بابا | 4 | 2 | - | NOT COUNTED (byte-for-byte the Salim answers incl. ms) |
+| 2026-09-28_gist-98611011_rater-karma-kitv3.json | كارما | 4 | 2 | 1.0 | INSUFFICIENT alone (kit v3, own timings) |
+| 2026-09-28_gist-98611011_rater-baba-kitv3.json | بابا | 4 | 2 | 1.0 | INSUFFICIENT alone; third named rater -> pooled FAIL (kit v3) |
 
 ## Kit v1 sessions (owner finding, gist rev b693458e)
 
@@ -96,3 +98,25 @@ the same per-beat pattern as kit v2 on one rater. If the three raters had been i
 = FAIL under the fixed rule (>= 10/12); that arithmetic is stated here so nobody has to recompute it, but it is NOT the
 verdict - the verdict needs two more NAMED, independent kit-v3 sessions (each with its own timings). Nothing here unfreezes
 engine, art, celebrate or flight.
+
+## Kit v3 verdict (gist 4f70a2dc rev 98611011, 2026-09-28T01:40:42Z; verdict written by score_results.mjs, not by hand)
+
+The owner re-pasted Karma and Baba from the live page with their own blocks: Karma 2/4 (ms 15578 / 8233 / 8048 / 79274,
+replays 1/0/0/2), Baba 2/4 (ms 9157 / 20669 / 10544 / 11308, replays 0/1/1/1) - distinct timings, independent sessions,
+`validateBlock` [] on both, lock honoured (min 8048 ms >= 5500). The two same-named copies of the Salim block from
+rev 795870df stay on record as DUPLICATE files and stay excluded.
+
+Pooled over 3 named raters (Salim, Karma, Baba), 12 trials: v2 6/12, two-sided p 1.0, PASS needed >= 10/12 ->
+**G12 on kit v3 = FAIL** (`SCORE.generated.json`, scored 2026-09-28T01:43:40Z; accepted 3 / rejected 7 / excluded 3).
+
+Per beat, kit v3: celebrate 3/3, flight 3/3, think 0/3, sad 0/3 - the same split as kit v2, now with the answer lock
+(no rating before the second beat), a seeded blink on the v2 clips, and the two clips that K9.5 actually changed
+(calm think, authored sad plate). Across the three kits: celebrate 10/10 and flight 10/10 for v2 - a stable signal;
+think 0/10 over three different think clips (puzzled spiral, real think state, calm ponder) - the loss is in the
+performance idea, not in the harness; sad 4/10 - 4/4 on kit v1, then 0/6 on kits v2 and v3 (kit v2 byte-identical to
+kit v1; kit v3 the new plate) - the sad beat has never carried a stable signal.
+
+What this record does NOT say: it does not say v2 is worse than v1 on think and sad (p 1.0 overall; 3 trials per beat
+carry no statistical weight on their own), and it does not authorise any engine or art work. The next step is a
+phase-boundary decision in the owner's own words; the freeze holds (app/ 0, Gate 6 closed, K10 NOT STARTED,
+celebrate / flight untouched).

@@ -1,0 +1,52 @@
+{
+ "kit": "2026-09-28T00:30:02Z",
+ "kit_version": 3,
+ "rater": "بابا",
+ "seed": 20260929,
+ "order_sha256": "c1880f3a886fadb27be1fd266dad5782bb5433fd3c62b7e7b90ea11fffc12453",
+ "n": 4,
+ "v2_chosen": 2,
+ "v1_chosen": 2,
+ "binomial_two_sided_p": 1,
+ "answers": [
+  {
+   "trial": 1,
+   "beat": "think",
+   "chosen": "v1",
+   "ms": 9157,
+   "replays": 0,
+   "lock_ms": 5500
+  },
+  {
+   "trial": 2,
+   "beat": "flight",
+   "chosen": "v2",
+   "ms": 20669,
+   "replays": 1,
+   "lock_ms": 5500
+  },
+  {
+   "trial": 3,
+   "beat": "celebrate",
+   "chosen": "v2",
+   "ms": 10544,
+   "replays": 1,
+   "lock_ms": 5500
+  },
+  {
+   "trial": 4,
+   "beat": "sad",
+   "chosen": "v1",
+   "ms": 11308,
+   "replays": 1,
+   "lock_ms": 5500
+  }
+ ],
+ "_record": {
+  "source": "OWNER DECISION gist 4f70a2dc60da3175dc1e509fbbd134f7 revision 98611011 (2026-09-28T01:40:42Z), pasted verbatim by the owner from the LIVE kit v3 page; replaces the same-named copy of the Salim block in rev 795870df (kept as DUPLICATE file)",
+  "kit": "v3 (2026-09-28T00:30:02Z, seed 20260929, order c1880f3a886fadb2..., answer lock 5500 ms)",
+  "recorded_at_resume_check": "#94",
+  "lock_respected": "yes - every answer ms >= answer_lock_ms 5500 (min 9157)",
+  "verdict_alone": "INSUFFICIENT alone - 4 trials (v2 2/4: same per-beat pattern); own timings 9157/20669/10544/11308, replays 0/1/1/1 - independent. Third named kit-v3 rater -> pooled verdict written by score_results.mjs. validateBlock []."
+ }
+}
