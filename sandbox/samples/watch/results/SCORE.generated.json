@@ -1,14 +1,16 @@
 {
- "verdict": "REJECTED",
- "reason": "no block belongs to this kit",
- "n": 0,
- "v2_chosen": 0,
- "v1_chosen": 0,
- "two_sided_p": null,
+ "verdict": "INSUFFICIENT",
+ "reason": "4 trials from 1 named raters (0 unnamed sessions); need >= 12 trials and >= 3 named raters",
+ "n": 4,
+ "v2_chosen": 2,
+ "v1_chosen": 2,
+ "two_sided_p": 1,
  "min_v2_wins_for_pass": null,
- "raters": [],
+ "raters": [
+  "سليم"
+ ],
  "unnamed_sessions": 0,
- "blocks_accepted": 0,
+ "blocks_accepted": 1,
  "blocks_rejected": [
   {
    "file": "2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json",
@@ -81,12 +83,29 @@
    ]
   }
  ],
- "per_beat": {},
+ "per_beat": {
+  "think": {
+   "n": 1,
+   "v2": 0
+  },
+  "flight": {
+   "n": 1,
+   "v2": 1
+  },
+  "celebrate": {
+   "n": 1,
+   "v2": 1
+  },
+  "sad": {
+   "n": 1,
+   "v2": 0
+  }
+ },
  "rule": "PASS iff two-sided p <= 0.05 AND v2_chosen > n/2, over >= 12 trials from >= 3 named raters",
  "kit": "2026-09-28T00:30:02Z",
  "order_sha256": "c1880f3a886fadb27be1fd266dad5782bb5433fd3c62b7e7b90ea11fffc12453",
  "kit_version": 3,
- "scored_at": "2026-09-28T00:31:52Z",
+ "scored_at": "2026-09-28T01:27:18Z",
  "files": [
   "2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json",
   "2026-09-27_gist-6ed35984_rater-karma.json",
@@ -94,10 +113,13 @@
   "2026-09-27_gist-6ed35984_rater-salim.json",
   "2026-09-27_gist-d33eaf03_rater-null.json",
   "2026-09-27_gist-df1b7d02_rater-baba-kitv2.json",
-  "2026-09-27_gist-df1b7d02_rater-salim-kitv2.json"
+  "2026-09-27_gist-df1b7d02_rater-salim-kitv2.json",
+  "2026-09-28_gist-795870df_rater-salim-kitv3.json"
  ],
  "excluded": [
-  "2026-09-27_gist-0c05fdfc_rater-mama-kitv2.DUPLICATE-of-karma.json (duplicate session, not independent; owner confirmed)"
+  "2026-09-27_gist-0c05fdfc_rater-mama-kitv2.DUPLICATE-of-karma.json (duplicate session, not independent; owner confirmed)",
+  "2026-09-28_gist-795870df_rater-baba-kitv3.DUPLICATE-of-salim.json (duplicate session, not independent; owner confirmed)",
+  "2026-09-28_gist-795870df_rater-karma-kitv3.DUPLICATE-of-salim.json (duplicate session, not independent; owner confirmed)"
  ],
- "note": "Kit v3 (K9.5-4): no kit-v3 rating session yet - the owner's phone session (2026-09-28/29) precedes it. The 7 earlier blocks (4 kit-v1, 3 kit-v2) are REJECTED here by design and stay recorded in this folder; the kit-v2 verdict (FAIL 6/12, 3 named raters, per beat celebrate 3/3 flight 3/3 think 0/3 sad 0/3) is preserved in results/README.md and in the g12_score.mjs test (13b), which re-scores those blocks against the kit-v2 manifest in the previous_kit chain."
+ "note": "kit v3 first session (gist 4f70a2dc rev 795870df): Salim 2/4 accepted; the Karma and Baba blocks in the same revision are byte-identical to Salim's answers (same ms) -> DUPLICATE files, excluded; 7 earlier-kit blocks rejected by design"
 }

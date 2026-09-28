@@ -1,0 +1,52 @@
+{
+ "kit": "2026-09-28T00:30:02Z",
+ "kit_version": 3,
+ "rater": "بابا ",
+ "seed": 20260929,
+ "order_sha256": "c1880f3a886fadb27be1fd266dad5782bb5433fd3c62b7e7b90ea11fffc12453",
+ "n": 4,
+ "v2_chosen": 2,
+ "v1_chosen": 2,
+ "binomial_two_sided_p": 1,
+ "answers": [
+  {
+   "trial": 1,
+   "beat": "think",
+   "chosen": "v1",
+   "ms": 15884,
+   "replays": 1,
+   "lock_ms": 5500
+  },
+  {
+   "trial": 2,
+   "beat": "flight",
+   "chosen": "v2",
+   "ms": 9383,
+   "replays": 0,
+   "lock_ms": 5500
+  },
+  {
+   "trial": 3,
+   "beat": "celebrate",
+   "chosen": "v2",
+   "ms": 8489,
+   "replays": 0,
+   "lock_ms": 5500
+  },
+  {
+   "trial": 4,
+   "beat": "sad",
+   "chosen": "v1",
+   "ms": 9179,
+   "replays": 0,
+   "lock_ms": 5500
+  }
+ ],
+ "_record": {
+  "source": "OWNER DECISION gist 4f70a2dc60da3175dc1e509fbbd134f7 revision 795870df (2026-09-28T01:23:09Z), pasted by the owner after PR #15 merged (fa845c2, 01:11:25Z) and Pages built at fa845c2 (01:11:51Z)",
+  "kit": "v3 (2026-09-28T00:30:02Z, seed 20260929, order c1880f3a886fadb2..., answer lock 5500 ms)",
+  "recorded_at_resume_check": "#93",
+  "lock_respected": "yes - every answer ms (15884/9383/8489/9179) >= answer_lock_ms 5500; think carried 1 replay",
+  "status": "NOT COUNTED - duplicate of the Salim block: every answer (beat, chosen, ms 15884/9383/8489/9179, replays 1/0/0/0) is identical; two independent sessions cannot share millisecond timings (same rule as the kit-v2 Mama file). Kept verbatim for the record; excluded from SCORE.generated.json by name. Only the owner can say whether بابا rated at all; a real session would carry its own ms values."
+ }
+}

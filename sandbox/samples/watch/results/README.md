@@ -15,6 +15,9 @@ v2_chosen > n/2 over >= 12 trials from >= 3 named raters; a small p in the lower
 | 2026-09-27_gist-df1b7d02_rater-baba-kitv2.json | بابا | 4 | 2 | 1.0 | INSUFFICIENT (kit v2) |
 | 2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json | كارما | 4 | 2 | 1.0 | INSUFFICIENT alone; third named rater -> pooled FAIL |
 | 2026-09-27_gist-0c05fdfc_rater-mama-kitv2.DUPLICATE-of-karma.json | ماما | 4 | 2 | - | NOT COUNTED (byte-for-byte the Karma answers incl. ms) |
+| 2026-09-28_gist-795870df_rater-salim-kitv3.json | سليم | 4 | 2 | 1.0 | INSUFFICIENT (kit v3, first named rater) |
+| 2026-09-28_gist-795870df_rater-karma-kitv3.DUPLICATE-of-salim.json | كارما | 4 | 2 | - | NOT COUNTED (byte-for-byte the Salim answers incl. ms) |
+| 2026-09-28_gist-795870df_rater-baba-kitv3.DUPLICATE-of-salim.json | بابا | 4 | 2 | - | NOT COUNTED (byte-for-byte the Salim answers incl. ms) |
 
 ## Kit v1 sessions (owner finding, gist rev b693458e)
 
@@ -76,3 +79,20 @@ six other clips are reused byte-identical from kit v2 (sha256-checked). Kit v3: 
 `../score_results.mjs` (committed tool): under kit v3 it reads REJECTED, 0 accepted / 7 earlier-kit blocks rejected by
 design - the kit-v2 verdict above stays the record until >= 3 named raters rate kit v3 (owner side; after the phone
 session of 2026-09-28/29). PASS rule unchanged: v2 >= 10/12 from >= 3 named raters.
+
+## Kit v3 session 1 (gist 4f70a2dc rev 795870df, rated on the LIVE page after PR #15 merged fa845c2 01:11:25Z, Pages built 01:11:51Z)
+
+Three blocks were pasted, labelled Salim, Karma and Baba. All three carry kit 2026-09-28T00:30:02Z / seed 20260929 /
+order c1880f3a... / kit_version 3 / lock_ms 5500 and pass `validateBlock` ([]). But the three answer arrays are
+byte-identical - beat, choice, replays AND milliseconds (think 15884 with 1 replay, flight 9383, celebrate 8489, sad 9179).
+Two independent sessions cannot share millisecond timings, so by the rule already applied to the kit-v2 Mama file only the
+FIRST block (Salim) is counted; the Karma and Baba copies are kept verbatim as DUPLICATE files and excluded by name in
+`score_results.mjs`. Only the owner can say whether Karma and Baba rated at all; real sessions would carry their own ms.
+
+Counted so far on kit v3: Salim 2/4 (flight -> v2, celebrate -> v2, think -> v1, sad -> v1), p 1.0 = INSUFFICIENT
+(`SCORE.generated.json`: accepted 1, rejected 7 earlier-kit blocks, excluded 3 DUPLICATE files). The lock worked as
+designed: every answer came after 5500 ms (fastest 8489 ms; on kit v2 the fastest was 2459 ms). Read as data, not meaning:
+the same per-beat pattern as kit v2 on one rater. If the three raters had been independent, the pool would be 6/12, p 1.0
+= FAIL under the fixed rule (>= 10/12); that arithmetic is stated here so nobody has to recompute it, but it is NOT the
+verdict - the verdict needs two more NAMED, independent kit-v3 sessions (each with its own timings). Nothing here unfreezes
+engine, art, celebrate or flight.
