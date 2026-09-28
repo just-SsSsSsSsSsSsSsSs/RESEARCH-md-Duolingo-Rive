@@ -7,6 +7,7 @@ main{max-width:1200px;margin:0 auto;padding:20px}
 video{width:100%;background:#000;border-radius:10px}
 button{font:inherit;padding:12px 22px;border:0;border-radius:10px;background:#3b4b8a;color:#fff;cursor:pointer}
 button.primary{background:#ffd166;color:#221}
+button[disabled]{opacity:.35;cursor:not-allowed}
 .card{background:#181c30;border-radius:12px;padding:16px;margin:12px 0}
 code{background:#0a0c16;padding:2px 6px;border-radius:6px;direction:ltr;display:inline-block}
 small{color:#a9b0c8}
@@ -19,29 +20,41 @@ pre{white-space:pre-wrap;direction:ltr;text-align:left}
 <p>ستشاهد <b id="nTrials"></b> مقاطع، كل مقطع فيه بومتان تؤديان نفس الحركة. اختر البومة التي تبدو <b>حية</b> أكثر. لا توجد إجابة صحيحة؛ الإعادة مرتان كحد أقصى.</p>
 <p>ترتيب اليمين/اليسار مثبت مسبقا (بذرة <code id="seed"></code>)، بصمته sha256: <code id="keyHash"></code>. المفتاح يظهر بعد آخر مقطع فقط.</p>
 <p><small id="limits"></small></p>
-<p><small>الإصدار <code id="kitVersion"></code>. ما يشغّله كل مقطع بالضبط:</small></p><ul id="states" style="font-size:.85em"></ul>
+<p><small>الإصدار <code id="kitVersion"></code>. ما يشغّله كل مقطع بالضبط (الاسم هو المقطع الذي تُحلّ إليه الحالة فعليا عند التسجيل):</small></p><ul id="states" style="font-size:.85em"></ul>
+<p id="lockNote"></p>
 <label>اسم المقيّم (مطلوب - بدون اسم، الجلسة لا تُحتسب مُقيّمًا): <input id="rater"></label>
 <p><button class="primary" id="start">ابدأ</button></p>
 </div>
 <div id="trial" hidden>
 <h2 id="title"></h2>
 <div class="pair">
-<div><video id="vR" muted playsinline></video><p style="text-align:center"><button data-side="R">هذه حية</button></p></div>
-<div><video id="vL" muted playsinline></video><p style="text-align:center"><button data-side="L">هذه حية</button></p></div>
+<div><video id="vR" muted playsinline></video><p style="text-align:center"><button data-side="R" disabled>هذه حية</button></p></div>
+<div><video id="vL" muted playsinline></video><p style="text-align:center"><button data-side="L" disabled>هذه حية</button></p></div>
 </div>
+<p id="countdown" style="text-align:center"></p>
 <p><button id="replay">أعد المشاهدة</button> <small id="replays"></small></p>
 </div>
 <div id="done" hidden class="card"><h2>النتيجة</h2><pre id="result"></pre>
 <p>انسخ الكتلة أعلاه وأرسلها كما هي. المفتاح (الجهة اليسرى لكل مقطع): <code id="key"></code></p></div>
 </main>
 <script>
-const M = {"generated_at": "2026-09-27T17:27:58Z", "kit_version": 2, "seed": 20260928, "clip_ms": 10000, "idle_ms": 1200, "second_beat_ms": 5500, "beats": ["celebrate", "flight", "think", "sad"], "arms": {"v2": "engine=v2 art=p2 (this branch)", "v1": "engine=v1 art=p2 (frozen K7 reference)"}, "states_per_clip": {"celebrate": {"v2": "triumph('large') performance (falls back to celebrate())", "v1": "celebrate()"}, "flight": {"v2": "states.fire('move:to', by dx 240 dy -140) then move:to home", "v1": "flyBy(240, -140) then flyBy back"}, "think": {"v2": "states.fire('answer:pending') -> state think (body ponder, gaze rollUp, mouth mid, vfx question, sfx hmm)", "v1": "think()"}, "sad": {"v2": "oops('large') performance (falls back to sad())", "v1": "sad()"}}, "clips": {"v2_celebrate": "v2_celebrate.webm", "v2_flight": "v2_flight.webm", "v2_think": "v2_think.webm", "v2_sad": "v2_sad.webm", "v1_celebrate": "v1_celebrate.webm", "v1_flight": "v1_flight.webm", "v1_think": "v1_think.webm", "v1_sad": "v1_sad.webm"}, "errors": {"v2_celebrate": [], "v2_flight": [], "v2_think": [], "v2_sad": [], "v1_celebrate": [], "v1_flight": [], "v1_think": [], "v1_sad": []}, "previous_kit": {"kit_version": 1, "generated_at": "2026-09-27T05:05:59Z", "seed": 20260927, "order_sha256": "bc00a361cefcc89ea4be4f7670fa27a7d585e108b91d0da955900bac0a0202e1", "note": "beats ['think'] re-recorded; all other clips reused byte-identical (sha256 checked before reuse)"}, "reused_from_previous_kit": ["v2_celebrate.webm", "v2_flight.webm", "v2_sad.webm", "v1_celebrate.webm", "v1_flight.webm", "v1_sad.webm"], "owl_box_at_rest": {"v2_celebrate": [210, 200, 430, 464], "v2_flight": [210, 200, 430, 464], "v2_think": [210, 200, 430, 464], "v2_sad": [210, 200, 430, 464], "v1_celebrate": [210, 200, 430, 464], "v1_flight": [210, 200, 430, 464], "v1_think": [210, 200, 430, 464], "v1_sad": [210, 200, 430, 464]}, "sha256": {"v2_celebrate": "87b2509b6bfd033cc4203e6efb8d6e0e7eaab37ae1635117c5449a2e6f93e007", "v2_flight": "cf2426fa83121042dcc2404487cb9bc3f4d872a87134f4adb597d876da7bfeac", "v2_think": "1b6d2669abc7149992c816c40f0b39579e9f28d2d6354a65342fbd0da1429015", "v2_sad": "f9aa5c168c7399d04c249ea3539e6db0b585c30b5af1bdd4a50e1cd337bd3df6", "v1_celebrate": "724059b1ba5cff8d02a3159942d792ea7313912b90273b4460ccda063c3e4767", "v1_flight": "ec53f49b8745eace72503e77c97c140bb497d90b56631ff892bb5f6735a52bb6", "v1_think": "87e9d6b487b24e5bd41fe88633e3f83e94e10840c65bce6641c5fb53b1087ca5", "v1_sad": "055c95d123c1c114abcd731e29e591b5a696e0ea669813dd9e40779b8970cd2b"}, "bytes": {"v2_celebrate": 842534, "v2_flight": 1111386, "v2_think": 716893, "v2_sad": 909707, "v1_celebrate": 789910, "v1_flight": 646210, "v1_think": 838606, "v1_sad": 1019739}, "duration_s": {"v2_celebrate": 10.4, "v2_flight": 10.4, "v2_think": 10.4, "v2_sad": 10.4, "v1_celebrate": 10.4, "v1_flight": 10.4, "v1_think": 10.4, "v1_sad": 10.4}, "order": [{"beat": "think", "left": "v2"}, {"beat": "celebrate", "left": "v1"}, {"beat": "flight", "left": "v2"}, {"beat": "sad", "left": "v2"}], "order_sha256": "8c83cf040514b75998cf5325a3aaabf1a22af979c996fe4e5a003d64fd26359b", "reference_still_present": false, "limits": "Control arm = v1 (frozen K7 engine on this branch). The gist asks for a still from the reference video; no such file exists in the repository, so none is shown. Raters are not independent of the owner; the p-value is indicative only. 4 trials per rater; 3-5 raters give 12-20 trials."};
+const M = {"generated_at": "2026-09-28T00:30:02Z", "kit_version": 3, "seed": 20260929, "clip_ms": 10000, "idle_ms": 1200, "second_beat_ms": 5500, "answer_lock_ms": 5500, "blink_seed": 20260928, "resolved_clips": {"v2_celebrate": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)", "v2_flight": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)", "v2_think": "state think -> body ponder -> rig.ponder (acting.performances.think)", "v2_sad": "oops(large) -> sad plate beak_sad.webp", "v1_celebrate": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)", "v1_flight": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)", "v1_think": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)", "v1_sad": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)"}, "recording_urls": {"v2_celebrate": null, "v2_flight": null, "v2_think": "index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928", "v2_sad": "index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928", "v1_celebrate": null, "v1_flight": null, "v1_think": null, "v1_sad": null}, "blink_seeded": {"v2_celebrate": false, "v2_flight": false, "v2_think": true, "v2_sad": true, "v1_celebrate": false, "v1_flight": false, "v1_think": false, "v1_sad": false}, "beats": ["celebrate", "flight", "think", "sad"], "arms": {"v2": "engine=v2 art=p2 (this branch)", "v1": "engine=v1 art=p2 (frozen K7 reference)"}, "states_per_clip": {"celebrate": {"v2": "triumph('large') performance (falls back to celebrate())", "v1": "celebrate()"}, "flight": {"v2": "states.fire('move:to', by dx 240 dy -140) then move:to home", "v1": "flyBy(240, -140) then flyBy back"}, "think": {"v2": "states.fire('answer:pending') -> state think -> RESOLVED clip body.ponder = rig.ponder(escalate) = the K9.5-2 calm think performance (spec acting.performances.think; eyes lift and hold, head tilt 5/7/9 deg, wing to chin, one blink, settle; no spiral); mouth mid; vfx off (sfx=0)", "v1": "think() (gaze roll 1.5 s, head +9 deg, wing to chin)"}, "sad": {"v2": "oops('large') performance (falls back to sad()) -> mouth plate beak_sad.webp (K9.5-3 authored art)", "v1": "sad() -> mouth plate beak_sad.webp (same art on both arms since K9.5-3)"}}, "clips": {"v2_celebrate": "v2_celebrate.webm", "v2_flight": "v2_flight.webm", "v2_think": "v2_think.webm", "v2_sad": "v2_sad.webm", "v1_celebrate": "v1_celebrate.webm", "v1_flight": "v1_flight.webm", "v1_think": "v1_think.webm", "v1_sad": "v1_sad.webm"}, "errors": {"v2_celebrate": [], "v2_flight": [], "v2_think": [], "v2_sad": [], "v1_celebrate": [], "v1_flight": [], "v1_think": [], "v1_sad": []}, "previous_kit": {"kit_version": 2, "generated_at": "2026-09-27T17:27:58Z", "seed": 20260928, "order_sha256": "8c83cf040514b75998cf5325a3aaabf1a22af979c996fe4e5a003d64fd26359b", "note": "beats ['sad', 'think'] re-recorded on arms ['v2']; all other clips reused byte-identical (sha256 checked before reuse)", "previous_kit": {"kit_version": 1, "generated_at": "2026-09-27T05:05:59Z", "seed": 20260927, "order_sha256": "bc00a361cefcc89ea4be4f7670fa27a7d585e108b91d0da955900bac0a0202e1", "note": "beats ['think'] re-recorded; all other clips reused byte-identical (sha256 checked before reuse)"}}, "reused_from_previous_kit": ["v2_celebrate.webm", "v2_flight.webm", "v1_celebrate.webm", "v1_flight.webm", "v1_think.webm", "v1_sad.webm"], "owl_box_at_rest": {"v2_celebrate": [210, 200, 430, 464], "v2_flight": [210, 200, 430, 464], "v2_think": [210, 200, 430, 464], "v2_sad": [210, 200, 430, 464], "v1_celebrate": [210, 200, 430, 464], "v1_flight": [210, 200, 430, 464], "v1_think": [210, 200, 430, 464], "v1_sad": [210, 200, 430, 464]}, "sha256": {"v2_celebrate": "87b2509b6bfd033cc4203e6efb8d6e0e7eaab37ae1635117c5449a2e6f93e007", "v2_flight": "cf2426fa83121042dcc2404487cb9bc3f4d872a87134f4adb597d876da7bfeac", "v2_think": "ee41f2580d5cbcdb1be87bad40f6b42606874f7205455e3cd4667a7d60573f75", "v2_sad": "44a9b72ece5e77563b6ed74a00e5e89ecf7065a6f87b8e116595c6834fb1ddf9", "v1_celebrate": "724059b1ba5cff8d02a3159942d792ea7313912b90273b4460ccda063c3e4767", "v1_flight": "ec53f49b8745eace72503e77c97c140bb497d90b56631ff892bb5f6735a52bb6", "v1_think": "87e9d6b487b24e5bd41fe88633e3f83e94e10840c65bce6641c5fb53b1087ca5", "v1_sad": "055c95d123c1c114abcd731e29e591b5a696e0ea669813dd9e40779b8970cd2b"}, "bytes": {"v2_celebrate": 842534, "v2_flight": 1111386, "v2_think": 669171, "v2_sad": 812993, "v1_celebrate": 789910, "v1_flight": 646210, "v1_think": 838606, "v1_sad": 1019739}, "duration_s": {"v2_celebrate": 10.4, "v2_flight": 10.4, "v2_think": 10.4, "v2_sad": 10.4, "v1_celebrate": 10.4, "v1_flight": 10.4, "v1_think": 10.4, "v1_sad": 10.4}, "order": [{"beat": "think", "left": "v1"}, {"beat": "flight", "left": "v1"}, {"beat": "celebrate", "left": "v1"}, {"beat": "sad", "left": "v2"}], "order_sha256": "c1880f3a886fadb27be1fd266dad5782bb5433fd3c62b7e7b90ea11fffc12453", "reference_still_present": false, "limits": "Control arm = v1 (frozen K7 engine on this branch). The gist asks for a still from the reference video; no such file exists in the repository, so none is shown. Raters are not independent of the owner; the p-value is indicative only. 4 trials per rater; 3-5 raters give 12-20 trials."};
 const order = M.order;   // per trial: {beat, left: 'v2'|'v1'}; in this RTL grid the first cell is the RIGHT side
 document.getElementById('nTrials').textContent = order.length;
 document.getElementById('seed').textContent = M.seed;
 document.getElementById('keyHash').textContent = M.order_sha256;
 document.getElementById('limits').textContent = M.limits;
 document.getElementById('kitVersion').textContent = 'kit v' + (M.kit_version || 1) + ' (' + M.generated_at + ')';
+const LOCK_MS = M.answer_lock_ms || 0;
+document.getElementById('lockNote').textContent = LOCK_MS ? 'أزرار الاختيار مقفلة في كل مقطع حتى تبدأ الحركة الثانية (' + (LOCK_MS / 1000).toFixed(1) + ' ث)؛ يظهر عدّاد تنازلي.' : '';
+let lockTimer = null, lockUntil = 0;
+function setLocked(on) { document.querySelectorAll('button[data-side]').forEach(b => { b.disabled = on; }); }
+function lock() {
+  clearInterval(lockTimer); setLocked(LOCK_MS > 0); lockUntil = performance.now() + LOCK_MS;
+  const cd = document.getElementById('countdown');
+  const tick = () => { const left = lockUntil - performance.now(); if (left <= 0) { clearInterval(lockTimer); setLocked(false); cd.textContent = 'يمكنك الاختيار الآن'; return; } cd.textContent = 'الاختيار يُفتح بعد ' + (left / 1000).toFixed(1) + ' ث'; };
+  if (LOCK_MS > 0) { tick(); lockTimer = setInterval(tick, 100); } else cd.textContent = '';
+}
 Object.entries(M.states_per_clip || {}).forEach(([beat, s]) => { const li = document.createElement('li'); li.textContent = beat + ': v2 = ' + s.v2 + ' | v1 = ' + s.v1; document.getElementById('states').appendChild(li); });
 let i = 0, replays = 0; const answers = []; const t = [];
 const vR = document.getElementById('vR'), vL = document.getElementById('vL');
@@ -51,13 +64,14 @@ function show() {
   vL.src = M.clips[o.left + '_' + o.beat]; vR.src = M.clips[other(o.left) + '_' + o.beat];
   replays = 0; document.getElementById('replays').textContent = '';
   vL.currentTime = 0; vR.currentTime = 0; Promise.all([vL.play(), vR.play()]).catch(() => {});
-  t.push(performance.now());
+  t.push(performance.now()); lock();
 }
 document.getElementById('start').onclick = () => { document.getElementById('intro').hidden = true; document.getElementById('trial').hidden = false; show(); };
 document.getElementById('replay').onclick = () => { if (replays >= 2) return; replays++; document.getElementById('replays').textContent = 'إعادة ' + replays + '/2'; vL.currentTime = 0; vR.currentTime = 0; vL.play(); vR.play(); };
 document.querySelectorAll('button[data-side]').forEach(b => b.onclick = () => {
+  if (b.disabled || performance.now() < lockUntil) return;   // lock enforced in the handler too, not only by the attribute
   const o = order[i]; const chosen = b.dataset.side === 'L' ? o.left : other(o.left);
-  answers.push({ trial: i + 1, beat: o.beat, chosen, ms: Math.round(performance.now() - t[i]), replays });
+  answers.push({ trial: i + 1, beat: o.beat, chosen, ms: Math.round(performance.now() - t[i]), replays, lock_ms: LOCK_MS });
   i++; if (i < order.length) show(); else finish();
 });
 function binom(k, n) { const C = (n, r) => { let x = 1; for (let j = 1; j <= r; j++) x = x * (n - r + j) / j; return x; };
@@ -65,7 +79,7 @@ function binom(k, n) { const C = (n, r) => { let x = 1; for (let j = 1; j <= r; 
 function finish() {
   document.getElementById('trial').hidden = true; document.getElementById('done').hidden = false;
   const k = answers.filter(a => a.chosen === 'v2').length, n = answers.length;
-  const out = { kit: M.generated_at, rater: document.getElementById('rater').value || null, seed: M.seed, order_sha256: M.order_sha256, n, v2_chosen: k, v1_chosen: n - k, binomial_two_sided_p: +binom(k, n).toFixed(4), answers };
+  const out = { kit: M.generated_at, kit_version: M.kit_version, rater: document.getElementById('rater').value || null, seed: M.seed, order_sha256: M.order_sha256, n, v2_chosen: k, v1_chosen: n - k, binomial_two_sided_p: +binom(k, n).toFixed(4), answers };
   document.getElementById('result').textContent = JSON.stringify(out, null, 1);
   document.getElementById('key').textContent = order.map(o => o.beat + ':' + o.left).join('  ');
 }

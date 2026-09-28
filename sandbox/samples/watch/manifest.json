@@ -1,10 +1,42 @@
 {
- "generated_at": "2026-09-27T17:27:58Z",
- "kit_version": 2,
- "seed": 20260928,
+ "generated_at": "2026-09-28T00:30:02Z",
+ "kit_version": 3,
+ "seed": 20260929,
  "clip_ms": 10000,
  "idle_ms": 1200,
  "second_beat_ms": 5500,
+ "answer_lock_ms": 5500,
+ "blink_seed": 20260928,
+ "resolved_clips": {
+  "v2_celebrate": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)",
+  "v2_flight": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)",
+  "v2_think": "state think -> body ponder -> rig.ponder (acting.performances.think)",
+  "v2_sad": "oops(large) -> sad plate beak_sad.webp",
+  "v1_celebrate": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)",
+  "v1_flight": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)",
+  "v1_think": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)",
+  "v1_sad": "reused from kit v2 (recorded before resolved-clip labelling; unseeded blink)"
+ },
+ "recording_urls": {
+  "v2_celebrate": null,
+  "v2_flight": null,
+  "v2_think": "index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928",
+  "v2_sad": "index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928",
+  "v1_celebrate": null,
+  "v1_flight": null,
+  "v1_think": null,
+  "v1_sad": null
+ },
+ "blink_seeded": {
+  "v2_celebrate": false,
+  "v2_flight": false,
+  "v2_think": true,
+  "v2_sad": true,
+  "v1_celebrate": false,
+  "v1_flight": false,
+  "v1_think": false,
+  "v1_sad": false
+ },
  "beats": [
   "celebrate",
   "flight",
@@ -25,12 +57,12 @@
    "v1": "flyBy(240, -140) then flyBy back"
   },
   "think": {
-   "v2": "states.fire('answer:pending') -> state think (body ponder, gaze rollUp, mouth mid, vfx question, sfx hmm)",
-   "v1": "think()"
+   "v2": "states.fire('answer:pending') -> state think -> RESOLVED clip body.ponder = rig.ponder(escalate) = the K9.5-2 calm think performance (spec acting.performances.think; eyes lift and hold, head tilt 5/7/9 deg, wing to chin, one blink, settle; no spiral); mouth mid; vfx off (sfx=0)",
+   "v1": "think() (gaze roll 1.5 s, head +9 deg, wing to chin)"
   },
   "sad": {
-   "v2": "oops('large') performance (falls back to sad())",
-   "v1": "sad()"
+   "v2": "oops('large') performance (falls back to sad()) -> mouth plate beak_sad.webp (K9.5-3 authored art)",
+   "v1": "sad() -> mouth plate beak_sad.webp (same art on both arms since K9.5-3)"
   }
  },
  "clips": {
@@ -54,18 +86,25 @@
   "v1_sad": []
  },
  "previous_kit": {
-  "kit_version": 1,
-  "generated_at": "2026-09-27T05:05:59Z",
-  "seed": 20260927,
-  "order_sha256": "bc00a361cefcc89ea4be4f7670fa27a7d585e108b91d0da955900bac0a0202e1",
-  "note": "beats ['think'] re-recorded; all other clips reused byte-identical (sha256 checked before reuse)"
+  "kit_version": 2,
+  "generated_at": "2026-09-27T17:27:58Z",
+  "seed": 20260928,
+  "order_sha256": "8c83cf040514b75998cf5325a3aaabf1a22af979c996fe4e5a003d64fd26359b",
+  "note": "beats ['sad', 'think'] re-recorded on arms ['v2']; all other clips reused byte-identical (sha256 checked before reuse)",
+  "previous_kit": {
+   "kit_version": 1,
+   "generated_at": "2026-09-27T05:05:59Z",
+   "seed": 20260927,
+   "order_sha256": "bc00a361cefcc89ea4be4f7670fa27a7d585e108b91d0da955900bac0a0202e1",
+   "note": "beats ['think'] re-recorded; all other clips reused byte-identical (sha256 checked before reuse)"
+  }
  },
  "reused_from_previous_kit": [
   "v2_celebrate.webm",
   "v2_flight.webm",
-  "v2_sad.webm",
   "v1_celebrate.webm",
   "v1_flight.webm",
+  "v1_think.webm",
   "v1_sad.webm"
  ],
  "owl_box_at_rest": {
@@ -121,8 +160,8 @@
  "sha256": {
   "v2_celebrate": "87b2509b6bfd033cc4203e6efb8d6e0e7eaab37ae1635117c5449a2e6f93e007",
   "v2_flight": "cf2426fa83121042dcc2404487cb9bc3f4d872a87134f4adb597d876da7bfeac",
-  "v2_think": "1b6d2669abc7149992c816c40f0b39579e9f28d2d6354a65342fbd0da1429015",
-  "v2_sad": "f9aa5c168c7399d04c249ea3539e6db0b585c30b5af1bdd4a50e1cd337bd3df6",
+  "v2_think": "ee41f2580d5cbcdb1be87bad40f6b42606874f7205455e3cd4667a7d60573f75",
+  "v2_sad": "44a9b72ece5e77563b6ed74a00e5e89ecf7065a6f87b8e116595c6834fb1ddf9",
   "v1_celebrate": "724059b1ba5cff8d02a3159942d792ea7313912b90273b4460ccda063c3e4767",
   "v1_flight": "ec53f49b8745eace72503e77c97c140bb497d90b56631ff892bb5f6735a52bb6",
   "v1_think": "87e9d6b487b24e5bd41fe88633e3f83e94e10840c65bce6641c5fb53b1087ca5",
@@ -131,8 +170,8 @@
  "bytes": {
   "v2_celebrate": 842534,
   "v2_flight": 1111386,
-  "v2_think": 716893,
-  "v2_sad": 909707,
+  "v2_think": 669171,
+  "v2_sad": 812993,
   "v1_celebrate": 789910,
   "v1_flight": 646210,
   "v1_think": 838606,
@@ -151,25 +190,25 @@
  "order": [
   {
    "beat": "think",
-   "left": "v2"
+   "left": "v1"
+  },
+  {
+   "beat": "flight",
+   "left": "v1"
   },
   {
    "beat": "celebrate",
    "left": "v1"
   },
   {
-   "beat": "flight",
-   "left": "v2"
-  },
-  {
    "beat": "sad",
    "left": "v2"
   }
  ],
- "order_sha256": "8c83cf040514b75998cf5325a3aaabf1a22af979c996fe4e5a003d64fd26359b",
+ "order_sha256": "c1880f3a886fadb27be1fd266dad5782bb5433fd3c62b7e7b90ea11fffc12453",
  "reference_still_present": false,
  "limits": "Control arm = v1 (frozen K7 engine on this branch). The gist asks for a still from the reference video; no such file exists in the repository, so none is shown. Raters are not independent of the owner; the p-value is indicative only. 4 trials per rater; 3-5 raters give 12-20 trials.",
- "kit_total_mb": 6.88,
+ "kit_total_mb": 6.74,
  "pass_kit_size": true,
  "pass_no_page_errors": true,
  "max_clip_s": 10.5,

@@ -1,86 +1,92 @@
 {
- "verdict": "FAIL",
- "reason": "no evidence: v2 6/12, two-sided p 1.0000 > 0.05 (need >= 10/12)",
- "n": 12,
- "v2_chosen": 6,
- "v1_chosen": 6,
- "two_sided_p": 1,
- "min_v2_wins_for_pass": 10,
- "raters": [
-  "كارما",
-  "بابا",
-  "سليم"
- ],
+ "verdict": "REJECTED",
+ "reason": "no block belongs to this kit",
+ "n": 0,
+ "v2_chosen": 0,
+ "v1_chosen": 0,
+ "two_sided_p": null,
+ "min_v2_wins_for_pass": null,
+ "raters": [],
  "unnamed_sessions": 0,
- "blocks_accepted": 3,
+ "blocks_accepted": 0,
  "blocks_rejected": [
   {
-   "index": 1,
+   "file": "2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json",
    "why": [
-    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
-    "seed 20260927 != 20260928",
+    "kit 2026-09-27T17:27:58Z != 2026-09-28T00:30:02Z",
+    "seed 20260928 != 20260929",
     "order_sha256 mismatch",
-    "trial 2 beat flight != celebrate",
-    "trial 3 beat sad != flight",
+    "trial 2 beat celebrate != flight",
+    "trial 3 beat flight != celebrate"
+   ]
+  },
+  {
+   "file": "2026-09-27_gist-6ed35984_rater-karma.json",
+   "why": [
+    "kit 2026-09-27T05:05:59Z != 2026-09-28T00:30:02Z",
+    "seed 20260927 != 20260929",
+    "order_sha256 mismatch",
+    "trial 3 beat sad != celebrate",
     "trial 4 beat celebrate != sad"
    ]
   },
   {
-   "index": 2,
+   "file": "2026-09-27_gist-6ed35984_rater-null-2.json",
    "why": [
-    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
-    "seed 20260927 != 20260928",
+    "kit 2026-09-27T05:05:59Z != 2026-09-28T00:30:02Z",
+    "seed 20260927 != 20260929",
     "order_sha256 mismatch",
-    "trial 2 beat flight != celebrate",
-    "trial 3 beat sad != flight",
+    "trial 3 beat sad != celebrate",
     "trial 4 beat celebrate != sad"
    ]
   },
   {
-   "index": 3,
+   "file": "2026-09-27_gist-6ed35984_rater-salim.json",
    "why": [
-    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
-    "seed 20260927 != 20260928",
+    "kit 2026-09-27T05:05:59Z != 2026-09-28T00:30:02Z",
+    "seed 20260927 != 20260929",
     "order_sha256 mismatch",
-    "trial 2 beat flight != celebrate",
-    "trial 3 beat sad != flight",
+    "trial 3 beat sad != celebrate",
     "trial 4 beat celebrate != sad"
    ]
   },
   {
-   "index": 4,
+   "file": "2026-09-27_gist-d33eaf03_rater-null.json",
    "why": [
-    "kit 2026-09-27T05:05:59Z != 2026-09-27T17:27:58Z",
-    "seed 20260927 != 20260928",
+    "kit 2026-09-27T05:05:59Z != 2026-09-28T00:30:02Z",
+    "seed 20260927 != 20260929",
     "order_sha256 mismatch",
-    "trial 2 beat flight != celebrate",
-    "trial 3 beat sad != flight",
+    "trial 3 beat sad != celebrate",
     "trial 4 beat celebrate != sad"
+   ]
+  },
+  {
+   "file": "2026-09-27_gist-df1b7d02_rater-baba-kitv2.json",
+   "why": [
+    "kit 2026-09-27T17:27:58Z != 2026-09-28T00:30:02Z",
+    "seed 20260928 != 20260929",
+    "order_sha256 mismatch",
+    "trial 2 beat celebrate != flight",
+    "trial 3 beat flight != celebrate"
+   ]
+  },
+  {
+   "file": "2026-09-27_gist-df1b7d02_rater-salim-kitv2.json",
+   "why": [
+    "kit 2026-09-27T17:27:58Z != 2026-09-28T00:30:02Z",
+    "seed 20260928 != 20260929",
+    "order_sha256 mismatch",
+    "trial 2 beat celebrate != flight",
+    "trial 3 beat flight != celebrate"
    ]
   }
  ],
- "per_beat": {
-  "think": {
-   "n": 3,
-   "v2": 0
-  },
-  "celebrate": {
-   "n": 3,
-   "v2": 3
-  },
-  "flight": {
-   "n": 3,
-   "v2": 3
-  },
-  "sad": {
-   "n": 3,
-   "v2": 0
-  }
- },
+ "per_beat": {},
  "rule": "PASS iff two-sided p <= 0.05 AND v2_chosen > n/2, over >= 12 trials from >= 3 named raters",
- "kit": "2026-09-27T17:27:58Z",
- "order_sha256": "8c83cf040514b75998cf5325a3aaabf1a22af979c996fe4e5a003d64fd26359b",
- "scored_at": "2026-09-27T20:55:46Z",
+ "kit": "2026-09-28T00:30:02Z",
+ "order_sha256": "c1880f3a886fadb27be1fd266dad5782bb5433fd3c62b7e7b90ea11fffc12453",
+ "kit_version": 3,
+ "scored_at": "2026-09-28T00:31:52Z",
  "files": [
   "2026-09-27_gist-0c05fdfc_rater-karma-kitv2.json",
   "2026-09-27_gist-6ed35984_rater-karma.json",
@@ -91,7 +97,7 @@
   "2026-09-27_gist-df1b7d02_rater-salim-kitv2.json"
  ],
  "excluded": [
-  "2026-09-27_gist-0c05fdfc_rater-mama-kitv2.DUPLICATE-of-karma.json (identical answers and ms to the Karma block; not an independent session)"
+  "2026-09-27_gist-0c05fdfc_rater-mama-kitv2.DUPLICATE-of-karma.json (duplicate session, not independent; owner confirmed)"
  ],
- "note": "FINAL for kit v2 (owner directive, gist rev 0c05fdfc): 3 named raters (Salim, Baba, Karma), 12 trials, v2 6/12, two-sided p 1.0, PASS needed >= 10/12 -> FAIL as the tool outputs it. Per beat over kit v2: think 0/3, celebrate 3/3, flight 3/3, sad 0/3. Over both kits (kit-v1 sessions REJECTED here but on record): celebrate 7/7, flight 7/7, think 0/7 (4 on the puzzled clip + 3 on the real think state), sad 4/7 (4/4 kit v1 then 0/3 kit v2 on byte-identical clips - noise demonstrated). Kit-v1 files: 4 REJECTED by design. Extension to 20 trials to rescue the result is refused in advance by the owner (same rule as kit v1)."
+ "note": "Kit v3 (K9.5-4): no kit-v3 rating session yet - the owner's phone session (2026-09-28/29) precedes it. The 7 earlier blocks (4 kit-v1, 3 kit-v2) are REJECTED here by design and stay recorded in this folder; the kit-v2 verdict (FAIL 6/12, 3 named raters, per beat celebrate 3/3 flight 3/3 think 0/3 sad 0/3) is preserved in results/README.md and in the g12_score.mjs test (13b), which re-scores those blocks against the kit-v2 manifest in the previous_kit chain."
 }

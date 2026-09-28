@@ -65,9 +65,13 @@ def main():
     g12_p = os.path.join(SB, 'samples', 'watch', 'results', 'SCORE.generated.json'); g12 = load(g12_p)
     g12_verdict = get(g12, 'verdict', src='SCORE.generated'); g12_beats = get(g12, 'per_beat', src='SCORE.generated')
     g12_kit = load(os.path.join(SB, 'samples', 'watch', 'manifest.json')).get('kit_version', 1)
-    g12_line = (f'watch kit v{g12_kit} ({get(g12, "kit", src="SCORE.generated")}): '
-                f'{g12_verdict} - v2 {g12["v2_chosen"]}/{g12["n"]} from {len(g12["raters"])} named raters, two-sided p {g12["two_sided_p"]:.4f} (PASS needed >= {g12["min_v2_wins_for_pass"]}/{g12["n"]}); '
-                'per beat v2 ' + ', '.join(f'{b} {v["v2"]}/{v["n"]}' for b, v in g12_beats.items()))
+    if g12.get('n'):
+        g12_line = (f'watch kit v{g12_kit} ({get(g12, "kit", src="SCORE.generated")}): '
+                    f'{g12_verdict} - v2 {g12["v2_chosen"]}/{g12["n"]} from {len(g12["raters"])} named raters, two-sided p {g12["two_sided_p"]:.4f} (PASS needed >= {g12["min_v2_wins_for_pass"]}/{g12["n"]}); '
+                    'per beat v2 ' + ', '.join(f'{b} {v["v2"]}/{v["n"]}' for b, v in g12_beats.items()))
+    else:   # a fresh kit with no accepted block yet (kit v3 after K9.5-4): the scorer says REJECTED / 0 accepted; the previous kit's verdict stays in results/README.md
+        g12_line = (f'watch kit v{g12_kit} ({get(g12, "kit", src="SCORE.generated")}): {g12_verdict} - {g12.get("reason")}; '
+                    f'{g12.get("blocks_accepted", 0)} accepted, {len(g12.get("blocks_rejected", []))} earlier-kit blocks rejected by design (previous kit v{g12_kit - 1} verdict recorded in samples/watch/results/README.md)')
     sync_p = os.path.join(SFX, 'sfx_sync.json'); sy = load(sync_p)
     mix_p = os.path.join(SFX, 'sfx_mix.json'); mi = load(mix_p)
     poly_p = os.path.join(SFX, 'sfx_polyphony.json'); po = load(poly_p)
@@ -156,7 +160,7 @@ def main():
          f'5 owls 1x p95 {v2_1["raf_p95_ms"]} ms, jank {v2_1["jank_pct"]} %, heap +{v2_1["heap_delta_mb_after_scene"]} MB; {g12_line}',
          f'{rel(matrix_p)} {ts["matrix"]}; {rel(g12_p)} {ts["g12"]}',
          # perf half PASS + human half as the scorer says: FAIL / PASS close the row; INSUFFICIENT / REJECTED keep it OPEN
-         'FAIL' if g12_verdict == 'FAIL' else ('PASS' if g12_verdict == 'PASS' and v2_1['raf_p95_ms'] <= 20 and v2_1['jank_pct'] < 1 else 'OPEN (human gate)')),
+         'FAIL' if g12_verdict == 'FAIL' else ('PASS' if g12_verdict == 'PASS' and v2_1['raf_p95_ms'] <= 20 and v2_1['jank_pct'] < 1 else 'OPEN (human gate: kit v%d awaits >= 3 named raters)' % g12_kit)),
     ]
     edge_line = f'edge width median {edge["dpr2_rest"]["edge_width_device_px_median"]} device px at DPR2 rest, soft edge {P(edge["pass_soft_edge"])} ({rel(proofs_p)} {ts["proofs"]})'
 
