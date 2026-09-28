@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-28T04:47:19Z",
+ "generated_at": "2026-09-28T05:15:48Z",
  "perf": "think",
  "frame_ms": 16.7,
  "totalMs": 3500,
@@ -10,7 +10,7 @@
  "checks": {
   "all_channels_matched_once_both_arms": true,
   "every_channel_scheduled_within_one_frame": true,
-  "every_channel_start_latency_le_two_frames_both_arms": true,
+  "every_channel_starts_running_within_three_frames_both_arms": true,
   "every_channel_timing_equal": true,
   "every_channel_composite_equal": true,
   "every_channel_keyframes_equal": true,
@@ -27,7 +27,7 @@
   "no_page_errors_timing_run": true,
   "reduced_no_body_animation_both_arms": true,
   "reduced_mouth_sequence_equal_within_frame": true,
-  "reduced_blink_equal": true,
+  "reduced_blink_equal_within_frame": true,
   "no_page_errors_reduced": true,
   "perf_off_legacy_alive": true
  },
@@ -38,9 +38,9 @@
    "v1_hits": 1,
    "v2_hits": 1,
    "v1_t": 1,
-   "v2_t": 2.2,
-   "call_dt_ms": 1.2,
-   "start_dt_ms": 0.06,
+   "v2_t": 2.5,
+   "call_dt_ms": 1.5,
+   "start_dt_ms": 0.08,
    "timing": {
     "duration": 1500,
     "delay": 0,
@@ -59,8 +59,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 15.67,
-   "v2_start_latency_ms": 14.53,
+   "v1_start_latency_ms": 15.64,
+   "v2_start_latency_ms": 14.22,
    "start_latency_ok": true,
    "pass": true
   },
@@ -70,9 +70,9 @@
    "v1_hits": 1,
    "v2_hits": 1,
    "v1_t": 1.5,
-   "v2_t": 2.8,
-   "call_dt_ms": 1.3,
-   "start_dt_ms": 0.06,
+   "v2_t": 3,
+   "call_dt_ms": 1.5,
+   "start_dt_ms": 0.08,
    "timing": {
     "duration": 1500,
     "delay": 0,
@@ -91,8 +91,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 15.17,
-   "v2_start_latency_ms": 13.93,
+   "v1_start_latency_ms": 15.14,
+   "v2_start_latency_ms": 13.72,
    "start_latency_ok": true,
    "pass": true
   },
@@ -102,9 +102,9 @@
    "v1_hits": 1,
    "v2_hits": 1,
    "v1_t": 1.7,
-   "v2_t": 2.9,
-   "call_dt_ms": 1.2,
-   "start_dt_ms": 0.06,
+   "v2_t": 3.2,
+   "call_dt_ms": 1.5,
+   "start_dt_ms": 0.08,
    "timing": {
     "duration": 700,
     "delay": 0,
@@ -123,8 +123,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 14.97,
-   "v2_start_latency_ms": 13.83,
+   "v1_start_latency_ms": 14.94,
+   "v2_start_latency_ms": 13.52,
    "start_latency_ok": true,
    "pass": true
   },
@@ -133,10 +133,10 @@
    "joint": "armR",
    "v1_hits": 1,
    "v2_hits": 1,
-   "v1_t": 2,
-   "v2_t": 3.2,
-   "call_dt_ms": 1.2,
-   "start_dt_ms": 0.06,
+   "v1_t": 1.9,
+   "v2_t": 3.4,
+   "call_dt_ms": 1.5,
+   "start_dt_ms": 0.08,
    "timing": {
     "duration": 550,
     "delay": 200,
@@ -155,8 +155,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 14.67,
-   "v2_start_latency_ms": 13.53,
+   "v1_start_latency_ms": 14.74,
+   "v2_start_latency_ms": 13.32,
    "start_latency_ok": true,
    "pass": true
   },
@@ -168,7 +168,7 @@
    "v1_t": 2.2,
    "v2_t": 3.6,
    "call_dt_ms": 1.4,
-   "start_dt_ms": 0.06,
+   "start_dt_ms": 0.08,
    "timing": {
     "duration": 380,
     "delay": 800,
@@ -187,8 +187,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 14.47,
-   "v2_start_latency_ms": 13.13,
+   "v1_start_latency_ms": 14.44,
+   "v2_start_latency_ms": 13.12,
    "start_latency_ok": true,
    "pass": true
   },
@@ -197,10 +197,10 @@
    "joint": "legL",
    "v1_hits": 1,
    "v2_hits": 1,
-   "v1_t": 2.5,
+   "v1_t": 2.4,
    "v2_t": 3.9,
-   "call_dt_ms": 1.4,
-   "start_dt_ms": 0.06,
+   "call_dt_ms": 1.5,
+   "start_dt_ms": 0.08,
    "timing": {
     "duration": 340,
     "delay": 700,
@@ -219,8 +219,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 14.17,
-   "v2_start_latency_ms": 12.83,
+   "v1_start_latency_ms": 14.24,
+   "v2_start_latency_ms": 12.82,
    "start_latency_ok": true,
    "pass": true
   },
@@ -229,10 +229,10 @@
    "joint": "head",
    "v1_hits": 1,
    "v2_hits": 1,
-   "v1_t": 2604.1,
-   "v2_t": 2604.9,
-   "call_dt_ms": 0.8,
-   "start_dt_ms": 16.61,
+   "v1_t": 2603.7,
+   "v2_t": 2606,
+   "call_dt_ms": 2.3,
+   "start_dt_ms": 16.58,
    "timing": {
     "duration": 450,
     "delay": 0,
@@ -251,8 +251,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 29.13,
-   "v2_start_latency_ms": 11.72,
+   "v1_start_latency_ms": 29.5,
+   "v2_start_latency_ms": 10.62,
    "start_latency_ok": true,
    "pass": true
   },
@@ -261,10 +261,10 @@
    "joint": "pupilL",
    "v1_hits": 1,
    "v2_hits": 1,
-   "v1_t": 2604.4,
-   "v2_t": 2605,
-   "call_dt_ms": 0.6,
-   "start_dt_ms": 16.61,
+   "v1_t": 2604.1,
+   "v2_t": 2606.4,
+   "call_dt_ms": 2.3,
+   "start_dt_ms": 16.58,
    "timing": {
     "duration": 500,
     "delay": 0,
@@ -283,8 +283,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 28.83,
-   "v2_start_latency_ms": 11.62,
+   "v1_start_latency_ms": 29.1,
+   "v2_start_latency_ms": 10.22,
    "start_latency_ok": true,
    "pass": true
   },
@@ -293,10 +293,10 @@
    "joint": "pupilR",
    "v1_hits": 1,
    "v2_hits": 1,
-   "v1_t": 2604.5,
-   "v2_t": 2605,
-   "call_dt_ms": 0.5,
-   "start_dt_ms": 16.61,
+   "v1_t": 2604.2,
+   "v2_t": 2606.7,
+   "call_dt_ms": 2.5,
+   "start_dt_ms": 16.58,
    "timing": {
     "duration": 500,
     "delay": 0,
@@ -315,8 +315,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 28.73,
-   "v2_start_latency_ms": 11.62,
+   "v1_start_latency_ms": 29.0,
+   "v2_start_latency_ms": 9.92,
    "start_latency_ok": true,
    "pass": true
   },
@@ -325,10 +325,10 @@
    "joint": "armR",
    "v1_hits": 1,
    "v2_hits": 1,
-   "v1_t": 2604.7,
-   "v2_t": 2605.1,
-   "call_dt_ms": 0.4,
-   "start_dt_ms": 16.61,
+   "v1_t": 2604.4,
+   "v2_t": 2606.9,
+   "call_dt_ms": 2.5,
+   "start_dt_ms": 16.58,
    "timing": {
     "duration": 700,
     "delay": 0,
@@ -347,8 +347,8 @@
    "v1_replaceState": "active",
    "v2_replaceState": "active",
    "released_or_finished_both": true,
-   "v1_start_latency_ms": 28.53,
-   "v2_start_latency_ms": 11.52,
+   "v1_start_latency_ms": 28.8,
+   "v2_start_latency_ms": 9.72,
    "start_latency_ok": true,
    "pass": true
   }
@@ -356,10 +356,10 @@
  "events": {
   "idle_blinks": {
    "v1": [
-    2805.4
+    2794.4
    ],
    "v2": [
-    2852.9
+    2850.7
    ]
   },
   "setMouth": {
@@ -373,81 +373,81 @@
       "arg": "mid"
      },
      "v2": {
-      "t": 4,
+      "t": 4.2,
       "kind": "setMouth",
       "arg": "mid"
      },
-     "dt_ms": 3.5,
+     "dt_ms": 3.7,
      "pass": true
     },
     {
      "v1": {
-      "t": 903,
+      "t": 902.8,
       "kind": "setMouth",
       "arg": "closed"
      },
      "v2": {
-      "t": 904.5,
+      "t": 904.7,
       "kind": "setMouth",
       "arg": "closed"
      },
-     "dt_ms": 1.5,
+     "dt_ms": 1.9,
      "pass": true
     },
     {
      "v1": {
-      "t": 1503,
+      "t": 1502.9,
       "kind": "setMouth",
       "arg": "mid"
      },
      "v2": {
-      "t": 1504.3,
+      "t": 1504.5,
       "kind": "setMouth",
       "arg": "mid"
      },
-     "dt_ms": 1.3,
+     "dt_ms": 1.6,
      "pass": true
     },
     {
      "v1": {
-      "t": 2604.8,
+      "t": 2604.4,
       "kind": "setMouth",
       "arg": "open"
      },
      "v2": {
-      "t": 2605.7,
+      "t": 2608.2,
       "kind": "setMouth",
       "arg": "open"
      },
-     "dt_ms": 0.9,
+     "dt_ms": 3.8,
      "pass": true
     },
     {
      "v1": {
-      "t": 2905.1,
+      "t": 2904.8,
       "kind": "setMouth",
       "arg": "smile"
      },
      "v2": {
-      "t": 2904.4,
+      "t": 2904.7,
       "kind": "setMouth",
       "arg": "smile"
      },
-     "dt_ms": 0.7,
+     "dt_ms": 0.1,
      "pass": true
     },
     {
      "v1": {
-      "t": 3503,
+      "t": 3502.8,
       "kind": "setMouth",
       "arg": "closed"
      },
      "v2": {
-      "t": 3504.5,
+      "t": 3504.7,
       "kind": "setMouth",
       "arg": "closed"
      },
-     "dt_ms": 1.5,
+     "dt_ms": 1.9,
      "pass": true
     }
    ],
@@ -459,16 +459,16 @@
    "rows": [
     {
      "v1": {
-      "t": 2604.9,
+      "t": 2604.5,
       "kind": "blink",
       "arg": false
      },
      "v2": {
-      "t": 2605.7,
+      "t": 2608.3,
       "kind": "blink",
       "arg": false
      },
-     "dt_ms": 0.8,
+     "dt_ms": 3.8,
      "pass": true
     }
    ],
@@ -480,16 +480,16 @@
    "rows": [
     {
      "v1": {
-      "t": 2603.2,
+      "t": 2602.9,
       "kind": "release",
       "arg": "^(pupilL|pupilR|head|armR)$"
      },
      "v2": {
-      "t": 2604.4,
+      "t": 2604.9,
       "kind": "release",
       "arg": "^(pupilL|pupilR|head|armR)$"
      },
-     "dt_ms": 1.2,
+     "dt_ms": 2.0,
      "pass": true
     }
    ],
@@ -499,87 +499,69 @@
  "extras_not_in_data": {
   "v1": [
    {
-    "t": 2605.2,
+    "t": 2604.9,
     "joint": "lidL",
     "duration": 150,
     "fill": "none"
    },
    {
-    "t": 2605.4,
+    "t": 2605,
     "joint": "lidR",
     "duration": 150,
     "fill": "none"
    },
    {
-    "t": 2805.6,
+    "t": 2794.8,
     "joint": "lidL",
     "duration": 150,
     "fill": "none"
    },
    {
-    "t": 2805.8,
+    "t": 2794.9,
     "joint": "lidR",
     "duration": 150,
     "fill": "none"
-   },
-   {
-    "t": 3288,
-    "joint": "pupilL",
-    "duration": 420,
-    "fill": "forwards"
-   },
-   {
-    "t": 3288.1,
-    "joint": "pupilR",
-    "duration": 420,
-    "fill": "forwards"
-   },
-   {
-    "t": 3288.3,
-    "joint": "head",
-    "duration": 600,
-    "fill": "forwards"
    }
   ],
   "v2": [
    {
-    "t": 2605.3,
+    "t": 2607.4,
     "joint": "armR_mid",
     "duration": 700,
     "fill": "auto"
    },
    {
-    "t": 2605.5,
+    "t": 2607.8,
     "joint": "armR_tip",
     "duration": 700,
     "fill": "auto"
    },
    {
-    "t": 2605.6,
+    "t": 2608,
     "joint": "armR_tip",
     "duration": 260,
     "fill": "auto"
    },
    {
-    "t": 2605.8,
+    "t": 2608.7,
     "joint": "lidL",
     "duration": 150,
     "fill": "none"
    },
    {
-    "t": 2605.8,
+    "t": 2608.9,
     "joint": "lidR",
     "duration": 150,
     "fill": "none"
    },
    {
-    "t": 2853.2,
+    "t": 2851,
     "joint": "lidL",
     "duration": 150,
     "fill": "none"
    },
    {
-    "t": 2853.3,
+    "t": 2851.1,
     "joint": "lidR",
     "duration": 150,
     "fill": "none"
@@ -591,7 +573,7 @@
    "mouth": "closed",
    "busy": false,
    "held_forwards_before": 0,
-   "held_forwards_after": 3
+   "held_forwards_after": 0
   },
   "v2": {
    "mouth": "closed",
@@ -633,22 +615,22 @@
    "cues": [
     {
      "p": "perf",
-     "t": 1.2,
+     "t": 1.4,
      "name": "think"
     },
     {
      "p": "flex",
-     "t": 2605.6,
+     "t": 2608.2,
      "name": null
     },
     {
      "p": "blink",
-     "t": 2605.9,
+     "t": 2608.9,
      "name": null
     },
     {
      "p": "blink",
-     "t": 2853.4,
+     "t": 2851.2,
      "name": null
     },
     {
@@ -663,62 +645,62 @@
   "cues": [
    {
     "p": "enter",
-    "t": 0.3,
+    "t": 0.7,
     "name": null
    },
    {
     "p": "perf",
-    "t": 0.5,
+    "t": 1.1,
     "name": "think"
    },
    {
     "p": "beat",
-    "t": 700.8,
+    "t": 701.3,
     "name": null
    },
    {
     "p": "beat",
-    "t": 1400.5,
+    "t": 1401.1,
     "name": null
    },
    {
     "p": "blink",
-    "t": 1563.7,
+    "t": 1531.2,
     "name": null
    },
    {
     "p": "beat",
-    "t": 2100.6,
+    "t": 2101.2,
     "name": null
    },
    {
     "p": "flex",
-    "t": 2603,
+    "t": 2604.7,
     "name": null
    },
    {
     "p": "blink",
-    "t": 2603.3,
+    "t": 2605,
     "name": null
    },
    {
     "p": "beat",
-    "t": 2800.6,
+    "t": 2801.1,
     "name": null
    },
    {
     "p": "beat",
-    "t": 3500.6,
+    "t": 3501.1,
     "name": null
    },
    {
     "p": "settle",
-    "t": 3501.2,
+    "t": 3502.5,
     "name": null
    },
    {
     "p": "enter",
-    "t": 3742.8,
+    "t": 3744.2,
     "name": null
    }
   ],
@@ -737,14 +719,15 @@
  "reduced": {
   "v1": {
    "non_lid_anims": 0,
+   "idle_look_anims": 0,
    "events": [
     {
-     "t": 0.7,
+     "t": 0.8,
      "kind": "setMouth",
      "arg": "mid"
     },
     {
-     "t": 0.8,
+     "t": 0.9,
      "kind": "blink",
      "arg": true
     },
@@ -754,7 +737,7 @@
      "arg": false
     },
     {
-     "t": 1402.9,
+     "t": 1402.8,
      "kind": "setMouth",
      "arg": "closed"
     }
@@ -764,24 +747,25 @@
   },
   "v2": {
    "non_lid_anims": 0,
+   "idle_look_anims": 0,
    "events": [
     {
-     "t": 2,
+     "t": 1.3,
      "kind": "setMouth",
      "arg": "mid"
     },
     {
-     "t": 2.3,
+     "t": 1.5,
      "kind": "blink",
      "arg": true
     },
     {
-     "t": 204.3,
+     "t": 203.4,
      "kind": "blink",
      "arg": false
     },
     {
-     "t": 1404.5,
+     "t": 1403.3,
      "kind": "setMouth",
      "arg": "closed"
     }
@@ -791,22 +775,22 @@
    "cues": [
     {
      "p": "perf",
-     "t": 2,
+     "t": 1.3,
      "name": "think"
     },
     {
      "p": "blink",
-     "t": 4.1,
+     "t": 3,
      "name": null
     },
     {
      "p": "blink",
-     "t": 205,
+     "t": 203.9,
      "name": null
     },
     {
      "p": "settle",
-     "t": 1404.6,
+     "t": 1403.5,
      "name": null
     }
    ]
@@ -817,19 +801,25 @@
   "busyDuring": true,
   "busyAfter": false,
   "cues": [
+   "enter",
+   "beat",
+   "beat",
+   "beat",
    "flex",
    "blink",
-   "blink"
+   "beat",
+   "blink",
+   "beat"
   ],
-  "ms": 3519
+  "ms": 3522
  },
  "strip_png": "sandbox/samples/proofs/k96_think_strip.png",
  "pass_all": true,
  "summary": {
   "channels": 10,
-  "max_call_dt_ms": 1.4,
-  "max_start_dt_ms": 16.61,
+  "max_call_dt_ms": 2.5,
+  "max_start_dt_ms": 16.58,
   "mouth_events": 6,
-  "max_event_dt_ms": 3.5
+  "max_event_dt_ms": 3.8
  }
 }
