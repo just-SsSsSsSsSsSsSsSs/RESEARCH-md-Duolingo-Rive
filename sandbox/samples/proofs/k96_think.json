@@ -1,0 +1,835 @@
+{
+ "generated_at": "2026-09-28T04:47:19Z",
+ "perf": "think",
+ "frame_ms": 16.7,
+ "totalMs": 3500,
+ "urls": {
+  "v1": "http://127.0.0.1:8080/sandbox/index.html?art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928&engine=v1",
+  "v2": "http://127.0.0.1:8080/sandbox/index.html?art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928&engine=v2"
+ },
+ "checks": {
+  "all_channels_matched_once_both_arms": true,
+  "every_channel_scheduled_within_one_frame": true,
+  "every_channel_start_latency_le_two_frames_both_arms": true,
+  "every_channel_timing_equal": true,
+  "every_channel_composite_equal": true,
+  "every_channel_keyframes_equal": true,
+  "mouth_sequence_equal_within_frame": true,
+  "blink_calls_equal_within_frame": true,
+  "release_calls_equal_within_frame": true,
+  "end_state_v1_closed_free": true,
+  "end_state_v2_closed_free": true,
+  "every_forwards_channel_released_both_arms": true,
+  "v2_cues_perf_then_settle": true,
+  "v2_settle_at_totalMs_within_frame": true,
+  "v2_plays_from_data": true,
+  "state_route_perf_settle_idle": true,
+  "no_page_errors_timing_run": true,
+  "reduced_no_body_animation_both_arms": true,
+  "reduced_mouth_sequence_equal_within_frame": true,
+  "reduced_blink_equal": true,
+  "no_page_errors_reduced": true,
+  "perf_off_legacy_alive": true
+ },
+ "channels": [
+  {
+   "id": "T1",
+   "joint": "pupilL",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 1,
+   "v2_t": 2.2,
+   "call_dt_ms": 1.2,
+   "start_dt_ms": 0.06,
+   "timing": {
+    "duration": 1500,
+    "delay": 0,
+    "iterations": 1,
+    "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+    "fill": "forwards",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "replace",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 15.67,
+   "v2_start_latency_ms": 14.53,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T1",
+   "joint": "pupilR",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 1.5,
+   "v2_t": 2.8,
+   "call_dt_ms": 1.3,
+   "start_dt_ms": 0.06,
+   "timing": {
+    "duration": 1500,
+    "delay": 0,
+    "iterations": 1,
+    "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+    "fill": "forwards",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "replace",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 15.17,
+   "v2_start_latency_ms": 13.93,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T2",
+   "joint": "head",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 1.7,
+   "v2_t": 2.9,
+   "call_dt_ms": 1.2,
+   "start_dt_ms": 0.06,
+   "timing": {
+    "duration": 700,
+    "delay": 0,
+    "iterations": 1,
+    "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+    "fill": "forwards",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "add",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 14.97,
+   "v2_start_latency_ms": 13.83,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T3",
+   "joint": "armR",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 2,
+   "v2_t": 3.2,
+   "call_dt_ms": 1.2,
+   "start_dt_ms": 0.06,
+   "timing": {
+    "duration": 550,
+    "delay": 200,
+    "iterations": 1,
+    "easing": "linear(0 0%, 0.3033 2.5%, 0.7563 5%, 1.0924 7.5%, 1.225 10%, 1.1967 12.5%, 1.0982 15%, 1.0057 17.5%, 0.956 20%, 0.9493 22.5%, 0.9676 25%, 0.9908 27.5%, 1.0066 30%, 1.0119 32.5%, 1.0095 35%, 1.0042 37.5%, 0.9997 40%, 0.9975 42.5%, 0.9975 45%, 0.9985 47.5%, 0.9997 50%, 1.0004 52.5%, 1.0006 55%, 1.0005 57.5%, 1.0002 60%, 1 62.5%, 0.9999 65%, 0.9999 67.5%, 0.9999 70%, 1 72.5%, 1 75%, 1 77.5%, 1 80%, 1 82.5%, 1 85%, 1 87.5%, 1 90%, 1 92.5%, 1 95%, 1 97.5%, 1 100%)",
+    "fill": "forwards",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "add",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 14.67,
+   "v2_start_latency_ms": 13.53,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T4",
+   "joint": "armR",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 2.2,
+   "v2_t": 3.6,
+   "call_dt_ms": 1.4,
+   "start_dt_ms": 0.06,
+   "timing": {
+    "duration": 380,
+    "delay": 800,
+    "iterations": 4,
+    "easing": "cubic-bezier(0.45, 0.05, 0.55, 0.95)",
+    "fill": "auto",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "add",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 14.47,
+   "v2_start_latency_ms": 13.13,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T5",
+   "joint": "legL",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 2.5,
+   "v2_t": 3.9,
+   "call_dt_ms": 1.4,
+   "start_dt_ms": 0.06,
+   "timing": {
+    "duration": 340,
+    "delay": 700,
+    "iterations": 5,
+    "easing": "cubic-bezier(0.45, 0.05, 0.55, 0.95)",
+    "fill": "auto",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "add",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 14.17,
+   "v2_start_latency_ms": 12.83,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T6",
+   "joint": "head",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 2604.1,
+   "v2_t": 2604.9,
+   "call_dt_ms": 0.8,
+   "start_dt_ms": 16.61,
+   "timing": {
+    "duration": 450,
+    "delay": 0,
+    "iterations": 1,
+    "easing": "linear(0 0%, 0.3033 2.5%, 0.7563 5%, 1.0924 7.5%, 1.225 10%, 1.1967 12.5%, 1.0982 15%, 1.0057 17.5%, 0.956 20%, 0.9493 22.5%, 0.9676 25%, 0.9908 27.5%, 1.0066 30%, 1.0119 32.5%, 1.0095 35%, 1.0042 37.5%, 0.9997 40%, 0.9975 42.5%, 0.9975 45%, 0.9985 47.5%, 0.9997 50%, 1.0004 52.5%, 1.0006 55%, 1.0005 57.5%, 1.0002 60%, 1 62.5%, 0.9999 65%, 0.9999 67.5%, 0.9999 70%, 1 72.5%, 1 75%, 1 77.5%, 1 80%, 1 82.5%, 1 85%, 1 87.5%, 1 90%, 1 92.5%, 1 95%, 1 97.5%, 1 100%)",
+    "fill": "auto",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "add",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 29.13,
+   "v2_start_latency_ms": 11.72,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T7",
+   "joint": "pupilL",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 2604.4,
+   "v2_t": 2605,
+   "call_dt_ms": 0.6,
+   "start_dt_ms": 16.61,
+   "timing": {
+    "duration": 500,
+    "delay": 0,
+    "iterations": 1,
+    "easing": "linear(0 0%, 0.3033 2.5%, 0.7563 5%, 1.0924 7.5%, 1.225 10%, 1.1967 12.5%, 1.0982 15%, 1.0057 17.5%, 0.956 20%, 0.9493 22.5%, 0.9676 25%, 0.9908 27.5%, 1.0066 30%, 1.0119 32.5%, 1.0095 35%, 1.0042 37.5%, 0.9997 40%, 0.9975 42.5%, 0.9975 45%, 0.9985 47.5%, 0.9997 50%, 1.0004 52.5%, 1.0006 55%, 1.0005 57.5%, 1.0002 60%, 1 62.5%, 0.9999 65%, 0.9999 67.5%, 0.9999 70%, 1 72.5%, 1 75%, 1 77.5%, 1 80%, 1 82.5%, 1 85%, 1 87.5%, 1 90%, 1 92.5%, 1 95%, 1 97.5%, 1 100%)",
+    "fill": "auto",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "add",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 28.83,
+   "v2_start_latency_ms": 11.62,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T7",
+   "joint": "pupilR",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 2604.5,
+   "v2_t": 2605,
+   "call_dt_ms": 0.5,
+   "start_dt_ms": 16.61,
+   "timing": {
+    "duration": 500,
+    "delay": 0,
+    "iterations": 1,
+    "easing": "linear(0 0%, 0.3033 2.5%, 0.7563 5%, 1.0924 7.5%, 1.225 10%, 1.1967 12.5%, 1.0982 15%, 1.0057 17.5%, 0.956 20%, 0.9493 22.5%, 0.9676 25%, 0.9908 27.5%, 1.0066 30%, 1.0119 32.5%, 1.0095 35%, 1.0042 37.5%, 0.9997 40%, 0.9975 42.5%, 0.9975 45%, 0.9985 47.5%, 0.9997 50%, 1.0004 52.5%, 1.0006 55%, 1.0005 57.5%, 1.0002 60%, 1 62.5%, 0.9999 65%, 0.9999 67.5%, 0.9999 70%, 1 72.5%, 1 75%, 1 77.5%, 1 80%, 1 82.5%, 1 85%, 1 87.5%, 1 90%, 1 92.5%, 1 95%, 1 97.5%, 1 100%)",
+    "fill": "auto",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "add",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 28.73,
+   "v2_start_latency_ms": 11.62,
+   "start_latency_ok": true,
+   "pass": true
+  },
+  {
+   "id": "T8",
+   "joint": "armR",
+   "v1_hits": 1,
+   "v2_hits": 1,
+   "v1_t": 2604.7,
+   "v2_t": 2605.1,
+   "call_dt_ms": 0.4,
+   "start_dt_ms": 16.61,
+   "timing": {
+    "duration": 700,
+    "delay": 0,
+    "iterations": 1,
+    "easing": "linear(0 0%, 0.3033 2.5%, 0.7563 5%, 1.0924 7.5%, 1.225 10%, 1.1967 12.5%, 1.0982 15%, 1.0057 17.5%, 0.956 20%, 0.9493 22.5%, 0.9676 25%, 0.9908 27.5%, 1.0066 30%, 1.0119 32.5%, 1.0095 35%, 1.0042 37.5%, 0.9997 40%, 0.9975 42.5%, 0.9975 45%, 0.9985 47.5%, 0.9997 50%, 1.0004 52.5%, 1.0006 55%, 1.0005 57.5%, 1.0002 60%, 1 62.5%, 0.9999 65%, 0.9999 67.5%, 0.9999 70%, 1 72.5%, 1 75%, 1 77.5%, 1 80%, 1 82.5%, 1 85%, 1 87.5%, 1 90%, 1 92.5%, 1 95%, 1 97.5%, 1 100%)",
+    "fill": "auto",
+    "direction": "normal",
+    "endDelay": 0
+   },
+   "timing_equal": true,
+   "composite": "add",
+   "composite_equal": true,
+   "keyframes_equal": true,
+   "v1_playStateAtEnd": "idle",
+   "v2_playStateAtEnd": "idle",
+   "v1_replaceState": "active",
+   "v2_replaceState": "active",
+   "released_or_finished_both": true,
+   "v1_start_latency_ms": 28.53,
+   "v2_start_latency_ms": 11.52,
+   "start_latency_ok": true,
+   "pass": true
+  }
+ ],
+ "events": {
+  "idle_blinks": {
+   "v1": [
+    2805.4
+   ],
+   "v2": [
+    2852.9
+   ]
+  },
+  "setMouth": {
+   "v1_count": 6,
+   "v2_count": 6,
+   "rows": [
+    {
+     "v1": {
+      "t": 0.5,
+      "kind": "setMouth",
+      "arg": "mid"
+     },
+     "v2": {
+      "t": 4,
+      "kind": "setMouth",
+      "arg": "mid"
+     },
+     "dt_ms": 3.5,
+     "pass": true
+    },
+    {
+     "v1": {
+      "t": 903,
+      "kind": "setMouth",
+      "arg": "closed"
+     },
+     "v2": {
+      "t": 904.5,
+      "kind": "setMouth",
+      "arg": "closed"
+     },
+     "dt_ms": 1.5,
+     "pass": true
+    },
+    {
+     "v1": {
+      "t": 1503,
+      "kind": "setMouth",
+      "arg": "mid"
+     },
+     "v2": {
+      "t": 1504.3,
+      "kind": "setMouth",
+      "arg": "mid"
+     },
+     "dt_ms": 1.3,
+     "pass": true
+    },
+    {
+     "v1": {
+      "t": 2604.8,
+      "kind": "setMouth",
+      "arg": "open"
+     },
+     "v2": {
+      "t": 2605.7,
+      "kind": "setMouth",
+      "arg": "open"
+     },
+     "dt_ms": 0.9,
+     "pass": true
+    },
+    {
+     "v1": {
+      "t": 2905.1,
+      "kind": "setMouth",
+      "arg": "smile"
+     },
+     "v2": {
+      "t": 2904.4,
+      "kind": "setMouth",
+      "arg": "smile"
+     },
+     "dt_ms": 0.7,
+     "pass": true
+    },
+    {
+     "v1": {
+      "t": 3503,
+      "kind": "setMouth",
+      "arg": "closed"
+     },
+     "v2": {
+      "t": 3504.5,
+      "kind": "setMouth",
+      "arg": "closed"
+     },
+     "dt_ms": 1.5,
+     "pass": true
+    }
+   ],
+   "pass": true
+  },
+  "blink": {
+   "v1_count": 1,
+   "v2_count": 1,
+   "rows": [
+    {
+     "v1": {
+      "t": 2604.9,
+      "kind": "blink",
+      "arg": false
+     },
+     "v2": {
+      "t": 2605.7,
+      "kind": "blink",
+      "arg": false
+     },
+     "dt_ms": 0.8,
+     "pass": true
+    }
+   ],
+   "pass": true
+  },
+  "release": {
+   "v1_count": 1,
+   "v2_count": 1,
+   "rows": [
+    {
+     "v1": {
+      "t": 2603.2,
+      "kind": "release",
+      "arg": "^(pupilL|pupilR|head|armR)$"
+     },
+     "v2": {
+      "t": 2604.4,
+      "kind": "release",
+      "arg": "^(pupilL|pupilR|head|armR)$"
+     },
+     "dt_ms": 1.2,
+     "pass": true
+    }
+   ],
+   "pass": true
+  }
+ },
+ "extras_not_in_data": {
+  "v1": [
+   {
+    "t": 2605.2,
+    "joint": "lidL",
+    "duration": 150,
+    "fill": "none"
+   },
+   {
+    "t": 2605.4,
+    "joint": "lidR",
+    "duration": 150,
+    "fill": "none"
+   },
+   {
+    "t": 2805.6,
+    "joint": "lidL",
+    "duration": 150,
+    "fill": "none"
+   },
+   {
+    "t": 2805.8,
+    "joint": "lidR",
+    "duration": 150,
+    "fill": "none"
+   },
+   {
+    "t": 3288,
+    "joint": "pupilL",
+    "duration": 420,
+    "fill": "forwards"
+   },
+   {
+    "t": 3288.1,
+    "joint": "pupilR",
+    "duration": 420,
+    "fill": "forwards"
+   },
+   {
+    "t": 3288.3,
+    "joint": "head",
+    "duration": 600,
+    "fill": "forwards"
+   }
+  ],
+  "v2": [
+   {
+    "t": 2605.3,
+    "joint": "armR_mid",
+    "duration": 700,
+    "fill": "auto"
+   },
+   {
+    "t": 2605.5,
+    "joint": "armR_tip",
+    "duration": 700,
+    "fill": "auto"
+   },
+   {
+    "t": 2605.6,
+    "joint": "armR_tip",
+    "duration": 260,
+    "fill": "auto"
+   },
+   {
+    "t": 2605.8,
+    "joint": "lidL",
+    "duration": 150,
+    "fill": "none"
+   },
+   {
+    "t": 2605.8,
+    "joint": "lidR",
+    "duration": 150,
+    "fill": "none"
+   },
+   {
+    "t": 2853.2,
+    "joint": "lidL",
+    "duration": 150,
+    "fill": "none"
+   },
+   {
+    "t": 2853.3,
+    "joint": "lidR",
+    "duration": 150,
+    "fill": "none"
+   }
+  ]
+ },
+ "end_state": {
+  "v1": {
+   "mouth": "closed",
+   "busy": false,
+   "held_forwards_before": 0,
+   "held_forwards_after": 3
+  },
+  "v2": {
+   "mouth": "closed",
+   "busy": false,
+   "held_forwards_before": 0,
+   "held_forwards_after": 0,
+   "plan": {
+    "totalMs": 3500,
+    "channels": 8,
+    "events": 8,
+    "reduced": false,
+    "schedule": [
+     {
+      "atMs": 0,
+      "actions": 6
+     },
+     {
+      "atMs": 900,
+      "actions": 1
+     },
+     {
+      "atMs": 1500,
+      "actions": 1
+     },
+     {
+      "atMs": 2600,
+      "actions": 6
+     },
+     {
+      "atMs": 2900,
+      "actions": 1
+     },
+     {
+      "atMs": 3500,
+      "actions": 1
+     }
+    ]
+   },
+   "cues": [
+    {
+     "p": "perf",
+     "t": 1.2,
+     "name": "think"
+    },
+    {
+     "p": "flex",
+     "t": 2605.6,
+     "name": null
+    },
+    {
+     "p": "blink",
+     "t": 2605.9,
+     "name": null
+    },
+    {
+     "p": "blink",
+     "t": 2853.4,
+     "name": null
+    },
+    {
+     "p": "settle",
+     "t": 3504.9,
+     "name": null
+    }
+   ]
+  }
+ },
+ "state_route": {
+  "cues": [
+   {
+    "p": "enter",
+    "t": 0.3,
+    "name": null
+   },
+   {
+    "p": "perf",
+    "t": 0.5,
+    "name": "think"
+   },
+   {
+    "p": "beat",
+    "t": 700.8,
+    "name": null
+   },
+   {
+    "p": "beat",
+    "t": 1400.5,
+    "name": null
+   },
+   {
+    "p": "blink",
+    "t": 1563.7,
+    "name": null
+   },
+   {
+    "p": "beat",
+    "t": 2100.6,
+    "name": null
+   },
+   {
+    "p": "flex",
+    "t": 2603,
+    "name": null
+   },
+   {
+    "p": "blink",
+    "t": 2603.3,
+    "name": null
+   },
+   {
+    "p": "beat",
+    "t": 2800.6,
+    "name": null
+   },
+   {
+    "p": "beat",
+    "t": 3500.6,
+    "name": null
+   },
+   {
+    "p": "settle",
+    "t": 3501.2,
+    "name": null
+   },
+   {
+    "p": "enter",
+    "t": 3742.8,
+    "name": null
+   }
+  ],
+  "states": [
+   "think",
+   "idle"
+  ],
+  "finalState": "idle",
+  "lastPerf": "think",
+  "planTotal": 3500
+ },
+ "errors": {
+  "v1": [],
+  "v2": []
+ },
+ "reduced": {
+  "v1": {
+   "non_lid_anims": 0,
+   "events": [
+    {
+     "t": 0.7,
+     "kind": "setMouth",
+     "arg": "mid"
+    },
+    {
+     "t": 0.8,
+     "kind": "blink",
+     "arg": true
+    },
+    {
+     "t": 202.7,
+     "kind": "blink",
+     "arg": false
+    },
+    {
+     "t": 1402.9,
+     "kind": "setMouth",
+     "arg": "closed"
+    }
+   ],
+   "mouthAtEnd": "closed",
+   "busy": false
+  },
+  "v2": {
+   "non_lid_anims": 0,
+   "events": [
+    {
+     "t": 2,
+     "kind": "setMouth",
+     "arg": "mid"
+    },
+    {
+     "t": 2.3,
+     "kind": "blink",
+     "arg": true
+    },
+    {
+     "t": 204.3,
+     "kind": "blink",
+     "arg": false
+    },
+    {
+     "t": 1404.5,
+     "kind": "setMouth",
+     "arg": "closed"
+    }
+   ],
+   "mouthAtEnd": "closed",
+   "busy": false,
+   "cues": [
+    {
+     "p": "perf",
+     "t": 2,
+     "name": "think"
+    },
+    {
+     "p": "blink",
+     "t": 4.1,
+     "name": null
+    },
+    {
+     "p": "blink",
+     "t": 205,
+     "name": null
+    },
+    {
+     "p": "settle",
+     "t": 1404.6,
+     "name": null
+    }
+   ]
+  }
+ },
+ "legacy_perf_off": {
+  "perfSpecNull": true,
+  "busyDuring": true,
+  "busyAfter": false,
+  "cues": [
+   "flex",
+   "blink",
+   "blink"
+  ],
+  "ms": 3519
+ },
+ "strip_png": "sandbox/samples/proofs/k96_think_strip.png",
+ "pass_all": true,
+ "summary": {
+  "channels": 10,
+  "max_call_dt_ms": 1.4,
+  "max_start_dt_ms": 16.61,
+  "mouth_events": 6,
+  "max_event_dt_ms": 3.5
+ }
+}
