@@ -183,7 +183,9 @@ P._reducedFace = function (mouth, ms) {
 //   event:   {atMs, mouth} | {atMs, blink} | {atMs, release:[joints]} | {atMs, cue}
 // Scheduling: everything sharing one atMs runs from ONE timer, in the fixed order release -> channels -> mouth -> blink
 // -> cue (v1 released the held layers before starting the aha trio). atMs 0 runs synchronously, exactly like the inline
-// statements at the top of v1 think()/sad(). REDUCED (WCAG 2.3.3): face only, from `reduced`, no channels, no VFX.
+// statements at the top of v1 think()/sad(). REDUCED (WCAG 2.3.3): face only, from `reduced` = {mouth, blinkDouble?,
+// events?[{atMs, mouth|blink}], closeAtMs} (think: mid + double blink at 0, close 1400; sad: sad at 0, smile + double blink at
+// 900, close 1600 - both copied from the v1 REDUCED lines), no channels, no VFX.
 // Cues: perf at start, fx per tier, settle at totalMs - the K9.4 convention Foley/state layer already listen to.
 // ---------------------------------------------------------------------------------------------
 P._choreoSchedule = function (C) {
@@ -217,7 +219,11 @@ P.perform = function (name, tier = 'small') {
   this._lastPerf = { name, tier, plan: { totalMs: C.totalMs, channels: C.channels.length, events: C.events.length, reduced: !!REDUCED } };
   this.stats.performances = (this.stats.performances || 0) + 1;
   this.cue('perf', { name, tier });
-  if (REDUCED) { const R = C.reduced; this.setMouth(R.mouth); this.blink(!!R.blinkDouble); this.later(() => { this.setMouth('closed'); this.busy = false; this.cue('settle'); }, R.closeAtMs); return this._sleep(R.closeAtMs).then(() => true); }
+  if (REDUCED) {   // face only: reduced.mouth at 0 (+ blink(blinkDouble) at 0 when declared), optional mid-way face events (mouth | blink), closed at closeAtMs
+    const R = C.reduced; this.setMouth(R.mouth); if (R.blinkDouble !== undefined) this.blink(!!R.blinkDouble);
+    for (const ev of R.events || []) this.later(() => { if (ev.mouth) this.setMouth(ev.mouth); else if (typeof ev.blink === 'boolean') this.blink(ev.blink); }, ev.atMs);
+    this.later(() => { this.setMouth('closed'); this.busy = false; this.cue('settle'); }, R.closeAtMs); return this._sleep(R.closeAtMs).then(() => true);
+  }
   const { times, at } = this._choreoSchedule(C);
   const fire = (ms) => { for (const a of at.get(ms)) a.run(); };
   for (const ms of times) { if (ms === 0) fire(0); else this.later(() => fire(ms), ms); }
@@ -278,6 +284,7 @@ P.triumph = function (tier = 'small') {
  * medium = double take (second anticipation before the extreme); large = + jiggle (damped body oscillation).
  */
 P.oops = function (tier = 'small') {
+  const S = this.perfSpec('sad'); if (S && S.choreo) return this.perform('sad', tier);   // K9.6-5: the v1 sad() choreography as data (owner decision a3e73842); the K9.4 take below stays for legacy specs
   const O = this.perfSpec('oops'); if (!O) return this.sad();
   if (this.busy) return Promise.resolve(false); this.busy = true;
   const t = this._tierOf(O, tier);
@@ -465,7 +472,8 @@ export function validateActing(spec) {
     const vfxNames = (o, path) => { if (o.vfx !== undefined) { if (!Array.isArray(o.vfx)) problems.push(`${path}.vfx must be a list`); else for (const v of o.vfx) if (!(spec.vfx && spec.vfx[v])) problems.push(`${path}.vfx '${v}' not in the vfx catalogue`); } };
     if (Pf.triumph) { const T = Pf.triumph, p = 'acting.performances.triumph'; num(T, 'jumpPx', p); range(T, 'anticipateMs', p); num(T, 'airMs', p); num(T, 'settleWithinMs', p); num(T, 'rollMs', p);
       tiers(T, p, (t, tp) => { num(t, 'apexScale', tp); vfxNames(t, tp); }); }
-    if (Pf.oops) { const O = Pf.oops, p = 'acting.performances.oops'; range(O, 'anticipateMs', p); range(O, 'stretchScaleY', p); range(O, 'holdMs', p); num(O, 'totalMaxMs', p); num(O, 'jiggleMs', p);
+    const oopsTake = Pf.oops || Pf.oops_take_k94;   // K9.6-5: the K9.4 take is kept as a record (oops_take_k94) and still validated by its own rules
+    if (oopsTake) { const O = oopsTake, p = Pf.oops ? 'acting.performances.oops' : 'acting.performances.oops_take_k94'; range(O, 'anticipateMs', p); range(O, 'stretchScaleY', p); range(O, 'holdMs', p); num(O, 'totalMaxMs', p); num(O, 'jiggleMs', p);
       if (!(O.jiggleDecay > 0 && O.jiggleDecay < 1)) problems.push(`${p}.jiggleDecay must be in (0,1)`);
       if (O.stretchScaleY && !(O.stretchScaleY[0] > 1)) problems.push(`${p}.stretchScaleY must stretch (> 1)`);
       tiers(O, p, (t, tp) => { if (!(Number.isInteger(t.jiggle) && t.jiggle >= 0)) problems.push(`${tp}.jiggle must be an integer >= 0`); }); }
@@ -503,7 +511,12 @@ export function validateActing(spec) {
         if (e.cue !== undefined && typeof e.cue !== 'string') problems.push(`${ep}.cue must be a string`); });
         const closes = C.events.filter((e) => e.mouth === 'closed' && e.atMs === C.totalMs).length;
         if (closes !== 1) problems.push(`${p}.events must end with exactly one {atMs: totalMs, mouth: 'closed'} (clean end state)`); }
-      if (C.reduced) { const R = C.reduced, rp = `${p}.reduced`; if (!MOUTHS.includes(R.mouth)) problems.push(`${rp}.mouth must be ${MOUTHS.join('|')}`); if (R.blinkDouble !== undefined && typeof R.blinkDouble !== 'boolean') problems.push(`${rp}.blinkDouble must be a boolean`); if (!(typeof R.closeAtMs === 'number' && R.closeAtMs > 0 && R.closeAtMs <= C.totalMs)) problems.push(`${rp}.closeAtMs must be in (0, totalMs]`); }
+      if (C.reduced) { const R = C.reduced, rp = `${p}.reduced`; if (!MOUTHS.includes(R.mouth)) problems.push(`${rp}.mouth must be ${MOUTHS.join('|')}`); if (R.blinkDouble !== undefined && typeof R.blinkDouble !== 'boolean') problems.push(`${rp}.blinkDouble must be a boolean`); if (!(typeof R.closeAtMs === 'number' && R.closeAtMs > 0 && R.closeAtMs <= C.totalMs)) problems.push(`${rp}.closeAtMs must be in (0, totalMs]`);
+        if (R.events !== undefined) { if (!Array.isArray(R.events)) problems.push(`${rp}.events must be a list`); else R.events.forEach((e, i) => { const ep = `${rp}.events[${i}]`;
+          if (!(typeof e.atMs === 'number' && e.atMs >= 0 && e.atMs <= R.closeAtMs)) problems.push(`${ep}.atMs must be in [0, closeAtMs]`);
+          const acts = ['mouth', 'blink'].filter((k) => e[k] !== undefined); if (acts.length !== 1) problems.push(`${ep} must carry exactly one of mouth | blink (face only under reduced motion)`);
+          if (e.mouth !== undefined && !MOUTHS.includes(e.mouth)) problems.push(`${ep}.mouth must be ${MOUTHS.join('|')}`);
+          if (e.blink !== undefined && typeof e.blink !== 'boolean') problems.push(`${ep}.blink must be a boolean (double)`); }); } }
     };
     for (const name of Object.keys(Pf)) if (Pf[name] && Pf[name].choreo && name !== 'think') choreo(Pf[name].choreo, `acting.performances.${name}.choreo`);   // any performance may carry choreo (K9.6-5 sad)
     if (Pf.think && Pf.think.choreo) { choreo(Pf.think.choreo, 'acting.performances.think.choreo'); tiers(Pf.think, 'acting.performances.think', (t, tp) => vfxNames(t, tp)); }

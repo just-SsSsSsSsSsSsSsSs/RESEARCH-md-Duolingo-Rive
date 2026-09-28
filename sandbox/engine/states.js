@@ -27,7 +27,11 @@ const CLIPS = {
     // and no state names it today; ?perf=0 or a missing spec block falls back to the legacy think().
     ponder: (rig) => (rig.ponder && rig.perfSpec && rig.perfSpec('think')) ? rig.ponder(rig.escalate('think')) : rig.think(),
     jumpJoy: (rig) => (rig.triumph && rig.perfSpec && rig.perfSpec('triumph')) ? rig.triumph(rig.escalate('triumph')) : rig.celebrate(),   // K9.4: escalating performance, ?perf=0 -> legacy clip
-    recoil: (rig) => (rig.oops && rig.perfSpec && rig.perfSpec('oops')) ? rig.oops(rig.escalate('oops')) : rig.sad(),
+    // K9.6-5 (owner decision a3e73842 'carry the winner'): recoil plays acting.performances.sad.choreo (the v1 sad() as data)
+    // through the generic player; the K9.4 take remains reachable only on a spec that still names performances.oops; ?perf=0 or
+    // a missing block falls back to the legacy sad().
+    recoil: (rig) => (rig.perform && rig.perfSpec && rig.perfSpec('sad') && rig.perfSpec('sad').choreo) ? rig.perform('sad', rig.escalate('sad'))
+      : (rig.oops && rig.perfSpec && rig.perfSpec('oops')) ? rig.oops(rig.escalate('oops')) : rig.sad(),
     flight: (rig, ctx) => {
       const trace = !!(ctx && ctx.trace);
       if (ctx && ctx.home) return rig.flyTo(null, { trace, home: true });

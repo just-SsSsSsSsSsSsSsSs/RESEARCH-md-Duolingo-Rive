@@ -9,7 +9,9 @@
  *     setMouth / blink / release in think() must match one data event at the same absolute time.
  *     This is V1_CHOREOGRAPHY.md section 4 checked at the data level; K9.6-4 checks it on live animations;
  *  3) the K9.5-2 record think_calm_k95 equals the block that shipped at 3a1fb25 (comment aside);
- *  4) triumph / oops / puzzled / movingHold unchanged vs origin/main;
+ *  4) triumph / puzzled / movingHold unchanged vs origin/main; oops_take_k94 == origin/main performances.oops (comment aside);
+ *  6) K9.6-5: acting.performances.sad.choreo == rig.js sad() source (same parser, 10 channel rows incl. the per-side
+ *     wing pairs S4L/S4R S7L/S7R, 6 events, reduced events form), recoil route text, oops route text.
  *  5) tiers carry no vfx (the whole story, no additions).
  *
  * validateActing is lifted as text from acting.js (browser-only imports), same method as k95_think_spec.mjs.
@@ -60,17 +62,21 @@ check(mut((c) => { c.channels = []; }).length === 1, 'rejects an empty channel l
 const other = JSON.parse(JSON.stringify(owl)); other.acting.performances.oops = { choreo: { totalMs: 100, channels: [{ joints: ['nose'], keyframes: [{ transform: 'a' }, { transform: 'b' }], ms: 50, easing: 'soft' }], events: [{ atMs: 100, mouth: 'closed' }] } };
 check(validateActing(other).some((m) => m.includes('performances.oops.choreo.channels[0].joints')), 'choreo rules apply to any performance carrying choreo (not only think)');
 
-// ---- 2) data == v1 source (parsed from rig.js think() text) ---------------------------------------------------------
-const ti = rigSrc.indexOf('\n  think() {'), tj = rigSrc.indexOf('\n  }\n', ti);
-const src = rigSrc.slice(ti, tj);
-check(src.length > 500, 'rig.js think() located');
-// statement regions: the REDUCED line (excluded), the aha callback (absolute 2600), everything else top level (0)
-const reducedEnd = src.indexOf('return; }') + 'return; }'.length;
-const ahaOpen = src.indexOf('this.later(() => {\n'), ahaClose = src.indexOf('}, 2600);');
-check(ahaOpen > 0 && ahaClose > ahaOpen, 'aha callback `this.later(() => { ... }, 2600)` located');
-const baseTime = (idx) => (idx > ahaOpen && idx < ahaClose ? 2600 : 0);
+// ---- 2) data == v1 source (parsed from rig.js method text) ---------------------------------------------------------
+// parseV1(method, callbackAt): the REDUCED line is excluded; statements inside the one `this.later(() => { ... }, callbackAt)`
+// block get absolute time callbackAt (think: aha at 2600; sad: recovery at 1700); everything else is top level (0).
+function parseV1(method, callbackAt) {
+  const ti = rigSrc.indexOf(`\n  ${method}() {`), tj = rigSrc.indexOf('\n  }\n', ti);
+  const src = rigSrc.slice(ti, tj);
+  check(src.length > 500, `rig.js ${method}() located`);
+  const reducedEnd = src.indexOf('return; }') + 'return; }'.length;
+  const cbClose = src.indexOf(`}, ${callbackAt});`), cbOpen = src.lastIndexOf('this.later(() => {\n', cbClose);
+  check(cbOpen > 0 && cbClose > cbOpen, `${method}(): callback block \`this.later(() => { ... }, ${callbackAt})\` located`);
+  return { src, reducedEnd, baseTime: (idx) => (idx > cbOpen && idx < cbClose ? callbackAt : 0) };
+}
+const { src, reducedEnd, baseTime } = parseV1('think', 2600);
 const norm = (t) => t.replace(/\s+/g, '');
-const kfOf = (s) => [...s.matchAll(/\{\s*transform:\s*'([^']+)'(?:,\s*offset:\s*([\d.]+))?\s*\}/g)].map((m) => ({ transform: norm(m[1]), offset: m[2] !== undefined ? +m[2] : undefined }));
+const kfOf = (s) => [...s.matchAll(/\{\s*transform:\s*(?:'([^']+)'|`([^`]+)`)(?:,\s*offset:\s*([\d.]+))?\s*\}/g)].map((m) => ({ transform: norm(m[1] || m[2]), offset: m[3] !== undefined ? +m[3] : undefined }));   // '...' or `...` (sad wing rows use template literals)
 const optsOf = (s) => ({
   ms: +(/duration:\s*(\d+)/.exec(s) || [])[1],
   delayMs: +((/delay:\s*(\d+)/.exec(s) || [, 0])[1]),
@@ -79,44 +85,63 @@ const optsOf = (s) => ({
   composite: (/composite:\s*'(\w+)'/.exec(s) || [, 'replace'])[1],
   fill: (/fill:\s*'(\w+)'/.exec(s) || [, 'none'])[1],
 });
-const calls = [];
-const animRe = /this\.anim\(this\.j\((?:p|'(\w+)')\),\s*(\[[\s\S]*?\]),\s*(\{[^{}]*\})(,\s*true)?\)/g;
-for (const m of src.matchAll(animRe)) {
-  if (m.index < reducedEnd) continue;
-  calls.push({ joints: m[1] ? [m[1]] : ['pupilL', 'pupilR'], kf: kfOf(m[2]), ...optsOf(m[3]), keep: !!m[4], at: baseTime(m.index) });
+// animate() call forms: this.anim(this.j('x'), ...) | this.anim(this.j(p), ...) inside ['pupilL','pupilR'].forEach(p => ...) |
+// this.anim(root, ...) (sad: const root = this.j('root')) | this.anim(this.j(n), ...) inside [['armL', 1], ['armR', -1]].forEach(([n, s]) => ...)
+// where `${95 * s}deg` expands per side (template literals resolved for s = +1 / -1).
+const animRe = /this\.anim\((?:this\.j\((?:p|n|'(\w+)')\)|(root)),\s*(\[[\s\S]*?\]),\s*(\{[^{}]*\})(,\s*true)?\)/g;
+const expand = (s, side) => s.replace(/\$\{(\d+) \* s\}/g, (_, n) => String(+n * side));
+function callsOf(P) {
+  const out = [];
+  for (const m of P.src.matchAll(animRe)) {
+    if (m.index < P.reducedEnd) continue;
+    const base = { ...optsOf(m[4]), keep: !!m[5], at: P.baseTime(m.index) };
+    if (m[1]) out.push({ joints: [m[1]], kf: kfOf(m[3]), ...base });
+    else if (m[2]) out.push({ joints: ['root'], kf: kfOf(m[3]), ...base });
+    else if (/\$\{\d+ \* s\}/.test(m[3])) for (const [n, side] of [['armL', 1], ['armR', -1]]) out.push({ joints: [n], kf: kfOf(expand(m[3], side)), ...base });
+    else out.push({ joints: ['pupilL', 'pupilR'], kf: kfOf(m[3]), ...base });
+  }
+  return out;
 }
+const calls = callsOf({ src, reducedEnd, baseTime });
 check(calls.length === 8, `rig.js think() has 8 animate() calls after the REDUCED line (parsed ${calls.length})`);
 const chans = T.choreo.channels;
 check(chans.length === 8, `data has 8 channels (${chans.length})`);
-let matched = 0;
-for (const c of calls) {
-  const hit = chans.find((ch) => ch.joints.join('|') === c.joints.join('|') && ch.ms === c.ms && (ch.delayMs || 0) === c.delayMs &&
-    (ch.iterations || 1) === c.iterations && ch.easing === c.easing && (ch.composite || 'replace') === c.composite && (ch.fill || 'none') === c.fill &&
-    !!ch.keep === c.keep && (ch.atMs || 0) === c.at && ch.keyframes.length === c.kf.length &&
-    ch.keyframes.every((k, i) => norm(k.transform) === c.kf[i].transform && k.offset === c.kf[i].offset));
-  check(!!hit, `channel ${hit ? hit.id : '?'}: ${c.joints.join('+')} ${c.ms} ms x${c.iterations} ${c.easing} ${c.fill}${c.keep ? ' keep' : ''} starting at ${c.at + c.delayMs} ms == v1 source`);
-  if (hit) matched++;
+function matchChannels(calls, chans, label) {
+  let matched = 0;
+  for (const c of calls) {
+    const hit = chans.find((ch) => ch.joints.join('|') === c.joints.join('|') && ch.ms === c.ms && (ch.delayMs || 0) === c.delayMs &&
+      (ch.iterations || 1) === c.iterations && ch.easing === c.easing && (ch.composite || 'replace') === c.composite && (ch.fill || 'none') === c.fill &&
+      !!ch.keep === c.keep && (ch.atMs || 0) === c.at && ch.keyframes.length === c.kf.length &&
+      ch.keyframes.every((k, i) => norm(k.transform) === c.kf[i].transform && k.offset === c.kf[i].offset));
+    check(!!hit, `${label} channel ${hit ? hit.id : '?'}: ${c.joints.join('+')} ${c.ms} ms x${c.iterations} ${c.easing} ${c.fill}${c.keep ? ' keep' : ''} starting at ${c.at + c.delayMs} ms == v1 source`);
+    if (hit) matched++;
+  }
+  return matched;
 }
-check(matched === 8, `all 8 v1 channels matched by data (${matched}/8)`);
+check(matchChannels(calls, chans, 'think') === 8, 'all 8 v1 think channels matched by data');
 // events: each setMouth / blink / release with its absolute time.
 // forms in think(): `this.later(() => this.setMouth('x'), N);` (top level, time N); statements inside the aha callback
 // (time 2600, or 2600 + N for `this.later(() => this.setMouth('smile'), 300)`); `this.later(() => { ...closed... }, 3500)`.
-const events = [];
 const evRe = /this\.(?:setMouth\('(\w+)'\)|blink\((true|false)\)|release\(\/\^\(([^)]+)\)\$\/\))/g;
-for (const m of src.matchAll(evRe)) {
-  if (m.index < reducedEnd) continue;
-  let at = baseTime(m.index);
-  const lineStart = src.lastIndexOf('\n', m.index) + 1, lineEnd = src.indexOf('\n', m.index);
-  const line = src.slice(lineStart, lineEnd);
-  // a wrapping `this.later(() => <stmt>, N)` on the same line whose span contains the match
-  for (const w of line.matchAll(/this\.later\(\(\) => (?:\{[^}]*\}|[^,]*?), (\d+)\)/g)) {
-    const a = lineStart + w.index, b = a + w[0].length;
-    if (m.index >= a && m.index < b) at += +w[1];
+function eventsOf(P) {
+  const events = [];
+  for (const m of P.src.matchAll(evRe)) {
+    if (m.index < P.reducedEnd) continue;
+    let at = P.baseTime(m.index);
+    const lineStart = P.src.lastIndexOf('\n', m.index) + 1, lineEnd = P.src.indexOf('\n', m.index);
+    const line = P.src.slice(lineStart, lineEnd);
+    // a wrapping `this.later(() => <stmt>, N)` on the same line whose span contains the match
+    for (const w of line.matchAll(/this\.later\(\(\) => (?:\{[^}]*\}|[^,]*?), (\d+)\)/g)) {
+      const a = lineStart + w.index, b = a + w[0].length;
+      if (m.index >= a && m.index < b) at += +w[1];
+    }
+    if (m[1]) events.push({ at, mouth: m[1] });
+    else if (m[2]) events.push({ at, blink: m[2] === 'true' });
+    else events.push({ at, release: m[3].split('|') });
   }
-  if (m[1]) events.push({ at, mouth: m[1] });
-  else if (m[2]) events.push({ at, blink: m[2] === 'true' });
-  else events.push({ at, release: m[3].split('|') });
+  return events;
 }
+const events = eventsOf({ src, reducedEnd, baseTime });
 const E = T.choreo.events;
 const same = (e, d) => d.atMs === e.at && (e.mouth ? d.mouth === e.mouth : e.blink !== undefined ? d.blink === e.blink : Array.isArray(d.release) && d.release.join('|') === e.release.join('|'));
 for (const e of events) check(E.some((d) => same(e, d)), `event ${JSON.stringify(e)} present in data`);
@@ -136,11 +161,46 @@ else console.log('SKIP think_calm_k95 vs 3a1fb25 (git history unavailable)');
 
 // ---- 4) other performances unchanged vs origin/main ------------------------------------------------------------------
 const mainTxt = git('git show origin/main:sandbox/companions/owl.motion.json');
-if (mainTxt) { const M = JSON.parse(mainTxt).acting.performances; for (const k of ['triumph', 'oops', 'puzzled', 'movingHold']) check(sha16(owl.acting.performances[k]) === sha16(M[k]), `performances.${k} unchanged vs origin/main`); }
+const stripC = (o) => { const c = JSON.parse(JSON.stringify(o)); delete c.comment; return c; };
+if (mainTxt) { const M = JSON.parse(mainTxt).acting.performances; for (const k of ['triumph', 'puzzled', 'movingHold']) check(sha16(owl.acting.performances[k]) === sha16(M[k]), `performances.${k} unchanged vs origin/main`);
+  check(!owl.acting.performances.oops, 'performances.oops no longer routed (renamed to the oops_take_k94 record)');
+  check(sha16(stripC(owl.acting.performances.oops_take_k94)) === sha16(stripC(M.oops)), 'oops_take_k94 == origin/main performances.oops (comment aside)'); }
 else console.log('SKIP unchanged-vs-main (origin/main unavailable)');
 
 // ---- 5) tiers add nothing ------------------------------------------------------------------------------------------
 check(['small', 'medium', 'large'].every((t) => Array.isArray(T.tiers[t].vfx) && T.tiers[t].vfx.length === 0), 'tiers carry no vfx (the whole story, no additions)');
+
+// ---- 6) K9.6-5: sad choreo == rig.js sad() ------------------------------------------------------------------------------
+const Sd = owl.acting.performances.sad;
+check(!!(Sd && Sd.choreo), 'acting.performances.sad carries choreo');
+const PS = parseV1('sad', 1700);
+const sadCalls = callsOf(PS);
+check(sadCalls.length === 10, `rig.js sad() expands to 10 channel rows (8 animate() calls, wing pairs per side; parsed ${sadCalls.length})`);
+check(Sd.choreo.channels.length === 10, `sad data has 10 channels (${Sd.choreo.channels.length})`);
+check(matchChannels(sadCalls, Sd.choreo.channels, 'sad') === 10, 'all 10 v1 sad channel rows matched by data');
+const sadEvents = eventsOf(PS);
+for (const e of sadEvents) check(Sd.choreo.events.some((d) => same(e, d)), `sad event ${JSON.stringify(e)} present in data`);
+check(sadEvents.length === Sd.choreo.events.length, `sad event count equal (source ${sadEvents.length}, data ${Sd.choreo.events.length})`);
+check(Sd.choreo.totalMs === 2500, 'sad totalMs 2500 (rig.js: busy = false at 2500)');
+const sadMouth = Sd.choreo.events.filter((e) => e.mouth).map((e) => `${e.mouth}@${e.atMs}`).join(' ');
+check(sadMouth === 'open@0 sad@700 smile@1700 closed@2500', `sad mouth plate sequence == v1 (${sadMouth})`);
+const SR = Sd.choreo.reduced;
+check(SR && SR.mouth === 'sad' && SR.blinkDouble === undefined && SR.closeAtMs === 1600 && JSON.stringify(SR.events) === JSON.stringify([{ atMs: 900, mouth: 'smile' }, { atMs: 900, blink: true }]), 'sad reduced == rig.js REDUCED line (sad at 0; smile + blink(true) at 900; close at 1600)');
+check(Sd.choreo.channels.filter((c) => c.easing === 'linear').map((c) => c.id).join() === 'S6', 'the one linear in sad is S6 (v1 pupil orbit), disclosed');
+check(['small', 'medium', 'large'].every((t) => Array.isArray(Sd.tiers[t].vfx) && Sd.tiers[t].vfx.length === 0), 'sad tiers carry no vfx');
+// reduced.events rules
+const mutS = (fn) => { const s = JSON.parse(JSON.stringify(owl)); fn(s.acting.performances.sad.choreo); return validateActing(s).filter((m) => m.includes('sad.choreo')); };
+check(mutS((c) => { c.reduced.events[0].atMs = 5000; }).length === 1, 'rejects a reduced event after closeAtMs');
+check(mutS((c) => { c.reduced.events[0].blink = true; }).length === 1, 'rejects a reduced event with two actions');
+check(mutS((c) => { c.reduced.events[0].mouth = 'grin'; }).length === 1, 'rejects a reduced event with an unknown mouth');
+check(mutS((c) => { c.reduced.events = [{ atMs: 100, release: ['head'] }]; }).length === 1, 'rejects a reduced event that is not face-only (release)');
+// routes (source text): CLIPS.body.recoil -> perform('sad') when choreo present; P.oops -> perform('sad') first; P.ponder -> perform('think')
+const statesSrc = readFileSync(join(here, '../engine/states.js'), 'utf8');
+check(/recoil:[\s\S]*?rig\.perfSpec\('sad'\)\.choreo\)\s*\?\s*rig\.perform\('sad'/.test(statesSrc), "CLIPS.body.recoil routes to rig.perform('sad') when performances.sad.choreo exists");
+check(/recoil:[\s\S]*?:\s*rig\.sad\(\)/.test(statesSrc), 'recoil still falls back to the legacy sad()');
+check(/P\.oops = function[\s\S]*?if \(S && S\.choreo\) return this\.perform\('sad', tier\)/.test(actingSrc), "P.oops defers to perform('sad') when the choreo exists (kit/reel callers)");
+check(/P\.ponder = function[\s\S]*?if \(K\.choreo\) return this\.perform\('think', tier\)/.test(actingSrc), "P.ponder defers to perform('think') when the choreo exists");
+check(!!owl.acting.performances.oops_take_k94 && !owl.acting.performances.oops_take_k94.choreo, 'oops_take_k94 record present, un-routed (no choreo)');
 
 console.log(fails.length ? `K96 CHOREO SPEC FAIL (${fails.length})` : 'K96 CHOREO SPEC PASS');
 process.exit(fails.length ? 1 : 0);

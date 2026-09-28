@@ -766,8 +766,346 @@
         },
         "rollMs": 520
       },
-      "oops": {
-        "comment": "the take (P6): squash anticipation -> stretch extreme held -> recoil -> settle. medium = double take (second anticipation), large = + jiggle (damped body oscillation)",
+      "sad": {
+        "comment": "K9.6-5 (owner decision a3e73842 / cf3d3a8a): the v1 rig.js sad() choreography as DATA, copied channel by channel from rig.js 342-386 (docs/V1_CHOREOGRAPHY.md section 2). S1-S8 + event track; total 2500 ms. Played by P.perform('sad') (CLIPS.body.recoil). S6 is the one deliberate linear (v1 constant-rate pupil orbit). No additions: tiers carry no vfx.",
+        "choreo": {
+          "totalMs": 2500,
+          "reduced": {
+            "mouth": "sad",
+            "events": [
+              {
+                "atMs": 900,
+                "mouth": "smile"
+              },
+              {
+                "atMs": 900,
+                "blink": true
+              }
+            ],
+            "closeAtMs": 1600
+          },
+          "channels": [
+            {
+              "id": "S1",
+              "joints": [
+                "pupilL",
+                "pupilR"
+              ],
+              "keyframes": [
+                {
+                  "transform": "scale(1)"
+                },
+                {
+                  "transform": "scale(1.25)"
+                },
+                {
+                  "transform": "scale(1)"
+                }
+              ],
+              "ms": 700,
+              "easing": "soft",
+              "composite": "add"
+            },
+            {
+              "id": "S2",
+              "joints": [
+                "root"
+              ],
+              "keyframes": [
+                {
+                  "transform": "translate(0,0) rotate(0)",
+                  "offset": 0
+                },
+                {
+                  "transform": "translate(-6px,-14px) rotate(-8deg)",
+                  "offset": 0.18
+                },
+                {
+                  "transform": "translate(-14px,0) rotate(-4deg)",
+                  "offset": 0.34
+                },
+                {
+                  "transform": "translate(-12px,-8px) rotate(3deg)",
+                  "offset": 0.5
+                },
+                {
+                  "transform": "translate(-10px,0) rotate(0)",
+                  "offset": 0.64
+                },
+                {
+                  "transform": "translate(0,0) rotate(0)",
+                  "offset": 1
+                }
+              ],
+              "ms": 1600,
+              "easing": "soft",
+              "composite": "add"
+            },
+            {
+              "id": "S3",
+              "joints": [
+                "body"
+              ],
+              "keyframes": [
+                {
+                  "transform": "scale(1,1)"
+                },
+                {
+                  "transform": "scale(0.9,1.14)",
+                  "offset": 0.18
+                },
+                {
+                  "transform": "scale(1.12,0.88)",
+                  "offset": 0.34
+                },
+                {
+                  "transform": "scale(1,1)",
+                  "offset": 0.55
+                },
+                {
+                  "transform": "scale(1,1)"
+                }
+              ],
+              "ms": 1600,
+              "easing": "soft",
+              "composite": "add"
+            },
+            {
+              "id": "S4L",
+              "joints": [
+                "armL"
+              ],
+              "keyframes": [
+                {
+                  "transform": "rotate(0)"
+                },
+                {
+                  "transform": "rotate(95deg)",
+                  "offset": 0.2
+                },
+                {
+                  "transform": "rotate(75deg)",
+                  "offset": 0.3
+                },
+                {
+                  "transform": "rotate(100deg)",
+                  "offset": 0.4
+                },
+                {
+                  "transform": "rotate(80deg)",
+                  "offset": 0.5
+                },
+                {
+                  "transform": "rotate(0)",
+                  "offset": 0.8
+                },
+                {
+                  "transform": "rotate(0)"
+                }
+              ],
+              "ms": 1600,
+              "easing": "soft",
+              "composite": "add"
+            },
+            {
+              "id": "S4R",
+              "joints": [
+                "armR"
+              ],
+              "keyframes": [
+                {
+                  "transform": "rotate(0)"
+                },
+                {
+                  "transform": "rotate(-95deg)",
+                  "offset": 0.2
+                },
+                {
+                  "transform": "rotate(-75deg)",
+                  "offset": 0.3
+                },
+                {
+                  "transform": "rotate(-100deg)",
+                  "offset": 0.4
+                },
+                {
+                  "transform": "rotate(-80deg)",
+                  "offset": 0.5
+                },
+                {
+                  "transform": "rotate(0)",
+                  "offset": 0.8
+                },
+                {
+                  "transform": "rotate(0)"
+                }
+              ],
+              "ms": 1600,
+              "easing": "soft",
+              "composite": "add"
+            },
+            {
+              "id": "S5",
+              "joints": [
+                "head"
+              ],
+              "keyframes": [
+                {
+                  "transform": "rotate(0) translate(0,0)"
+                },
+                {
+                  "transform": "rotate(-10deg) translate(-3px,2px)"
+                },
+                {
+                  "transform": "rotate(0) translate(0,4px)"
+                },
+                {
+                  "transform": "rotate(10deg) translate(3px,2px)"
+                },
+                {
+                  "transform": "rotate(0) translate(0,0)"
+                }
+              ],
+              "ms": 520,
+              "delayMs": 250,
+              "iterations": 3,
+              "easing": "sine",
+              "composite": "add"
+            },
+            {
+              "id": "S6",
+              "joints": [
+                "pupilL",
+                "pupilR"
+              ],
+              "keyframes": [
+                {
+                  "transform": "translate(0,-4px)"
+                },
+                {
+                  "transform": "translate(4px,0)"
+                },
+                {
+                  "transform": "translate(0,4px)"
+                },
+                {
+                  "transform": "translate(-4px,0)"
+                },
+                {
+                  "transform": "translate(0,-4px)"
+                }
+              ],
+              "ms": 420,
+              "delayMs": 250,
+              "iterations": 4,
+              "easing": "linear",
+              "composite": "add"
+            },
+            {
+              "id": "S7L",
+              "joints": [
+                "armL"
+              ],
+              "atMs": 1700,
+              "keyframes": [
+                {
+                  "transform": "rotate(0)"
+                },
+                {
+                  "transform": "rotate(35deg)"
+                },
+                {
+                  "transform": "rotate(0)"
+                }
+              ],
+              "ms": 600,
+              "easing": "pop",
+              "composite": "add"
+            },
+            {
+              "id": "S7R",
+              "joints": [
+                "armR"
+              ],
+              "atMs": 1700,
+              "keyframes": [
+                {
+                  "transform": "rotate(0)"
+                },
+                {
+                  "transform": "rotate(-35deg)"
+                },
+                {
+                  "transform": "rotate(0)"
+                }
+              ],
+              "ms": 600,
+              "easing": "pop",
+              "composite": "add"
+            },
+            {
+              "id": "S8",
+              "joints": [
+                "head"
+              ],
+              "atMs": 1700,
+              "keyframes": [
+                {
+                  "transform": "rotate(0)"
+                },
+                {
+                  "transform": "rotate(8deg) translateY(2px)"
+                },
+                {
+                  "transform": "rotate(0)"
+                }
+              ],
+              "ms": 600,
+              "easing": "soft",
+              "composite": "add"
+            }
+          ],
+          "events": [
+            {
+              "atMs": 0,
+              "mouth": "open"
+            },
+            {
+              "atMs": 0,
+              "blink": false
+            },
+            {
+              "atMs": 700,
+              "mouth": "sad"
+            },
+            {
+              "atMs": 1700,
+              "mouth": "smile"
+            },
+            {
+              "atMs": 1700,
+              "blink": true
+            },
+            {
+              "atMs": 2500,
+              "mouth": "closed"
+            }
+          ]
+        },
+        "tiers": {
+          "small": {
+            "vfx": []
+          },
+          "medium": {
+            "vfx": []
+          },
+          "large": {
+            "vfx": []
+          }
+        }
+      },
+      "oops_take_k94": {
+        "comment": "RECORD ONLY (not routed since K9.6-5): the K9.4 take. the take (P6): squash anticipation -> stretch extreme held -> recoil -> settle. medium = double take (second anticipation), large = + jiggle (damped body oscillation)",
         "anticipateMs": [
           125,
           250
