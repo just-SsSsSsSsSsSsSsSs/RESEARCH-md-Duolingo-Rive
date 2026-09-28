@@ -14,7 +14,9 @@ All numbers measured on 2026-09-26 (alpha > 16 bounding boxes; viewBox 200 x 240
 | eyesL / eyesR.webp (K9.2b-1) | 168 x 166 | 38.9 x 38.4 | eyeL / eyeR | poses | sclera with iris disc inpainted |
 | pupilL / pupilR.webp (K9.2b-1) | 107 x 107 | 24.3 x 24.3 | pupilL / pupilR | look, dart, saccades, talk onsets, poses | independent L/R since K9.2b-1 |
 | lidsL / lidsR.webp (K9.2b-1) | 168 x 166 | 38.9 x 38.4 | lidL / lidR | blink, wink, pose lids 0..1 | scaleY(0) = open |
-| beak_closed.webp | 137 x 126 | 22 x 20.3 | mouth > data-mouth closed, smile, sad | display toggle | smile/sad reuse this plate (scaled/offset only) |
+| beak_closed.webp | 137 x 126 | 22 x 20.3 | mouth > data-mouth closed | display toggle | source of the smile/sad plates (K9.5-3) |
+| beak_smile.webp (K9.5-3) | 137 x 126 | 22 x 20.3 | mouth > data-mouth smile | display toggle | authored by art/author_mouth_plates.py from beak_closed: chevron crease healed, corners up 16 px / out 5 px, painted U mouth line; proof samples/proofs/k95_plates.json |
+| beak_sad.webp (K9.5-3) | 137 x 126 | 22 x 20.3 | mouth > data-mouth sad | display toggle | same tool: corners down 14 px / in 4 px, painted arch mouth line; lossless webp, --check reproduces the bytes |
 | beak_open.webp | 140 x 163 | 24 x 27.7 | mouth > data-mouth mid, open | display toggle | has tongue |
 | eyes.webp, lids.webp | 336 x 166 | - | superseded | - | kept only as the recomposite reference |
 
@@ -27,12 +29,14 @@ Vector: browL / browR (`<path>`, K9.2b-2) - the only vector art on the owl.
 | closed | beak_closed | yes | idle, talk quiet, landing |
 | mid | beak_open (22.1 x 25.5) | yes | talk envelope > mouth.levels.mid (0.28) |
 | open | beak_open (24 x 27.7) | yes | talk envelope > mouth.levels.open (0.62), celebrate, triumph pose |
-| smile | beak_closed (23.8 x 21.9, y-1) | NO (same plate) | flight, celebrate end, launch pose |
-| sad | beak_closed (20.9 x 19.2, y+3) | NO (same plate) | wrong/sad, oops pose |
+| smile | beak_smile (22 x 20.3, same box as closed) since K9.5-3 | yes | flight, celebrate end, launch pose |
+| sad | beak_sad (22 x 20.3, same box as closed) since K9.5-3 | yes | wrong/sad, oops pose |
 
-Verdict on the gist claim "five mouth shapes drawn and unwired": all five are wired
-(talk(), states.js mouth map, sad(), poses), but only three have distinct art. Smile and sad
-differ from closed by <= 1.8 units of scale/offset, below the perceptual budget.
+Verdict on the gist claim "five mouth shapes drawn and unwired" (as of K9.2c): all five were wired
+(talk(), states.js mouth map, sad(), poses), but only three had distinct art. Smile and sad
+differed from closed by <= 1.8 units of scale/offset, below the perceptual budget.
+K9.5-3 (owner decision 2026-09-27, item c) closed this: five shapes, five distinct plates; live render
+diff vs closed confined to the mouth box (smile 0.6 pct / sad 0.0 pct outside, 8.0 / 7.5 pct inside).
 
 ## Beak readability (K9.2b-3 measurement)
 
