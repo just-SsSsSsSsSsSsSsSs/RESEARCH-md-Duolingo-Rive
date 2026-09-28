@@ -1,0 +1,275 @@
+{
+ "captured_at": "2026-09-27T23:40:49Z",
+ "window_ms": 12000,
+ "tolerance_ms": 16.7,
+ "compare": "inter-blink gaps and double flags from the 2nd logged blink on",
+ "runs": {
+  "v2": {
+   "seed_20260928_run1": {
+    "src": "object",
+    "seeded": true,
+    "seedValue": 20260928,
+    "blinks": [
+     {
+      "t": 3408,
+      "double": true
+     },
+     {
+      "t": 3609,
+      "double": false
+     },
+     {
+      "t": 6391,
+      "double": false
+     },
+     {
+      "t": 7504,
+      "double": true
+     },
+     {
+      "t": 7705,
+      "double": false
+     },
+     {
+      "t": 9649,
+      "double": false
+     }
+    ],
+    "errors": [],
+    "engine": "v2",
+    "seed": 20260928,
+    "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928"
+   },
+   "seed_20260928_run2": {
+    "src": "object",
+    "seeded": true,
+    "seedValue": 20260928,
+    "blinks": [
+     {
+      "t": 3438,
+      "double": true
+     },
+     {
+      "t": 3640,
+      "double": false
+     },
+     {
+      "t": 6422,
+      "double": false
+     },
+     {
+      "t": 7529,
+      "double": true
+     },
+     {
+      "t": 7729,
+      "double": false
+     },
+     {
+      "t": 9678,
+      "double": false
+     }
+    ],
+    "errors": [],
+    "engine": "v2",
+    "seed": 20260928,
+    "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928"
+   },
+   "seed_7": {
+    "src": "object",
+    "seeded": true,
+    "seedValue": 7,
+    "blinks": [
+     {
+      "t": 1220,
+      "double": false
+     },
+     {
+      "t": 4698,
+      "double": true
+     },
+     {
+      "t": 4899,
+      "double": false
+     },
+     {
+      "t": 5512,
+      "double": true
+     },
+     {
+      "t": 5713,
+      "double": false
+     },
+     {
+      "t": 8332,
+      "double": false
+     },
+     {
+      "t": 10835,
+      "double": false
+     }
+    ],
+    "errors": [],
+    "engine": "v2",
+    "seed": 7,
+    "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=7"
+   },
+   "no_seed": {
+    "src": "undefined",
+    "seeded": false,
+    "seedValue": null,
+    "blinks": [
+     {
+      "t": 1972,
+      "double": false
+     },
+     {
+      "t": 5917,
+      "double": false
+     },
+     {
+      "t": 9901,
+      "double": false
+     }
+    ],
+    "errors": [],
+    "engine": "v2",
+    "seed": null,
+    "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0"
+   }
+  },
+  "v1": {
+   "seed_20260928_run1": {
+    "src": "object",
+    "seeded": true,
+    "seedValue": 20260928,
+    "blinks": [
+     {
+      "t": 3434,
+      "double": false
+     },
+     {
+      "t": 6864,
+      "double": false
+     },
+     {
+      "t": 9413,
+      "double": false
+     }
+    ],
+    "errors": [],
+    "engine": "v1",
+    "seed": 20260928,
+    "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v1&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928"
+   },
+   "seed_20260928_run2": {
+    "src": "object",
+    "seeded": true,
+    "seedValue": 20260928,
+    "blinks": [
+     {
+      "t": 3428,
+      "double": false
+     },
+     {
+      "t": 6858,
+      "double": false
+     },
+     {
+      "t": 9407,
+      "double": false
+     }
+    ],
+    "errors": [],
+    "engine": "v1",
+    "seed": 20260928,
+    "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v1&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928"
+   },
+   "seed_7": {
+    "src": "object",
+    "seeded": true,
+    "seedValue": 7,
+    "blinks": [
+     {
+      "t": 1194,
+      "double": true
+     },
+     {
+      "t": 1395,
+      "double": false
+     },
+     {
+      "t": 5339,
+      "double": false
+     },
+     {
+      "t": 8391,
+      "double": false
+     },
+     {
+      "t": 11311,
+      "double": false
+     }
+    ],
+    "errors": [],
+    "engine": "v1",
+    "seed": 7,
+    "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v1&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=7"
+   },
+   "no_seed": {
+    "src": "undefined",
+    "seeded": false,
+    "seedValue": null,
+    "blinks": [
+     {
+      "t": 1344,
+      "double": false
+     },
+     {
+      "t": 3257,
+      "double": true
+     },
+     {
+      "t": 3458,
+      "double": false
+     },
+     {
+      "t": 6538,
+      "double": false
+     },
+     {
+      "t": 9388,
+      "double": false
+     },
+     {
+      "t": 11818,
+      "double": true
+     }
+    ],
+    "errors": [],
+    "engine": "v1",
+    "seed": null,
+    "url": "http://127.0.0.1:8080/sandbox/index.html?engine=v1&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0"
+   }
+  }
+ },
+ "pass": {
+  "v2": {
+   "same_seed_identical_gaps": true,
+   "different_seed_differs": true,
+   "no_seed_uses_math_random": true,
+   "seeded_flag_set": true,
+   "no_page_errors": true,
+   "enough_blinks": true
+  },
+  "v1": {
+   "same_seed_identical_gaps": true,
+   "different_seed_differs": true,
+   "no_seed_uses_math_random": true,
+   "seeded_flag_set": true,
+   "no_page_errors": true,
+   "enough_blinks": true
+  }
+ },
+ "pass_all": true
+}

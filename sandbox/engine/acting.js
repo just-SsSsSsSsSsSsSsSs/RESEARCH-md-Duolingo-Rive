@@ -20,6 +20,7 @@
  * Nothing here reads layout; only transform animations (compositor-only).
  */
 import { CinematicRig, randIn, clock } from './motion.js';
+import { blinkRng } from './rng.js';   // K9.5-1: the idle moving-hold scheduler also fires blinkDouble; when a recording is seeded it draws from the same source
 import { EASE, REDUCED } from '../rig.js?v=g4';
 
 const P = CinematicRig.prototype;
@@ -283,6 +284,38 @@ P.oops = function (tier = 'small') {
  * Puzzled: spiral gaze (pupils trace an outward spiral, radius spiralRadiusPx[0] -> [1] over spiralMs), dramatic head tilt
  * by tier, wing-to-chin, thought bubble (medium+), shrug (large); pupils re-centre within recentreMs at the end.
  */
+/**
+ * K9.5-2 (owner decision 2026-09-27, item a): the think state's OWN calm performance, from spec.acting.performances.think.
+ * Read from the G12 record (think 0/7 while the v2 state borrowed the puzzled spiral): eyes lead (gaze lifts up-and-away and
+ * HOLDS), head follows with a small tilt (<= 9 deg), optional wing to chin, one soft blink mid-hold, micro-drift so the hold
+ * is alive, then a clean settle. No spiral, no bubble, no shrug. Falls back to the legacy think() when the block is absent.
+ */
+P.ponder = function (tier = 'small') {
+  const K = this.perfSpec('think'); if (!K) return this.think();
+  if (this.busy) return Promise.resolve(false); this.busy = true;
+  const t = this._tierOf(K, tier);
+  this._lastPerf = { name: 'think', tier };
+  this.stats.performances = (this.stats.performances || 0) + 1;
+  this.cue('perf', { name: 'think', tier });
+  if (REDUCED) { this._reducedFace('mid', 1400); return this._sleep(1400); }
+  const [gx, gy] = K.gazePx, hold = randIn(K.holdMs), total = Math.min(K.totalMaxMs, K.liftMs + hold + K.settleMs);
+  const drift = K.driftPx, driftMs = K.driftMs / clock.rate;
+  this.setMouth('mid');
+  for (const p of ['pupilL', 'pupilR']) this.anim(this.j(p), [{ transform: 'translate(0,0)' }, { transform: `translate(${gx}px, ${gy}px)` }], { duration: K.liftMs, easing: EASE.soft, fill: 'forwards' }, true);   // eyes lead
+  this.later(() => this.anim(this.j('head'), [{ transform: 'rotate(0)' }, { transform: `rotate(${-t.headDeg}deg) translate(${(gx * 0.5).toFixed(1)}px, -1px)` }], { duration: K.liftMs, easing: EASE.soft, composite: 'add', fill: 'forwards' }, true), K.headFollowMs);   // head follows
+  if (t.wing) this.anim(this.j('armR'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-128deg) translate(2px,-14px)' }], { duration: 550, easing: EASE.pop, composite: 'add', fill: 'forwards', delay: K.headFollowMs + 120 }, true);
+  this.later(() => this.blink(false), K.blinkAtMs);                   // one soft blink mid-hold
+  this.later(() => {                                                  // micro-drift: the hold is alive, not frozen (<= driftPx, validated)
+    for (const [p, s] of [['pupilL', 1], ['pupilR', -1]]) this.anim(this.j(p), [{ transform: 'translate(0,0)' }, { transform: `translate(${(drift * s).toFixed(2)}px, ${(-drift * 0.5).toFixed(2)}px)` }, { transform: 'translate(0,0)' }], { duration: driftMs, easing: EASE.sine, composite: 'add', iterations: Math.max(1, Math.floor((hold - K.blinkAtMs) / K.driftMs)) });
+    this.cue('hold', { impulse: 'thinkDrift', joints: ['pupilL', 'pupilR'], ms: K.driftMs });
+  }, K.blinkAtMs + 150);
+  this._fx(t.vfx);
+  this.later(() => { this.release(/^(pupilL|pupilR|head|armR)$/); this.cue('recentre', { withinMs: K.settleMs }); }, K.liftMs + hold);   // clean settle
+  this.later(() => { this.setMouth('closed'); this.busy = false; this.cue('settle'); }, total);
+  this._lastPerf.plan = { liftMs: K.liftMs, holdMs: hold, settleMs: K.settleMs, totalMs: total, headDeg: t.headDeg, wing: !!t.wing };
+  return this._sleep(total).then(() => true);
+};
+
 P.puzzled = function (tier = 'small') {
   const Z = this.perfSpec('puzzled'); if (!Z) return this.think();
   if (this.busy) return Promise.resolve(false); this.busy = true;
@@ -327,7 +360,7 @@ P.startMovingHold = function () {
   const fire = (name) => {
     const im = M.impulses[name], now = performance.now();
     if (im.joints.some((j) => lastJoint[j] && now - lastJoint[j] < M.minGapSameJointMs)) return false;
-    const ms = im.ms / clock.rate, sgn = Math.random() < 0.5 ? -1 : 1;
+    const ms = im.ms / clock.rate, sgn = blinkRng.random() < 0.5 ? -1 : 1;   // K9.5-1: blinkRng == Math.random unless ?seed=
     if (name === 'blinkDouble') { this.blink(true); }
     else im.joints.forEach((j, k) => {
       const el = this.j(j); if (!el) return;
@@ -344,12 +377,12 @@ P.startMovingHold = function () {
     if (!this.busy && !this.flying) {
       // shuffled bag: every impulse name is used once before any repeats (declared budget: >= 3 distinct names in 20 s),
       // then the bag is reshuffled - random order, guaranteed variety (P4: no favourite tic)
-      if (!bag.length) bag = names.slice().sort(() => Math.random() - 0.5);
+      if (!bag.length) bag = names.slice().sort(() => blinkRng.random() - 0.5);
       for (let i = 0; i < bag.length; i++) { if (fire(bag[i])) { bag.splice(i, 1); break; } }
     }
-    this.later(tick, randIn(M.intervalMs));
+    this.later(tick, blinkRng.between(M.intervalMs[0], M.intervalMs[1]));
   };
-  this.later(tick, randIn(M.intervalMs));
+  this.later(tick, blinkRng.between(M.intervalMs[0], M.intervalMs[1]));
   return () => { on = false; };
 };
 
@@ -379,6 +412,11 @@ export function validateActing(spec) {
       if (!(O.jiggleDecay > 0 && O.jiggleDecay < 1)) problems.push(`${p}.jiggleDecay must be in (0,1)`);
       if (O.stretchScaleY && !(O.stretchScaleY[0] > 1)) problems.push(`${p}.stretchScaleY must stretch (> 1)`);
       tiers(O, p, (t, tp) => { if (!(Number.isInteger(t.jiggle) && t.jiggle >= 0)) problems.push(`${tp}.jiggle must be an integer >= 0`); }); }
+    if (Pf.think) { const K = Pf.think, p = 'acting.performances.think'; num(K, 'liftMs', p); num(K, 'headFollowMs', p); range(K, 'holdMs', p); num(K, 'driftPx', p); num(K, 'driftMs', p); num(K, 'blinkAtMs', p); num(K, 'settleMs', p); num(K, 'totalMaxMs', p);   // K9.5-2
+      if (!Array.isArray(K.gazePx) || K.gazePx.length !== 2 || !(Math.hypot(K.gazePx[0], K.gazePx[1]) + (K.driftPx || 0) <= 6)) problems.push(`${p}.gazePx must be [dx,dy] with |gaze| + driftPx <= 6 px (K9.5 budget: pupil max offset)`);
+      if (!(K.driftPx <= 2)) problems.push(`${p}.driftPx must be <= 2 (a hold, not a saccade)`);
+      if (Array.isArray(K.holdMs) && K.liftMs && K.settleMs && K.totalMaxMs && K.liftMs + K.holdMs[1] + K.settleMs > K.totalMaxMs + 500) problems.push(`${p}: liftMs + holdMs[1] + settleMs exceeds totalMaxMs by more than 500 ms`);
+      tiers(K, p, (t, tp) => { num(t, 'headDeg', tp); if (!(t.headDeg <= 9)) problems.push(`${tp}.headDeg must be <= 9 (K9.5 budget: calm think)`); if (typeof t.wing !== 'boolean') problems.push(`${tp}.wing must be a boolean`); vfxNames(t, tp); }); }
     if (Pf.puzzled) { const Z = Pf.puzzled, p = 'acting.performances.puzzled'; range(Z, 'spiralRadiusPx', p); num(Z, 'spiralMs', p); num(Z, 'spiralTurns', p); range(Z, 'holdMs', p); num(Z, 'recentreMs', p); num(Z, 'totalMaxMs', p);
       tiers(Z, p, (t, tp) => { num(t, 'headDeg', tp); vfxNames(t, tp); }); }
     if (Pf.movingHold && Pf.movingHold.enabled !== false) { const M = Pf.movingHold, p = 'acting.performances.movingHold'; range(M, 'intervalMs', p); num(M, 'maxMs', p); num(M, 'maxPx', p); num(M, 'maxDeg', p); num(M, 'minGapSameJointMs', p);

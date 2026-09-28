@@ -1,0 +1,198 @@
+{
+  "source": {
+    "file": "beak_closed.webp",
+    "size": [
+      137,
+      126
+    ],
+    "widest_row": 58
+  },
+  "plates": {
+    "beak_smile": {
+      "file": "beak_smile.webp",
+      "size": [
+        137,
+        126
+      ],
+      "mode": "RGBA",
+      "format": "WEBP",
+      "bytes": 14130,
+      "sha16": "b4e32f4f51f71b13",
+      "mean_abs_rgb_diff_vs_closed": 4.73,
+      "top_pinned_max_dev": 0,
+      "intermediate_alpha_px": 872,
+      "checks": {
+        "size_137x126": true,
+        "rgba": true,
+        "webp": true,
+        "distinct_from_closed": true,
+        "top_pinned_identical": true,
+        "soft_alpha_edge": true
+      }
+    },
+    "beak_sad": {
+      "file": "beak_sad.webp",
+      "size": [
+        137,
+        126
+      ],
+      "mode": "RGBA",
+      "format": "WEBP",
+      "bytes": 14730,
+      "sha16": "00dc737a77310600",
+      "mean_abs_rgb_diff_vs_closed": 4.78,
+      "top_pinned_max_dev": 0,
+      "intermediate_alpha_px": 1028,
+      "checks": {
+        "size_137x126": true,
+        "rgba": true,
+        "webp": true,
+        "distinct_from_closed": true,
+        "top_pinned_identical": true,
+        "soft_alpha_edge": true
+      }
+    }
+  },
+  "smile_vs_sad_mean_abs_diff": 15.89,
+  "checks": {
+    "smile_and_sad_distinct": true,
+    "parts_json_entries": true,
+    "author_tool_reproduces_committed_bytes": true,
+    "svg_smile_wired": true,
+    "svg_sad_wired": true,
+    "svg_closed_mid_open_unchanged": true,
+    "sw_precaches_plates": true,
+    "puzzled_function_unchanged": true,
+    "flight_js_unchanged_vs_main": true,
+    "live_five_shapes": true,
+    "live_hrefs_new_plates": true,
+    "no_page_errors": true
+  },
+  "author_check": "author_mouth_plates --check: up to date",
+  "puzzled_sha16": "c9b154b0ecc7e837",
+  "flight_js_diff_lines": 0,
+  "captured": "2026-09-28T00:20:50Z",
+  "url": "index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928",
+  "budgets": {
+    "plate_size": [
+      137,
+      126
+    ],
+    "render_diff_outside_mouth_pct_max": 2.0,
+    "render_diff_inside_mouth_pct_min": 3.0
+  },
+  "live": {
+    "shapes": [
+      "closed",
+      "mid",
+      "open",
+      "smile",
+      "sad"
+    ],
+    "hrefs": {
+      "closed": "art/parts/owl/beak_closed.webp",
+      "mid": "art/parts/owl/beak_open.webp",
+      "open": "art/parts/owl/beak_open.webp",
+      "smile": "art/parts/owl/beak_smile.webp",
+      "sad": "art/parts/owl/beak_sad.webp"
+    },
+    "mouthBox": {
+      "x": 94.68417358398438,
+      "y": 110.84393310546875,
+      "w": 30.424163818359375,
+      "h": 28.10137939453125
+    },
+    "svg": {
+      "w": 220,
+      "h": 264
+    }
+  },
+  "errors": [],
+  "render": {
+    "svg_px": [
+      440,
+      528
+    ],
+    "mouth_box_px": [
+      183,
+      215,
+      256,
+      283
+    ],
+    "shapes": {
+      "smile": {
+        "visible_groups": [
+          "smile"
+        ],
+        "diff_outside_mouth_pct": 0.601,
+        "diff_inside_mouth_pct": 7.96,
+        "checks": {
+          "exactly_one_group_visible": true,
+          "diff_confined_to_mouth": "True",
+          "diff_visible_inside_mouth": "True"
+        }
+      },
+      "sad": {
+        "visible_groups": [
+          "sad"
+        ],
+        "diff_outside_mouth_pct": 0.0,
+        "diff_inside_mouth_pct": 7.49,
+        "checks": {
+          "exactly_one_group_visible": true,
+          "diff_confined_to_mouth": "True",
+          "diff_visible_inside_mouth": "True"
+        }
+      },
+      "open": {
+        "visible_groups": [
+          "open"
+        ],
+        "diff_outside_mouth_pct": 0.147,
+        "diff_inside_mouth_pct": 40.95,
+        "checks": {
+          "exactly_one_group_visible": true,
+          "diff_confined_to_mouth": "True",
+          "diff_visible_inside_mouth": "True"
+        }
+      }
+    }
+  },
+  "sheet": "k95_plates_sheet.png",
+  "checks_flat": {
+    "smile_and_sad_distinct": true,
+    "parts_json_entries": true,
+    "author_tool_reproduces_committed_bytes": true,
+    "svg_smile_wired": true,
+    "svg_sad_wired": true,
+    "svg_closed_mid_open_unchanged": true,
+    "sw_precaches_plates": true,
+    "puzzled_function_unchanged": true,
+    "flight_js_unchanged_vs_main": true,
+    "live_five_shapes": true,
+    "live_hrefs_new_plates": true,
+    "no_page_errors": true,
+    "beak_smile.size_137x126": true,
+    "beak_smile.rgba": true,
+    "beak_smile.webp": true,
+    "beak_smile.distinct_from_closed": true,
+    "beak_smile.top_pinned_identical": true,
+    "beak_smile.soft_alpha_edge": true,
+    "beak_sad.size_137x126": true,
+    "beak_sad.rgba": true,
+    "beak_sad.webp": true,
+    "beak_sad.distinct_from_closed": true,
+    "beak_sad.top_pinned_identical": true,
+    "beak_sad.soft_alpha_edge": true,
+    "render.smile.exactly_one_group_visible": true,
+    "render.smile.diff_confined_to_mouth": "True",
+    "render.smile.diff_visible_inside_mouth": "True",
+    "render.sad.exactly_one_group_visible": true,
+    "render.sad.diff_confined_to_mouth": "True",
+    "render.sad.diff_visible_inside_mouth": "True",
+    "render.open.exactly_one_group_visible": true,
+    "render.open.diff_confined_to_mouth": "True",
+    "render.open.diff_visible_inside_mouth": "True"
+  },
+  "pass_all": true
+}

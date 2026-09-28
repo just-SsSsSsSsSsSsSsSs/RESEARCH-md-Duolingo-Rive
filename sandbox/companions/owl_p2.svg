@@ -21,8 +21,8 @@
         <g data-mouth="closed"><image href="art/parts/owl/beak_closed.webp" x="89.0" y="101.0" width="22.0" height="20.3" /></g>
         <g data-mouth="mid"><image href="art/parts/owl/beak_open.webp" x="89.0" y="101.0" width="22.1" height="25.5" /></g>
         <g data-mouth="open"><image href="art/parts/owl/beak_open.webp" x="88.0" y="101.0" width="24.0" height="27.7" /></g>
-        <g data-mouth="smile"><image href="art/parts/owl/beak_closed.webp" x="88.1" y="100.0" width="23.8" height="21.9" /></g>
-        <g data-mouth="sad"><image href="art/parts/owl/beak_closed.webp" x="89.5" y="103.0" width="20.9" height="19.2" /></g>
+        <g data-mouth="smile"><image href="art/parts/owl/beak_smile.webp" x="89.0" y="101.0" width="22.0" height="20.3" /></g>
+        <g data-mouth="sad"><image href="art/parts/owl/beak_sad.webp" x="89.0" y="101.0" width="22.0" height="20.3" /></g>
       </g>
     </g>
   </g>

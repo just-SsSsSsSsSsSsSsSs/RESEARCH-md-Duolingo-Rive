@@ -1,0 +1,401 @@
+{
+  "captured": "2026-09-28T00:02:41Z",
+  "url": "index.html?engine=v2&art=p2&n=1&auto=0&sw=0&hud=0&sfx=0&seed=20260928",
+  "spec_think": {
+    "comment": "K9.5-2 (owner decision 2026-09-27, item a): the think state gets its OWN calm performance instead of borrowing puzzled. Read from the G12 data (think 0/7 against a monotonic v1 gaze): fewer, slower, larger-legibility moves - eyes lead (gaze lifts up-and-away and HOLDS), head follows with a small tilt, wing to chin, one soft blink mid-hold, micro-drift so the hold is alive, then a clean settle. No spiral, no bubble, no shrug. puzzled stays untouched for confusion beats.",
+    "liftMs": 520,
+    "gazePx": [
+      3,
+      -4
+    ],
+    "headFollowMs": 90,
+    "holdMs": [
+      1100,
+      1500
+    ],
+    "driftPx": 0.8,
+    "driftMs": 900,
+    "blinkAtMs": 800,
+    "settleMs": 420,
+    "totalMaxMs": 3000,
+    "tiers": {
+      "small": {
+        "headDeg": 5,
+        "wing": false,
+        "vfx": []
+      },
+      "medium": {
+        "headDeg": 7,
+        "wing": true,
+        "vfx": []
+      },
+      "large": {
+        "headDeg": 9,
+        "wing": true,
+        "vfx": [
+          "question"
+        ]
+      }
+    }
+  },
+  "static": {
+    "puzzled_sha16": "c9b154b0ecc7e837",
+    "flight_js_diff_lines": 0,
+    "ponder_before_puzzled": true
+  },
+  "tiers": {
+    "small": {
+      "tier": "small",
+      "total_ms": 2363.2,
+      "head_max_deg": 4.98,
+      "head_authored_deg": 5,
+      "head_idle_overlay_deg": -0.02,
+      "pupil_max_px": 5.81,
+      "root_max_deg": 0,
+      "blink_cues_in_hold": 1,
+      "perf_blink_at_ms": [
+        802.0
+      ],
+      "idle_blinks_in_hold": 0,
+      "cue_order": [
+        "enter",
+        "perf",
+        "beat",
+        "blink",
+        "hold",
+        "beat",
+        "recentre",
+        "beat",
+        "settle",
+        "enter"
+      ],
+      "states": [
+        {
+          "to": "think",
+          "from": "idle",
+          "t": 0.8
+        },
+        {
+          "to": "idle",
+          "from": "think",
+          "t": 2608.5
+        }
+      ],
+      "final_state": "idle",
+      "plan": {
+        "liftMs": 520,
+        "holdMs": 1422.8763524476221,
+        "settleMs": 420,
+        "totalMs": 2362.876352447622,
+        "headDeg": 5,
+        "wing": false
+      },
+      "fx": [],
+      "samples": 168,
+      "checks": {
+        "perf_cue_is_think": true,
+        "no_spiral_cue": true,
+        "state_think_then_idle": true,
+        "total_ms_le_3000": true,
+        "head_le_9deg": true,
+        "head_authored_le_9deg": true,
+        "head_reaches_tier": true,
+        "pupil_le_6px": true,
+        "pupil_lifts": true,
+        "root_untouched": true,
+        "perf_blink_at_blinkAtMs": true,
+        "recentre_before_settle": true,
+        "fx_matches_tier": true
+      }
+    },
+    "medium": {
+      "tier": "medium",
+      "total_ms": 2347.1,
+      "head_max_deg": 7.99,
+      "head_authored_deg": 7,
+      "head_idle_overlay_deg": 0.99,
+      "pupil_max_px": 5.81,
+      "root_max_deg": 0,
+      "blink_cues_in_hold": 2,
+      "perf_blink_at_ms": [
+        801.5
+      ],
+      "idle_blinks_in_hold": 1,
+      "cue_order": [
+        "enter",
+        "perf",
+        "beat",
+        "blink",
+        "hold",
+        "beat",
+        "recentre",
+        "beat",
+        "blink",
+        "settle",
+        "enter"
+      ],
+      "states": [
+        {
+          "to": "think",
+          "from": "idle",
+          "t": 0.1
+        },
+        {
+          "to": "idle",
+          "from": "think",
+          "t": 2590.6
+        }
+      ],
+      "final_state": "idle",
+      "plan": {
+        "liftMs": 520,
+        "holdMs": 1406.117394056366,
+        "settleMs": 420,
+        "totalMs": 2346.117394056366,
+        "headDeg": 7,
+        "wing": true
+      },
+      "fx": [],
+      "samples": 167,
+      "checks": {
+        "perf_cue_is_think": true,
+        "no_spiral_cue": true,
+        "state_think_then_idle": true,
+        "total_ms_le_3000": true,
+        "head_le_9deg": true,
+        "head_authored_le_9deg": true,
+        "head_reaches_tier": true,
+        "pupil_le_6px": true,
+        "pupil_lifts": true,
+        "root_untouched": true,
+        "perf_blink_at_blinkAtMs": true,
+        "recentre_before_settle": true,
+        "fx_matches_tier": true
+      }
+    },
+    "large": {
+      "tier": "large",
+      "total_ms": 2092.1,
+      "head_max_deg": 8.64,
+      "head_authored_deg": 9,
+      "head_idle_overlay_deg": -0.36,
+      "pupil_max_px": 5.81,
+      "root_max_deg": 0,
+      "blink_cues_in_hold": 1,
+      "perf_blink_at_ms": [
+        801.4
+      ],
+      "idle_blinks_in_hold": 0,
+      "cue_order": [
+        "enter",
+        "perf",
+        "fx",
+        "beat",
+        "blink",
+        "hold",
+        "beat",
+        "recentre",
+        "settle",
+        "beat",
+        "enter"
+      ],
+      "states": [
+        {
+          "to": "think",
+          "from": "idle",
+          "t": 0.1
+        },
+        {
+          "to": "idle",
+          "from": "think",
+          "t": 2334.1
+        }
+      ],
+      "final_state": "idle",
+      "plan": {
+        "liftMs": 520,
+        "holdMs": 1151.977951743469,
+        "settleMs": 420,
+        "totalMs": 2091.977951743469,
+        "headDeg": 9,
+        "wing": true
+      },
+      "fx": [
+        "question"
+      ],
+      "samples": 151,
+      "checks": {
+        "perf_cue_is_think": true,
+        "no_spiral_cue": true,
+        "state_think_then_idle": true,
+        "total_ms_le_3000": true,
+        "head_le_9deg": true,
+        "head_authored_le_9deg": true,
+        "head_reaches_tier": true,
+        "pupil_le_6px": true,
+        "pupil_lifts": true,
+        "root_untouched": true,
+        "perf_blink_at_blinkAtMs": true,
+        "recentre_before_settle": true,
+        "fx_matches_tier": true
+      }
+    }
+  },
+  "errors": [],
+  "spec_check": {
+    "ok": true,
+    "problems": []
+  },
+  "resolved_clip": "ponder",
+  "reduced": {
+    "addedLayers": {
+      "root": 0,
+      "body": 0,
+      "head": 0,
+      "arm": 0
+    },
+    "ms": 1424,
+    "cues": [
+      "perf",
+      "blink",
+      "blink",
+      "settle"
+    ],
+    "matches": true
+  },
+  "perf_off": {
+    "perfSpecNull": true,
+    "busyDuring": true,
+    "cues": [
+      "enter",
+      "beat",
+      "beat",
+      "beat",
+      "flex",
+      "blink",
+      "beat",
+      "blink",
+      "beat",
+      "enter"
+    ],
+    "finalState": "idle",
+    "ms": 3794
+  },
+  "strip": {
+    "file": "k95_think_strip.png",
+    "rows": [
+      {
+        "tier": "small",
+        "frames": [
+          {
+            "label": "lift",
+            "captured_ms": 401.3
+          },
+          {
+            "label": "hold",
+            "captured_ms": 1002.5
+          },
+          {
+            "label": "settle",
+            "captured_ms": 1803.7
+          }
+        ]
+      },
+      {
+        "tier": "medium",
+        "frames": [
+          {
+            "label": "lift",
+            "captured_ms": 402.0
+          },
+          {
+            "label": "hold",
+            "captured_ms": 1001.7
+          },
+          {
+            "label": "settle",
+            "captured_ms": 1802.6
+          }
+        ]
+      },
+      {
+        "tier": "large",
+        "frames": [
+          {
+            "label": "lift",
+            "captured_ms": 400.9
+          },
+          {
+            "label": "hold",
+            "captured_ms": 1002.7
+          },
+          {
+            "label": "settle",
+            "captured_ms": 1802.0
+          }
+        ]
+      }
+    ]
+  },
+  "checks": {
+    "spec_validates_in_page": true,
+    "think_state_body_is_ponder": true,
+    "reduced_media_matches": true,
+    "reduced_adds_zero_body_layers": true,
+    "reduced_no_spiral": true,
+    "perf_off_falls_back_to_legacy_think": true,
+    "puzzled_function_unchanged": true,
+    "ponder_inserted_before_puzzled": true,
+    "flight_js_unchanged_vs_main": true,
+    "no_page_errors": true,
+    "small.perf_cue_is_think": true,
+    "small.no_spiral_cue": true,
+    "small.state_think_then_idle": true,
+    "small.total_ms_le_3000": true,
+    "small.head_le_9deg": true,
+    "small.head_authored_le_9deg": true,
+    "small.head_reaches_tier": true,
+    "small.pupil_le_6px": true,
+    "small.pupil_lifts": true,
+    "small.root_untouched": true,
+    "small.perf_blink_at_blinkAtMs": true,
+    "small.recentre_before_settle": true,
+    "small.fx_matches_tier": true,
+    "medium.perf_cue_is_think": true,
+    "medium.no_spiral_cue": true,
+    "medium.state_think_then_idle": true,
+    "medium.total_ms_le_3000": true,
+    "medium.head_le_9deg": true,
+    "medium.head_authored_le_9deg": true,
+    "medium.head_reaches_tier": true,
+    "medium.pupil_le_6px": true,
+    "medium.pupil_lifts": true,
+    "medium.root_untouched": true,
+    "medium.perf_blink_at_blinkAtMs": true,
+    "medium.recentre_before_settle": true,
+    "medium.fx_matches_tier": true,
+    "large.perf_cue_is_think": true,
+    "large.no_spiral_cue": true,
+    "large.state_think_then_idle": true,
+    "large.total_ms_le_3000": true,
+    "large.head_le_9deg": true,
+    "large.head_authored_le_9deg": true,
+    "large.head_reaches_tier": true,
+    "large.pupil_le_6px": true,
+    "large.pupil_lifts": true,
+    "large.root_untouched": true,
+    "large.perf_blink_at_blinkAtMs": true,
+    "large.recentre_before_settle": true,
+    "large.fx_matches_tier": true
+  },
+  "pass_all": true,
+  "budgets": {
+    "total_ms_max": 3000,
+    "head_deg_max": 9,
+    "pupil_px_max": 6,
+    "sampling_slack": {
+      "deg": 0.5,
+      "px": 0.5
+    }
+  }
+}

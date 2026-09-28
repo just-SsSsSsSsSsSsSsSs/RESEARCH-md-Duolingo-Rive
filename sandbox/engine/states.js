@@ -22,7 +22,10 @@ const CLIPS = {
     breathe: noop,                          // idle loop already runs in rig.idle()
     wave: (rig) => rig.nod(),
     bob: noop,                              // talk() drives the head spring itself
-    ponder: (rig) => (rig.puzzled && rig.perfSpec && rig.perfSpec('puzzled')) ? rig.puzzled(rig.escalate('puzzled')) : rig.think(),
+    // K9.5-2 (owner decision 2026-09-27, item a): think has its own calm performance (acting.performances.think). Until this
+    // commit ponder borrowed the puzzled spiral - the G12 record (think 0/7) measured that borrow. puzzled itself is untouched
+    // and no state names it today; ?perf=0 or a missing spec block falls back to the legacy think().
+    ponder: (rig) => (rig.ponder && rig.perfSpec && rig.perfSpec('think')) ? rig.ponder(rig.escalate('think')) : rig.think(),
     jumpJoy: (rig) => (rig.triumph && rig.perfSpec && rig.perfSpec('triumph')) ? rig.triumph(rig.escalate('triumph')) : rig.celebrate(),   // K9.4: escalating performance, ?perf=0 -> legacy clip
     recoil: (rig) => (rig.oops && rig.perfSpec && rig.perfSpec('oops')) ? rig.oops(rig.escalate('oops')) : rig.sad(),
     flight: (rig, ctx) => {

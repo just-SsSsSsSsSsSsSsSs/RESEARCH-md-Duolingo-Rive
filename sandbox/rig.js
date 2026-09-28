@@ -44,6 +44,10 @@ export const EASE = {
 };
 
 const rand = (a, b) => a + Math.random() * (b - a);
+// K9.5-1: the blink scheduler alone draws from an injectable source so a recording can be seeded (owner decision
+// 2026-09-27, item b). rig.js keeps its zero-import rule: index.html sets window.__blinkRng (engine/rng.js) when the
+// URL carries ?seed=; without it this is Math.random exactly as before.
+const blinkRandom = () => (typeof window !== 'undefined' && window.__blinkRng ? window.__blinkRng.random() : Math.random());
 
 // Constitution section 5: decorative motion respects prefers-reduced-motion.
 // In reduced mode: breath/blink stay (subtle), flight/rolls/dizzy are replaced by a short fade-nudge.
@@ -144,9 +148,9 @@ export class SvgRig {
   scheduleBlink() {
     this.later(() => {
       if (this.disposed) return;
-      this.blink(Math.random() < 0.2);
+      this.blink(blinkRandom() < 0.2);
       this.scheduleBlink();
-    }, rand(1800, 4200));
+    }, 1800 + blinkRandom() * (4200 - 1800));
   }
 
   // pupils drift together; head follows a little (overlapping action)

@@ -1,0 +1,46 @@
+{
+ "kit": "2026-09-27T17:27:58Z",
+ "rater": "كارما",
+ "seed": 20260928,
+ "order_sha256": "8c83cf040514b75998cf5325a3aaabf1a22af979c996fe4e5a003d64fd26359b",
+ "n": 4,
+ "v2_chosen": 2,
+ "v1_chosen": 2,
+ "binomial_two_sided_p": 1,
+ "answers": [
+  {
+   "trial": 1,
+   "beat": "think",
+   "chosen": "v1",
+   "ms": 78754,
+   "replays": 1
+  },
+  {
+   "trial": 2,
+   "beat": "celebrate",
+   "chosen": "v2",
+   "ms": 2764,
+   "replays": 0
+  },
+  {
+   "trial": 3,
+   "beat": "flight",
+   "chosen": "v2",
+   "ms": 2161,
+   "replays": 0
+  },
+  {
+   "trial": 4,
+   "beat": "sad",
+   "chosen": "v1",
+   "ms": 3411,
+   "replays": 0
+  }
+ ],
+ "_record": {
+  "source": "gist a402871de4d1a2438cdea66e07fc0761 revision 0c05fdfc (2026-09-27T20:52:20Z), pasted verbatim by the owner from the LIVE kit v2 page",
+  "kit": "v2 (2026-09-27T17:27:58Z, seed 20260928)",
+  "recorded_at_resume_check": "#77",
+  "verdict_alone": "INSUFFICIENT - 1 session, 4 trials; third NAMED kit-v2 rater (the one the owner directive names)"
+ }
+}
