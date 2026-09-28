@@ -412,7 +412,45 @@ export function validateActing(spec) {
       if (!(O.jiggleDecay > 0 && O.jiggleDecay < 1)) problems.push(`${p}.jiggleDecay must be in (0,1)`);
       if (O.stretchScaleY && !(O.stretchScaleY[0] > 1)) problems.push(`${p}.stretchScaleY must stretch (> 1)`);
       tiers(O, p, (t, tp) => { if (!(Number.isInteger(t.jiggle) && t.jiggle >= 0)) problems.push(`${tp}.jiggle must be an integer >= 0`); }); }
-    if (Pf.think) { const K = Pf.think, p = 'acting.performances.think'; num(K, 'liftMs', p); num(K, 'headFollowMs', p); range(K, 'holdMs', p); num(K, 'driftPx', p); num(K, 'driftMs', p); num(K, 'blinkAtMs', p); num(K, 'settleMs', p); num(K, 'totalMaxMs', p);   // K9.5-2
+    // K9.6-2 choreo schema (owner decision a3e73842 'carry the winner'): a performance may carry `choreo` = the v1 rig
+    // choreography as data. Rules: joints must exist in the rig (JOINTS), easing must be an EASE name or 'linear',
+    // ms > 0, iterations integer >= 1, composite add|replace, fill forwards requires keep true, atMs/delayMs >= 0,
+    // channel end <= totalMs, events sorted by atMs with one action each, mouth shapes known, totalMs <= 4000.
+    const JOINTS = ['root', 'body', 'head', 'armL', 'armR', 'legL', 'legR', 'pupilL', 'pupilR', 'lidL', 'lidR', 'browL', 'browR', 'eyeL', 'eyeR', 'mouth', 'shadow'];
+    const MOUTHS = ['closed', 'mid', 'open', 'smile', 'sad'];
+    const EASINGS = ['soft', 'inOut', 'pop', 'land', 'sine', 'linear'];   // = Object.keys(EASE) + 'linear'; listed here so validateActing stays self-contained (tests lift it as text)
+    const choreo = (C, p) => {
+      if (!C || typeof C !== 'object') return problems.push(`${p} must be an object`);
+      if (!(typeof C.totalMs === 'number' && C.totalMs > 0 && C.totalMs <= 4000)) problems.push(`${p}.totalMs must be in (0, 4000]`);
+      if (!Array.isArray(C.channels) || !C.channels.length) problems.push(`${p}.channels must be a non-empty list`);
+      else C.channels.forEach((c, i) => { const cp = `${p}.channels[${c.id || i}]`;
+        if (!Array.isArray(c.joints) || !c.joints.length || c.joints.some((jn) => !JOINTS.includes(jn))) problems.push(`${cp}.joints must name rig joints (${JOINTS.join('|')})`);
+        if (!Array.isArray(c.keyframes) || c.keyframes.length < 2 || c.keyframes.some((k) => typeof k.transform !== 'string' || (k.offset !== undefined && !(k.offset >= 0 && k.offset <= 1)))) problems.push(`${cp}.keyframes must be >= 2 frames of {transform, offset?}`);
+        if (!(typeof c.ms === 'number' && c.ms > 0)) problems.push(`${cp}.ms must be > 0`);
+        if (!EASINGS.includes(c.easing)) problems.push(`${cp}.easing must be one of ${EASINGS.join('|')}`);
+        if (c.iterations !== undefined && !(Number.isInteger(c.iterations) && c.iterations >= 1)) problems.push(`${cp}.iterations must be an integer >= 1`);
+        if (c.composite !== undefined && !['add', 'replace'].includes(c.composite)) problems.push(`${cp}.composite must be add | replace`);
+        if (c.fill === 'forwards' && c.keep !== true) problems.push(`${cp}: fill forwards requires keep true (a held layer must be releasable)`);
+        for (const k of ['atMs', 'delayMs']) if (c[k] !== undefined && !(typeof c[k] === 'number' && c[k] >= 0)) problems.push(`${cp}.${k} must be >= 0`);
+        const end = (c.atMs || 0) + (c.delayMs || 0) + c.ms * (c.iterations || 1);
+        if (C.totalMs && end > C.totalMs + 0.5) problems.push(`${cp} ends at ${end} ms > totalMs ${C.totalMs}`); });
+      if (!Array.isArray(C.events)) problems.push(`${p}.events must be a list`);
+      else { let last = -1; C.events.forEach((e, i) => { const ep = `${p}.events[${i}]`;
+        if (!(typeof e.atMs === 'number' && e.atMs >= 0 && e.atMs <= (C.totalMs || Infinity))) problems.push(`${ep}.atMs must be in [0, totalMs]`);
+        if (e.atMs < last) problems.push(`${ep} out of order (events must be sorted by atMs)`); last = e.atMs;
+        const acts = ['mouth', 'blink', 'release', 'cue'].filter((k) => e[k] !== undefined);
+        if (acts.length !== 1) problems.push(`${ep} must carry exactly one action (mouth | blink | release | cue)`);
+        if (e.mouth !== undefined && !MOUTHS.includes(e.mouth)) problems.push(`${ep}.mouth must be ${MOUTHS.join('|')}`);
+        if (e.blink !== undefined && typeof e.blink !== 'boolean') problems.push(`${ep}.blink must be a boolean (double)`);
+        if (e.release !== undefined && (!Array.isArray(e.release) || e.release.some((jn) => !JOINTS.includes(jn)))) problems.push(`${ep}.release must list rig joints`);
+        if (e.cue !== undefined && typeof e.cue !== 'string') problems.push(`${ep}.cue must be a string`); });
+        const closes = C.events.filter((e) => e.mouth === 'closed' && e.atMs === C.totalMs).length;
+        if (closes !== 1) problems.push(`${p}.events must end with exactly one {atMs: totalMs, mouth: 'closed'} (clean end state)`); }
+      if (C.reduced) { const R = C.reduced, rp = `${p}.reduced`; if (!MOUTHS.includes(R.mouth)) problems.push(`${rp}.mouth must be ${MOUTHS.join('|')}`); if (R.blinkDouble !== undefined && typeof R.blinkDouble !== 'boolean') problems.push(`${rp}.blinkDouble must be a boolean`); if (!(typeof R.closeAtMs === 'number' && R.closeAtMs > 0 && R.closeAtMs <= C.totalMs)) problems.push(`${rp}.closeAtMs must be in (0, totalMs]`); }
+    };
+    for (const name of Object.keys(Pf)) if (Pf[name] && Pf[name].choreo && name !== 'think') choreo(Pf[name].choreo, `acting.performances.${name}.choreo`);   // any performance may carry choreo (K9.6-5 sad)
+    if (Pf.think && Pf.think.choreo) { choreo(Pf.think.choreo, 'acting.performances.think.choreo'); tiers(Pf.think, 'acting.performances.think', (t, tp) => vfxNames(t, tp)); }
+    else if (Pf.think) { const K = Pf.think, p = 'acting.performances.think'; num(K, 'liftMs', p); num(K, 'headFollowMs', p); range(K, 'holdMs', p); num(K, 'driftPx', p); num(K, 'driftMs', p); num(K, 'blinkAtMs', p); num(K, 'settleMs', p); num(K, 'totalMaxMs', p);   // K9.5-2
       if (!Array.isArray(K.gazePx) || K.gazePx.length !== 2 || !(Math.hypot(K.gazePx[0], K.gazePx[1]) + (K.driftPx || 0) <= 6)) problems.push(`${p}.gazePx must be [dx,dy] with |gaze| + driftPx <= 6 px (K9.5 budget: pupil max offset)`);
       if (!(K.driftPx <= 2)) problems.push(`${p}.driftPx must be <= 2 (a hold, not a saccade)`);
       if (Array.isArray(K.holdMs) && K.liftMs && K.settleMs && K.totalMaxMs && K.liftMs + K.holdMs[1] + K.settleMs > K.totalMaxMs + 500) problems.push(`${p}: liftMs + holdMs[1] + settleMs exceeds totalMaxMs by more than 500 ms`);

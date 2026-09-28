@@ -800,12 +800,254 @@
         "jiggleAmpScale": 0.06
       },
       "think": {
-        "comment": "K9.5-2 (owner decision 2026-09-27, item a): the think state gets its OWN calm performance instead of borrowing puzzled. Read from the G12 data (think 0/7 against a monotonic v1 gaze): fewer, slower, larger-legibility moves - eyes lead (gaze lifts up-and-away and HOLDS), head follows with a small tilt, wing to chin, one soft blink mid-hold, micro-drift so the hold is alive, then a clean settle. No spiral, no bubble, no shrug. puzzled stays untouched for confusion beats.",
+        "comment": "K9.6-2 (owner decision a3e73842 + confirmations cf3d3a8a/0b1f96bc, 'carry the winner'): the think beat plays the v1 rig think() choreography verbatim as DATA - the design that won G12 10/10 against three different v2 think designs (0/10). Every channel and time is copied from rig.js 390-422 (docs/V1_CHOREOGRAPHY.md section 1). Tiers are identical on purpose: the owner asked for the whole story; escalation adds nothing here. Played by acting.js P.perform via the choreo schema; the K9.5-2 calm design is kept as think_calm_k95 (not routed) for the record.",
+        "choreo": {
+          "totalMs": 3500,
+          "reduced": {
+            "mouth": "mid",
+            "blinkDouble": true,
+            "closeAtMs": 1400
+          },
+          "channels": [
+            {
+              "id": "T1",
+              "joints": [
+                "pupilL",
+                "pupilR"
+              ],
+              "keyframes": [
+                {
+                  "transform": "translate(0,0)"
+                },
+                {
+                  "transform": "translate(0,-5px)",
+                  "offset": 0.2
+                },
+                {
+                  "transform": "translate(-5px,-3px)",
+                  "offset": 0.45
+                },
+                {
+                  "transform": "translate(5px,-3px)",
+                  "offset": 0.7
+                },
+                {
+                  "transform": "translate(3px,-4px)",
+                  "offset": 1
+                }
+              ],
+              "ms": 1500,
+              "easing": "soft",
+              "fill": "forwards",
+              "keep": true
+            },
+            {
+              "id": "T2",
+              "joints": [
+                "head"
+              ],
+              "keyframes": [
+                {
+                  "transform": "rotate(0)"
+                },
+                {
+                  "transform": "rotate(9deg) translate(3px,-2px)"
+                }
+              ],
+              "ms": 700,
+              "easing": "soft",
+              "composite": "add",
+              "fill": "forwards",
+              "keep": true
+            },
+            {
+              "id": "T3",
+              "joints": [
+                "armR"
+              ],
+              "keyframes": [
+                {
+                  "transform": "rotate(0)"
+                },
+                {
+                  "transform": "rotate(-128deg) translate(2px,-14px)"
+                }
+              ],
+              "ms": 550,
+              "delayMs": 200,
+              "easing": "pop",
+              "composite": "add",
+              "fill": "forwards",
+              "keep": true
+            },
+            {
+              "id": "T4",
+              "joints": [
+                "armR"
+              ],
+              "keyframes": [
+                {
+                  "transform": "translate(0,0)"
+                },
+                {
+                  "transform": "translate(0,-3px)"
+                },
+                {
+                  "transform": "translate(0,0)"
+                }
+              ],
+              "ms": 380,
+              "delayMs": 800,
+              "iterations": 4,
+              "easing": "sine",
+              "composite": "add"
+            },
+            {
+              "id": "T5",
+              "joints": [
+                "legL"
+              ],
+              "keyframes": [
+                {
+                  "transform": "translateY(0)"
+                },
+                {
+                  "transform": "translateY(-3px) rotate(-6deg)"
+                },
+                {
+                  "transform": "translateY(0)"
+                }
+              ],
+              "ms": 340,
+              "delayMs": 700,
+              "iterations": 5,
+              "easing": "sine",
+              "composite": "add"
+            },
+            {
+              "id": "T6",
+              "joints": [
+                "head"
+              ],
+              "atMs": 2600,
+              "keyframes": [
+                {
+                  "transform": "translateY(0) scale(1)"
+                },
+                {
+                  "transform": "translateY(-6px) scale(1.06)"
+                },
+                {
+                  "transform": "translateY(0) scale(1)"
+                }
+              ],
+              "ms": 450,
+              "easing": "pop",
+              "composite": "add"
+            },
+            {
+              "id": "T7",
+              "joints": [
+                "pupilL",
+                "pupilR"
+              ],
+              "atMs": 2600,
+              "keyframes": [
+                {
+                  "transform": "scale(1)"
+                },
+                {
+                  "transform": "scale(1.3)"
+                },
+                {
+                  "transform": "scale(1)"
+                }
+              ],
+              "ms": 500,
+              "easing": "pop",
+              "composite": "add"
+            },
+            {
+              "id": "T8",
+              "joints": [
+                "armR"
+              ],
+              "atMs": 2600,
+              "keyframes": [
+                {
+                  "transform": "rotate(0)"
+                },
+                {
+                  "transform": "rotate(-140deg)"
+                },
+                {
+                  "transform": "rotate(0)"
+                }
+              ],
+              "ms": 700,
+              "easing": "pop",
+              "composite": "add"
+            }
+          ],
+          "events": [
+            {
+              "atMs": 0,
+              "mouth": "mid"
+            },
+            {
+              "atMs": 900,
+              "mouth": "closed"
+            },
+            {
+              "atMs": 1500,
+              "mouth": "mid"
+            },
+            {
+              "atMs": 2600,
+              "release": [
+                "pupilL",
+                "pupilR",
+                "head",
+                "armR"
+              ]
+            },
+            {
+              "atMs": 2600,
+              "mouth": "open"
+            },
+            {
+              "atMs": 2600,
+              "blink": false
+            },
+            {
+              "atMs": 2900,
+              "mouth": "smile"
+            },
+            {
+              "atMs": 3500,
+              "mouth": "closed"
+            }
+          ]
+        },
+        "tiers": {
+          "small": {
+            "vfx": []
+          },
+          "medium": {
+            "vfx": []
+          },
+          "large": {
+            "vfx": []
+          }
+        }
+      },
+      "think_calm_k95": {
+        "comment": "RECORD ONLY (not routed since K9.6-2): the K9.5-2 calm ponder design that scored G12 0/3 on kit v3. K9.5-2 (owner decision 2026-09-27, item a): the think state gets its OWN calm performance instead of borrowing puzzled. Read from the G12 data (think 0/7 against a monotonic v1 gaze): fewer, slower, larger-legibility moves - eyes lead (gaze lifts up-and-away and HOLDS), head follows with a small tilt, wing to chin, one soft blink mid-hold, micro-drift so the hold is alive, then a clean settle. No spiral, no bubble, no shrug. puzzled stays untouched for confusion beats.",
         "liftMs": 520,
         "gazePx": [
-        3,
-        -4
-      ],
+          3,
+          -4
+        ],
         "headFollowMs": 90,
         "holdMs": [
           1100,
