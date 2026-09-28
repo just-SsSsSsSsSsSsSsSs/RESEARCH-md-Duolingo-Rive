@@ -36,11 +36,17 @@ BASE = os.environ.get('SANDBOX_BASE', 'http://127.0.0.1:8080/sandbox/')
 CLIP_MS = 10000
 IDLE_MS = 1200          # idle first: breathing, blink, saccades are part of "alive"
 SECOND_BEAT_MS = 5500   # a second beat so a 10 s clip is not 60 % idle
-BEATS = ['celebrate', 'flight', 'think', 'sad']
-KIT_VERSION = 3   # v1 (seed 20260927) ran puzzled('large') in the think clip; v2 ran the real think state, which then RESOLVED to the puzzled
+KIT_VERSION = 4   # v4 (K9.6-6, owner decision gist 0b1f96bc): beats think + sad ONLY (celebrate / flight were decided 10/10 on kit v1-v3 and are
+                  # not re-tested); v2 = the v1 choreography carried as data (perform('think') / perform('sad')); scoring_mode 'tie' (score_core.js);
+                  # 2 trials per beat per rater (4 per session, 12 from 3 raters, 16 with a 4th); v1 clips reused byte-identical from kit v3.
+                  # v3 notes follow:
+BEATS = ['think', 'sad'] if KIT_VERSION >= 4 else ['celebrate', 'flight', 'think', 'sad']
+TRIALS_PER_BEAT = 2 if KIT_VERSION >= 4 else 1
+SCORING_MODE = 'tie' if KIT_VERSION >= 4 else 'win'
+KIT_VERSION_NOTE_V3 = 3   # v1 (seed 20260927) ran puzzled('large') in the think clip; v2 ran the real think state, which then RESOLVED to the puzzled
                   # performance (labelling defect, DIRECTIVES #81); v3 (owner decision 2026-09-27) = v2 protocol + answer buttons locked until
                   # second_beat_ms, blink seeded on the recording URL, per-clip label names the RESOLVED clip, v2 think/sad re-recorded
-SEED = int(os.environ.get('WATCH_SEED', '20260929'))
+SEED = int(os.environ.get('WATCH_SEED', '20260930' if KIT_VERSION >= 4 else '20260929'))   # a new seed per kit version: the order key must differ
 BLINK_SEED = int(os.environ.get('BLINK_SEED', '20260928'))   # K9.5-1: ?seed= pins the blink scheduler on both arms (pinned at recording time only)
 MAX_KIT_MB = 12.0
 MAX_CLIP_S = 10.5   # declared in PROGRESS K9.6 RESEARCH before the first run
@@ -50,20 +56,20 @@ RUN = {
     'flight': "() => { const r = window.__rigs[0]; if (r.states) { r._forcedRoll = 'large'; r.states.fire('move:to', { by: { dx: 240, dy: -140 } }); } else if (r.flyBy) r.flyBy(240, -140); }",
     'flight_home': "() => { const r = window.__rigs[0]; if (r.states) r.states.fire('move:to', { home: true, target: null }); else if (r.flyBy) r.flyBy(-240, 140); }",
     'think': "() => { const r = window.__rigs[0]; if (r.states) r.states.fire('answer:pending'); else r.think(); }",
-    'sad': "() => { const r = window.__rigs[0]; if (r.oops && r.perfSpec && r.perfSpec('oops')) r.oops('large'); else r.sad(); }",
+    'sad': "() => { const r = window.__rigs[0]; if (r.states) r.states.fire('answer:wrong'); else r.sad(); }",   # kit v4: the real state route (CLIPS.body.recoil -> perform('sad')); kit v3 called oops('large') directly
 }
 READY = "window.__rigs && window.__rigs[0] && !window.__rigs[0].busy"
 # Rule line (gist rev b693458e): every clip states exactly which state it runs; shown in the kit, manifest and README.
 STATES_PER_CLIP = {
     'celebrate': {'v2': "triumph('large') performance (falls back to celebrate())", 'v1': 'celebrate()'},
     'flight': {'v2': "states.fire('move:to', by dx 240 dy -140) then move:to home", 'v1': 'flyBy(240, -140) then flyBy back'},
-    'think': {'v2': "states.fire('answer:pending') -> state think -> RESOLVED clip body.ponder = rig.ponder(escalate) = the K9.5-2 calm think performance (spec acting.performances.think; eyes lift and hold, head tilt 5/7/9 deg, wing to chin, one blink, settle; no spiral); mouth mid; vfx off (sfx=0)", 'v1': 'think() (gaze roll 1.5 s, head +9 deg, wing to chin)'},
-    'sad': {'v2': "oops('large') performance (falls back to sad()) -> mouth plate beak_sad.webp (K9.5-3 authored art)", 'v1': 'sad() -> mouth plate beak_sad.webp (same art on both arms since K9.5-3)'},
+    'think': {'v2': "states.fire('answer:pending') -> state think -> RESOLVED clip body.ponder = rig.ponder -> rig.perform('think') = the v1 think() choreography played from acting.performances.think.choreo (K9.6-2/3: T1-T8, 3500 ms, aha at 2600, mouth mid/closed/mid/open/smile/closed); vfx off (sfx=0)", 'v1': 'think() (gaze roll 1.5 s, head +9 deg, wing to chin)'},
+    'sad': {'v2': "states.fire('answer:wrong') -> state wrong -> RESOLVED clip body.recoil = rig.perform('sad') = the v1 sad() choreography played from acting.performances.sad.choreo (K9.6-5: S1-S8, 2500 ms, mouth open/sad/smile/closed, plate beak_sad.webp); vfx off (sfx=0)", 'v1': 'sad() -> mouth plate beak_sad.webp (same art on both arms since K9.5-3)'},
 }
 # kit v3 rule: the label above names the clip the state RESOLVES to, checked live at recording time (manifest.resolved_clips)
 RESOLVE = {
-    'think': "() => { const r = window.__rigs[0]; if (!r.states) return 'v1 think()'; const st = r.spec.states.list.think; return 'state think -> body ' + st.body + ' -> ' + ((r.ponder && r.perfSpec && r.perfSpec('think')) ? 'rig.ponder (acting.performances.think)' : 'rig.think() legacy'); }",
-    'sad': "() => { const r = window.__rigs[0]; const m = r.mouthShapes && r.mouthShapes.sad && r.mouthShapes.sad.querySelector('image'); return ((r.oops && r.perfSpec && r.perfSpec('oops')) ? 'oops(large)' : 'sad()') + ' -> sad plate ' + (m ? m.getAttribute('href').split('/').pop() : 'none'); }",
+    'think': "() => { const r = window.__rigs[0]; if (!r.states) return 'v1 think()'; const st = r.spec.states.list.think; const K = r.perfSpec && r.perfSpec('think'); return 'state think -> body ' + st.body + ' -> ' + (K && K.choreo ? 'rig.perform(think) choreo ' + K.choreo.channels.length + ' channels ' + K.choreo.totalMs + ' ms' : K ? 'rig.ponder (acting.performances.think)' : 'rig.think() legacy'); }",
+    'sad': "() => { const r = window.__rigs[0]; const m = r.mouthShapes && r.mouthShapes.sad && r.mouthShapes.sad.querySelector('image'); const S = r.perfSpec && r.perfSpec('sad'); const st = r.states && r.spec.states.list.wrong; return (r.states ? 'state wrong -> body ' + st.body + ' -> ' : '') + (S && S.choreo ? 'rig.perform(sad) choreo ' + S.choreo.channels.length + ' channels ' + S.choreo.totalMs + ' ms' : (r.oops && r.perfSpec && r.perfSpec('oops')) ? 'oops(large)' : 'sad()') + ' -> sad plate ' + (m ? m.getAttribute('href').split('/').pop() : 'none'); }",
     'celebrate': "() => { const r = window.__rigs[0]; return (r.triumph && r.perfSpec && r.perfSpec('triumph')) ? 'triumph(large)' : 'celebrate()'; }",
     'flight': "() => { const r = window.__rigs[0]; return r.states ? 'states move:to (flight.js)' : 'flyBy'; }",
 }
@@ -222,7 +228,7 @@ def write_readme(manifest):
     order = manifest['order']
     clips = '\n'.join(f'| {k} | {manifest["bytes"][k]} | {manifest["sha256"][k][:16]} | {manifest["duration_s"][k] if isinstance(manifest["duration_s"], dict) else "-"} |' for k in manifest['clips'])
     thr = '\n'.join(f'| {n} | {min_wins(n)}/{n} | {binom_two_sided(min_wins(n), n):.4f} | {n - min_wins(n)}/{n} gives the SAME p and is a LOSS |' for n in (12, 16, 20))
-    readme = f"""# Watch kit G12 (K9.6-2) - generated {manifest['generated_at']} by sandbox/watch_kit.py
+    readme = f"""# Watch kit G12 (kit v{manifest.get('kit_version', 1)}) - generated {manifest['generated_at']} by sandbox/watch_kit.py
 
 Open `index.html` from a local copy of this folder (no server, no network, 0 external resources).
 {len(order)} trials per rater; each trial shows the same beat on two engines side by side in a pre-shuffled left/right
@@ -230,8 +236,7 @@ order (seed {SEED}; sha256 of the order `{manifest['order_sha256']}`). One force
 (2AFC). Replay at most 2. The key is revealed after the last trial. The rater copies the JSON result block back.
 
 Read-out: count for v2 out of n and the exact two-sided binomial p. Examples (k/n: p): {json.dumps(manifest['readout_examples_p'])}
-Claim rule declared here: v2 "reads alive" only if two-sided p <= 0.05 AND v2_chosen > n/2 (v2 in the UPPER tail),
-over >= 12 trials from >= 3 named raters; anything else is reported as no evidence (FAIL / INSUFFICIENT).
+{('Claim rule declared here (kit v4, scoring_mode tie - owner decision gist 0b1f96bc, frozen in DIRECTIVES.md before recording): FAIL iff any beat has v2 below its floor (1 of its trials; 2 when the beat has >= 8 trials, i.e. a 4th named rater) OR two-sided p <= 0.05 with v2 < n/2 (a significant loss); PASS otherwise as a perceived tie, and on an outright win (>= 10/12, 13/16); over >= 12 trials from >= 3 named raters. Exact false-FAIL for a perfect port: 3.98 pct at 12 trials, 6.91 pct at 16. The primary proof of the port is automatic (samples/proofs/k96_think.json, k96_sad.json: every channel within 16.7 ms); this kit is the perceptual sanity check.') if manifest.get('scoring_mode') == 'tie' else 'Claim rule declared here: v2 "reads alive" only if two-sided p <= 0.05 AND v2_chosen > n/2 (v2 in the UPPER tail), over >= 12 trials from >= 3 named raters; anything else is reported as no evidence (FAIL / INSUFFICIENT).'}
 Direction matters (owner audit, gist rev d33eaf03): the two-sided p is symmetric, so 10/12 and 2/12 both give
 0.0386 and 0/12 gives 0.0005 - a small p with v2 losing is a LOSS, never a pass. Score with `score.html`
 (offline, next to this file) or `node sandbox/tests/g12_score.mjs`; never by reading p alone.
@@ -263,7 +268,7 @@ async def main():
     from playwright.async_api import async_playwright
     os.makedirs(OUT, exist_ok=True)
     manifest = {'generated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'kit_version': KIT_VERSION, 'seed': SEED, 'clip_ms': CLIP_MS, 'idle_ms': IDLE_MS, 'second_beat_ms': SECOND_BEAT_MS,
-                'answer_lock_ms': SECOND_BEAT_MS, 'blink_seed': BLINK_SEED, 'resolved_clips': {}, 'recording_urls': {}, 'blink_seeded': {},
+                'answer_lock_ms': SECOND_BEAT_MS, 'blink_seed': BLINK_SEED, 'resolved_clips': {}, 'recording_urls': {}, 'blink_seeded': {}, 'scoring_mode': SCORING_MODE, 'trials_per_beat': TRIALS_PER_BEAT,
                 'beats': BEATS, 'arms': {'v2': 'engine=v2 art=p2 (this branch)', 'v1': 'engine=v1 art=p2 (frozen K7 reference)'}, 'states_per_clip': STATES_PER_CLIP, 'clips': {}, 'errors': {}}
     only = None; prev = None
     if '--only' in sys.argv:
@@ -274,7 +279,9 @@ async def main():
         with open(os.path.join(OUT, 'manifest.json')) as fh: prev = json.load(fh)
         manifest['previous_kit'] = {'kit_version': prev.get('kit_version', 1), 'generated_at': prev['generated_at'], 'seed': prev['seed'], 'order_sha256': prev['order_sha256'],
                                     'note': f'beats {sorted(only)} re-recorded on arms {sorted(only_arms)}; all other clips reused byte-identical (sha256 checked before reuse)'}
-        if prev.get('previous_kit'): manifest['previous_kit']['previous_kit'] = prev['previous_kit']   # chain v1 -> v2 -> v3 kept whole
+        if prev.get('previous_kit'): manifest['previous_kit']['previous_kit'] = prev['previous_kit']   # chain v1 -> v2 -> v3 -> v4 kept whole
+        dropped = [b for b in prev.get('beats', []) if b not in BEATS]
+        if dropped: manifest['previous_kit']['beats_dropped'] = dropped; manifest['beats_not_in_this_kit'] = {b: 'decided on kit v%s (%s); clips stay in the folder and in git history, not shown to raters' % (prev.get('kit_version'), prev['clips'].get('v2_' + b, '')) for b in dropped}
         manifest['reused_from_previous_kit'] = []
     async with async_playwright() as p:
         b = await p.chromium.launch()
@@ -303,11 +310,12 @@ async def main():
             manifest['duration_s'][k] = round(float(r.stdout.strip()), 2) if r.returncode == 0 and r.stdout.strip() else None
     except Exception:
         manifest['duration_s'] = 'ffprobe unavailable (durations not measured, disclosed)'
-    rnd = random.Random(SEED); order = [{'beat': bt, 'left': rnd.choice(['v2', 'v1'])} for bt in BEATS]; rnd.shuffle(order)
+    rnd = random.Random(SEED); order = [{'beat': bt, 'left': rnd.choice(['v2', 'v1'])} for bt in BEATS for _ in range(TRIALS_PER_BEAT)]; rnd.shuffle(order)
     manifest['order'] = order; manifest['order_sha256'] = hashlib.sha256(json.dumps(order, sort_keys=True).encode()).hexdigest()
     manifest['reference_still_present'] = os.path.exists(os.path.join(OUT, 'reference_still.png'))
     manifest['limits'] = ('Control arm = v1 (frozen K7 engine on this branch). The gist asks for a still from the reference video; no such file exists in the repository, '
-                          'so none is shown. Raters are not independent of the owner; the p-value is indicative only. 4 trials per rater; 3-5 raters give 12-20 trials.')
+                          'so none is shown. Raters are not independent of the owner; the p-value is indicative only. %d trials per rater; 3-5 raters give 12-20 trials.' % len(order)
+                          + (' Kit v4 scoring is TIE mode (score_core.js): the v2 arm is a port of the v1 choreography, so it passes when raters cannot tell it apart (no significant loss, every beat above its floor), not only when it wins.' if SCORING_MODE == 'tie' else ''))
     kit = KIT_HTML.replace('__MANIFEST__', json.dumps(manifest, ensure_ascii=False))
     with open(os.path.join(OUT, 'index.html'), 'w') as fh: fh.write(kit)
     total = sum(manifest['bytes'].values()) + len(kit.encode())
